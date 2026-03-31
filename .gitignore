@@ -1,0 +1,27 @@
+# Data files (large EEG recordings)
+data/increase/
+data/normal/
+data/*.mat
+*.set
+*.fdt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Claude Code internals
+.claude/
