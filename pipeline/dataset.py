@@ -36,12 +36,14 @@ class StressEEGDataset(Dataset):
         target_sfreq: float = 200.0,
         window_sec: float = 10.0,
         stride_sec: float | None = None,
+        norm: str = "zscore",
         cache_dir: str = "data/cache",
     ):
         self.data_root = data_root
         self.target_sfreq = target_sfreq
         self.window_sec = window_sec
         self.stride_sec = stride_sec
+        self.norm = norm
         self.cache_dir = cache_dir
 
         df = pd.read_csv(csv_path)
@@ -62,13 +64,14 @@ class StressEEGDataset(Dataset):
             trial_name = os.path.splitext(os.path.basename(file_path))[0]
 
             stride_tag = "" if stride_sec is None else f"_s{stride_sec}"
+            norm_tag = "" if norm == "zscore" else f"_n{norm}"
             self.records.append(
                 {
                     "file_path": file_path,
                     "baseline_label": 1 if group == "increase" else 0,
                     "stress_score": float(row["Stress_Score"]) / 100.0,
                     "patient_id": patient_id,
-                    "cache_name": f"{group}_p{patient_id:02d}_{trial_name}{stride_tag}.pt",
+                    "cache_name": f"{group}_p{patient_id:02d}_{trial_name}{stride_tag}{norm_tag}.pt",
                 }
             )
 
@@ -92,10 +95,11 @@ class StressEEGDataset(Dataset):
             epochs = epoch_raw(raw, self.target_sfreq, self.window_sec, self.stride_sec)  # (M, C, T)
             epochs = epochs * 1e6  # V → µV
 
-            mean = epochs.mean(axis=2, keepdims=True)
-            std = epochs.std(axis=2, keepdims=True)
-            std[std < 1e-6] = 1.0
-            epochs = (epochs - mean) / std
+            if self.norm == "zscore":
+                mean = epochs.mean(axis=2, keepdims=True)
+                std = epochs.std(axis=2, keepdims=True)
+                std[std < 1e-6] = 1.0
+                epochs = (epochs - mean) / std
 
             torch.save(torch.from_numpy(epochs).float(), cache_path)
             n_new += 1

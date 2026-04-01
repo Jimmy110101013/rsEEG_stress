@@ -59,6 +59,17 @@ def parse_args():
     p.add_argument("--device", default="cuda:6")
     p.add_argument("--no-bf16", action="store_true")
     p.add_argument("--loss", choices=["focal", "ce"], default="focal")
+    p.add_argument("--norm", choices=["zscore", "none"], default="zscore",
+                   help="EEG normalization (zscore=per-epoch z-score, none=raw µV)")
+    p.add_argument("--dropout", type=float, default=0.0,
+                   help="Dropout rate before classification head (0=off)")
+    p.add_argument("--unfreeze-cls", action="store_true",
+                   help="Unfreeze REVE cls_query_token for attention pooling adaptation")
+    p.add_argument("--weight-decay", type=float, default=1e-2)
+    p.add_argument("--warmup-epochs", type=int, default=5,
+                   help="Linear LR warmup epochs (0=off)")
+    p.add_argument("--no-scheduler", action="store_true",
+                   help="Disable ReduceLROnPlateau scheduler")
     # Augmentation
     p.add_argument("--stride", type=float, default=None,
                    help="Epoch stride in seconds (default=window_sec, no overlap)")
@@ -109,8 +120,8 @@ def train_one_fold(
 
     # Fresh model per fold
     extractor = create_extractor(args.extractor, embed_dim=EMBED_DIM)
-    model = DecoupledStressModel(extractor, embed_dim=EMBED_DIM).to(device)
-    model.freeze_backbone()
+    model = DecoupledStressModel(extractor, embed_dim=EMBED_DIM, dropout=args.dropout).to(device)
+    model.freeze_backbone(unfreeze_cls_query=args.unfreeze_cls)
 
     # Verify freeze
     trainable = [n for n, p in model.named_parameters() if p.requires_grad]
@@ -120,15 +131,28 @@ def train_one_fold(
         for n in trainable:
             print(f"    [trainable] {n}")
 
+    counts = np.bincount(train_labels)
+    class_weights = torch.tensor(len(train_labels) / (len(counts) * counts), dtype=torch.float32).to(device)
     if args.loss == "focal":
-        criterion = FocalLoss(gamma=2.0)
+        criterion = FocalLoss(gamma=2.0, alpha=class_weights)
     else:
-        counts = np.bincount(train_labels)
-        weights = torch.tensor(len(train_labels) / (len(counts) * counts), dtype=torch.float32).to(device)
-        criterion = nn.CrossEntropyLoss(weight=weights)
-    optimizer = torch.optim.Adam(
-        filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr
+        criterion = nn.CrossEntropyLoss(weight=class_weights)
+    optimizer = torch.optim.AdamW(
+        filter(lambda p: p.requires_grad, model.parameters()),
+        lr=args.lr, weight_decay=args.weight_decay,
     )
+    warmup_scheduler = None
+    if args.warmup_epochs > 0:
+        warmup_scheduler = torch.optim.lr_scheduler.LinearLR(
+            optimizer, start_factor=0.01, end_factor=1.0,
+            total_iters=args.warmup_epochs,
+        )
+    if not args.no_scheduler:
+        plateau_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, mode='max', factor=0.5, patience=5, min_lr=1e-6,
+        )
+    else:
+        plateau_scheduler = None
 
     best_raw_bal_acc = 0.0
     best_state = None
@@ -159,12 +183,15 @@ def train_one_fold(
             use_mixup = args.mixup > 0
 
             with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
+                # Extract pooled features first, then apply mixup at embedding level
+                # to avoid mask corruption from mixing variable-length padded sequences
+                pooled = model.extract_pooled(epochs_batch, mask)
                 if use_mixup:
-                    mixed_x, y_a, y_b, lam = mixup_batch(epochs_batch, labels, args.mixup)
-                    cls_logits, _ = model(mixed_x, mask)
+                    pooled, y_a, y_b, lam = mixup_batch(pooled, labels, args.mixup)
+                    cls_logits, _ = model.classify(pooled)
                     loss = lam * criterion(cls_logits, y_a) + (1 - lam) * criterion(cls_logits, y_b)
                 else:
-                    cls_logits, _ = model(epochs_batch, mask)
+                    cls_logits, _ = model.classify(pooled)
                     loss = criterion(cls_logits, labels)
 
             optimizer.zero_grad()
@@ -184,13 +211,19 @@ def train_one_fold(
         val_metrics = evaluate(model, val_loader, criterion, device, use_amp)
         elapsed = time.time() - t0
 
+        current_lr = optimizer.param_groups[0]['lr']
         print(
             f"  Fold {fold_idx+1} | Epoch {epoch:>3}/{args.epochs} | "
             f"train_loss={train_loss:.4f} | "
             f"val_loss={val_metrics['loss']:.4f} | "
             f"val_bal_acc={val_metrics['bal_acc']:.4f} | "
-            f"{elapsed:.1f}s"
+            f"lr={current_lr:.1e} | {elapsed:.1f}s"
         )
+
+        if warmup_scheduler is not None and epoch <= args.warmup_epochs:
+            warmup_scheduler.step()
+        elif plateau_scheduler is not None:
+            plateau_scheduler.step(val_metrics["bal_acc"])
 
         # Checkpoint on raw bal_acc improvement
         if val_metrics["bal_acc"] > best_raw_bal_acc:
@@ -288,15 +321,18 @@ def main():
     args = parse_args()
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     print(f"Device: {device} | Extractor: {args.extractor} | Folds: {args.folds} | Loss: {args.loss}")
+    print(f"Norm: {args.norm} | Dropout: {args.dropout} | WD: {args.weight_decay} | Scheduler: {not args.no_scheduler}")
+    if args.unfreeze_cls:
+        print("CLS query token: unfrozen")
     if args.stride:
         print(f"Stride: {args.stride}s (overlapping epochs)")
     if args.noise > 0:
         print(f"Gaussian noise: std={args.noise}")
     if args.mixup > 0:
-        print(f"Mixup: alpha={args.mixup}")
+        print(f"Mixup: alpha={args.mixup} (embedding-level)")
     print()
 
-    dataset = StressEEGDataset(CSV_PATH, DATA_ROOT, stride_sec=args.stride)
+    dataset = StressEEGDataset(CSV_PATH, DATA_ROOT, stride_sec=args.stride, norm=args.norm)
     labels = dataset.get_labels()
     patient_ids = dataset.get_patient_ids()
 
