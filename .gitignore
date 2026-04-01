@@ -2,6 +2,7 @@
 data/increase/
 data/normal/
 data/*.mat
+data/cache/
 *.set
 *.fdt
 

@@ -56,3 +56,11 @@ class DecoupledStressModel(nn.Module):
         reg_output = self.head_reg(pooled)  # (B, 1)
 
         return cls_logits, reg_output
+
+    def freeze_backbone(self):
+        for param in self.extractor.parameters():
+            param.requires_grad = False
+
+    def unfreeze_backbone(self):
+        for param in self.extractor.parameters():
+            param.requires_grad = True

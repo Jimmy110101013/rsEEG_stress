@@ -1,6 +1,27 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch import Tensor
+
+
+class FocalLoss(nn.Module):
+    """Focal Loss for class-imbalanced classification.
+
+    FL(p_t) = -(1 - p_t)^gamma * log(p_t)
+    """
+
+    def __init__(self, gamma: float = 2.0):
+        super().__init__()
+        self.gamma = gamma
+
+    def forward(self, logits: Tensor, targets: Tensor) -> Tensor:
+        log_probs = F.log_softmax(logits, dim=1)
+        probs = log_probs.exp()
+        targets_one_hot = F.one_hot(targets, num_classes=logits.shape[1]).float()
+
+        focal_weight = (1.0 - probs).pow(self.gamma)
+        loss = -(focal_weight * log_probs * targets_one_hot).sum(dim=1).mean()
+        return loss
 
 
 class MTLLoss(nn.Module):
