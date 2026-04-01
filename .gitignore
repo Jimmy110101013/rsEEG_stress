@@ -23,5 +23,8 @@ Thumbs.db
 # Jupyter
 .ipynb_checkpoints/
 
+# Model weights
+weights/
+
 # Claude Code internals
 .claude/

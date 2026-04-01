@@ -1,5 +1,6 @@
 # CLAUDE.md (Master Architecture Blueprint)
-
+## 0. Default settings
+Use timm_eeg for conda env and install things inside it.
 ## 1. Project Overview & Core Philosophy
 
 This project aims to decode resting-state EEG (5-minute recordings @ 200Hz) into clinical stress markers using **EEG Foundation Models (e.g., REVE, LaBraM)**.

@@ -1,1 +1,1 @@
-# Placeholder for REVE Foundation Model wrapper (Phase 2)
+from .reve_extractor import ReveExtractor  # noqa: F401 — triggers registration

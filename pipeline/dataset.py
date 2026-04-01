@@ -69,6 +69,10 @@ class StressEEGDataset(Dataset):
         raw = mne.io.read_raw_eeglab(rec["file_path"], preload=True, verbose=False)
         epochs = epoch_raw(raw, self.target_sfreq, self.window_sec)  # (M, C, T)
 
+        # MNE converts EEGLAB µV data to Volts (multiplies by 1e-6).
+        # Restore to µV scale for FM input compatibility, then Z-score.
+        epochs = epochs * 1e6  # V → µV
+
         # Z-score normalize per channel (across time within each epoch)
         mean = epochs.mean(axis=2, keepdims=True)
         std = epochs.std(axis=2, keepdims=True)
