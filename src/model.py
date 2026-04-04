@@ -78,6 +78,29 @@ class DecoupledStressModel(nn.Module):
         pooled = self.extract_pooled(x, mask)
         return self.classify(pooled)
 
+    def predict_windows(self, x: Tensor, mask: Tensor):
+        """Predict at both window-level and subject-level (single forward pass).
+
+        Returns:
+            window_logits: (B, M, 2) — per-window classification
+            cls_logits: (B, 2) — subject-level classification (pooled)
+            reg_output: (B, 1) — subject-level regression (pooled)
+        """
+        B, M, C, T = x.shape
+        x_flat = x.reshape(B * M, C, T)
+        feats = self.extractor(x_flat)
+        feats = feats.reshape(B, M, self.embed_dim)
+
+        # Window-level: classify each window independently
+        window_logits = self.head_cls(feats)  # (B, M, 2)
+
+        # Subject-level: masked average pool then classify
+        mask_exp = mask.unsqueeze(-1).float()
+        pooled = (feats * mask_exp).sum(1) / mask_exp.sum(1).clamp(min=1)
+        cls_logits, reg_output = self.classify(pooled)
+
+        return window_logits, cls_logits, reg_output
+
     def freeze_backbone(self, unfreeze_cls_query: bool = False):
         for param in self.extractor.parameters():
             param.requires_grad = False

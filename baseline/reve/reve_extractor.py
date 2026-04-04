@@ -94,6 +94,20 @@ class ReveExtractor(BaseExtractor):
         if not loaded_encoder:
             print("[REVE] Using randomly initialized encoder weights")
 
+    def get_layer_groups(self) -> list[list["torch.nn.Parameter"]]:
+        """REVE layer groups: [patch_embed+pos, layer_0, ..., layer_21, pooling+norm]."""
+        groups = []
+        # Group 0: patch embedding + positional encoding
+        embed_params = []
+        for name, p in self.reve.named_parameters():
+            if "transformer.layers." not in name:
+                embed_params.append(p)
+        groups.append(embed_params)
+        # Groups 1..depth: transformer layers
+        for attn, ff in self.reve.transformer.layers:
+            groups.append(list(attn.parameters()) + list(ff.parameters()))
+        return groups
+
     def forward(self, x: Tensor) -> Tensor:
         """Extract features from EEG epochs.
 

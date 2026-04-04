@@ -1,1 +1,1 @@
-# Placeholder for CBraMod Foundation Model wrapper (Phase 2)
+from .cbramod_extractor import CBraModExtractor  # noqa: F401 — triggers registration

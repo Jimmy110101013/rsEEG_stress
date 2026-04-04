@@ -1,1 +1,1 @@
-# Placeholder for LaBraM Foundation Model wrapper (Phase 2)
+from .labram_extractor import LaBraMExtractor  # noqa: F401 — triggers registration
