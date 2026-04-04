@@ -25,21 +25,23 @@ from sklearn.metrics import (
     f1_score,
 )
 from sklearn.model_selection import StratifiedGroupKFold
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import DataLoader, Subset, TensorDataset
 
 # Register extractors
 import baseline.mock_fm  # noqa: F401
 import baseline.reve  # noqa: F401
+import baseline.labram  # noqa: F401
+import baseline.cbramod  # noqa: F401
 from baseline.abstract import create_extractor
 from pipeline.dataset import StressEEGDataset, stress_collate_fn
 from src.loss import FocalLoss
 from src.model import DecoupledStressModel
 
-# ──────────────────── Defaults ────────────────────
+# ──────────────────── Defaults (aligned with REVE reference) ─────
 CSV_PATH = "data/comprehensive_labels.csv"
 DATA_ROOT = "data"
 BATCH_SIZE = 4
-LR = 1e-3
+LR = 5e-3
 N_EPOCHS = 50
 PATIENCE = 15
 EMBED_DIM = 512
@@ -61,13 +63,13 @@ def parse_args():
     p.add_argument("--loss", choices=["focal", "ce"], default="focal")
     p.add_argument("--norm", choices=["zscore", "none"], default="zscore",
                    help="EEG normalization (zscore=per-epoch z-score, none=raw µV)")
-    p.add_argument("--dropout", type=float, default=0.0,
-                   help="Dropout rate before classification head (0=off)")
-    p.add_argument("--unfreeze-cls", action="store_true",
-                   help="Unfreeze REVE cls_query_token for attention pooling adaptation")
+    p.add_argument("--dropout", type=float, default=0.05,
+                   help="Dropout rate before classification head")
+    p.add_argument("--freeze-cls", action="store_true",
+                   help="Freeze REVE cls_query_token (unfrozen by default per REVE ref)")
     p.add_argument("--weight-decay", type=float, default=1e-2)
-    p.add_argument("--warmup-epochs", type=int, default=5,
-                   help="Linear LR warmup epochs (0=off)")
+    p.add_argument("--warmup-epochs", type=int, default=3,
+                   help="Exponential LR warmup epochs (0=off)")
     p.add_argument("--no-scheduler", action="store_true",
                    help="Disable ReduceLROnPlateau scheduler")
     # Augmentation
@@ -106,6 +108,25 @@ def mixup_batch(
 # ──────────────────── Core ────────────────────────
 
 
+def precompute_features(model, loader, device, use_amp):
+    """Run frozen backbone once, return TensorDataset of (pooled, labels)."""
+    model.eval()
+    all_pooled, all_labels = [], []
+
+    with torch.no_grad():
+        for epochs_batch, labels, _scores, mask, _pids in loader:
+            epochs_batch = epochs_batch.to(device)
+            mask = mask.to(device)
+
+            with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
+                pooled = model.extract_pooled(epochs_batch, mask)
+
+            all_pooled.append(pooled.float().cpu())
+            all_labels.append(labels)
+
+    return TensorDataset(torch.cat(all_pooled), torch.cat(all_labels))
+
+
 def train_one_fold(
     fold_idx: int,
     train_labels: np.ndarray,
@@ -119,9 +140,10 @@ def train_one_fold(
     use_amp = not args.no_bf16 and device.type == "cuda"
 
     # Fresh model per fold
-    extractor = create_extractor(args.extractor, embed_dim=EMBED_DIM)
-    model = DecoupledStressModel(extractor, embed_dim=EMBED_DIM, dropout=args.dropout).to(device)
-    model.freeze_backbone(unfreeze_cls_query=args.unfreeze_cls)
+    extractor = create_extractor(args.extractor)
+    embed_dim = extractor.embed_dim
+    model = DecoupledStressModel(extractor, embed_dim=embed_dim, dropout=args.dropout).to(device)
+    model.freeze_backbone(unfreeze_cls_query=not args.freeze_cls)
 
     # Verify freeze
     trainable = [n for n, p in model.named_parameters() if p.requires_grad]
@@ -131,6 +153,19 @@ def train_one_fold(
         for n in trainable:
             print(f"    [trainable] {n}")
 
+    # Feature caching: run backbone once, skip if noise or cls_query is trainable
+    use_feature_cache = (args.noise == 0 and args.freeze_cls)
+    if use_feature_cache:
+        t_cache = time.time()
+        print("  Precomputing features (frozen backbone)...", end=" ", flush=True)
+        train_feat_ds = precompute_features(model, train_loader, device, use_amp)
+        val_feat_ds = precompute_features(model, val_loader, device, use_amp)
+        test_feat_ds = precompute_features(model, test_loader, device, use_amp)
+        print(f"done ({time.time() - t_cache:.1f}s)")
+        train_loader = DataLoader(train_feat_ds, batch_size=args.batch_size, shuffle=True)
+        val_loader = DataLoader(val_feat_ds, batch_size=args.batch_size, shuffle=False)
+        test_loader = DataLoader(test_feat_ds, batch_size=args.batch_size, shuffle=False)
+
     counts = np.bincount(train_labels)
     class_weights = torch.tensor(len(train_labels) / (len(counts) * counts), dtype=torch.float32).to(device)
     if args.loss == "focal":
@@ -139,13 +174,16 @@ def train_one_fold(
         criterion = nn.CrossEntropyLoss(weight=class_weights)
     optimizer = torch.optim.AdamW(
         filter(lambda p: p.requires_grad, model.parameters()),
-        lr=args.lr, weight_decay=args.weight_decay,
+        lr=args.lr, betas=(0.92, 0.999), eps=1e-9,
+        weight_decay=args.weight_decay,
     )
     warmup_scheduler = None
     if args.warmup_epochs > 0:
-        warmup_scheduler = torch.optim.lr_scheduler.LinearLR(
-            optimizer, start_factor=0.01, end_factor=1.0,
-            total_iters=args.warmup_epochs,
+        # Exponential warmup per REVE reference: (10^(step/total) - 1) / 9
+        total_warmup = args.warmup_epochs
+        warmup_scheduler = torch.optim.lr_scheduler.LambdaLR(
+            optimizer,
+            lr_lambda=lambda epoch: (10 ** (min(epoch, total_warmup) / total_warmup) - 1) / 9,
         )
     if not args.no_scheduler:
         plateau_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
@@ -169,46 +207,69 @@ def train_one_fold(
         train_loss, n_steps = 0.0, 0
         t0 = time.time()
 
-        for epochs_batch, labels, _scores, mask in train_loader:
-            epochs_batch, labels, mask = (
-                epochs_batch.to(device),
-                labels.to(device),
-                mask.to(device),
-            )
+        if use_feature_cache:
+            for pooled_feats, labels in train_loader:
+                pooled_feats, labels = pooled_feats.to(device), labels.to(device)
 
-            # Training-time augmentation: Gaussian noise
-            if args.noise > 0:
-                epochs_batch = epochs_batch + args.noise * torch.randn_like(epochs_batch)
+                use_mixup = args.mixup > 0
+                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
+                    if use_mixup:
+                        pooled_feats, y_a, y_b, lam = mixup_batch(pooled_feats, labels, args.mixup)
+                        cls_logits, _ = model.classify(pooled_feats)
+                        loss = lam * criterion(cls_logits, y_a) + (1 - lam) * criterion(cls_logits, y_b)
+                    else:
+                        cls_logits, _ = model.classify(pooled_feats)
+                        loss = criterion(cls_logits, labels)
 
-            use_mixup = args.mixup > 0
+                optimizer.zero_grad()
+                loss.backward()
 
-            with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                # Extract pooled features first, then apply mixup at embedding level
-                # to avoid mask corruption from mixing variable-length padded sequences
-                pooled = model.extract_pooled(epochs_batch, mask)
-                if use_mixup:
-                    pooled, y_a, y_b, lam = mixup_batch(pooled, labels, args.mixup)
-                    cls_logits, _ = model.classify(pooled)
-                    loss = lam * criterion(cls_logits, y_a) + (1 - lam) * criterion(cls_logits, y_b)
-                else:
-                    cls_logits, _ = model.classify(pooled)
-                    loss = criterion(cls_logits, labels)
+                if not grad_verified:
+                    _verify_gradients(model)
+                    grad_verified = True
 
-            optimizer.zero_grad()
-            loss.backward()
+                optimizer.step()
+                train_loss += loss.item()
+                n_steps += 1
+        else:
+            for epochs_batch, labels, _scores, mask, _pids in train_loader:
+                epochs_batch, labels, mask = (
+                    epochs_batch.to(device),
+                    labels.to(device),
+                    mask.to(device),
+                )
 
-            if not grad_verified:
-                _verify_gradients(model)
-                grad_verified = True
+                # Training-time augmentation: Gaussian noise
+                if args.noise > 0:
+                    epochs_batch = epochs_batch + args.noise * torch.randn_like(epochs_batch)
 
-            optimizer.step()
-            train_loss += loss.item()
-            n_steps += 1
+                use_mixup = args.mixup > 0
+
+                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
+                    pooled = model.extract_pooled(epochs_batch, mask)
+                    if use_mixup:
+                        pooled, y_a, y_b, lam = mixup_batch(pooled, labels, args.mixup)
+                        cls_logits, _ = model.classify(pooled)
+                        loss = lam * criterion(cls_logits, y_a) + (1 - lam) * criterion(cls_logits, y_b)
+                    else:
+                        cls_logits, _ = model.classify(pooled)
+                        loss = criterion(cls_logits, labels)
+
+                optimizer.zero_grad()
+                loss.backward()
+
+                if not grad_verified:
+                    _verify_gradients(model)
+                    grad_verified = True
+
+                optimizer.step()
+                train_loss += loss.item()
+                n_steps += 1
 
         train_loss /= max(n_steps, 1)
 
         # ── Val ──
-        val_metrics = evaluate(model, val_loader, criterion, device, use_amp)
+        val_metrics = evaluate(model, val_loader, criterion, device, use_amp, use_feature_cache)
         elapsed = time.time() - t0
 
         current_lr = optimizer.param_groups[0]['lr']
@@ -249,30 +310,38 @@ def train_one_fold(
     else:
         print("  [WARN] No improvement during training, using last model")
 
-    y_true, y_pred = predict(model, test_loader, device, use_amp)
+    y_true, y_pred = predict(model, test_loader, device, use_amp, use_feature_cache)
     return y_true, y_pred, best_epoch
 
 
-def evaluate(model, loader, criterion, device, use_amp) -> dict:
+def evaluate(model, loader, criterion, device, use_amp, cached=False) -> dict:
     model.eval()
     all_preds, all_labels = [], []
     total_loss, n_steps = 0.0, 0
 
     with torch.no_grad():
-        for epochs_batch, labels, _scores, mask in loader:
-            epochs_batch, labels, mask = (
-                epochs_batch.to(device),
-                labels.to(device),
-                mask.to(device),
-            )
-            with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                cls_logits, _ = model(epochs_batch, mask)
-                loss = criterion(cls_logits, labels)
-
-            total_loss += loss.item()
-            n_steps += 1
-            all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
-            all_labels.append(labels.cpu().numpy())
+        if cached:
+            for pooled_feats, labels in loader:
+                pooled_feats, labels = pooled_feats.to(device), labels.to(device)
+                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
+                    cls_logits, _ = model.classify(pooled_feats)
+                    loss = criterion(cls_logits, labels)
+                total_loss += loss.item()
+                n_steps += 1
+                all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
+                all_labels.append(labels.cpu().numpy())
+        else:
+            for epochs_batch, labels, _scores, mask, _pids in loader:
+                epochs_batch, labels, mask = (
+                    epochs_batch.to(device), labels.to(device), mask.to(device),
+                )
+                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
+                    cls_logits, _ = model(epochs_batch, mask)
+                    loss = criterion(cls_logits, labels)
+                total_loss += loss.item()
+                n_steps += 1
+                all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
+                all_labels.append(labels.cpu().numpy())
 
     y_true = np.concatenate(all_labels)
     y_pred = np.concatenate(all_preds)
@@ -286,23 +355,28 @@ def evaluate(model, loader, criterion, device, use_amp) -> dict:
     }
 
 
-def predict(model, loader, device, use_amp) -> Tuple[np.ndarray, np.ndarray]:
+def predict(model, loader, device, use_amp, cached=False) -> Tuple[np.ndarray, np.ndarray]:
     """Run inference and return (y_true, y_pred) arrays."""
     model.eval()
     all_preds, all_labels = [], []
 
     with torch.no_grad():
-        for epochs_batch, labels, _scores, mask in loader:
-            epochs_batch, labels, mask = (
-                epochs_batch.to(device),
-                labels.to(device),
-                mask.to(device),
-            )
-            with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                cls_logits, _ = model(epochs_batch, mask)
-
-            all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
-            all_labels.append(labels.cpu().numpy())
+        if cached:
+            for pooled_feats, labels in loader:
+                pooled_feats, labels = pooled_feats.to(device), labels.to(device)
+                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
+                    cls_logits, _ = model.classify(pooled_feats)
+                all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
+                all_labels.append(labels.cpu().numpy())
+        else:
+            for epochs_batch, labels, _scores, mask, _pids in loader:
+                epochs_batch, labels, mask = (
+                    epochs_batch.to(device), labels.to(device), mask.to(device),
+                )
+                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
+                    cls_logits, _ = model(epochs_batch, mask)
+                all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
+                all_labels.append(labels.cpu().numpy())
 
     return np.concatenate(all_labels), np.concatenate(all_preds)
 
@@ -317,12 +391,19 @@ def _verify_gradients(model):
     print("  ✓ Freeze verified: backbone frozen, head has gradients")
 
 
+def seed_everything(seed: int):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+
 def main():
     args = parse_args()
+    seed_everything(args.seed)
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     print(f"Device: {device} | Extractor: {args.extractor} | Folds: {args.folds} | Loss: {args.loss}")
     print(f"Norm: {args.norm} | Dropout: {args.dropout} | WD: {args.weight_decay} | Scheduler: {not args.no_scheduler}")
-    if args.unfreeze_cls:
+    if not args.freeze_cls:
         print("CLS query token: unfrozen")
     if args.stride:
         print(f"Stride: {args.stride}s (overlapping epochs)")
@@ -399,7 +480,7 @@ def main():
         fold_acc = accuracy_score(y_true, y_pred)
         fold_bal = balanced_accuracy_score(y_true, y_pred)
         print(
-            f"  → Test (best @ epoch {best_epoch}): "
+            f"  -> Test (best @ epoch {best_epoch}): "
             f"acc={fold_acc:.4f}, bal_acc={fold_bal:.4f}"
         )
 

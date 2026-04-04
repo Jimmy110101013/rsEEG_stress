@@ -23,3 +23,12 @@ class BaseExtractor(nn.Module, ABC):
             (B, embed_dim) feature vectors.
         """
         ...
+
+    def get_layer_groups(self) -> list[list[nn.Parameter]]:
+        """Return parameter groups ordered from early to late layers.
+
+        Used for LLRD (layer-wise learning rate decay).
+        Default: single group with all parameters.
+        Override in subclasses for model-specific layer ordering.
+        """
+        return [list(self.parameters())]

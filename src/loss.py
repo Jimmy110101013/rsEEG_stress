@@ -14,15 +14,22 @@ class FocalLoss(nn.Module):
         alpha: Per-class weights tensor of shape (num_classes,), or None for uniform.
     """
 
-    def __init__(self, gamma: float = 2.0, alpha: Tensor | None = None):
+    def __init__(self, gamma: float = 2.0, alpha: Tensor | None = None,
+                 label_smoothing: float = 0.0):
         super().__init__()
         self.gamma = gamma
+        self.label_smoothing = label_smoothing
         self.register_buffer("alpha", alpha)
 
     def forward(self, logits: Tensor, targets: Tensor) -> Tensor:
         log_probs = F.log_softmax(logits, dim=1)
         probs = log_probs.exp()
-        targets_one_hot = F.one_hot(targets, num_classes=logits.shape[1]).float()
+        n_classes = logits.shape[1]
+        targets_one_hot = F.one_hot(targets, num_classes=n_classes).float()
+
+        if self.label_smoothing > 0:
+            targets_one_hot = (1.0 - self.label_smoothing) * targets_one_hot + \
+                              self.label_smoothing / n_classes
 
         focal_weight = (1.0 - probs).pow(self.gamma)
         if self.alpha is not None:
@@ -32,34 +39,54 @@ class FocalLoss(nn.Module):
 
 
 class PairwiseRankingLoss(nn.Module):
-    """Pairwise ranking loss for ordinal regression.
+    """Within-subject pairwise ranking loss with score-gap-weighted margins.
 
-    For all pairs (i, j) in a batch where score_i != score_j,
-    enforces that the model output preserves the same ordering.
-    Invariant to absolute score values — only cares about relative rank.
+    For each within-subject pair (i, j), enforces:
+        pred_i - pred_j ≥ |score_i - score_j|   (if score_i > score_j)
+
+    The margin equals the actual score difference, so the model must reproduce
+    both the ranking AND the magnitude of stress differences. Noise pairs
+    (tiny score gaps like 63 vs 65) get near-zero margins and don't dominate.
+
+    When patient_ids is None, falls back to all-pairs (cross-subject).
     """
 
-    def __init__(self, margin: float = 0.1):
+    def __init__(self, margin: float = 0.0):
         super().__init__()
-        self.margin = margin
+        self.fixed_margin = margin  # additional fixed margin on top of score gap
 
-    def forward(self, reg_output: Tensor, stress_scores: Tensor) -> Tensor:
+    def forward(self, reg_output: Tensor, stress_scores: Tensor,
+                patient_ids: Tensor | None = None) -> Tensor:
         pred = reg_output.squeeze(-1)  # (B,)
         n = pred.size(0)
         if n < 2:
             return pred.new_tensor(0.0)
 
         i, j = torch.triu_indices(n, n, offset=1, device=pred.device)
-        target = torch.sign(stress_scores[i] - stress_scores[j])
+
+        # Within-subject filtering: only keep pairs from the same patient
+        if patient_ids is not None:
+            same_subj = patient_ids[i] == patient_ids[j]
+            i, j = i[same_subj], j[same_subj]
+            if len(i) == 0:
+                return pred.new_tensor(0.0)
+
+        score_diff = stress_scores[i] - stress_scores[j]
+        target = torch.sign(score_diff)
 
         # Filter out ties (same score)
         valid = target != 0
         if not valid.any():
             return pred.new_tensor(0.0)
 
-        return F.margin_ranking_loss(
-            pred[i[valid]], pred[j[valid]], target[valid], margin=self.margin,
-        )
+        i, j, target = i[valid], j[valid], target[valid]
+        # Per-pair margin = actual score gap (scores already in [0,1])
+        margins = torch.abs(stress_scores[i] - stress_scores[j]) + self.fixed_margin
+
+        # loss = max(0, margin_ij - target_ij * (pred_i - pred_j))
+        pred_diff = pred[i] - pred[j]
+        loss = torch.clamp(margins - target * pred_diff, min=0)
+        return loss.mean()
 
 
 class MTLLoss(nn.Module):
