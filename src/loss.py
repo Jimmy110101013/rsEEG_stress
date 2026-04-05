@@ -1,7 +1,16 @@
+import math
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
+
+
+def adv_lambda_schedule(epoch: int, max_epochs: int, max_lambda: float = 0.1) -> float:
+    """DANN-style progressive lambda ramp (Ganin et al., JMLR 2016).
+    Sigmoid schedule: 0 → max_lambda over training."""
+    p = epoch / max_epochs
+    return float(max_lambda * (2.0 / (1.0 + math.exp(-10.0 * p)) - 1.0))
 
 
 class FocalLoss(nn.Module):

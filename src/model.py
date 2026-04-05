@@ -1,8 +1,28 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
+from torch.autograd import Function
 
 from baseline.abstract.base_extractor import BaseExtractor
+
+
+class GradientReversalFn(Function):
+    """Gradient Reversal Layer (Ganin et al., JMLR 2016).
+    Forward: identity. Backward: negate gradients scaled by lambda.
+    """
+    @staticmethod
+    def forward(ctx, x, lambda_):
+        ctx.lambda_ = lambda_
+        return x.view_as(x)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        return grad_output.neg() * ctx.lambda_, None
+
+
+class GradientReversal(nn.Module):
+    def forward(self, x, lambda_=1.0):
+        return GradientReversalFn.apply(x, lambda_)
 
 
 class DecoupledStressModel(nn.Module):
@@ -16,7 +36,8 @@ class DecoupledStressModel(nn.Module):
     """
 
     def __init__(self, extractor: BaseExtractor, embed_dim: int = 512,
-                 dropout: float = 0.0, head_hidden: int = 0):
+                 dropout: float = 0.0, head_hidden: int = 0,
+                 n_subjects: int = 0):
         super().__init__()
         self.extractor = extractor
         self.embed_dim = embed_dim
@@ -38,6 +59,14 @@ class DecoupledStressModel(nn.Module):
         else:
             self.head_cls = nn.Linear(embed_dim, 2)
             self.head_reg = nn.Linear(embed_dim, 1)
+
+        # Subject-adversarial head (opt-in: n_subjects > 0)
+        if n_subjects > 0:
+            self.grl = GradientReversal()
+            self.head_subj = nn.Sequential(
+                nn.Linear(embed_dim, 128), nn.GELU(),
+                nn.Dropout(dropout), nn.Linear(128, n_subjects),
+            )
 
     def extract_pooled(self, x: Tensor, mask: Tensor) -> Tensor:
         """Extract features and pool over epochs.
@@ -62,6 +91,13 @@ class DecoupledStressModel(nn.Module):
     def classify(self, pooled: Tensor) -> tuple[Tensor, Tensor]:
         """Run classification and regression heads on pooled features."""
         return self.head_cls(pooled), self.head_reg(pooled)
+
+    def classify_subject(self, features: Tensor, lambda_adv: float = 1.0) -> Tensor | None:
+        """Subject classification through GRL for adversarial training.
+        Returns None if no adversarial head is configured."""
+        if not hasattr(self, 'head_subj'):
+            return None
+        return self.head_subj(self.grl(features, lambda_adv))
 
     def forward(
         self, x: Tensor, mask: Tensor
