@@ -36,6 +36,7 @@ from typing import Tuple
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
@@ -102,6 +103,9 @@ def parse_args():
                    help="Path to labels CSV (default: comprehensive_labels_stress.csv)")
     p.add_argument("--max-duration", type=float, default=None,
                    help="Filter out recordings longer than this (seconds). Paper uses 400.")
+    p.add_argument("--adv-weight", type=float, default=0.0,
+                   help="Max adversarial lambda for subject-adversarial training (GRL). "
+                        "0=off, 0.1 recommended. Ramps from 0 via DANN sigmoid schedule.")
     return p.parse_args()
 
 
@@ -357,8 +361,18 @@ def train_one_fold_ft(
     # Fresh model
     extractor = create_extractor(args.extractor)
     embed_dim = extractor.embed_dim
-    model = DecoupledStressModel(extractor, embed_dim=embed_dim, dropout=args.dropout).to(device)
+    n_subjects = len(np.unique(dataset.get_patient_ids())) if args.adv_weight > 0 else 0
+    model = DecoupledStressModel(extractor, embed_dim=embed_dim, dropout=args.dropout,
+                                 n_subjects=n_subjects).to(device)
     # Don't freeze — full fine-tuning
+
+    # Subject-adversarial setup
+    pid_to_idx = None
+    if args.adv_weight > 0:
+        unique_pids = np.unique(dataset.get_patient_ids())
+        pid_to_idx = {int(pid): i for i, pid in enumerate(unique_pids)}
+        if fold_idx == 0:
+            print(f"  Adversarial: {len(unique_pids)} subjects, max_lambda={args.adv_weight}")
 
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     if fold_idx == 0:
@@ -409,14 +423,27 @@ def train_one_fold_ft(
         t0 = time.time()
         optimizer.zero_grad()
 
-        for step, (windows, labels, _pids, rec_idxs) in enumerate(train_loader):
+        for step, (windows, labels, pids, rec_idxs) in enumerate(train_loader):
             windows, labels = windows.to(device), labels.to(device)
+            pids = pids.to(device)
             rec_idxs = rec_idxs.to(device)
 
             with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
                 features = model.extractor(windows)          # (B, embed_dim)
                 cls_logits = model.head_cls(features)         # (B, 2)
                 window_loss = criterion(cls_logits, labels)
+
+                # Subject-adversarial loss (GRL)
+                if args.adv_weight > 0:
+                    from src.loss import adv_lambda_schedule
+                    lambda_adv = adv_lambda_schedule(epoch, args.epochs, args.adv_weight)
+                    subj_logits = model.classify_subject(features, lambda_adv)
+                    subj_targets = torch.tensor(
+                        [pid_to_idx[p.item()] for p in pids],
+                        device=device, dtype=torch.long)
+                    loss_adv = F.cross_entropy(subj_logits, subj_targets)
+                    # Scale forward loss by lambda too (GRL only handles backward)
+                    window_loss = window_loss + lambda_adv * loss_adv
 
                 # LEAD-style recording-level aggregated loss
                 if args.subject_loss_weight > 0:
