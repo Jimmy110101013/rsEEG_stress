@@ -1,0 +1,27 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a systematic cross-subject evaluation of three EEG foundation
+models for resting-state stress classification, validated by two clinical
+reference datasets. Three claims are robust to method choice:
+
+\begin{enumerate}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
+  \item Trial-level cross-validation inflates reported balanced accuracy
+    by $\sim$21~points relative to subject-level cross-validation, across
+    three architecturally distinct foundation models.
+  \item Frozen FM features encode subject identity 11--13$\times$ more
+    than diagnostic labels, on both stress and Alzheimer's data.
+  \item Fine-tuning amplifies label signal only when the underlying
+    biological signal is strong enough; weak signals (chronic stress)
+    saturate at the same $\sim$0.66 \BA{} achievable with classical
+    band-power features and a random forest, and standard mitigations
+    (subject-adversarial, LEAD-style auxiliary losses) degrade rather
+    than improve this.
+\end{enumerate}
+
+We do not interpret this as failure of resting-state EEG for stress
+detection. The same data shows that a real but modest stress signature
+exists --- and the same diagnosis tells us which research direction will
+exceed the ceiling: subject identity should be treated as a reference
+frame, not as noise to be removed. Within-subject longitudinal modelling
+is, in our reading, the productive next experiment.

@@ -1,0 +1,65 @@
+% arxiv.sty — minimal arXiv-preprint style
+% Self-contained: no external .sty files required beyond CTAN basics.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{arxiv}[2026/04/07 arXiv preprint style]
+
+% --- page geometry ---------------------------------------------------------
+\RequirePackage[
+  letterpaper,
+  hmargin=1in,
+  vmargin=1.25in
+]{geometry}
+
+% --- typography ------------------------------------------------------------
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{lmodern}
+\RequirePackage{microtype}
+
+% --- core packages ---------------------------------------------------------
+\RequirePackage{amsmath, amssymb, amsfonts}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage{booktabs}
+\RequirePackage{enumitem}
+\RequirePackage{caption}
+\RequirePackage{url}
+\RequirePackage[
+  hidelinks,
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black
+]{hyperref}
+\RequirePackage[round]{natbib}
+\bibliographystyle{plainnat}
+
+% --- running header --------------------------------------------------------
+\RequirePackage{fancyhdr}
+\providecommand{\headeright}{Preprint}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textsc{\headeright}}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- abstract --------------------------------------------------------------
+\renewenvironment{abstract}{%
+  \vskip 0.5em
+  \begin{center}{\bfseries\large Abstract}\end{center}
+  \vskip 0.25em
+  \begin{quote}\itshape
+}{%
+  \end{quote}
+  \vskip 0.5em
+}
+
+% --- section spacing -------------------------------------------------------
+\RequirePackage{titlesec}
+\titlespacing*{\section}{0pt}{1.25em}{0.5em}
+\titlespacing*{\subsection}{0pt}{1.0em}{0.4em}
+\titlespacing*{\subsubsection}{0pt}{0.8em}{0.3em}
+
+% --- text-mode shortcut ----------------------------------------------------
+\providecommand{\BA}{\textsc{ba}}

@@ -1,0 +1,56 @@
+\section{Related Work}
+\label{sec:related}
+
+% TODO: lift and condense from docs/related_work.md (17 KB).
+
+\paragraph{EEG foundation models.}
+LaBraM~\citep{labram2024}, CBraMod~\citep{cbramod2025}, REVE~\citep{reve2024},
+BIOT, and BENDR pretrain transformer encoders on large unlabelled EEG corpora
+via masked patch reconstruction or contrastive objectives. Reported
+downstream tasks span sleep staging, motor imagery, and clinical
+classification.
+% TODO: paragraph contrasting their reported gains vs. our findings.
+
+\paragraph{Cross-subject benchmarks reveal a consistent FM ceiling.}
+Three independent 2025--2026 benchmarks have reported that EEG foundation
+models fail to beat classical baselines on cross-subject affective and
+cognitive tasks: Brain4FMs~\citep{brain4fms2026},
+EEG-FM-Bench~\citep{eegfmbench2025}, and AdaBrain-Bench~\citep{adabrain2025}.
+Our work complements these benchmarks by providing the \emph{mechanistic}
+explanation: subject-identity dominance in the learned feature space.
+
+\paragraph{Subject leakage in EEG cross-validation.}
+The distinction between trial-level (random) and subject-level (grouped)
+cross-validation is well-known in the EEG ML literature
+\citep[e.g.,][]{varoquaux2017}, but trial-level splits remain common in
+published EEG stress classification work. We document the resulting
+inflation systematically across three FMs.
+
+\paragraph{Variance decomposition for representation analysis.}
+$\eta^{2}$ from one-way ANOVA is a standard effect-size measure for
+identifying the dominant source of variance in a feature set
+\citep{cohen1973}.
+% TODO: cite recent neuroimaging work using $\eta^2$ for FM analysis.
+The ``brain fingerprinting'' literature \citep{finn2015} establishes that
+within-subject features are remarkably stable, providing precedent for
+subject-identity-dominance findings. We extend this from rsfMRI to
+foundation-model EEG embeddings.
+
+\paragraph{Subject-adversarial training and domain generalisation.}
+Gradient reversal layer (GRL)~\citep{ganin2015} and related domain
+adversarial methods aim to remove nuisance variables from learned
+representations. The LEAD framework~\citep{lead2024} applies this to
+EEG-as-domain. We evaluate both on our task and find they degrade rather
+than improve performance, consistent with the hypothesis that the diagnostic
+signal is too weak to survive subject-information removal.
+
+\paragraph{Resting-state stress detection.}
+% TODO: structure this paragraph: cite EEGMAT, SAM40, EDPMSC for related
+% public datasets; cite Wang et al. arXiv:2505.23042 for the 90\% claim and
+% explain the trial-leakage issue.
+Public resting-state EEG stress datasets are scarce. EEGMAT, SAM40, and
+EDPMSC use acute stress induction (mental arithmetic) rather than chronic
+stress, and none use validated psychometric labels such as DASS. Our UCSD
+Stress dataset fills this gap with longitudinal recordings under both DASS
+and DSS instruments, but at the cost of a small subject count
+($N{=}17$) --- a constraint we treat as part of the diagnosis.

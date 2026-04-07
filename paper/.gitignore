@@ -1,0 +1,24 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.bbl
+*.blg
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+_minted-*/
+
+# Tectonic cache
+build/
+
+# Built PDF (regenerate via `make pdf`)
+main.pdf
+
+# Editor files
+*.swp
+*~
+.DS_Store

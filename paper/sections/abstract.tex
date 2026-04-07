@@ -1,0 +1,25 @@
+\begin{abstract}
+% Lift / refine from progress.md §1.
+EEG foundation models (FMs) promise transferable representations for clinical
+EEG, but their utility on weak-signal resting-state tasks remains unclear.
+We conducted a systematic cross-subject evaluation of three architecturally
+distinct FMs (LaBraM, REVE, CBraMod) on chronic stress classification (UCSD
+Stress, $N{=}17$ subjects), and validated the diagnosis on two clinical
+reference datasets (ADFTD Alzheimer's, $N{=}65$; TDBRAIN MDD, $N{=}359$).
+Three findings emerge.
+\textbf{(1)}~Frozen FM features encode subject identity 11--13$\times$ more
+than diagnostic labels (variance decomposition via $\eta^{2}$), and this
+pattern is consistent across architectures and tasks.
+\textbf{(2)}~Trial-level cross-validation inflates reported balanced
+accuracy by $\sim$21~points relative to subject-level cross-validation across
+all three FMs, explaining the gap between published 90\% claims and our
+55--66\% subject-level results.
+\textbf{(3)}~A random forest on hand-crafted band-power features matches
+fine-tuned LaBraM ($0.666$ vs.\ $0.656$~\BA{} on stress; $0.753$ vs.\ $0.752$
+on Alzheimer's), and adversarial subject removal degrades rather than
+improves performance.
+We characterise the resting-state stress signal as method-independent at
+$\sim$0.66~\BA{} under binary cross-subject framing, and argue that
+within-subject longitudinal modelling --- where subject identity becomes the
+reference frame rather than the noise --- is the productive path forward.
+\end{abstract}

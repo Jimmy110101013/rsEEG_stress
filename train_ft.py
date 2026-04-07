@@ -138,6 +138,14 @@ def parse_args():
     # Memory
     p.add_argument("--grad-accum", type=int, default=0,
                    help="Gradient accumulation steps (0=auto: 4 for LoRA, 1 for LP)")
+    # Cross-dataset support
+    p.add_argument("--dataset", choices=["stress", "adftd", "tdbrain"], default="stress",
+                   help="Dataset to use (stress=UCSD, adftd=Alzheimer's, tdbrain=MDD)")
+    p.add_argument("--n-splits", type=int, default=3,
+                   help="Pseudo-recording splits for ADFTD (default: 3)")
+    # Feature extraction
+    p.add_argument("--save-features", action="store_true",
+                   help="Save test-fold features from best model for eta-squared analysis")
     args = p.parse_args()
 
     # Mode-dependent defaults (aligned with REVE stress task config)
@@ -154,6 +162,33 @@ def parse_args():
 
 
 # ──────────────────── Helpers ─────────────────────
+
+
+def extract_test_features(model, dataset, test_idx, device, use_amp=True, ch_select_idx=None):
+    """Extract pooled features from test set using the fine-tuned model.
+
+    Returns:
+        features: (N_test, embed_dim) numpy array
+    """
+    model.eval()
+    all_feats = []
+    with torch.no_grad():
+        for i in test_idx:
+            item = dataset[i]
+            epochs = item[0]  # (M, C, T)
+            if ch_select_idx is not None:
+                epochs = epochs[:, ch_select_idx, :]
+            M = epochs.shape[0]
+            epoch_feats = []
+            for start in range(0, M, 16):
+                batch = epochs[start:start+16].to(device)
+                with torch.autocast('cuda', dtype=torch.bfloat16, enabled=use_amp):
+                    feats = model.extractor(batch)  # (sub_B, embed_dim)
+                epoch_feats.append(feats.float().cpu())
+            epoch_feats = torch.cat(epoch_feats, dim=0)
+            pooled = epoch_feats.mean(dim=0).numpy()
+            all_feats.append(pooled)
+    return np.stack(all_feats)
 
 
 def print_split_info(name: str, indices, labels: np.ndarray, patient_ids: np.ndarray):
@@ -774,6 +809,11 @@ def train_one_fold_ft(
 
     # Fresh model — all params trainable
     extractor = create_extractor(args.extractor)
+    # Override channel mapping for 19ch datasets (ADFTD, TDBRAIN)
+    if args.dataset in ("adftd", "tdbrain"):
+        from pipeline.common_channels import COMMON_19
+        from baseline.labram.channel_map import get_input_chans
+        extractor.input_chans = get_input_chans(COMMON_19)
     embed_dim = extractor.embed_dim
     n_subjects = len(np.unique(dataset.get_patient_ids())) if args.adv_weight > 0 else 0
     model = DecoupledStressModel(
@@ -964,14 +1004,27 @@ def train_one_fold_ft(
 
     # Test — recording-level
     test_rec = evaluate_recording_level(model, test_loader, device, use_amp)
+
+    # Extract test-fold features if requested
+    ft_features = None
+    if args.save_features:
+        print(f"  Extracting test-fold features ({len(test_idx)} recordings)...")
+        ft_features = extract_test_features(model, dataset, test_idx, device, use_amp)
+        print(f"  Features shape: {ft_features.shape}")
+
     # Return in the same format as predict() for compatibility with main()
+    scores = np.zeros(len(test_rec["y_true"]))
+    if hasattr(dataset, 'records') and len(dataset.records) > 0:
+        if "stress_score" in dataset.records[0]:
+            scores = np.array([dataset.records[int(i)]["stress_score"] for i in test_idx])
     return {
         "y_true": test_rec["y_true"],
         "y_pred": test_rec["y_pred"],
         "reg_pred": np.zeros(len(test_rec["y_true"])),
-        "scores": np.array([dataset.records[int(i)]["stress_score"] for i in test_idx]),
+        "scores": scores,
         "win_correct": np.full(len(test_rec["y_true"]), np.nan),
         "win_total": np.full(len(test_rec["y_true"]), np.nan),
+        "ft_features": ft_features,
     }, best_epoch, curves
 
 
@@ -1031,7 +1084,9 @@ def main():
     # Results directory
     label_tag = f"dss{int(args.threshold)}" if args.label == "dss" else args.label.replace("-", "")
     aug_tag = f"_aug{int(args.aug_overlap*100)}" if args.aug_overlap else ""
-    run_id = f"{datetime.now():%Y%m%d_%H%M}_{args.mode}_{label_tag}{aug_tag}_{args.extractor}"
+    ds_tag = f"_{args.dataset}" if args.dataset != "stress" else ""
+    feat_tag = "_feat" if args.save_features else ""
+    run_id = f"{datetime.now():%Y%m%d_%H%M}_{args.mode}_{label_tag}{aug_tag}_{args.extractor}{ds_tag}{feat_tag}"
     results_dir = os.path.join("results", run_id)
     os.makedirs(results_dir, exist_ok=True)
     with open(os.path.join(results_dir, "config.json"), "w") as f:
@@ -1042,31 +1097,70 @@ def main():
     from baseline.abstract.factory import EXTRACTOR_REGISTRY
     _, config_cls = EXTRACTOR_REGISTRY[args.extractor]
     window_sec = config_cls().window_sec
-    dataset = StressEEGDataset(args.csv, DATA_ROOT, window_sec=window_sec,
-                               stride_sec=args.stride, norm=args.norm,
-                               max_duration=args.max_duration)
-    patient_ids = dataset.get_patient_ids()
 
-    if args.label == "dss":
-        threshold_norm = args.threshold / 100.0
-        labels = np.array([
-            1 if r["stress_score"] >= threshold_norm else 0
-            for r in dataset.records
-        ])
-        n_high, n_low = int(labels.sum()), int(len(labels) - labels.sum())
-        print(f"DSS labels (>={args.threshold}): high={n_high}, low={n_low}")
-    elif args.label == "subject-dass":
-        increase_pids = set(
-            r["patient_id"] for r in dataset.records if r["baseline_label"] == 1
+    ch_select_idx = None  # For 19ch selection when using ADFTD extractor on stress
+
+    if args.dataset == "adftd":
+        from pipeline.adftd_dataset import ADFTDDataset
+        from pipeline.common_channels import COMMON_19
+        from baseline.labram.channel_map import get_input_chans
+        dataset = ADFTDDataset(
+            "data/adftd", binary=True,
+            window_sec=window_sec,
+            cache_dir="data/cache_adftd_split3",
+            n_splits=args.n_splits,
+            norm=args.norm,
         )
-        labels = np.array([
-            1 if r["patient_id"] in increase_pids else 0
-            for r in dataset.records
-        ])
-        n1, n0 = int(labels.sum()), int(len(labels) - labels.sum())
-        print(f"Subject-DASS labels: increase={n1} ({len(increase_pids)} subjects), normal={n0}")
-    else:
+        patient_ids = dataset.get_patient_ids()
         labels = dataset.get_labels()
+        n1, n0 = int(labels.sum()), int(len(labels) - labels.sum())
+        print(f"ADFTD: {len(dataset)} recordings, {len(np.unique(patient_ids))} subjects "
+              f"(AD={n1}, HC={n0})")
+        # Override label arg since ADFTD has its own labels
+        args.label = "adftd"
+    elif args.dataset == "tdbrain":
+        from pipeline.tdbrain_dataset import TDBRAINDataset
+        # TDBRAIN already has natural multi-recording structure (EO+EC, multi-session)
+        # so we don't create pseudo-recording splits — always n_splits=1
+        dataset = TDBRAINDataset(
+            "data/tdbrain",
+            target_sfreq=200.0,
+            window_sec=window_sec,
+            norm=args.norm,
+            condition="both",
+            target_dx="MDD",
+            cache_dir="data/cache_tdbrain",
+            n_splits=1,
+        )
+        patient_ids = dataset.get_patient_ids()
+        labels = dataset.get_labels()
+        args.label = "tdbrain"
+    else:
+        dataset = StressEEGDataset(args.csv, DATA_ROOT, window_sec=window_sec,
+                                   stride_sec=args.stride, norm=args.norm,
+                                   max_duration=args.max_duration)
+        patient_ids = dataset.get_patient_ids()
+
+        if args.label == "dss":
+            threshold_norm = args.threshold / 100.0
+            labels = np.array([
+                1 if r["stress_score"] >= threshold_norm else 0
+                for r in dataset.records
+            ])
+            n_high, n_low = int(labels.sum()), int(len(labels) - labels.sum())
+            print(f"DSS labels (>={args.threshold}): high={n_high}, low={n_low}")
+        elif args.label == "subject-dass":
+            increase_pids = set(
+                r["patient_id"] for r in dataset.records if r["baseline_label"] == 1
+            )
+            labels = np.array([
+                1 if r["patient_id"] in increase_pids else 0
+                for r in dataset.records
+            ])
+            n1, n0 = int(labels.sum()), int(len(labels) - labels.sum())
+            print(f"Subject-DASS labels: increase={n1} ({len(increase_pids)} subjects), normal={n0}")
+        else:
+            labels = dataset.get_labels()
 
     outer_cv = StratifiedGroupKFold(
         n_splits=args.folds, shuffle=True, random_state=args.seed
@@ -1129,6 +1223,18 @@ def main():
                 args, device,
             )
         global_results.append(test_results)
+
+        # Save test-fold features if extracted
+        if test_results.get("ft_features") is not None:
+            feat_path = os.path.join(results_dir, f"fold{fold_idx+1}_features.npz")
+            np.savez_compressed(
+                feat_path,
+                features=test_results["ft_features"],
+                labels=labels[test_idx],
+                patient_ids=patient_ids[test_idx],
+                test_idx=test_idx,
+            )
+            print(f"  Saved features → {feat_path}")
 
         # Save curves
         curves_path = os.path.join(results_dir, f"curves_fold{fold_idx+1}.csv")

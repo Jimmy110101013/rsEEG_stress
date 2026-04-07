@@ -1,6 +1,6 @@
 # Related Work (Living Document)
 
-*Last updated: 2026-04-04. This document is incrementally updated as we discover more relevant literature.*
+*Last updated: 2026-04-05. This document is incrementally updated as we discover more relevant literature.*
 
 ---
 
@@ -45,7 +45,23 @@
 - **Relevance**: Validates our LP failure results. However, their stress evaluation may use trial-level splits
 - **Ref**: arXiv:2508.17742
 
-### 2.2 EEG Foundation Models: Critical Review (2025)
+### 2.2 AdaBrain-Bench (2025)
+- **Scope**: BIOT, EEGPT, LaBraM, CBraMod across multiple tasks
+- **Critical finding**: *"Emotion recognition and motor imagery yielded suboptimal performance"* cross-subject due to *"highly individual neural responses"*
+- **Numbers**: SEED emotion — LaBraM 55.78%, CBraMod 51.11% BA (3-class); EEGMAT workload — LaBraM 85.83%, CBraMod 88.89% BA (binary, task-evoked, easier)
+- **Relevance**: Confirms FMs fail on affect tasks but succeed on motor/cognitive load tasks
+- **Ref**: arXiv:2507.09882
+
+### 2.3 Brain4FMs (Feb 2026)
+- **Scope**: 15 models (BENDR, BIOT, LaBraM, CBraMod, EEGPT, REVE, BrainWave, NeuroGPT, BrainOmni, etc.)
+- **DEAP emotion**: Most models ~0.50 AUROC (random), 0.22-0.42 accuracy
+- **Key quote**: *"current BFMs capture motor-related neural patterns more reliably than higher-level affective or communicative semantics"*
+- **Quote**: *"Communication and affective computing remain challenging for cross-subject generalization due to strong non-stationarity and large cross-subject/inter-session variability"*
+- **Finding**: Supervised baseline MSCARNet outperformed most BFMs on emotion tasks
+- **Relevance**: Strongest independent confirmation that FM failure on affect/stress is universal, not specific to our dataset
+- **Ref**: arXiv:2602.11558
+
+### 2.4 EEG Foundation Models: Critical Review (2025)
 - Most FMs use masked sequence reconstruction + transformers
 - LP << FT gap raises questions about representation quality
 - Evaluations are heterogeneous, making cross-paper comparison difficult
@@ -155,19 +171,92 @@
 
 ---
 
-## 7. Summary: Our Positioning
+## 7. Public EEG Stress Datasets
+
+### 7.1 Resting-State Stress Datasets
+
+| Dataset | N | Protocol | EEG Setup | Labels | Public | Ref |
+|---------|---|----------|-----------|--------|--------|-----|
+| **UCSD Classroom** (ours) | 18 subj, 82 rec | 5-min eyes-open rest, longitudinal | 32ch, 1000Hz | DASS + DSS | No | arXiv:2505.23042 |
+| **Al-Shargie 2020** | 33 | 3-min eyes-closed rest | 5ch Emotiv Insight, 128Hz | PSS-10 + expert interview | **No** | Sensors 2020, PMC7180785 |
+| **EDPMSC** | 28 (13M/15F) | 3-min eyes-open rest, pre/post activity | 4ch Muse, 256Hz | PSS-10 (≥20 = stressed) | Yes | PMID:31283515 |
+
+**Gap**: No public resting-state EEG dataset with DASS-style chronic stress labeling exists besides ours. Al-Shargie (closest, PSS + rest) is not public.
+
+### 7.2 Task-Evoked Stress Datasets (Potential Auxiliary Data)
+
+| Dataset | N | Protocol | EEG Setup | Labels | Public | Ref |
+|---------|---|----------|-----------|--------|--------|-----|
+| **SAM 40** | 40 (14F/26M, mean 21.5y) | Stroop, arithmetic, mirror image + relaxation, 25s epochs ×3 | 32ch Emotiv Flex | Task vs relaxation | Yes (CC BY 4.0) | Figshare, ScienceDirect |
+| **EEGMAT** | 36 (university students, Ukraine) | 180s rest + 60s mental serial subtraction | 19ch 10-20, 500Hz | Rest vs arithmetic | Yes (PhysioNet, ODC) | PhysioNet |
+| **STEW** | 48 | 2.5-min rest + 2.5-min SIMKAP multitask | 14ch Emotiv EPOC, 128Hz | Self-rated workload (1-9) | Yes (IEEE DataPort) | IEEE DataPort |
+| **DASPS** (anxiety) | 23 (10M/13F, mean 30y) | Anxiety induction via exposure recall | 14ch Emotiv EPOC | Anxiety levels (psych assessment) | Yes (IEEE DataPort) | DOI:10.21227/barx-we60 |
+
+**FM benchmark results on these datasets**:
+- EEGMAT: CBraMod 71.94%, LaBraM 85.83% BA (subject-independent, EEG-FM-Bench/AdaBrain-Bench) — but task-evoked binary is fundamentally easier
+- SAM 40: No FM evaluation found
+- STEW: Limited FM results
+
+**Potential use**: EEGMAT and SAM 40 could serve as auxiliary data for multi-dataset training or as independent validation that FM failure extends to task-evoked stress paradigms under subject-level CV.
+
+### 7.3 Related Affect/Emotion Datasets (Not Stress)
+
+- **SEED** (15 subj, 62ch): Film-clip emotion, 3/4 class. LaBraM 55.78% BA cross-subject (AdaBrain-Bench)
+- **DEAP** (32 subj, 32ch): Music video emotion, valence/arousal. Most FMs ~0.50 AUROC (Brain4FMs)
+- **Note**: WESAD (15 subj) has NO EEG — physiological only (ECG, EDA, EMG)
+
+---
+
+## 8. Neurophysiological Basis for Classification Ceiling
+
+### 8.1 Neural Efficiency Hypothesis
+- **Theory** (Haier 1988; Neubauer & Fink 2009): Higher intelligence/education → less neural activation for equivalent tasks
+- **EEG evidence**: High cognitive-reserve individuals show lower spectral power in theta/delta, higher individual alpha peak frequency, greater coherence stability across conditions
+- **Implication for our dataset**: Taiwanese graduate students = high-education, high-CR population. Predicts less neural differentiation between stress states — the very signal we're trying to classify is attenuated at the source
+- **Ref**: Neubauer & Fink, *Neuroscience & Biobehavioral Reviews* 33(7), 2009; Fleck et al., *Frontiers in Aging Neuroscience* 12, 2020
+
+### 8.2 Allostatic Regulation in Young Adults
+- **Theory** (McEwen 2010): Chronic stress accumulates allostatic load; young adults have lower load — regulatory systems (HPA axis, ANS) return to baseline more effectively
+- **Cortisol habituation**: Repeated/chronic stress → HPA axis downregulates response → neural signatures adapt to "new normal" indistinguishable from pre-stress baseline
+- **Resilience = stability**: Lower resting-state brain network flexibility correlates with higher psychological resilience in young adults (PMC6989886) — stable patterns are the opposite of what stress classification needs
+- **Ref**: McEwen, *Annals of the New York Academy of Sciences* 1186, 2010
+
+### 8.3 Frontal Alpha Asymmetry: Trait vs State
+- **Finding**: In young adults, alpha asymmetry reflects enduring dispositions (trait-like) rather than transient stress states
+- **Implication**: Our strongest classical feature (right-hemisphere alpha) captures between-subject personality differences, not within-subject stress variation — explaining why it helps subject-level classification (~66% BA) but cannot push much further
+- **Ref**: MDPI Symmetry 14(8), 2022
+
+### 8.4 LOSO Accuracy Drop in Student Populations
+- Studies achieving 93% with k-fold drop to **74% with LOSO** on same student EEG data
+- Saeed et al. (2020): 85.2% on bachelor students (18-23y) with DASS + expert labeling, using standard k-fold — not LOSO
+- Literature consensus: Chronic stress classification with LOSO consistently yields 55-75% BA
+- **Ref**: Saeed et al., *Sensors* 20(7), 2020; Springer LNCS 2021 (LOSO necessity)
+
+### 8.5 Our Hypothesis (Untested)
+Young graduate students' brains may maintain stable resting-state EEG patterns even under chronic academic stress due to: (1) high cognitive reserve from years of education, (2) efficient allostatic regulation typical of young adults, (3) cortisol habituation from prolonged stress exposure. This would make the resting-state stress classification task inherently harder for this population than for older or less-educated cohorts, explaining the ~65% BA ceiling observed across all methods (FM, classical ML, adversarial training).
+
+---
+
+## 9. Summary: Our Positioning
 
 | Aspect | Field Status | Our Contribution |
 |--------|-------------|-----------------|
-| FM on resting-state stress | Only 1 paper (our reference) | First multi-FM comparison (3 models) |
-| Subject-level evaluation | Known problem, rarely applied to FMs | Expose 30+ point inflation gap on stress |
-| FM + classical features | Not done | Potential novel hybrid approach |
-| Cross-subject stress with FMs | Unexplored | Our core challenge and opportunity |
+| FM on resting-state stress | Only 1 paper (our reference, 90% BA with leakage) | First multi-FM comparison (3 models) with rigorous subject-level CV |
+| Subject-level evaluation | Known problem, rarely applied to FMs | Expose 30+ point inflation gap; quantify subject identity encoding (34-37x eta-squared) |
+| FM + classical features | Not done | RF matches FM with 0 GPU; potential hybrid approach |
+| Cross-subject stress with FMs | Unexplored | 3 FM benchmarks now confirm failure; we explain *why* via variance decomposition |
+| Young-brain stress ceiling | Hypothesized in neuro lit, not tested on EEG classification | Converging evidence: neural efficiency + allostatic regulation explains ~65% ceiling |
+| Public stress EEG benchmarks | No resting-state DASS dataset exists | Our dataset is unique; EEGMAT/SAM40 available for auxiliary validation |
 
 ### Key Papers to Cite
 1. Data leakage paper (Frontiers 2024) — methodological backing
 2. 100k models partitioning paper (2025) — empirical backing
-3. EEG-FM-Bench (2025) — FM comparison context
-4. LEAD (2025) — subject-regularized training technique
-5. TAR stress paper (2026) — neurophysiological feature justification
-6. Reference paper (Lin et al., 2025) — dataset and baseline
+3. EEG-FM-Bench (2025) — FM benchmark context
+4. AdaBrain-Bench (2025) — FM benchmark context (emotion/stress failure)
+5. Brain4FMs (2026) — strongest confirmation of FM failure on affect (15 models, near-random)
+6. LEAD (2025) — subject-regularized training technique
+7. TAR stress paper (2026) — neurophysiological feature justification
+8. Reference paper (Lin et al., 2025) — dataset and baseline
+9. Neubauer & Fink (2009) — neural efficiency hypothesis
+10. McEwen (2010) — allostatic load framework
+11. Saeed et al. (2020) — DASS-based EEG stress, closest comparison
