@@ -8,8 +8,11 @@ The 19 standard 10-20 channels are the intersection across:
 All 19 channels are present in LaBraM's STANDARD_1020 position embedding table.
 """
 
-import mne
 import numpy as np
+
+# `mne` is imported lazily inside select_channels() so this module can be
+# imported on lightweight environments (e.g., HDF5-only loaders that never
+# touch MNE Raw objects) without paying the scipy.spatial import cost.
 
 
 # Standard 10-20 channels present in all datasets
@@ -66,7 +69,7 @@ def normalize_channel_name(name: str) -> str:
     return upper
 
 
-def select_channels(raw: mne.io.BaseRaw, target_channels: list[str] = None) -> mne.io.BaseRaw:
+def select_channels(raw, target_channels: list[str] = None):
     """Pick and reorder channels from MNE Raw to match target channel list.
 
     Args:
@@ -79,6 +82,7 @@ def select_channels(raw: mne.io.BaseRaw, target_channels: list[str] = None) -> m
     Raises:
         ValueError: If any target channel is missing from the recording.
     """
+    import mne  # noqa: F401  (kept for type clarity, used by raw.copy())
     if target_channels is None:
         target_channels = COMMON_19
 

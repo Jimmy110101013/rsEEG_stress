@@ -139,8 +139,17 @@ def parse_args():
     p.add_argument("--grad-accum", type=int, default=0,
                    help="Gradient accumulation steps (0=auto: 4 for LoRA, 1 for LP)")
     # Cross-dataset support
-    p.add_argument("--dataset", choices=["stress", "adftd", "tdbrain"], default="stress",
-                   help="Dataset to use (stress=UCSD, adftd=Alzheimer's, tdbrain=MDD)")
+    p.add_argument("--dataset",
+                   choices=["stress", "adftd", "tdbrain", "dementia", "mdd"],
+                   default="stress",
+                   help="Dataset to use (stress=UCSD, adftd=Alzheimer's, "
+                        "tdbrain=Brainclinics MDD, dementia=HNC dementia, mdd=HNC MDD)")
+    p.add_argument("--hnc-data-root", default="data/hnc",
+                   help="Directory containing HNC dementia/MDD HDF5 + .pkl files")
+    p.add_argument("--hnc-channels", default=None,
+                   help="Comma-separated list of 30 channel names in HDF5 axis-1 "
+                        "order, e.g. 'Fp1,Fp2,F3,F4,...'. Required when "
+                        "--dataset is 'dementia' or 'mdd'.")
     p.add_argument("--n-splits", type=int, default=3,
                    help="Pseudo-recording splits for ADFTD (default: 3)")
     # Feature extraction
@@ -809,8 +818,8 @@ def train_one_fold_ft(
 
     # Fresh model — all params trainable
     extractor = create_extractor(args.extractor)
-    # Override channel mapping for 19ch datasets (ADFTD, TDBRAIN)
-    if args.dataset in ("adftd", "tdbrain"):
+    # Override channel mapping for 19ch datasets (ADFTD, TDBRAIN, HNC dementia/MDD)
+    if args.dataset in ("adftd", "tdbrain", "dementia", "mdd"):
         from pipeline.common_channels import COMMON_19
         from baseline.labram.channel_map import get_input_chans
         extractor.input_chans = get_input_chans(COMMON_19)
@@ -1135,6 +1144,31 @@ def main():
         patient_ids = dataset.get_patient_ids()
         labels = dataset.get_labels()
         args.label = "tdbrain"
+    elif args.dataset in ("dementia", "mdd"):
+        from pipeline.hnc_dataset import HNCDataset
+        # HNC private datasets — Dementia (3-class collapsed to Control vs
+        # Dementia) and MDD (binary). Provider train/valid/test splits are
+        # concatenated and re-folded subject-level by the CV loop below.
+        if not args.hnc_channels:
+            raise SystemExit(
+                "--hnc-channels is required when --dataset is dementia/mdd. "
+                "Pass the 30 channel names from the data owner in HDF5 axis-1 "
+                "order, e.g. --hnc-channels 'Fp1,Fp2,F3,F4,F7,F8,Fz,...'"
+            )
+        hnc_channel_names = [c.strip() for c in args.hnc_channels.split(",")]
+        dataset = HNCDataset(
+            name=args.dataset,
+            data_root=args.hnc_data_root,
+            channel_names=hnc_channel_names,
+            target_sfreq=200.0,
+            window_sec=window_sec,
+            norm=args.norm,
+            binary=True,
+            cache_dir=f"data/cache_hnc_{args.dataset}",
+        )
+        patient_ids = dataset.get_patient_ids()
+        labels = dataset.get_labels()
+        args.label = f"hnc-{args.dataset}"
     else:
         dataset = StressEEGDataset(args.csv, DATA_ROOT, window_sec=window_sec,
                                    stride_sec=args.stride, norm=args.norm,

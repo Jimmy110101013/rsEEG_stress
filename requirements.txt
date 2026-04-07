@@ -1,0 +1,50 @@
+# ---------------------------------------------------------------------------
+# rsEEG_stress pipeline requirements
+#
+# Tested with Python 3.10, CUDA 12.4 (forward-compatible with CUDA 12.5 driver).
+# All versions below are the exact ones in our local `timm_eeg` env and are
+# known to be mutually compatible. Do NOT upgrade numpy to 2.x — our codebase
+# relies on numpy 1.x semantics, and scipy 1.15+ also requires numpy 2.x.
+#
+# conda create -n FM_analysis python=3.10 -y
+# conda activate FM_analysis
+# ---------------------------------------------------------------------------
+# IMPORTANT — install torch FIRST with the matching CUDA wheel index, e.g.:
+#
+#     pip install --index-url https://download.pytorch.org/whl/cu124 \
+#         torch==2.5.1 torchvision==0.20.1
+#
+# then install the rest:
+#
+#     pip install -r requirements.txt
+#
+# If torch is listed alongside the rest, pip may fetch the default CPU wheel.
+# ---------------------------------------------------------------------------
+
+# Core numerics — pin strictly; numpy/scipy ABI is fragile.
+numpy==1.26.4
+scipy==1.14.1
+pandas==2.2.3
+
+# Deep learning (listed here for convenience; install via the CUDA index above).
+torch==2.5.1
+torchvision==0.20.1
+
+# Classical ML
+scikit-learn==1.5.2
+
+# EEG I/O and preprocessing
+mne==1.8.0
+
+# HDF5 reader (required for the MDD/dementia dataset)
+h5py==3.12.1
+
+# Model building blocks used by LaBraM / CBraMod / REVE
+einops==0.8.0
+timm==1.0.11
+
+# Plotting (figures, diagnostics)
+matplotlib==3.9.2
+
+# Progress bars (used by training loops)
+tqdm==4.66.5
