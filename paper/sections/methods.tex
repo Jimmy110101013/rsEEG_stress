@@ -1,0 +1,104 @@
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Datasets}
+\label{sec:methods:datasets}
+
+% Lift table from progress.md §2 + extend to include TDBRAIN.
+
+We evaluate on three resting-state EEG datasets spanning a range of clinical
+signal strengths (Table~\ref{tab:datasets}).
+
+\begin{table}[h]
+\centering
+\caption{Datasets evaluated. Signal strength is qualitative.}
+\label{tab:datasets}
+\small
+\begin{tabular}{lrrlll}
+\toprule
+Dataset & Subjects & Recordings & Protocol & Labels & Signal \\
+\midrule
+UCSD Stress (ours) & 17 & 70 & 5\,min EO, longitudinal & DASS (binary) & Weak \\
+ADFTD~\citep{adftd} & 65 & 195 & $\sim$14\,min EC & AD vs HC & Strong \\
+TDBRAIN~\citep{tdbrain} & 359 & 734 & EO+EC, multi-session & MDD vs HC & Moderate \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{UCSD Stress.} 17 subjects, 70 valid recordings after a 400\,s
+duration filter, 5\,min eyes-open resting protocol, multiple visits per
+subject. Labels are derived from DASS (depression-anxiety-stress) scale: a
+recording is labelled \emph{increase} if the subject's longitudinal DASS
+trajectory crosses a clinical threshold; \emph{normal} otherwise. We use
+the \texttt{subject-dass} label mode in which all recordings from a
+subject classified as \emph{increase} share the positive label, ensuring
+subject-level CV is well-defined.
+
+\paragraph{ADFTD~\citep{adftd}.} OpenNeuro ds004504. 65 subjects (36 AD,
+29 HC), 19-channel resting-state EEG. We split each $\sim$14\,min recording
+into three contiguous $\sim$4.5\,min pseudo-recordings (\texttt{n\_splits=3})
+to enable within-subject variance analysis, yielding 195 ``recordings'' for
+the variance decomposition.
+
+\paragraph{TDBRAIN~\citep{tdbrain}.} 359 subjects (94 HC, 640 MDD-positive
+recordings across multi-session subjects), 19 channels, 500\,Hz, both
+eyes-open and eyes-closed conditions used as separate recordings. Subject
+identity is preserved across conditions and sessions for subject-level CV.
+
+\subsection{Foundation Models}
+\label{sec:methods:fms}
+
+We evaluate three FMs spanning distinct architectural families:
+\textbf{LaBraM}~\citep{labram2024} (ViT with channel position embeddings,
+embed dim 200), \textbf{REVE}~\citep{reve2024} (ViT with 4D Fourier
+positional encoding and MAE pretraining, embed dim 512), and
+\textbf{CBraMod}~\citep{cbramod2025} (criss-cross transformer with
+asymmetric channel position encoding, embed dim 200).
+
+For frozen feature extraction, all three are restricted to the 19-channel
+common 10-20 montage shared across our datasets, with appropriate channel
+mapping (10-10 to 10-20 aliases applied where necessary).
+
+\subsection{Cross-Validation Protocols}
+\label{sec:methods:cv}
+
+We compare two protocols on identical data:
+\begin{itemize}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
+  \item \textbf{Trial-level CV}: stratified 5-fold over windows, with
+    multiple windows from a single subject potentially appearing in both
+    train and test folds. This is the protocol behind much of the
+    published EEG stress literature.
+  \item \textbf{Subject-level CV}: stratified group 5-fold with subject as
+    the group, ensuring no subject appears in both train and test. This
+    is our primary metric.
+\end{itemize}
+
+For both, we report balanced accuracy (\BA{}) at the recording level
+(majority vote across windows of a recording), as well as per-window
+metrics for diagnostic purposes.
+
+\subsection{Variance Decomposition via $\eta^{2}$}
+\label{sec:methods:eta}
+
+Given a feature matrix $X \in \mathbb{R}^{n \times d}$ with subject labels
+$s$ and task labels $y$, we compute $\eta^{2}$ for each grouping factor
+via one-way ANOVA per feature dimension and average across dimensions:
+\begin{equation}
+  \eta^{2}_{\mathrm{factor}} =
+    \frac{1}{d} \sum_{j=1}^{d}
+    \frac{\mathrm{SS}_{\mathrm{between}}^{(j)}}
+         {\mathrm{SS}_{\mathrm{total}}^{(j)}}
+\end{equation}
+where $\mathrm{SS}_{\mathrm{between}}^{(j)}$ is the between-group sum of
+squares for feature $j$ under the chosen factor (subject or task). The
+ratio $\eta^{2}_{\mathrm{subject}} / \eta^{2}_{\mathrm{label}}$ quantifies
+the relative dominance of subject identity over the diagnostic signal.
+
+To enable fair comparison across datasets with different subject counts, we
+also report a subject-count-matched estimate: for ADFTD ($N{=}65$) we
+randomly subsample $N{=}17$ subjects 10 times and report the mean and
+standard deviation.
+
+% TODO: add subsection 3.5 on classical baseline (RF on band power)
+% TODO: add subsection 3.6 on adversarial training (GRL setup)
+% TODO: add subsection 3.7 on statistical tests (permutation, bootstrap)

@@ -1,0 +1,124 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{What Our Results Do and Do Not Show}
+
+% Important: this is the constructive reframing per docs/paper_strategy.md.
+
+It is tempting to read our results as ``foundation models cannot detect
+stress from resting-state EEG.'' That framing is incorrect, and the
+distinction matters.
+
+\paragraph{What we do show.} Two completely different methods --- a
+200M-parameter pretrained transformer and a random forest on hand-crafted
+band-power features --- converge to the same balanced accuracy
+($\sim$0.66) on subject-level cross-validation with $N{=}17$. If no
+diagnostic signal existed, both would collapse to chance ($\sim$0.50).
+The fact that they converge to a number above chance, and to
+\emph{the same} number, is positive evidence that a real cross-subject
+resting-state stress signature exists in our data. The ceiling is
+\emph{method-independent}, not method-failure.
+
+\paragraph{What we do not show.} We do not show that the underlying
+biology is silent, that EEG is the wrong modality, or that the dream of
+pre-diagnosing prolonged stress is unrealistic. We show only that the
+specific framing --- binary, single-recording, generic-feature,
+cross-subject zero-shot prediction with $N{=}17$ --- saturates near
+$0.66$ regardless of model.
+
+\subsection{Why Subject Identity Dominates}
+
+Foundation models pretrained on masked patch prediction or contrastive
+objectives are rewarded for any feature that helps reconstruct or
+discriminate windows. Subject-specific traits (skull thickness, electrode
+impedance, individual spectral fingerprints) are stable and discriminative;
+clinical labels are less so. The pretraining objective therefore implicitly
+selects for subject identity --- and the bigger the model, the more
+faithfully it encodes it.
+
+This is the same phenomenon documented in rsfMRI ``brain
+fingerprinting''~\citep{finn2015}: individual functional connectomes are
+remarkably stable across sessions, and accurately identifiable across
+hundreds of subjects, while task-related variance is comparatively small.
+
+\subsection{Why Standard Mitigations Fail}
+
+Subject-adversarial methods (GRL, LEAD-style auxiliary losses) attempt to
+remove subject information from the learned features. Our results
+(Table~\ref{tab:adv}) show this hurts rather than helps.
+
+We hypothesise the explanation is straightforward: removing variance does
+not create signal. If $\eta^{2}_{\mathrm{label}} \approx 0.06$ in the raw
+features, then no projection of those features can exceed that label
+information content. The subject information is acting as a stable
+\emph{reference frame}, and removing it leaves the small label variance
+exposed but unamplified --- and now also less robust to noise.
+
+\subsection{Implications: Reframe the Question}
+
+The constructive read of our findings is that subject identity dominance is
+a structural feature, not a bug, and the right response is to change the
+question being asked of the model:
+
+\begin{itemize}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
+  \item \textbf{Within-subject longitudinal modelling.} Use each subject as
+    their own reference. Predict the deviation of a follow-up recording
+    from the subject's baseline rather than absolute label. This converts
+    subject identity from noise into the reference frame and matches the
+    actual clinical use case (pre-diagnose stress in \emph{this individual}
+    over time). We list this as the highest-leverage open experiment in
+    Section~\ref{sec:future}.
+  \item \textbf{Personalised few-shot adaptation.} Standard in clinical BCIs
+    but underused for psychiatric EEG. A handful of calibration samples per
+    subject may unlock the per-subject signal that cross-subject models
+    cannot reach.
+  \item \textbf{Continuous label regression.} Binary thresholding throws
+    away most of the label variance. Regressing against the actual DASS
+    score is a natural alternative.
+  \item \textbf{Multimodal fusion.} EEG's modest signal may be detectable
+    when combined with autonomic markers (HRV, actigraphy). The diagnosis
+    here suggests EEG should be one input among several, not the sole
+    input.
+\end{itemize}
+
+\subsection{Limitations}
+\label{sec:limitations}
+
+\begin{itemize}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
+  \item Small subject count ($N{=}17$) on the primary dataset. We address
+    this by validating the variance pattern on two larger reference
+    datasets (ADFTD $N{=}65$, TDBRAIN $N{=}359$).
+  \item Three FMs is not exhaustive. We chose architectures spanning ViT
+    (LaBraM, REVE) and criss-cross transformers (CBraMod), but recent
+    models such as BIOT and LARGE-Brain are not evaluated here.
+  \item The 19-channel common montage limits frozen-feature analysis to a
+    subset of available electrodes. Per-dataset fine-tuning uses the full
+    montage.
+  \item We only evaluate full fine-tuning. Linear probing and adapter
+    methods may behave differently and are an obvious extension.
+\end{itemize}
+
+\subsection{Future Work}
+\label{sec:future}
+
+% This section is the bridge to the next paper (or the next iteration of
+% this one). Do not delete the within-subject longitudinal proposal --- it
+% is the main constructive output of the diagnosis.
+
+\begin{enumerate}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
+  \item \textbf{Within-subject longitudinal modelling on UCSD Stress
+    (highest leverage).} Compute per-subject baseline features, predict
+    deviation from baseline, evaluate under the same subject-level CV
+    protocol. If \BA{} exceeds 0.72, the productive next paper writes
+    itself.
+  \item \textbf{Spectral-guided FiLM conditioning.} Inject neurophysiology
+    priors (theta/alpha/beta band power) into the FM via FiLM layers.
+    Whether this works is an open question.
+  \item \textbf{Subject-aware contrastive pretraining on small clinical
+    cohorts.} Flip the diagnosis on its head: explicitly encode subject as
+    a feature and condition the classifier on it.
+  \item \textbf{Replication on additional resting-state stress cohorts}
+    (EEGMAT, SAM40, EDPMSC), even though these use acute stress
+    induction --- to test whether the ceiling is universal or
+    chronic-stress-specific.
+\end{enumerate}

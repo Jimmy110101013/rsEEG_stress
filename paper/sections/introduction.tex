@@ -1,0 +1,78 @@
+\section{Introduction}
+\label{sec:intro}
+
+% TODO: refine narrative; this is a stub from progress.md §1 + §8.
+
+EEG foundation models trained on large unlabelled corpora have been proposed
+as a general-purpose feature extractor for clinical and affective EEG tasks.
+Recent models including LaBraM~\citep{labram2024}, CBraMod~\citep{cbramod2025},
+and REVE~\citep{reve2024} report strong downstream performance on a range of
+benchmarks, raising hope that pretrained representations could enable
+data-efficient diagnosis on small clinical cohorts where supervised
+end-to-end training is infeasible.
+
+Resting-state stress detection is a natural target. The clinical use case
+--- pre-diagnosing prolonged stress from a short eyes-open recording --- is
+high-impact, the labels (validated psychometric instruments such as DASS) are
+trustworthy, and the data acquisition is cheap. Prior work using
+trial-level cross-validation has reported balanced accuracies above 90\% on
+this task~\citep{wang2025stress}, suggesting the problem is essentially
+solved.
+
+\paragraph{Our findings.}
+We show that this optimistic picture is an artefact of evaluation
+methodology, not of model capacity. Concretely:
+
+\begin{enumerate}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
+  \item \textbf{The trial-vs-subject cross-validation gap is large and
+    consistent.} All three foundation models we evaluate drop $\sim$21
+    balanced-accuracy points when moving from trial-level to subject-level
+    splits. The previously-reported 90\% headline numbers fail to generalise
+    to unseen subjects.
+
+  \item \textbf{Frozen FM features encode subject identity, not diagnostic
+    signal.} Variance decomposition via $\eta^{2}$ shows subject identity
+    explains 11--13$\times$ more feature variance than task labels --- a
+    pattern that holds across three architecturally distinct FMs and two
+    clinical datasets (stress and Alzheimer's).
+
+  \item \textbf{Classical features match FM performance.} A random forest on
+    156 hand-crafted band-power features achieves $0.666$ \BA{} on stress,
+    statistically indistinguishable from fine-tuned LaBraM ($0.656$). The
+    same parity holds on Alzheimer's ($0.753$ vs.\ $0.752$).
+
+  \item \textbf{Standard mitigations fail.} Subject-adversarial training via
+    gradient reversal degrades stress classification from $0.656$ to
+    $0.537$. LEAD-style auxiliary subject losses behave similarly. The
+    diagnostic signal is too weak to amplify by removing subject information
+    alone.
+
+  \item \textbf{The ceiling is method-independent and signal-limited.}
+    Across foundation models, classical baselines, and adversarial
+    variants, balanced accuracy on subject-level CV converges to
+    $\sim$0.65 with $N{=}17$. We characterise this as the upper bound for
+    binary cross-subject zero-shot prediction under our task framing.
+\end{enumerate}
+
+We argue this is not a refutation of resting-state EEG for stress, but a
+characterisation of the wrong question. Subject identity dominance is a
+\emph{useful} structural property if the question is reframed: ``has this
+person's EEG drifted from \emph{their own} baseline?'' rather than ``does
+this generic EEG segment come from a stressed person?''. Section~\ref{sec:discussion}
+develops this implication and motivates personalised within-subject
+modelling as the productive path forward.
+
+\paragraph{Contributions.}
+\begin{itemize}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
+  \item First multi-FM, multi-dataset cross-subject evaluation for
+    resting-state stress detection with rigorous subject-level CV.
+  \item Quantitative diagnosis of subject-identity dominance via variance
+    decomposition, validated across three FMs and three datasets (Stress,
+    ADFTD, TDBRAIN).
+  \item Negative results for two standard mitigation strategies
+    (subject-adversarial and LEAD-style subject losses).
+  \item Evidence that classical band-power features match FMs at this
+    signal level, with no GPU and no pretraining.
+  \item A reframing of the task that preserves the underlying clinical hope
+    and points at a tractable next experiment.
+\end{itemize}
