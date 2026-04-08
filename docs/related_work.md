@@ -106,9 +106,14 @@
   1. **Subject-level CE loss**: Average predictions across all segments from same subject, compute CE on the averaged prediction. Forces consistent per-subject predictions. Combined with sample-level CE: `L = α·L_sam + β·L_sub` (α=β=0.5)
   2. **Index group-shuffling**: Custom batching to guarantee ≥G samples per subject per batch (G=8 for FT), making subject-level loss meaningful
   3. **Multi-sampling segmentation**: Segment at multiple rates for multi-scale augmentation
-- **Evaluation**: Monte Carlo CV with subject-independent splits (8:1:1), 5 seeds. NOT LOSO for main results
+- **Evaluation**: Subject-independent train/val/test 6:2:2, 5 seeds (41–45) on fixed splits. NOT LOSO and NOT k-fold.
 - **vs LaBraM**: LEAD (1,186 hrs pretraining) beats LaBraM (2,000 hrs) — attributed to domain-focused pretraining + subject regularization
-- **Key numbers**: Subject-level F1 on ADFTD: LEAD 93.95% vs LaBraM 93.77% (close), but AUROC: LEAD 100% vs LaBraM 75% (big gap)
+- **Verified key numbers (Table 2, single-dataset training, ADFTD, 53,215 samples / 65 subjects)**:
+  - LaBraM sample-level: Acc 55.07, F1 71.03
+  - LaBraM subject-level: **Acc 57.14, F1 72.73** ← anchor for our ADFTD comparison
+  - (Earlier note in this doc claiming LaBraM F1 = 93.77% / AUROC 75% was incorrect — verified 2026-04-07 against LEAD arXiv v1 Table 2.)
+- **Our LaBraM-FT on same dataset**: Subject Acc 0.7538, F1 0.7541, BA 0.7521 (5-fold StratifiedGroupKFold) — slightly **above** LEAD's reported vanilla LaBraM, confirming our FT recipe is properly trained, not undertrained.
+- **TDBRAIN role in LEAD**: TDBRAIN (911 subjects) is used ONLY for self-supervised pre-training of LEAD, NOT as a downstream evaluation dataset. LEAD's 5 downstream datasets are ADFTD, BrainLat, CNBPM, Cognision-ERP, Cognision-rsEEG. **No published LaBraM-on-TDBRAIN-MDD-classification benchmark exists** in LEAD, EEG-FM-Bench (2508.17742), or AdaBrain-Bench (2507.09882, confirmed 2026-04-07).
 - **Handcrafted features**: Only as baseline (32 features → linear classifier, performs poorly)
 - **Relevance**: Their subject-level CE loss is directly applicable to our problem. Our global pooling (averaging epoch features) achieves a similar structural effect. Their gated temporal-spatial attention is analogous to CBraMod's criss-cross but with learnable fusion instead of concatenation
 - **Ref**: arXiv:2502.01678
@@ -242,7 +247,7 @@ Young graduate students' brains may maintain stable resting-state EEG patterns e
 | Aspect | Field Status | Our Contribution |
 |--------|-------------|-----------------|
 | FM on resting-state stress | Only 1 paper (our reference, 90% BA with leakage) | First multi-FM comparison (3 models) with rigorous subject-level CV |
-| Subject-level evaluation | Known problem, rarely applied to FMs | Expose 30+ point inflation gap; quantify subject identity encoding (34-37x eta-squared) |
+| Subject-level evaluation | Known problem, rarely applied to FMs | Expose 30+ point inflation gap; quantify subject identity dominance with pooled label fraction (only 7.2% of LaBraM representation variance allocated to stress label, unchanged by fine-tuning) |
 | FM + classical features | Not done | RF matches FM with 0 GPU; potential hybrid approach |
 | Cross-subject stress with FMs | Unexplored | 3 FM benchmarks now confirm failure; we explain *why* via variance decomposition |
 | Young-brain stress ceiling | Hypothesized in neuro lit, not tested on EEG classification | Converging evidence: neural efficiency + allostatic regulation explains ~65% ceiling |

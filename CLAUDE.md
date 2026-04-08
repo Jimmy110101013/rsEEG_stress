@@ -6,15 +6,22 @@ Use timm_eeg for conda env and install things inside it.
 
 Resting-state EEG stress classification using EEG Foundation Models. 18 subjects, 82 recordings (after 400s filter), binary classification (normal vs increase).
 
-### Key Finding: Subject Identity Dominance
-Frozen FM features encode **subject identity 34-37x more than stress** (eta-squared analysis across all 3 FMs). This explains the 30+ point gap between trial-level CV (86% BA, subject leakage) and subject-level CV (49-55% BA, near chance).
+### Key Finding: Subject Identity Dominance (corrected 2026-04-08)
+Frozen LaBraM allocates only **7.2% of its 200-d representation variance
+to the stress label** (pooled $SS_{\text{label}} / SS_{\text{total}}$),
+with fine-tuning producing **no measurable change** (7.23% → 7.24%).
+Cross-dataset comparison shows fine-tuning rewrites the representation
+cleanly only on ADFTD (2.8% → 7.7%, +2.76×) and not on Stress or
+TDBRAIN. Canonical numbers: `paper/figures/variance_analysis.json`.
+Methodology: `docs/eta_squared_pipeline_explanation.md`.
 
-### Current Results
+### Current Results (subject-level CV, 70-rec)
 | Model | Subject-Level BA | Trial-Level BA | Status |
 |-------|-----------------|----------------|--------|
-| LaBraM | 0.54 | 0.86 | Active |
-| CBraMod | 0.49 | 0.71 | Ruled out |
-| REVE | 0.55 | pending | OOM issues |
+| LaBraM FT | **0.656** | 0.862 | Primary |
+| Classical RF | 0.666 | — | Matches FM |
+| CBraMod | 0.488 | 0.712 | Ruled out |
+| REVE | 0.553 | 0.770 | Ruled out |
 
 ### Paper Strategy: Diagnosis + Solution
 1. **Expose** trial-level vs subject-level inflation gap (30+ points)

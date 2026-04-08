@@ -72,15 +72,18 @@
 
 ## 4. Representation Diagnosis
 
-### 4.1 Variance Decomposition (eta-squared on frozen features)
+### 4.1 Variance decomposition — SUPERSEDED
 
-| FM | Subject ID η² | Stress Label η² | Ratio |
-|----|--------------|-----------------|-------|
-| LaBraM | 0.680 | 0.020 | **34x** |
-| CBraMod | 0.626 | 0.017 | **36x** |
-| REVE | 0.546 | 0.015 | **37x** |
+The original naive one-way η² subject/label ratio was structurally biased
+(subjects are pure-label, so subject-SS mechanically contains label-SS).
+The reviewer-ready reformulation uses the **pooled label fraction**
+$SS_{\text{label}} / SS_{\text{total}}$ summed over feature dims. Only
+LaBraM was carried forward to the cross-dataset analysis; CBraMod and
+REVE were ruled out for stress and not re-run with the corrected method.
 
-**Finding**: Frozen FM features encode subject identity 34-37x more than stress across all 3 models.
+**Canonical current numbers**: `paper/figures/variance_analysis.json` and
+`docs/eta_squared_pipeline_explanation.md`. For Stress frozen LaBraM the
+pooled label fraction is 7.23%, and fine-tuning does not change it.
 
 ### 4.2 Effect Size Comparison
 
@@ -144,7 +147,13 @@ Top features from Random Forest (70-rec):
 All 3 FMs show consistent ~21 point BA drop from trial-level to subject-level CV. Published results using trial-level CV dramatically overestimate real-world generalization.
 
 ### F2: FM features encode subject identity, not stress
-Frozen FM features explain 55-68% of variance through subject identity but only 1.5-2% through stress label (34-37x ratio). This is consistent across all 3 architecturally different FMs.
+Frozen LaBraM allocates 7.23% of its total representation variance to the
+stress label on UCSD Stress (pooled label fraction from
+`paper/figures/variance_analysis.json`), and fine-tuning does not change
+this fraction (7.23% → 7.24%). The classifier achieves BA=0.656 by
+reading a projection through an unchanged representation, not by
+reshaping it. The original "34–37× subject/label ratio" figure was a
+naive one-way η² artifact and is no longer cited.
 
 ### F3: Classical features match FM performance
 Random Forest on 156 hand-crafted features (band power + ratios + asymmetry) achieves 0.666 BA — matching LaBraM's 0.656 BA. No GPU, no pretraining, no fine-tuning needed.

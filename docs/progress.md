@@ -1,14 +1,25 @@
 # Research Progress Report
 
 **Project**: EEG Foundation Model Evaluation for Resting-State Stress Classification
-**Period**: April 2–7, 2026
+**Period**: April 2–8, 2026
 **Author**: Jimmy Lin
 
 ---
 
 ## 1. Executive Summary
 
-We conducted a systematic evaluation of EEG foundation models (FMs) for cross-subject resting-state stress classification. Our findings reveal that FMs encode subject identity 11–13x more than task-relevant diagnostic signals — a limitation that persists across both weak-signal (chronic stress) and strong-signal (Alzheimer's disease) resting-state EEG tasks. Fine-tuning partially recovers diagnostic signal for strong-signal tasks but fails for weak-signal tasks, establishing signal strength as the fundamental bottleneck.
+We conducted a systematic evaluation of EEG foundation models (FMs) for
+cross-subject resting-state EEG classification across three datasets:
+UCSD Stress (17 subjects), ADFTD (65), TDBRAIN (359). Our reviewer-ready
+metric is the pooled label fraction $SS_{\text{label}} / SS_{\text{total}}$
+in the LaBraM 200-d representation. Fine-tuning only measurably rewrites
+the representation on the medium-sized ADFTD (2.8% → 7.7%, +2.76×); on
+the small Stress dataset it does not change the representation at all
+(7.2% → 7.2%), and on the large-but-subject-saturated TDBRAIN it actually
+dilutes the pooled label fraction (3.0% → 1.5%). Classifier BA rises
+modestly on Stress (0.66) despite no representation change, because the
+classifier head learns to read a pre-existing projection. See
+`docs/eta_squared_pipeline_explanation.md` for the full methodology.
 
 ---
 
@@ -60,28 +71,45 @@ We conducted a systematic evaluation of EEG foundation models (FMs) for cross-su
 
 Prior work (Wang et al., arXiv:2505.23042) reports 90% BA on the same dataset using trial-level splits with subject leakage.
 
-### 4.3 Frozen Feature Variance Decomposition (eta-squared)
+### 4.3 Cross-dataset variance decomposition (pooled label fraction)
 
-**Frozen LaBraM features (19 common channels):**
+Reviewer-ready metric: $SS_{\text{label}} / SS_{\text{total}}$ summed over
+the 200 LaBraM dims, computed on the pooled fine-tuned feature matrix
+(one OOF embedding per recording). Full methodology and rationale in
+`docs/eta_squared_pipeline_explanation.md`.
 
-| Dataset | N subj | eta²(subject) | eta²(label) | Ratio |
-|---------|--------|---------------|-------------|-------|
-| UCSD Stress | 17 | 0.649 | 0.059 | **11.0x** |
-| ADFTD full | 65 | 0.783 | 0.024 | 33.0x |
-| ADFTD N-matched (10 draws) | 17 | 0.748 ± 0.042 | 0.062 ± 0.016 | **13.0x ± 3.9x** |
+| Dataset | n rec / n subj | BA | Frozen label frac | FT pooled label frac | Change |
+|---|---|---|---|---|---|
+| Stress  | 70 / 17  | 0.656 | **7.23%** | **7.24%** | → unchanged |
+| ADFTD   | 195 / 65 | 0.752 | 2.79% | **7.70%** | **↑ 2.76×** |
+| TDBRAIN | 734 / 359| 0.681 | 2.97% | 1.47% | ↓ 0.49× |
 
-When controlling for subject count (N=17), both datasets show similar subject-to-label ratio (~11–13x). Frozen FM features are equally uninformative for both tasks.
+**Canonical source**: `paper/figures/variance_analysis.json`.
 
-### 4.4 Frozen vs Fine-Tuned Feature Comparison
+Supporting metrics (cluster-bootstrapped CIs, REML mixed-effects ICC,
+subject-level PERMANOVA) all live in the same JSON and move in the same
+directions.
 
-| Dataset | Mode | eta²(subject) | eta²(label) | Ratio | BA |
-|---------|------|---------------|-------------|-------|----|
-| Stress (N=17) | Frozen | 0.649 | 0.059 | 11.0x | — |
-| Stress (N=17) | **FT** | 0.874 | 0.069 | **12.8x** | 0.656 |
-| ADFTD matched (N=17) | Frozen | 0.748 | 0.062 | 13.0x | — |
-| ADFTD matched (N=17) | **FT** | 0.930 | 0.125 | **7.7x** | 0.752 |
+### 4.4 Interpretation
 
-**Critical finding**: Fine-tuning increases both subject and label encoding. For Alzheimer's, label encoding grows faster (ratio drops 13x→7.7x). For stress, the ratio stays flat (11x→12.8x) — fine-tuning cannot create signal that isn't in the raw EEG.
+Fine-tuning's effect on the LaBraM representation is dataset-size
+dependent, not a uniform "reduces subject dominance" story:
+
+- **Stress (n=70)**: no measurable change in representation structure.
+  Classifier BA=0.66 is achieved by reading a pre-existing projection
+  through an unchanged representation.
+- **ADFTD (n=195, 65 subjects)**: clean label-signal injection; the
+  only dataset where fine-tuning genuinely rewrites LaBraM's variance
+  structure. PERMANOVA drops from p=0.05 to p=0.001.
+- **TDBRAIN (n=734, 359 subjects)**: the five OOF fold-models drift
+  from each other and dilute the global label signal when pooled;
+  individual folds show mild label-signal injection that doesn't
+  survive pooling.
+
+The original "fine-tuning reduces subject dominance 5-6×" narrative was
+based on per-dim averaged ω² and per-fold Stress ratios, both of which
+turned out to be measurement artifacts. See §10 of
+`docs/eta_squared_pipeline_explanation.md` for the correction history.
 
 ---
 
@@ -91,13 +119,20 @@ When controlling for subject count (N=17), both datasets show similar subject-to
 All 3 FMs show consistent ~21-point BA drop from trial-level to subject-level CV. Published results using trial-level CV dramatically overestimate generalization.
 
 ### F2: Frozen FM features encode subject identity, not diagnostic signal
-Variance decomposition shows subject identity explains 11–13x more feature variance than task labels. This is consistent across architecturally different FMs (LaBraM, REVE, CBraMod) and across both weak-signal (stress) and strong-signal (Alzheimer's) tasks.
+Frozen LaBraM allocates only 2.8–7.2% of its representation variance to
+the label across the three datasets, while classifier BA is 0.66–0.75.
+The representation is subject-dominated; the classifier extracts whatever
+small label component exists via a supervised projection.
 
 ### F3: Classical features match FM performance
 Random Forest on 156 hand-crafted features (band power + ratios + asymmetry) achieves 0.666 BA on stress — matching fine-tuned LaBraM (0.656). On ADFTD, RF (0.753) also matches FT LaBraM (0.752). No GPU, no pretraining needed.
 
-### F4: Fine-tuning helps strong signals but not weak ones
-Fine-tuning reduces the subject-to-label dominance ratio from 13x to 7.7x for Alzheimer's (eta²(label) doubles). For stress, the ratio remains at ~12x — the diagnostic signal is too weak to amplify.
+### F4: Fine-tuning's effect is dataset-size dependent, not signal-strength dependent
+Only ADFTD shows a clean FT-induced increase in the pooled label fraction
+(2.8% → 7.7%, +2.76×). Stress is unchanged (7.2% → 7.2%) and TDBRAIN is
+diluted (3.0% → 1.5%). The earlier "fine-tuning helps strong signals but
+not weak ones" framing was based on per-dim averaged ω², which did not
+survive the switch to the reviewer-ready pooled metric.
 
 ### F5: The ~65% BA ceiling on stress is signal-limited, not method-limited
 Both FMs and classical ML converge to ~65% BA on stress with 17 subjects. Three consistently misclassified subjects (P2, P5, P14) have clean signal quality — biological overlap, not artifacts.
@@ -139,16 +174,38 @@ Brain4FMs (2026), EEG-FM-Bench (2025), and AdaBrain-Bench (2025) all report FM f
 
 ## 8. Paper Narrative
 
-**Title direction**: "Signal Strength Determines EEG Foundation Model Utility: A Cross-Dataset Diagnosis of Subject Identity Dominance in Resting-State Classification"
+**Title direction**: "Subject Identity Dominance Bounds Foundation-Model
+Performance on Resting-State EEG: Diagnosis and Implications for
+Personalized Modeling" (working title in `project_paper_strategy`).
 
-**Core argument**: EEG foundation models pretrained on masked patch prediction learn representations dominated by subject identity (11–13x over diagnostic signal). Fine-tuning can partially recover strong clinical signals (Alzheimer's: ratio drops to 7.7x, BA=75%) but fails for weak psychological signals (chronic stress: ratio stays at 12.8x, BA=65%). Classical band-power features match FM performance in both cases, questioning the added value of foundation model pretraining for resting-state EEG classification.
+**Core argument**: In resting-state EEG, the label is a subject-level
+property (each subject is either AD or HC, each subject is either MDD or
+HC, each subject has a fixed DASS score). Foundation models pretrained
+on masked-patch prediction learn representations where subject identity
+dominates the variance (label fraction <8% in all three datasets).
+Fine-tuning only measurably rewrites this representation on the medium-
+sized ADFTD dataset; on small (Stress, n=70) and very large but subject-
+saturated (TDBRAIN, 359 subjects) datasets, fine-tuning does not change
+the representation's variance structure and classifier BA gains come
+from the head learning a supervised projection, not from representation
+reshaping. Classical band-power features match or beat fine-tuned LaBraM
+on Stress and ADFTD, questioning the added value of FM pretraining for
+resting-state subject-level classification.
 
 **Contributions**:
-1. First rigorous multi-FM cross-subject evaluation for resting-state stress detection
-2. Novel quantitative diagnosis of subject-identity dominance via variance decomposition (eta-squared)
-3. Cross-dataset validation showing the pattern is universal, not dataset-specific
-4. Frozen vs fine-tuned comparison revealing signal-strength-dependent adaptation
-5. Evidence that classical features match FMs with zero computational overhead
+1. Reviewer-ready variance-decomposition methodology (pooled label
+   fraction + cluster bootstrap + subject-level PERMANOVA + mixed
+   effects ICC) for measuring whether FM fine-tuning rewrites
+   representations.
+2. Identification of a per-fold degeneracy in small-subject datasets
+   (Stress's 1-subject-per-positive-class problem) with a guard that
+   flags it in future analyses.
+3. Cross-dataset evidence that fine-tuning effects on FM representations
+   are dataset-size dependent, not uniformly "helpful".
+4. Evidence that classical features match fine-tuned FMs on both
+   Stress and ADFTD.
+5. Open question: does the pattern hold on task-evoked EEG, where
+   labels are within-subject rather than subject-level? (see §9.)
 
 ---
 
@@ -162,11 +219,26 @@ Brain4FMs (2026), EEG-FM-Bench (2025), and AdaBrain-Bench (2025) all report FM f
 2. **TUAB consideration**: Not resting-state (clinical routine with HV/photic). Dropped from comparison. Could use as "clinical EEG" reference if needed.
 
 ### Paper preparation
-3. Generate publication-quality figures (signal strength spectrum, frozen vs FT comparison)
-4. Write methods and results sections
-5. Statistical tests (permutation tests for eta-squared, confidence intervals for BA)
+3. Figures done: `cross_dataset_signal_strength.pdf` (pooled label
+   fraction) and `label_subspace.pdf` (3×3 diagnostic + t-SNE).
+4. Write methods and results sections using the corrected narrative.
+
+### Task-evoked comparison (open research question)
+5. **Should we add a task-evoked EEG dataset as a positive control?**
+   Our current three datasets all have subject-level labels (AD or not,
+   MDD or not, chronic stress or not). In task-evoked paradigms
+   (motor imagery, emotion, mental arithmetic) each subject has
+   recordings of multiple classes, so label is within-subject. The
+   hypothesis to test: "on within-subject labels, the FM representation
+   encodes the task strongly and fine-tuning works cleanly — the
+   subject-dominance story is specific to between-subject labels."
+   Candidate datasets: EEGMAT (mental arithmetic, paired rest/task per
+   subject), SAM40 (stress arithmetic, paired), SEED emotion (within-
+   subject), BCI Competition IV 2a (motor imagery, within-subject).
+   This would turn the paper's negative finding into a mechanistic
+   positive claim and is worth discussing with the advisor.
 
 ### Optional extensions
-6. TUAB/TUEP as non-resting-state reference point
-7. Spectral-guided FiLM conditioning (proposed but not implemented)
-8. Contrastive learning for subject-invariant features
+6. Within-subject longitudinal modeling (documented in
+   `project_paper_strategy`).
+7. Spectral-guided FiLM conditioning (proposed but not implemented).
