@@ -168,19 +168,27 @@ def parse_run(run_dir: str) -> List[RunRow]:
 
 
 def collect_runs(results_dir: str) -> List[RunRow]:
+    """Walk results_dir recursively and collect any directory whose name
+    matches RUN_DIR_RE (i.e. ``YYYYMMDD_HHMM_*``). This allows runs to be
+    organised into category subfolders like ``ft_subject/labram/`` without
+    breaking index generation.
+    """
     rows: List[RunRow] = []
-    for entry in sorted(os.listdir(results_dir)):
-        full = os.path.join(results_dir, entry)
-        if not os.path.isdir(full):
-            continue
-        if entry in ("archive", "cross_dataset", "fm_diagnosis", ".ipynb_checkpoints"):
-            continue
-        if not RUN_DIR_RE.match(entry):
-            continue
-        try:
-            rows.extend(parse_run(full))
-        except Exception as e:
-            rows.append(RunRow(run_id=entry, status="parse_error", notes=str(e)))
+    skip_dirs = {"archive", "features_cache", ".ipynb_checkpoints"}
+    for dirpath, dirnames, _ in os.walk(results_dir):
+        # Prune skipped top-level branches in place so os.walk doesn't descend.
+        dirnames[:] = sorted(d for d in dirnames if d not in skip_dirs)
+        for entry in list(dirnames):
+            if not RUN_DIR_RE.match(entry):
+                continue
+            full = os.path.join(dirpath, entry)
+            # Don't descend into run dirs.
+            dirnames.remove(entry)
+            try:
+                rows.extend(parse_run(full))
+            except Exception as e:
+                rows.append(RunRow(run_id=entry, status="parse_error", notes=str(e)))
+    rows.sort(key=lambda r: r.run_id)
     return rows
 
 

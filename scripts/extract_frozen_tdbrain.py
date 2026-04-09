@@ -1,4 +1,4 @@
-"""Extract frozen LaBraM features for TDBRAIN → cache_dataset/features_tdbrain_19ch.npz.
+"""Extract frozen LaBraM features for TDBRAIN → results/features_cache/frozen_labram_tdbrain_19ch.npz.
 
 Mirrors notebook cells 3, 5, 6 of Cross_Dataset_Signal_Strength.ipynb.
 """
@@ -16,7 +16,7 @@ from baseline.labram.channel_map import get_input_chans
 from baseline.abstract.factory import create_extractor
 
 DEVICE = 'cuda:5'
-SAVE_DIR = 'results/cross_dataset'
+SAVE_DIR = 'results/features_cache'
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 
@@ -43,7 +43,7 @@ def main():
     print(f'LaBraM loaded: {len(extractor.input_chans)} positions')
 
     # 3. Extract and pool features (mean across epochs)
-    cache_path = os.path.join(SAVE_DIR, 'features_tdbrain_19ch.npz')
+    cache_path = os.path.join(SAVE_DIR, 'frozen_labram_tdbrain_19ch.npz')
     all_feats, all_pids, all_labels = [], [], []
 
     with torch.no_grad():

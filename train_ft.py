@@ -43,6 +43,10 @@ import baseline.mock_fm  # noqa: F401
 import baseline.reve  # noqa: F401
 import baseline.labram  # noqa: F401
 import baseline.cbramod  # noqa: F401
+import baseline.eegnet  # noqa: F401
+import baseline.shallowconvnet  # noqa: F401
+import baseline.deepconvnet  # noqa: F401
+import baseline.eegconformer  # noqa: F401
 from baseline.abstract import create_extractor
 from pipeline.dataset import StressEEGDataset, WindowDataset, stress_collate_fn, window_collate_fn
 from src.loss import FocalLoss, MTLLoss, PairwiseRankingLoss
@@ -72,6 +76,9 @@ def parse_args():
                    help="Learning rate (default: 5e-3 for LP, 5e-5 for LoRA)")
     p.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--run-id", default=None,
+                   help="Override auto-generated run directory name "
+                        "(used by HP sweeps to guarantee unique per-run dirs).")
     # Label source
     p.add_argument("--label", choices=["dass", "subject-dass", "dss"], default="dass",
                    help="dass=file DASS, subject-dass=subject-level DASS, dss=score threshold")
@@ -140,10 +147,11 @@ def parse_args():
                    help="Gradient accumulation steps (0=auto: 4 for LoRA, 1 for LP)")
     # Cross-dataset support
     p.add_argument("--dataset",
-                   choices=["stress", "adftd", "tdbrain", "dementia", "mdd"],
+                   choices=["stress", "adftd", "tdbrain", "dementia", "mdd", "eegmat"],
                    default="stress",
                    help="Dataset to use (stress=UCSD, adftd=Alzheimer's, "
-                        "tdbrain=Brainclinics MDD, dementia=HNC dementia, mdd=HNC MDD)")
+                        "tdbrain=Brainclinics MDD, dementia=HNC dementia, mdd=HNC MDD, "
+                        "eegmat=PhysioNet mental arithmetic — within-subject positive control)")
     p.add_argument("--hnc-data-root", default="data/hnc",
                    help="Directory containing HNC dementia/MDD HDF5 + .pkl files")
     p.add_argument("--hnc-channels", default=None,
@@ -155,6 +163,11 @@ def parse_args():
     # Feature extraction
     p.add_argument("--save-features", action="store_true",
                    help="Save test-fold features from best model for eta-squared analysis")
+    # Permutation null — shuffle recording-level labels before CV to build
+    # a null distribution of BA under a label-free representation.
+    p.add_argument("--permute-labels", type=int, default=-1,
+                   help="If >=0, permute labels with this RNG seed before CV "
+                        "(permutation-null mode). -1 disables (default).")
     args = p.parse_args()
 
     # Mode-dependent defaults (aligned with REVE stress task config)
@@ -818,8 +831,8 @@ def train_one_fold_ft(
 
     # Fresh model — all params trainable
     extractor = create_extractor(args.extractor)
-    # Override channel mapping for 19ch datasets (ADFTD, TDBRAIN, HNC dementia/MDD)
-    if args.dataset in ("adftd", "tdbrain", "dementia", "mdd"):
+    # Override channel mapping for 19ch datasets (ADFTD, TDBRAIN, HNC dementia/MDD, EEGMAT)
+    if args.dataset in ("adftd", "tdbrain", "dementia", "mdd", "eegmat"):
         from pipeline.common_channels import COMMON_19
         from baseline.labram.channel_map import get_input_chans
         extractor.input_chans = get_input_chans(COMMON_19)
@@ -1095,7 +1108,10 @@ def main():
     aug_tag = f"_aug{int(args.aug_overlap*100)}" if args.aug_overlap else ""
     ds_tag = f"_{args.dataset}" if args.dataset != "stress" else ""
     feat_tag = "_feat" if args.save_features else ""
-    run_id = f"{datetime.now():%Y%m%d_%H%M}_{args.mode}_{label_tag}{aug_tag}_{args.extractor}{ds_tag}{feat_tag}"
+    if args.run_id:
+        run_id = args.run_id
+    else:
+        run_id = f"{datetime.now():%Y%m%d_%H%M}_{args.mode}_{label_tag}{aug_tag}_{args.extractor}{ds_tag}{feat_tag}"
     results_dir = os.path.join("results", run_id)
     os.makedirs(results_dir, exist_ok=True)
     with open(os.path.join(results_dir, "config.json"), "w") as f:
@@ -1127,6 +1143,21 @@ def main():
               f"(AD={n1}, HC={n0})")
         # Override label arg since ADFTD has its own labels
         args.label = "adftd"
+    elif args.dataset == "eegmat":
+        from pipeline.eegmat_dataset import EEGMATDataset
+        dataset = EEGMATDataset(
+            "data/eegmat",
+            target_sfreq=200.0,
+            window_sec=window_sec,
+            norm=args.norm,
+            cache_dir="data/cache_eegmat",
+        )
+        patient_ids = dataset.get_patient_ids()
+        labels = dataset.get_labels()
+        n1, n0 = int(labels.sum()), int(len(labels) - labels.sum())
+        print(f"EEGMAT: {len(dataset)} recordings, {len(np.unique(patient_ids))} subjects "
+              f"(task={n1}, rest={n0})")
+        args.label = "eegmat"
     elif args.dataset == "tdbrain":
         from pipeline.tdbrain_dataset import TDBRAINDataset
         # TDBRAIN already has natural multi-recording structure (EO+EC, multi-session)
@@ -1195,6 +1226,13 @@ def main():
             print(f"Subject-DASS labels: increase={n1} ({len(increase_pids)} subjects), normal={n0}")
         else:
             labels = dataset.get_labels()
+
+    if args.permute_labels >= 0:
+        rng = np.random.default_rng(args.permute_labels)
+        perm = rng.permutation(len(labels))
+        labels = labels[perm]
+        print(f"[permute-labels] Shuffled labels with rng seed {args.permute_labels}. "
+              f"Class balance preserved: {int(labels.sum())} pos / {int(len(labels)-labels.sum())} neg")
 
     outer_cv = StratifiedGroupKFold(
         n_splits=args.folds, shuffle=True, random_state=args.seed

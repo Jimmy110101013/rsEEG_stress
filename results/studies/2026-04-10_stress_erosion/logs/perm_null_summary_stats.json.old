@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-04-10T00:00",
+  "real_labels_runs": [
+    {
+      "seed": "42",
+      "ba": 0.5357
+    },
+    {
+      "seed": "123",
+      "ba": 0.4196
+    },
+    {
+      "seed": "2024",
+      "ba": 0.375
+    }
+  ],
+  "real_mean": 0.4434333333333333,
+  "real_std": 0.06773548224937616,
+  "null_runs": [
+    {
+      "perm_seed": 0,
+      "ba": 0.4911
+    },
+    {
+      "perm_seed": 1,
+      "ba": 0.4286
+    },
+    {
+      "perm_seed": 2,
+      "ba": 0.5357
+    },
+    {
+      "perm_seed": 3,
+      "ba": 0.4732
+    },
+    {
+      "perm_seed": 4,
+      "ba": 0.6071
+    },
+    {
+      "perm_seed": 5,
+      "ba": 0.4554
+    },
+    {
+      "perm_seed": 6,
+      "ba": 0.3661
+    },
+    {
+      "perm_seed": 7,
+      "ba": 0.5446
+    },
+    {
+      "perm_seed": 8,
+      "ba": 0.6429
+    },
+    {
+      "perm_seed": 9,
+      "ba": 0.4286
+    }
+  ],
+  "null_mean": 0.49733,
+  "null_std": 0.08123725807780566,
+  "frozen_lp_mean": 0.6161,
+  "frozen_lp_std": 0.0292,
+  "delta_real_minus_null": -0.053896666666666704,
+  "delta_frozen_minus_real": 0.1726666666666667,
+  "p_one_sided_null_ge_real": 0.7,
+  "interpretation": "Real FT (0.443) is below null mean (0.497), consistent with strong erosion: fine-tuning on weak-signal labels destroys the pretrained representation's natural 0.616 linear-probe signal."
+}

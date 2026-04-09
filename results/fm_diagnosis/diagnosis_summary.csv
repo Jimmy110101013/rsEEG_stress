@@ -1,8 +1,0 @@
-Model,Embed Dim,eta2 Subject,eta2 Stress,Subject/Stress Ratio,Cohen d (LDA),Silhouette Subject,Silhouette Stress,Within-Subj Sim,Between-Subj Sim,Subject Sim Gap,Label Sim Gap
-LaBraM,200,0.6803,0.0201,33.9x,5.150,0.1616,-0.0233,0.9812,0.9435,0.0376,-0.0051
-CBraMod,200,0.6258,0.0174,35.9x,5.210,-0.0076,-0.1111,0.9985,0.9961,0.0023,-0.0009
-REVE,512,0.5462,0.0149,36.6x,2.939,-0.0475,-0.0673,0.9220,0.8397,0.0823,-0.0187
-Classical (Theta),1 (scalar),-,-,-,1.144,-,-,-,-,-,-
-Classical (Alpha),1 (scalar),-,-,-,0.371,-,-,-,-,-,-
-Classical (Beta),1 (scalar),-,-,-,0.216,-,-,-,-,-,-
-Classical (TAR),1 (scalar),-,-,-,0.013,-,-,-,-,-,-

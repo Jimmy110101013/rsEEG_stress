@@ -39,19 +39,17 @@ from src import variance_analysis as va  # noqa: E402
 
 
 DATASETS = {
-    "Stress": {
-        "frozen": "results/cross_dataset/features_stress_19ch.npz",
-        "ft_dir": "results/20260406_0419_ft_subjectdass_aug75_labram_feat",
-        "label_names": ("normal", "increase"),
-    },
+    # NOTE: The Stress ft_dir was archived on 2026-04-09 (trait memorization
+    # artifact under --label subject-dass). Re-run with --label dass +
+    # --save-features if you need a current Stress row for this figure.
     "ADFTD": {
-        "frozen": "results/cross_dataset/features_adftd_19ch.npz",
-        "ft_dir": "results/20260406_0935_ft_dass_aug75_labram_adftd_feat",
+        "frozen": "results/features_cache/frozen_labram_adftd_19ch.npz",
+        "ft_dir": "results/features_cache/ft_labram/adftd_2026-04-06",
         "label_names": ("HC", "AD"),
     },
     "TDBRAIN": {
-        "frozen": "results/cross_dataset/features_tdbrain_19ch.npz",
-        "ft_dir": "results/20260407_1533_ft_dass_aug75_labram_tdbrain_feat",
+        "frozen": "results/features_cache/frozen_labram_tdbrain_19ch.npz",
+        "ft_dir": "results/features_cache/ft_labram/tdbrain_2026-04-07",
         "label_names": ("HC", "MDD"),
     },
 }

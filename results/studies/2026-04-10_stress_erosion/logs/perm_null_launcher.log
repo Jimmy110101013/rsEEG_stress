@@ -1,0 +1,22 @@
+[ 1/10] START perm_s0 on cuda:6
+[ 1/10] START perm_s1 on cuda:7
+[ 1/10] OK perm_s0 (cuda:6, 10.9 min)
+[ 2/10] START perm_s2 on cuda:6
+[ 2/10] OK perm_s1 (cuda:7, 15.9 min)
+[ 3/10] START perm_s3 on cuda:7
+[ 3/10] OK perm_s2 (cuda:6, 13.9 min)
+[ 4/10] START perm_s4 on cuda:6
+[ 4/10] OK perm_s3 (cuda:7, 12.7 min)
+[ 5/10] START perm_s5 on cuda:7
+[ 5/10] OK perm_s4 (cuda:6, 12.0 min)
+[ 6/10] START perm_s6 on cuda:6
+[ 6/10] OK perm_s5 (cuda:7, 14.2 min)
+[ 7/10] START perm_s7 on cuda:7
+[ 7/10] OK perm_s6 (cuda:6, 18.3 min)
+[ 8/10] START perm_s8 on cuda:6
+[ 8/10] OK perm_s7 (cuda:7, 16.2 min)
+[ 9/10] START perm_s9 on cuda:7
+[ 9/10] OK perm_s8 (cuda:6, 12.1 min)
+[10/10] OK perm_s9 (cuda:7, 16.2 min)
+
+Done. 10/10 OK.
