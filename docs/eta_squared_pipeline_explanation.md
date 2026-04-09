@@ -19,8 +19,8 @@ One vector per recording: LaBraM outputs a 200-d embedding.
 
 | Regime | Model | Feature source |
 |---|---|---|
-| **Frozen** | Pretrained LaBraM, no fine-tuning | `results/cross_dataset/features_{dataset}_19ch.npz` |
-| **Fine-tuned (pooled)** | 5-fold subject-level CV; each recording's embedding comes from the fold-model that held it out | `results/..._feat/fold{1..5}_features.npz` concatenated |
+| **Frozen** | Pretrained LaBraM, no fine-tuning | `results/features_cache/frozen_labram_{dataset}_19ch.npz` |
+| **Fine-tuned (pooled)** | 5-fold subject-level CV; each recording's embedding comes from the fold-model that held it out | `results/features_cache/ft_labram/{dataset}_YYYY-MM-DD/fold{1..5}_features.npz` concatenated |
 
 Every fine-tuned embedding is out-of-fold: the model that produced it
 never saw that recording during training. The pooled matrix has the same
@@ -74,18 +74,68 @@ completeness but not reported in the paper.
 **Code**: `src/variance_analysis.py:analyze_regime` populates
 `pooled_fractions.label` for every regime it analyzes.
 
+### 2.1 Why this metric, vs. the alternatives in EEG-FM-Bench
+
+The closest methodological prior for tracking "does fine-tuning rewrite
+an EEG FM representation" is EEG-FM-Bench (Xiong et al. 2025,
+arXiv:2508.17742, §4.3). Their pipeline uses two diagnostics:
+
+- **Gradient-mass per parameter group** during FT (Fig. 7 left). They
+  observe that in pretrained-FT settings the gradient norm concentrates
+  on the input Temporal Embedding while the Attention/MLP/Norm backbone
+  receives small gradients. This is an *input-side*, *qualitative*,
+  *multi-task averaged* observation.
+- **CKA / RSA between Scratch-trained and Pretrained checkpoints** over
+  training steps (Fig. 7 mid/right). This tracks whether multi-task FT
+  pulls a scratch model toward the pretrained representation. It is
+  *unsupervised* (label-blind) and *not* tracking how a pretrained
+  representation evolves during FT on a single small clinical task.
+
+Our pooled label fraction is the *output-side, label-aware,
+dataset-stratified, per-fold-aware* counterpart to those measures. The
+two are mechanistically consistent on Stress (small backbone gradients →
+unchanged pooled label fraction 7.23%→7.24%) but our metric makes
+behaviors visible that theirs cannot:
+
+| Behavior | Visible to gradient-mass? | Visible to CKA/RSA? | Visible to pooled label fraction? |
+|---|---|---|---|
+| Backbone receives small gradients on small data | yes | no (compares scratch↔pretrained, not pre↔post FT) | indirectly — output is unchanged |
+| Pretrained representation rewrites cleanly on medium data | no (gradient mass story is uniform) | partially (geometry shifts, but not toward what) | **yes**, with sign and magnitude (ADFTD 2.79%→7.70%) |
+| Per-fold OOF models drift apart, **diluting** the global label signal on large subject-saturated data | no (per-fold gradients not analyzed) | no (multi-task averaging) | **yes** — TDBRAIN 2.97%→1.47% is the signature |
+| Failure mode is dataset-size-dependent | no (multi-task averaged) | no | **yes** (the three-mode taxonomy) |
+
+The TDBRAIN fold-drift dilution row is the diagnostic that justifies
+the new metric: it is structurally invisible to any pipeline that
+averages over folds or over tasks before computing the diagnostic, but
+it is the dominant effect on subject-saturated datasets and inverts the
+naive scaling-laws expectation.
+
 ---
 
 ## 3. Production results (2026-04-08)
 
-Full analysis: `conda run -n stats_env python scripts/run_variance_analysis.py`
+Full analysis (Stress, ADFTD, TDBRAIN):
+`/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python scripts/run_variance_analysis.py`
 (n_boot=1000, n_perm=999, all 200 feature dims for mixed-effects).
 
-| Dataset | BA | Frozen label frac | FT pooled label frac | Change |
-|---|---|---|---|---|
-| Stress  | 0.656 | **7.23%** | **7.24%** | **→ (unchanged, ×1.00)** |
-| ADFTD   | 0.752 | 2.79%  | 7.70%  | **↑ ×2.76** |
-| TDBRAIN | 0.681 | 2.97%  | 1.47%  | **↓ ×0.49** |
+EEGMAT analysis (within-subject design needs the crossed decomposition path):
+`/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python scripts/analyze_eegmat.py`
+
+| Dataset | BA | n_rec / n_subj | Label type | Frozen label frac | FT pooled label frac | Change |
+|---|---|---|---|---|---|---|
+| ~~Stress~~ | ~~0.656~~ | 70 / 17  | between-subject | ~~**7.23%**~~ | ~~**7.24%**~~ | **STALE** — computed under subject-dass; see progress.md §4.6 |
+| EEGMAT   | 0.736 | 72 / 36  | **within-subject** | **5.35%** | **5.82%** | → (×1.09) |
+| ADFTD    | 0.752 | 195 / 65 | between-subject | 2.79% | 7.70% | ↑ ×2.76 |
+| TDBRAIN  | 0.681 | 734 / 359| between-subject | 2.97% | 1.47% | ↓ ×0.49 |
+
+> **Note (2026-04-10)**: The Stress row above is stale. The underlying FT
+> feature run used `--label subject-dass` (trait-memorization artifact,
+> see progress.md §4.6). Regenerating requires re-running Stress FT with
+> `--label dass --save-features` and re-running
+> `scripts/run_variance_analysis.py` after adding the new ft_dir to its
+> DATASETS dict. The 2026-04-10 Stress result is currently only
+> available at the **behavioral** level: Frozen LP 0.605 ± 0.030 vs
+> Real FT 0.443 ± 0.068 (`results/studies/2026-04-10_stress_erosion/`).
 
 Supporting metrics, all consistent with the primary result:
 
@@ -102,10 +152,29 @@ Fine-tuning only measurably rewrites the LaBraM representation on ADFTD
 global label fraction is unchanged (7.23% → 7.24%) and PERMANOVA
 correctly reports no change — the classifier achieves BA=0.66 by
 learning a projection through an unchanged representation, not by
-reshaping it. On TDBRAIN, the pooled label fraction actually halves
-after fine-tuning (the five fold-models drift in ways that dilute the
-global label signal), while classifier BA remains at 0.68 because the
-large sample size still gives enough signal for the head to read.
+reshaping it. The same projection-only failure mode holds on **EEGMAT**
+(5.35% → 5.82% at n=72, classifier BA=0.736), even though every EEGMAT
+subject contributes both labels (paired baseline rest vs arithmetic
+task) — the within-subject task contrast does *not* rescue
+representation rewriting at small n. Subject identity dominates ~71%
+of EEGMAT variance both before and after FT (mixed-effects ICC 0.56 →
+0.63), confirming that the projection-only behavior is structural to
+subject-dominated FM pretraining and depends on training-set size, not
+on whether the label is biologically separable per subject. On TDBRAIN,
+the pooled label fraction actually halves after fine-tuning (the five
+fold-models drift in ways that dilute the global label signal), while
+classifier BA remains at 0.68 because the large sample size still gives
+enough signal for the head to read.
+
+**Why EEGMAT needs a different code path.** `nested_ss` requires
+subject-pure labels (every recording from a subject shares one label).
+EEGMAT violates this by design — every subject contributes both rest
+and task recordings. The pooled label fraction $SS_{\text{label}}/SS_{\text{total}}$
+itself is still well-defined (it doesn't care about the subject design),
+but the nested decomposition $SS_\text{label} + SS_{\text{subject}|\text{label}} + SS_\text{residual}$
+needs to be replaced by the *crossed* decomposition $SS_\text{label} + SS_\text{subject} + SS_\text{interaction+resid}$.
+`scripts/analyze_eegmat.py` runs the crossed path and reports the same
+pooled label fraction in a directly comparable form.
 
 ---
 
@@ -166,7 +235,7 @@ All math lives in `src/variance_analysis.py`:
   not the primary metric).
 - `mixed_effects_variance(features, subject, label)` — REML
   `feat_d ~ label + (1|subject)` per dim. Lazy-imports statsmodels;
-  must run in `stats_env`.
+  must run in `stress` (unified env, see §6).
 - `cluster_bootstrap(features, subject, label, stat_fn, n_boot)` —
   subject-level resampling.
 - `subject_level_permanova(features, subject, label, n_perm)` —
@@ -182,13 +251,13 @@ All math lives in `src/variance_analysis.py`:
 CLIs and figure producers:
 
 - `scripts/run_variance_analysis.py` — produces `paper/figures/variance_analysis.json`.
-  Run under `stats_env`.
+  Run under `stress`.
 - `scripts/build_cross_dataset_figure.py` — Panel A: BA bars; Panel B:
   pooled label fraction with fold-change annotations. Reads JSON,
-  renders figure. Runs under `timm_eeg`.
+  renders figure. Runs under `stress` (or `timm_eeg`).
 - `scripts/build_label_subspace_figure.py` — 3×3 diagnostic figure
   (label fraction bar, cumulative label SS curve, top-2 PCA projection)
-  plus t-SNE frozen-vs-fine-tuned. Runs under `stats_env` (needs
+  plus t-SNE frozen-vs-fine-tuned. Runs under `stress` (needs
   scikit-learn).
 
 Tests: `tests/test_variance_analysis.py` — 10 tests including synthetic
@@ -201,23 +270,31 @@ concentration/spread detection.
 ## 6. How to reproduce
 
 ```bash
+STRESS=/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python
+
 # 1. Full statistical analysis → variance_analysis.json
-conda run -n stats_env python scripts/run_variance_analysis.py
+$STRESS scripts/run_variance_analysis.py
 
-# 2. Cross-dataset summary figure (pooled label fraction panel)
-conda run -n timm_eeg python scripts/build_cross_dataset_figure.py
+# 2. EEGMAT within-subject analysis → variance_analysis_eegmat.json
+$STRESS scripts/analyze_eegmat.py
 
-# 3. Diagnostic figure (label subspace + t-SNE)
-conda run -n stats_env python scripts/build_label_subspace_figure.py
+# 3. Cross-dataset summary figure (pooled label fraction panel)
+$STRESS scripts/build_cross_dataset_figure.py
 
-# 4. Tests
+# 4. Diagnostic figure (label subspace + t-SNE)
+$STRESS scripts/build_label_subspace_figure.py
+
+# 5. Tests
 conda run -n timm_eeg python tests/test_variance_analysis.py    # numpy-only
-conda run -n stats_env python tests/test_variance_analysis.py   # full suite
+$STRESS tests/test_variance_analysis.py                          # full suite
 ```
 
-Two conda environments because `timm_eeg` has a broken
-`scipy.interpolate._fitpack_impl` import that cascades to scipy.stats,
-statsmodels, and sklearn.manifold.TSNE. `stats_env` has a clean
-scipy/statsmodels/sklearn install and is used for any analysis that
-touches those. The two envs communicate exclusively via on-disk
-`.npz` / `.json` files.
+All analysis (training, feature extraction, stats) now runs in the
+unified `stress` conda env (scipy 1.17 + statsmodels 0.14 + sklearn 1.8
++ torch 2.5.1+cu124, built clean from conda-forge on 2026-04-08). The
+legacy `stats_env` was removed after verifying bit-exact reproduction of
+all pooled label fractions (Stress 7.23%→7.24%, ADFTD 2.79%→7.70%,
+TDBRAIN 2.97%→1.47%) under `stress`. `timm_eeg` still has the broken
+`scipy.interpolate._fitpack_impl` import, so numpy-only tests can run
+there but anything touching `statsmodels`/`scipy.stats`/`sklearn.manifold.TSNE`
+must use `stress`.

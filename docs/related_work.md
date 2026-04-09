@@ -1,6 +1,6 @@
 # Related Work (Living Document)
 
-*Last updated: 2026-04-05. This document is incrementally updated as we discover more relevant literature.*
+*Last updated: 2026-04-08. Major reframe after EEG-FM-Bench (Xiong et al. 2025) closest-prior pressure test: TDBRAIN fold-drift dilution is now the headline novelty; Stress and ADFTD are the framing endpoints. See §2.1 and §9.*
 
 ---
 
@@ -35,15 +35,22 @@
 
 ## 2. EEG FM Benchmarks
 
-### 2.1 EEG-FM-Bench (Xu et al., 2025)
-- **Scope**: 7 EEG-FMs, 14 datasets, 10 paradigms
-- **Critical findings**:
-  1. Frozen backbone = near chance across ALL models (linear probing fails universally)
-  2. Full fine-tuning is necessary; pretrained weights useful only as initialization
-  3. CBraMod and EEGPT are top performers with FT
-  4. Multi-task FT helps in data-scarce settings
-- **Relevance**: Validates our LP failure results. However, their stress evaluation may use trial-level splits
-- **Ref**: arXiv:2508.17742
+### 2.1 EEG-FM-Bench (Xiong et al., 2025) — *closest methodological prior*
+- **Scope**: 7 EEG-FMs (BENDR, BIOT, LaBraM, EEGPT, CBraMod, CSBrain, REVE) + 2 time-series FMs, 14 datasets, 10 paradigms, 3 FT strategies (frozen / LoRA / full-parameter), 2 task setups (single- / multi-task), 3 classifier heads.
+- **End-task findings**:
+  1. Frozen backbone shows a *severe generalization gap*; full-parameter FT is the upper bound (§4.4, Fig. 9).
+  2. Multi-task FT acts as a regularizer in data-scarce settings, often beating single-task FT.
+  3. Compact, EEG-specific architectures (EEGPT, CBraMod) outperform much larger models — scaling laws break in low-SNR EEG.
+- **Diagnostic findings (most relevant to our paper, §4.3 + Fig. 7)**:
+  - **Gradient-mass analysis**: in pretrained-FT settings, gradient norms concentrate on the **Temporal Embedding** (input projection); Attention/MLP/Norm receive small gradients. They interpret this as *"pre-training stabilizes the Transformer backbone… fine-tuning primarily adapts the Temporal Embedding to bridge raw signals and latent space."* Framed as a feature, not a failure.
+  - **CKA / RSA panels**: track *Scratch-vs-Pretrained* training trajectories — multi-task FT pulls scratch toward pretrained ("attractor"). They are *not* tracking how a pretrained representation evolves during FT on a single small clinical task.
+- **What they explicitly do not do** (this is the gap our paper fills):
+  1. No label-aware variance decomposition (CKA/RSA are unsupervised geometric measures).
+  2. No per-dataset analysis — diagnostic results are multi-task averaged across 14 datasets, hiding any per-dataset failure modes (e.g. our ADFTD injection vs TDBRAIN erosion contrast).
+  3. No per-fold representation tracking — fold-model drift on subject-saturated datasets is invisible to their pipeline because pooled OOF features would average it out.
+  4. No claim that "FT does nothing on small data" — they argue full-parameter FT is the upper bound for accuracy.
+- **How we position against EEG-FM-Bench**: their gradient-mass observation is the *input-side*, qualitative, multi-task-averaged version of our *output-side*, quantitative, dataset-stratified, label-aware measurement. The two are mechanistically consistent on Stress (small gradients on backbone → unchanged pooled label fraction 7.23%→7.24%), but only our metric makes the three-mode taxonomy visible — in particular, the TDBRAIN fold-drift dilution (3.0%→1.5%) cannot be seen with their CKA/RSA on multi-task averaged features.
+- **Ref**: arXiv:2508.17742 (Feb 2026 v2)
 
 ### 2.2 AdaBrain-Bench (2025)
 - **Scope**: BIOT, EEGPT, LaBraM, CBraMod across multiple tasks
@@ -122,6 +129,17 @@
 - PEFT with GNN adapter on frozen FM backbone
 - Only 2.4% trainable params, up to 16.1% F1 improvement
 - Adds spatial graph representations to temporal-only backbones
+
+### 4.4 Kumar et al., "Fine-Tuning can Distort Pretrained Features and Underperform Out-of-Distribution" (ICLR 2022 Oral)
+- **Theoretical claim**: Full fine-tuning provably distorts pretrained features in the OOD direction relative to a linear-probe-then-finetune (LP-FT) two-step procedure. The mechanism: a randomly-initialized head pulls the backbone toward features that fit the head's noise during the first epochs of FT, before the head has converged.
+- **Why it matters for our paper**: Provides the theoretical anchor for the *projection-vs-rewriting* distinction we measure with the pooled label fraction. The Stress regime (head learns a projection through an unchanged backbone) is the *opposite* failure mode from Kumar's distortion — the backbone *resists* the head's pull because gradients are too small (consistent with EEG-FM-Bench §4.3). The TDBRAIN regime (per-fold representations drift apart, diluting the global label signal) is closer to Kumar's distortion mechanism, manifested across CV folds rather than across in-distribution / OOD splits.
+- **Practical implication**: LP-FT is the canonical *fix* to try on Stress as a sanity check that our diagnostic is actionable.
+- **Ref**: arXiv:2202.10054
+
+### 4.5 Huang, "Using Cluster Bootstrapping to Analyze Nested Data with a Few Clusters" (Educational and Psychological Measurement, 2018)
+- **Methodological claim**: For nested data (observations within clusters), the standard percentile bootstrap underestimates SE because it treats correlated observations as independent. The fix is to resample *clusters* with replacement and include all observations from each resampled cluster.
+- **Why it matters for our paper**: Justifies our cluster bootstrap (resampling subjects, not recordings) for the pooled label fraction confidence intervals. Without this, an n=195 ADFTD bootstrap would treat 195 recordings as independent when the effective n is ~65 subjects, producing anti-conservative CIs that a stats reviewer would catch immediately.
+- **Ref**: Huang 2018, *Educational and Psychological Measurement* 78(2), 297–318
 
 ---
 
@@ -244,24 +262,58 @@ Young graduate students' brains may maintain stable resting-state EEG patterns e
 
 ## 9. Summary: Our Positioning
 
+The headline novelty is the **three modes of FT behavior** on resting-state and task-evoked EEG — label-signal injection / mild injection / active erosion — measured with two complementary metrics:
+1. **Representation-level**: pooled label fraction $SS_\text{label}/SS_\text{total}$ on the 200-d encoder output (paired matched-subsample resampling 100 draws/rung + subject-level label-permutation null).
+2. **Behavioral-level**: multi-seed subject BA via Frozen LP (LogisticRegression on cached features) vs canonical-recipe FT.
+
+The taxonomy across four datasets (updated 2026-04-10 after Stress reclassification):
+
+| Mode | Dataset (n_rec / n_subj) | Label type | Representation Δ (frozen → FT) | Behavioral Δ (frozen LP → FT BA) | Representation behavior |
+|---|---|---|---|---|---|
+| **Injection** | ADFTD (195 / 65) | between-subject, strong EEG biomarker (theta/delta increase in AD) | 2.79% → 7.70% (**+5.22 to +5.68 pp N-invariant**) | 0.669 → 0.752 (**+8.3 pp**) | Clean label-signal injection at both metrics. The canonical success case. |
+| **Mild injection** | EEGMAT (72 / 36) | within-subject, rest vs arithmetic (classical cognitive-load biomarker) | 5.35% → 5.82% (≈ 0, crossed design) | 0.671 → 0.736 (**+6.5 pp**) | Representation unchanged but BA improves — FT re-shapes head/projection without rewriting backbone. |
+| **Silent erosion** | TDBRAIN (734 / 359) | between-subject, MDD (weak EEG biomarker, contested lit) | 2.97% → 1.47% (**−1.06 to −1.58 pp N-invariant**, opposite side of permutation null) | 0.679 → 0.681 (≈ 0) | Representation label-fraction drops 50% while BA is unchanged — classifier compensates in a linear projection the frozen representation already supplied. |
+| **Behavioral erosion** | Stress (70 / 17) | between-subject, DASS trait class (no accepted EEG biomarker) | **stale** — needs re-run under `--label dass` | 0.605 ± 0.030 → 0.443 ± 0.068 (**−16.2 pp**) | Frozen LP beats FT by 16 pp. Real FT is statistically indistinguishable from null (FT on shuffled labels: 0.497 ± 0.081, p(null ≥ real)=0.70). Full evidence: `results/studies/2026-04-10_stress_erosion/`. |
+
+**The headline correction (2026-04-08 evening, after the matched-subsample experiment):** the previous "dataset-size-dependent" framing of this taxonomy was wrong. At literally matched N=17 with nearly identical frozen baselines (ADFTD 6.50%, Stress 7.23%), ADFTD gains +5 pp from FT and Stress gains 0 pp. The three modes are properties of the *label biology*, not the training set size. The canonical "ADFTD ×2.76 rewrite" ratio is also N-inflated (the pooled-fraction denominator shrinks at small N) — at Stress-comparable N=17 the true ratio is 1.87×, and the **N-invariant additive +5 pp** is the honest effect size. Use the additive framing as the headline; the ratio framing should appear only at full N for literature comparison.
+
+The TDBRAIN active-erosion finding is then the strongest leg of the stool: under permutation null, TDBRAIN's observed Δ doesn't merely fail to be positive — it sits on the *opposite* side of zero from where the null sits. FT is doing real damage to a label signal the frozen FM already carried.
+
+Reviewer-prior coverage: EEG-FM-Bench's CKA/RSA pipeline averages over multi-task and over folds, so neither the projection-only behavior on Stress + EEGMAT nor the active erosion on TDBRAIN is visible to it. Their gradient-mass observation ("backbone remains stable on pretrained-FT") is mechanistically consistent with our no-op result on Stress and EEGMAT but never quantified, label-aware, or stratified per-dataset, and they cannot see the ADFTD injection or the TDBRAIN erosion at all because their CKA pipeline is unsupervised and dataset-averaged.
+
 | Aspect | Field Status | Our Contribution |
 |--------|-------------|-----------------|
-| FM on resting-state stress | Only 1 paper (our reference, 90% BA with leakage) | First multi-FM comparison (3 models) with rigorous subject-level CV |
-| Subject-level evaluation | Known problem, rarely applied to FMs | Expose 30+ point inflation gap; quantify subject identity dominance with pooled label fraction (only 7.2% of LaBraM representation variance allocated to stress label, unchanged by fine-tuning) |
-| FM + classical features | Not done | RF matches FM with 0 GPU; potential hybrid approach |
-| Cross-subject stress with FMs | Unexplored | 3 FM benchmarks now confirm failure; we explain *why* via variance decomposition |
-| Young-brain stress ceiling | Hypothesized in neuro lit, not tested on EEG classification | Converging evidence: neural efficiency + allostatic regulation explains ~65% ceiling |
-| Public stress EEG benchmarks | No resting-state DASS dataset exists | Our dataset is unique; EEGMAT/SAM40 available for auxiliary validation |
+| **FT representation evolution diagnostics** | EEG-FM-Bench tracks gradient mass (input-side) and CKA/RSA (unsupervised, multi-task averaged) | Pooled label fraction $SS_\text{label}/SS_\text{total}$ — output-side, label-aware, dataset-stratified, per-fold-aware. Sensitive to fold-drift dilution that CKA/RSA average out. |
+| **N-invariance of FT effect direction** | Field default: assume more data → cleaner adaptation (monotonic). | Three N-invariant modes: injection (ADFTD +5 pp stable across N), no-op (Stress/EEGMAT Δ ≈ 0), erosion (TDBRAIN −1.5 pp stable across N, on opposite side of permutation null). Verified by paired matched subsampling and label-permutation null. Inverts the scaling-laws expectation: TDBRAIN gets *worse* with FT regardless of how much data you give it. |
+| **FM on resting-state stress** | Only 1 paper (our reference, 90% BA with leakage) | First multi-FM comparison with rigorous subject-level CV (Stress is one of three case studies, not the headline) |
+| **Subject-level CV rigor for FMs** | Known to matter (Brookshire 2024); rarely applied to FMs | 20+ point inflation gap quantified across 3 FMs; subject-level cluster bootstrap and subject-level PERMANOVA used as the inference layer |
+| **Statistical rigor of representation analysis** | Naive percentile bootstrap on recording-level features is the field default | Cluster bootstrap over subjects (Huang 2018) + per-fold degeneracy guard for n_subjects_per_class < 2 |
+| **FM + classical features on resting-state clinical EEG** | Not directly compared | RF on hand-crafted band power matches FT LaBraM on ADFTD (0.753 vs 0.752); Stress comparison is **stale** under subject-dass (RF 0.666, FT 0.656) — both need re-run under per-rec DASS. |
+| **Young-brain stress ceiling explanation** | Hypothesized in neuro lit, not tested on EEG classification | Converging evidence: neural efficiency + allostatic regulation explains the ~65% Stress ceiling at the *signal* level, complementing the *representation* level diagnosis |
 
-### Key Papers to Cite
-1. Data leakage paper (Frontiers 2024) — methodological backing
-2. 100k models partitioning paper (2025) — empirical backing
-3. EEG-FM-Bench (2025) — FM benchmark context
-4. AdaBrain-Bench (2025) — FM benchmark context (emotion/stress failure)
-5. Brain4FMs (2026) — strongest confirmation of FM failure on affect (15 models, near-random)
-6. LEAD (2025) — subject-regularized training technique
-7. TAR stress paper (2026) — neurophysiological feature justification
-8. Reference paper (Lin et al., 2025) — dataset and baseline
-9. Neubauer & Fink (2009) — neural efficiency hypothesis
-10. McEwen (2010) — allostatic load framework
-11. Saeed et al. (2020) — DASS-based EEG stress, closest comparison
+### Key Papers to Cite (in order of centrality to the new framing)
+
+**Closest priors / what we measure differently than:**
+1. **Xiong et al. 2025 — EEG-FM-Bench (arXiv:2508.17742)** — closest methodological prior. Their gradient-mass and CKA/RSA analyses are the input-side, unsupervised, multi-task-averaged counterparts to our output-side, label-aware, dataset-stratified pooled label fraction. We position against §4.3 Fig. 7 explicitly.
+2. **Kumar et al. 2022 — LP-FT (arXiv:2202.10054)** — theoretical anchor for the projection-vs-rewriting distinction. The Stress regime is the opposite failure mode from Kumar's distortion (backbone resists head pull); the TDBRAIN regime is closer to Kumar's distortion across folds.
+
+**Statistical methodology:**
+3. **Brookshire et al. 2024 — Data leakage in translational EEG (Frontiers Neuroscience)** — the definitive case for subject-level holdout and subject-level resampling.
+4. **Huang 2018 — Cluster bootstrap for nested data (Educational and Psychological Measurement)** — justifies cluster bootstrap over subjects in our CIs.
+5. **Anderson 2001 — PERMANOVA** — non-parametric robustness check on the parametric mixed-effects results.
+6. **100k models partitioning paper (2025)** — empirical backing for subject-level CV necessity.
+
+**Field context (FM benchmarks confirming failure on affect/clinical):**
+7. **AdaBrain-Bench (arXiv:2507.09882)** — emotion/stress failure across FMs.
+8. **Brain4FMs (arXiv:2602.11558)** — 15-model confirmation that FM failure on affect is universal.
+9. **Critical Review of EEG FMs (arXiv:2507.11783)** — frames the LP << FT gap as a representation-quality concern.
+
+**Datasets and reference baselines:**
+10. **Lin et al. 2025 (arXiv:2505.23042)** — UCSD stress dataset and the trial-level baseline we replicate then re-evaluate at subject level.
+11. **LEAD (arXiv:2502.01678)** — ADFTD baseline LaBraM number we anchor against (Table 2).
+12. **Wang et al. 2025 (LaBraM, arXiv:2405.18765)** — backbone architecture.
+
+**Neurophysiological ceiling (signal-level explanation, complement to representation-level diagnosis):**
+13. Neubauer & Fink 2009 — neural efficiency hypothesis.
+14. McEwen 2010 — allostatic load framework.
+15. Saeed et al. 2020 — DASS-based EEG stress, closest comparison.

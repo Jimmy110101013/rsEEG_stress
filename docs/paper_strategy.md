@@ -1,45 +1,68 @@
 # Paper Strategy & Reframing Notes
 
-**Date:** 2026-04-07
-**Status:** Active — start drafting in parallel with FiLM experiments
-**Companion docs:** `progress.md` (results), `related_work.md` (citations)
+**Date:** 2026-04-07 → reframed 2026-04-10
+**Status:** Active — claim locked on active erosion, awaiting advisor alignment
+**Companion docs:** `progress.md` (§4.6 for 2026-04-10 reclassification), `related_work.md` (citations)
 
-This document captures the strategic decisions about paper narrative, the
-honest reframing of our results, and the experimental directions still worth
-trying. Written as a snapshot so we don't lose the reasoning under deadline
-pressure.
+This document captures the strategic decisions about paper narrative. The
+original (2026-04-07) "method-independent ceiling" framing was superseded
+on 2026-04-10 after the Stress dataset was reclassified from representation
+no-op → behavioral erosion. This top section is rewritten; §3 onward is
+mostly original (2026-04-07 snapshot) with updated numbers where necessary.
 
 ---
 
-## 1. The Honest Reframe (read this first)
+## 1. The Honest Reframe (read this first — updated 2026-04-10)
 
-### What it feels like
-"Resting-state EEG can't predict stress. We failed."
+### What we thought (2026-04-07)
+"Resting-state stress has a modest ~0.66 BA ceiling, and classical features
+match FMs. The ceiling is method-independent — not a failure, just a
+characterization."
 
-### What the data actually says
-| Method | Subject-level BA (70-rec) | Above chance |
-|---|---|---|
-| Classical RF on band power | **0.666** | +0.166 |
-| Fine-tuned LaBraM | **0.656** | +0.156 |
-| Chance | 0.500 | — |
+### What the data actually says (after 2026-04-10)
 
-Two completely different methods (hand-crafted features and a 200M-param
-pretrained transformer) **converge to the same number above chance**. If the
-signal didn't exist, both would collapse to 0.5. They don't.
+The 0.656 LaBraM and 0.666 classical RF numbers were both computed under
+`--label subject-dass`, an OR-aggregation that turns the task into
+subject-identity broadcast. Under the honest per-recording DASS protocol
+(matches Lin et al. 2025), and with multi-seed (not single-seed) evaluation:
 
-→ **There IS a real cross-subject resting-state stress signature in our data.**
-It is small-to-moderate (~0.16 above chance with N=17 subjects), and it is
-saturated by classical features. The ceiling is **dataset-limited and
-framing-limited, not method-limited.**
+| Method | Subject BA (per-rec dass) | n seeds | Notes |
+|---|---|---|---|
+| Frozen LaBraM linear probe | **0.605 ± 0.030** | 8 | primary — beats FT |
+| LaBraM FT (canonical recipe) | **0.443 ± 0.068** | 3 | erosion |
+| LaBraM FT on shuffled labels (null) | 0.497 ± 0.081 | 10 perm | real FT ≈ null |
+| Chance | 0.500 | — | — |
 
-### The correct one-line summary
-> "There exists a modest cross-subject resting-state stress signal (~0.66 BA),
-> and both classical features and 200M-parameter foundation models converge to
-> it. The ceiling is method-independent under the binary cross-subject framing."
+The pretrained LaBraM representation has a stable, linearly-separable
+stress signal at 0.605 BA. Fine-tuning on the honest labels **destroys
+that signal**, dropping BA by 16.2 pp and producing results
+statistically indistinguishable from training on random labels
+(p(null ≥ real) = 0.70).
 
-This is **not a negative result** — it is a *characterization* of where the
-ceiling sits and why FMs cannot exceed it. That distinction matters for the
-paper, for our motivation, and for what experiments are still worth running.
+→ **The original "method-independent ceiling" framing is wrong.** The
+right framing is: the frozen pretrained representation already contains
+the signal, and fine-tuning under weak psychiatric labels actively
+degrades it. This is the *active erosion* mode — worse than "no-op",
+because the FT actually hurts.
+
+### The correct one-line summary (2026-04-10)
+> "On UCSD Stress, fine-tuning LaBraM does not merely fail to improve over
+> a frozen linear probe — it actively degrades the pretrained
+> representation's linearly-separable stress signal by 16 pp and reaches
+> performance statistically indistinguishable from training on randomly
+> shuffled labels. This is a consequence of the label's weak
+> correspondence to established EEG biomarkers, not of small sample size
+> (ADFTD at N=17 is an injection case)."
+
+This is a **much stronger** finding than the 2026-04-07 ceiling framing.
+Active erosion under weak labels is a specific, falsifiable claim about
+FM behavior, not a passive "we couldn't beat 0.66".
+
+### Evidence package
+Full numeric breakdown + reproducers at
+`results/studies/2026-04-10_stress_erosion/analysis.json`. Stale numbers
+(canonical 0.656, classical 0.666, subject-dass anything) are retained
+only as "what we thought before 2026-04-09" historical context.
 
 ---
 
@@ -68,9 +91,10 @@ paper, for our motivation, and for what experiments are still worth running.
 | §2 Related Work | Lock | docs/related_work.md (already exists) |
 | §3 Methods | Lock | — |
 | §4.1 Trial vs subject CV gap | Lock | progress.md §4.2 |
-| §4.2 Variance decomposition (η²) | Lock | progress.md §4.3, fm_diagnosis/ |
-| §4.3 Cross-dataset signal strength | Lock after TDBRAIN FT | cross_dataset/ notebook |
-| §4.4 Classical baseline parity | Lock | classical_subject-dass run |
+| §4.2 Variance decomposition (η²) | Re-run needed for Stress row (per-rec dass) | progress.md §4.3 + `results/archive/2026-04-05_fm_diagnosis/` (historical) |
+| §4.3 Cross-dataset signal strength | Lock (ADFTD/TDBRAIN/EEGMAT) | `results/studies/2026-04-09_cross_dataset_signal/` |
+| §4.4 Classical baseline parity | STALE — classical RF needs re-run under per-rec dass | `results/archive/2026-04-05_classical_baselines_subjectdass/` |
+| §4.6 Behavioral erosion on Stress (new) | Lock | `results/studies/2026-04-10_stress_erosion/` |
 | §4.5 Frozen vs FT η² shift | Lock | progress.md §4.4 |
 | §5.1 Failed mitigation: adversarial | Lock | progress.md §6 |
 | **§5.2 Spectral-guided FiLM** | **OPEN** | — pending |

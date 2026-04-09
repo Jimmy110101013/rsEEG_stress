@@ -4,6 +4,24 @@
 **Task**: Binary stress classification (increase vs normal) using subject-DASS labels  
 **Date**: April 2–5, 2026
 
+> ### ⚠️ Deprecated 2026-04-10 — historical reference only
+>
+> Every number in this document is a **single-seed** result under
+> **`--label subject-dass`**, which was reclassified as a trait-memorization
+> artifact on 2026-04-09. Canonical numbers (LaBraM FT 0.656, trial
+> LaBraM 0.862, classical RF 0.666) are not reproducible under the
+> honest per-recording DASS protocol and were further affected by
+> cuDNN non-determinism amplifying single-seed noise into ±10 pp
+> swings. Multi-seed Stress FT under per-rec DASS lands at
+> **0.443 ± 0.068** (erosion), and Frozen LP on the same features hits
+> **0.605 ± 0.030**. See:
+>
+> - `CLAUDE.md` headline finding (current state)
+> - `docs/progress.md` §4.6 (2026-04-10 reclassification writeup)
+> - `results/studies/2026-04-10_stress_erosion/analysis.json` (numbers)
+>
+> This file is kept for historical context — do not cite from it directly.
+
 ---
 
 ## 1. Models Evaluated
