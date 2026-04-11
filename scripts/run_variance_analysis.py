@@ -47,7 +47,7 @@ FT_LABRAM = f"{FEATURES_CACHE}/ft_labram"
 DATASETS = {
     "Stress": {
         "ft_dir": "results/studies/2026-04-11_stress_feat_multiseed/s42_llrd1.0",
-        "frozen": f"{FEATURES_CACHE}/frozen_labram_stress_19ch.npz",
+        "frozen": f"{FEATURES_CACHE}/frozen_labram_stress_30ch.npz",
         "drop_mixed_subjects": True,  # 3 mixed-label subjects under per-rec dass
     },
     "ADFTD": {

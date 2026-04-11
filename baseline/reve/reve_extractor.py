@@ -108,18 +108,27 @@ class ReveExtractor(BaseExtractor):
             groups.append(list(attn.parameters()) + list(ff.parameters()))
         return groups
 
+    def set_channels(self, channel_names: list[str]):
+        """Recompute channel_positions for a different channel montage.
+
+        Use this when the input has fewer channels than the default 30
+        (e.g. 19-channel datasets like ADFTD, TDBRAIN, EEGMAT).
+        """
+        pos_3d = self.pos_bank(channel_names)
+        self.channel_positions = pos_3d.to(self.channel_positions.device)
+
     def forward(self, x: Tensor) -> Tensor:
         """Extract features from EEG epochs.
 
         Args:
-            x: (B, C=30, T=2000) raw EEG signal
+            x: (B, C, T) raw EEG signal (C must match channel_positions)
 
         Returns:
             (B, embed_dim=512) feature vectors
         """
         B = x.shape[0]
 
-        # Expand cached positions to batch: (30, 3) → (B, 30, 3)
+        # Expand cached positions to batch: (C, 3) → (B, C, 3)
         pos = self.channel_positions.unsqueeze(0).expand(B, -1, -1)
 
         # Forward through REVE: (B, C, T) + (B, C, 3) → (B, C, n_patches, E)

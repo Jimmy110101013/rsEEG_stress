@@ -1,6 +1,6 @@
 """Multi-seed frozen linear probe on Stress per-recording DASS labels.
 
-Loads frozen features from `results/features_cache/frozen_{model}_stress_19ch.npz`,
+Loads frozen features from `results/features_cache/frozen_{model}_stress_30ch.npz`,
 pairs them with per-recording Group column from `data/comprehensive_labels.csv`,
 and runs subject-level StratifiedGroupKFold(5) logistic regression across
 multiple seeds.
@@ -51,7 +51,7 @@ def main() -> None:
     args = parser.parse_args()
 
     model = args.extractor
-    features_npz = f"results/features_cache/frozen_{model}_stress_19ch.npz"
+    features_npz = f"results/features_cache/frozen_{model}_stress_30ch.npz"
     out_path = Path(f"results/studies/2026-04-10_stress_erosion/frozen_lp/{model}_multi_seed.json")
 
     F = np.load(features_npz)["features"]
