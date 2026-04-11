@@ -85,7 +85,7 @@ class RevePositionBank(nn.Module):
             # The embedding tensor key varies — find it
             for key, tensor in state.items():
                 if tensor.ndim == 2 and tensor.shape[1] == 3:
-                    self.embedding = tensor
+                    self.embedding.data = tensor
                     break
 
         self.mapping = {name.upper(): i for i, name in enumerate(self.position_names)}
@@ -100,7 +100,7 @@ class RevePositionBank(nn.Module):
                 coords.append(CHANNEL_COORDS_30[ch_upper])
             else:
                 coords.append((0.0, 0.0, 0.0))
-        self.embedding = torch.tensor(coords, dtype=torch.float32)
+        self.embedding.data = torch.tensor(coords, dtype=torch.float32)
         self.position_names = [ch.upper() for ch in channel_names]
         self.mapping = {name: i for i, name in enumerate(self.position_names)}
         print(f"[PosBank] Fallback: using hardcoded 10-20 coords for {len(channel_names)} channels")

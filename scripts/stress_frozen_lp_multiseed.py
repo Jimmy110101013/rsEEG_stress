@@ -1,18 +1,19 @@
 """Multi-seed frozen linear probe on Stress per-recording DASS labels.
 
-Loads `results/features_cache/frozen_labram_stress_19ch.npz` (cached
-mean-pooled LaBraM features extracted with no fine-tuning), pairs them with
-the per-recording Group column from `data/comprehensive_labels.csv`, and
-runs subject-level StratifiedGroupKFold(5) logistic regression across
-multiple seeds. Writes results to
-`results/studies/2026-04-10_stress_erosion/frozen_lp/multi_seed.json`.
+Loads frozen features from `results/features_cache/frozen_{model}_stress_19ch.npz`,
+pairs them with per-recording Group column from `data/comprehensive_labels.csv`,
+and runs subject-level StratifiedGroupKFold(5) logistic regression across
+multiple seeds.
 
 Run from project root:
-    /raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python \
-        scripts/stress_frozen_lp_multiseed.py
+    PY=/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python
+    $PY scripts/stress_frozen_lp_multiseed.py                    # default: labram
+    $PY scripts/stress_frozen_lp_multiseed.py --extractor cbramod
+    $PY scripts/stress_frozen_lp_multiseed.py --extractor reve
 """
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -26,9 +27,7 @@ from sklearn.preprocessing import StandardScaler
 
 
 SEEDS = [42, 123, 2024, 7, 0, 1, 99, 31337]
-FEATURES_NPZ = "results/features_cache/frozen_labram_stress_19ch.npz"
 LABELS_CSV = "data/comprehensive_labels.csv"
-OUT_PATH = Path("results/studies/2026-04-10_stress_erosion/frozen_lp/multi_seed.json")
 
 
 def eval_seed(F: np.ndarray, labels: np.ndarray, pids: np.ndarray, seed: int) -> float:
@@ -46,7 +45,16 @@ def eval_seed(F: np.ndarray, labels: np.ndarray, pids: np.ndarray, seed: int) ->
 
 
 def main() -> None:
-    F = np.load(FEATURES_NPZ)["features"]  # (70, 200)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--extractor", default="labram",
+                        choices=["labram", "cbramod", "reve"])
+    args = parser.parse_args()
+
+    model = args.extractor
+    features_npz = f"results/features_cache/frozen_{model}_stress_19ch.npz"
+    out_path = Path(f"results/studies/2026-04-10_stress_erosion/frozen_lp/{model}_multi_seed.json")
+
+    F = np.load(features_npz)["features"]
     csv = pd.read_csv(LABELS_CSV)
     assert len(csv) == F.shape[0], f"row count mismatch: csv={len(csv)} feat={F.shape[0]}"
 
@@ -57,12 +65,14 @@ def main() -> None:
     vals = np.array(list(per_seed.values()))
 
     out = {
-        "source_features": FEATURES_NPZ,
+        "extractor": model,
+        "source_features": features_npz,
         "labels_source": f"{LABELS_CSV} Group column (per-recording DASS class)",
-        "protocol": "Subject-level StratifiedGroupKFold(5), LogisticRegression "
-                    "(C=1.0, class_weight=balanced) on StandardScaler-normed "
-                    "200-d LaBraM features.",
+        "protocol": f"Subject-level StratifiedGroupKFold(5), LogisticRegression "
+                    f"(C=1.0, class_weight=balanced) on StandardScaler-normed "
+                    f"{F.shape[1]}-d {model} features.",
         "n_recordings": int(F.shape[0]),
+        "embed_dim": int(F.shape[1]),
         "n_subjects": int(len(np.unique(pids))),
         "n_positive": int(labels.sum()),
         "n_negative": int((1 - labels).sum()),
@@ -76,13 +86,14 @@ def main() -> None:
         "max": float(vals.max()),
     }
 
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT_PATH, "w") as f:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w") as f:
         json.dump(out, f, indent=2)
 
-    print(f"→ {OUT_PATH}")
-    print(f"8-seed mean={out['mean_8seed']:.4f} std={out['std_8seed']:.4f}")
-    print(f"3-seed mean={out['mean_3seed_42_123_2024']:.4f} "
+    print(f"→ {out_path}")
+    print(f"{model} frozen LP ({F.shape[1]}-d)")
+    print(f"  8-seed mean={out['mean_8seed']:.4f} std={out['std_8seed']:.4f}")
+    print(f"  3-seed mean={out['mean_3seed_42_123_2024']:.4f} "
           f"std={out['std_3seed_42_123_2024']:.4f}")
 
 

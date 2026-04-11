@@ -1,8 +1,8 @@
 """Regression and sanity tests for src/variance_analysis.py.
 
 Run from project root:
-    conda run -n timm_eeg python tests/test_variance_analysis.py        # numpy-only tests
-    conda run -n stats_env python tests/test_variance_analysis.py       # full suite incl. mixed-effects
+    conda run -n timm_eeg python tests/test_variance_analysis.py                                 # numpy-only tests
+    /raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python tests/test_variance_analysis.py  # full suite incl. mixed-effects
 
 The tests are split into three groups:
 1. Synthetic regression: nested_ss recovers known variance components.
@@ -166,7 +166,7 @@ def test_legacy_reproduction_on_cached_features():
     label and within-label-between-subject variance together."""
     print("\n=== Test 4: legacy η² reproduction from nested SS ===")
     cache_path = "results/cross_dataset/features_stress_19ch.npz"
-    ft_run = "results/20260406_0419_ft_subjectdass_aug75_labram_feat"
+    ft_run = "results/feat_extract/20260406_0419_ft_subjectdass_aug75_labram_feat"
     if not (os.path.isfile(cache_path) and os.path.isdir(ft_run)):
         print(f"  SKIP: {cache_path} or {ft_run} missing")
         return
@@ -259,11 +259,11 @@ def test_permanova_signal_detected():
 
 
 # ----------------------------------------------------------------------
-# 4. Mixed-effects (only runs in stats_env)
+# 4. Mixed-effects (only runs in stress env)
 # ----------------------------------------------------------------------
 def test_mixed_effects_runs():
     """Mixed-effects model recovers ICC close to ground truth."""
-    print("\n=== Test 8: mixed_effects_variance ICC recovery (stats_env only) ===")
+    print("\n=== Test 8: mixed_effects_variance ICC recovery (stress env only) ===")
     f, s, y = make_synthetic(
         n_subj_per_label=10, n_rec_per_subj=6, n_dims=20,
         label_offset=2.0, sigma_subject=1.0, sigma_residual=0.5, seed=7

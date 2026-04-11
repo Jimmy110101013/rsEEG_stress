@@ -40,12 +40,16 @@ RESULTS = "results"
 FEATURES_CACHE = f"{RESULTS}/features_cache"
 FT_LABRAM = f"{FEATURES_CACHE}/ft_labram"
 
-# NOTE: The Stress row was removed on 2026-04-09 after its source FT
-# feature run (20260406_0419_..._labram_feat) was archived as a
-# trait-memorization artifact under --label subject-dass. Re-run with
-# --label dass + --save-features to produce a replacement, then add
-# "Stress" back to this DATASETS dict with the new ft_dir.
+# Stress per-rec dass: 3/17 subjects (pid 3, 11, 17) have recordings in
+# both DASS classes (increase + normal). nested_ss requires pure-label
+# subjects, so we drop these 3 (15 recordings), leaving 55 rec / 14 subj.
+# The pooled label fraction is computed on the pure subset only.
 DATASETS = {
+    "Stress": {
+        "ft_dir": "results/studies/2026-04-11_stress_feat_multiseed/s42_llrd1.0",
+        "frozen": f"{FEATURES_CACHE}/frozen_labram_stress_19ch.npz",
+        "drop_mixed_subjects": True,  # 3 mixed-label subjects under per-rec dass
+    },
     "ADFTD": {
         "ft_dir": f"{FT_LABRAM}/adftd_2026-04-06",
         "frozen": f"{FEATURES_CACHE}/frozen_labram_adftd_19ch.npz",
@@ -284,6 +288,29 @@ def main():
         frozen = va.load_frozen_features(cfg["frozen"], cfg["ft_dir"])
         print(f"  frozen: feats={frozen[0].shape} "
               f"subjects={len(set(frozen[2].tolist()))}")
+
+        # Drop mixed-label subjects if flagged (e.g. Stress per-rec dass
+        # has 3 subjects with recordings in both classes).
+        if cfg.get("drop_mixed_subjects", False):
+            def _find_mixed(pids, labs):
+                mixed = set()
+                for p in np.unique(pids):
+                    if len(np.unique(labs[pids == p])) > 1:
+                        mixed.add(p)
+                return mixed
+
+            mixed_pids = _find_mixed(frozen[2], frozen[1])
+            if mixed_pids:
+                print(f"  Dropping {len(mixed_pids)} mixed-label subjects: {sorted(mixed_pids)}")
+                keep_fz = np.array([p not in mixed_pids for p in frozen[2]])
+                frozen = (frozen[0][keep_fz], frozen[1][keep_fz], frozen[2][keep_fz])
+                new_ft = []
+                for f, y, p_ in ft_per_fold:
+                    keep = np.array([p not in mixed_pids for p in p_])
+                    new_ft.append((f[keep], y[keep], p_[keep]))
+                ft_per_fold = new_ft
+                print(f"  After drop: frozen {frozen[0].shape[0]} rec, "
+                      f"FT {sum(t[0].shape[0] for t in ft_per_fold)} rec (pooled)")
 
         # Note: nested_ss expects (features, subject, label).
         # load_*_features returns (features, labels, pids).

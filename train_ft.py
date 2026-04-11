@@ -456,7 +456,7 @@ def train_one_fold(
             encoder_unfrozen = True
             # Add encoder params to existing optimizer (preserves head momentum)
             new_params = [p for n, p in model.named_parameters()
-                          if p.requires_grad and "head_cls" not in n and "head_reg" not in n]
+                          if p.requires_grad and "head_cls" not in n and "head_reg" not in n and "head_subj" not in n]
             optimizer.add_param_group({
                 "params": new_params,
                 "lr": args.lr * args.encoder_lr_scale,
@@ -1054,6 +1054,12 @@ def seed_everything(seed: int):
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+    # cuDNN determinism — needed for reproducible BA on the 70-recording
+    # Stress regime, where non-deterministic conv kernels produce +/-10 pp
+    # BA swings at identical HP+seed. See studies/2026-04-10_stress_erosion/
+    # ft_drift_check/ for the 0.656 -> 0.450 evidence.
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 
 def main():

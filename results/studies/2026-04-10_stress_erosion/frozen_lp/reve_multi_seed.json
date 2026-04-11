@@ -1,0 +1,37 @@
+{
+  "extractor": "reve",
+  "source_features": "results/features_cache/frozen_reve_stress_19ch.npz",
+  "labels_source": "data/comprehensive_labels.csv Group column (per-recording DASS class)",
+  "protocol": "Subject-level StratifiedGroupKFold(5), LogisticRegression (C=1.0, class_weight=balanced) on StandardScaler-normed 512-d reve features.",
+  "n_recordings": 70,
+  "embed_dim": 512,
+  "n_subjects": 17,
+  "n_positive": 14,
+  "n_negative": 56,
+  "seeds": [
+    42,
+    123,
+    2024,
+    7,
+    0,
+    1,
+    99,
+    31337
+  ],
+  "per_seed_ba": {
+    "42": 0.5089285714285714,
+    "123": 0.4821428571428571,
+    "2024": 0.5,
+    "7": 0.4821428571428571,
+    "0": 0.4642857142857143,
+    "1": 0.4910714285714286,
+    "99": 0.5178571428571428,
+    "31337": 0.5089285714285714
+  },
+  "mean_8seed": 0.49441964285714285,
+  "std_8seed": 0.016666500583781326,
+  "mean_3seed_42_123_2024": 0.4970238095238095,
+  "std_3seed_42_123_2024": 0.011135885079684358,
+  "min": 0.4642857142857143,
+  "max": 0.5178571428571428
+}

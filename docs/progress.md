@@ -542,6 +542,43 @@ projection-shaped, not representation-shaped.
    - Need to verify: multiple recordings per subject? Channel montage?
 2. **TUAB consideration**: Not resting-state (clinical routine with HV/photic). Dropped from comparison. Could use as "clinical EEG" reference if needed.
 
+### §4.7 Multi-model HP sweep on Stress (2026-04-11)
+
+Comprehensive hyperparameter sweep across **3 FMs** (LaBraM, CBraMod, REVE) on
+UCSD Stress with per-recording DASS labels. Grid: 3 learning rates (1e-5, 3e-5,
+1e-4) × 2 encoder LR scales (0.1, 1.0) × 3 seeds (42, 123, 2024) = 18 runs per
+model, 54 total. All runs completed.
+
+**Results — Frozen LP vs Best FT:**
+
+| Model | Frozen LP (8-seed) | Best FT (3-seed) | Best FT config | Δ |
+|---|---|---|---|---|
+| LaBraM | 0.605 ± 0.030 | 0.524 ± 0.008 | lr=1e-4, elrs=1.0 | −8.1 pp (erosion) |
+| CBraMod | 0.452 ± 0.030 | 0.548 ± 0.026 | lr=1e-5, elrs=0.1 | +8.3 pp (injection) |
+| REVE | 0.494 ± 0.017 | 0.577 ± 0.041 | lr=3e-5, elrs=0.1 | +8.0 pp (injection) |
+
+**Key finding:** Erosion on Stress is **LaBraM-specific**. CBraMod and REVE show
+injection (FT improves over frozen). This refutes the earlier hypothesis that
+"erosion isn't LaBraM-specific" (CLAUDE.md §4 priority 3). The pattern suggests
+erosion requires a strong frozen representation — LaBraM's 0.605 frozen BA is
+much higher than CBraMod's 0.452 or REVE's 0.494.
+
+**Implications for cross-dataset taxonomy:** The ADFTD/TDBRAIN/EEGMAT modes were
+established with LaBraM only. Whether CBraMod/REVE show the same modes on those
+datasets is an open question. The claim "FT mode is driven by label–biomarker
+strength" is supported by cross-dataset LaBraM evidence, but cross-model evidence
+currently only covers Stress.
+
+**Note on LaBraM erosion magnitude:** The canonical recipe (lr=1e-5, elrs=0.1)
+produces 0.443 ± 0.068 (−16.2 pp gap). The best HP config (lr=1e-4, elrs=1.0)
+produces 0.524 ± 0.008 (−8.1 pp gap). Both are erosion, but the magnitude
+depends on HP. The permutation null comparison (real FT ≈ null) was done with
+the canonical recipe only.
+
+**EEGMAT 3-seed study:** LaBraM FT on EEGMAT: BA = 0.731 ± 0.017 (seeds 42,
+123, 2024). Features saved for variance analysis at
+`results/studies/2026-04-10_eegmat_feat_multiseed/`.
+
 ### Paper preparation
 3. Figures done: `cross_dataset_signal_strength.pdf` (pooled label
    fraction) and `label_subspace.pdf` (3×3 diagnostic + t-SNE).

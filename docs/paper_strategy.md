@@ -1,7 +1,7 @@
 # Paper Strategy & Reframing Notes
 
-**Date:** 2026-04-07 → reframed 2026-04-10
-**Status:** Active — claim locked on active erosion, awaiting advisor alignment
+**Date:** 2026-04-07 → reframed 2026-04-10 → updated 2026-04-11
+**Status:** Active — multi-model HP sweep completed, narrative updated
 **Companion docs:** `progress.md` (§4.6 for 2026-04-10 reclassification), `related_work.md` (citations)
 
 This document captures the strategic decisions about paper narrative. The
@@ -19,50 +19,51 @@ mostly original (2026-04-07 snapshot) with updated numbers where necessary.
 match FMs. The ceiling is method-independent — not a failure, just a
 characterization."
 
-### What the data actually says (after 2026-04-10)
+### What the data actually says (after 2026-04-11 HP sweep)
 
 The 0.656 LaBraM and 0.666 classical RF numbers were both computed under
 `--label subject-dass`, an OR-aggregation that turns the task into
 subject-identity broadcast. Under the honest per-recording DASS protocol
-(matches Lin et al. 2025), and with multi-seed (not single-seed) evaluation:
+(matches Lin et al. 2025), multi-seed evaluation, and **comprehensive HP
+sweep across 3 FMs** (3 learning rates × 2 encoder LR scales × 3 seeds =
+54 total runs):
 
-| Method | Subject BA (per-rec dass) | n seeds | Notes |
-|---|---|---|---|
-| Frozen LaBraM linear probe | **0.605 ± 0.030** | 8 | primary — beats FT |
-| LaBraM FT (canonical recipe) | **0.443 ± 0.068** | 3 | erosion |
-| LaBraM FT on shuffled labels (null) | 0.497 ± 0.081 | 10 perm | real FT ≈ null |
-| Chance | 0.500 | — | — |
+| Model | Frozen LP (8-seed) | Best FT (3-seed) | Δ | Mode |
+|---|---|---|---|---|
+| **LaBraM** | **0.605 ± 0.030** | 0.524 ± 0.008 | **−8.1 pp** | erosion |
+| **CBraMod** | 0.452 ± 0.030 | **0.548 ± 0.026** | **+8.3 pp** | injection |
+| **REVE** | 0.494 ± 0.017 | **0.577 ± 0.041** | **+8.0 pp** | injection |
 
-The pretrained LaBraM representation has a stable, linearly-separable
-stress signal at 0.605 BA. Fine-tuning on the honest labels **destroys
-that signal**, dropping BA by 16.2 pp and producing results
-statistically indistinguishable from training on random labels
-(p(null ≥ real) = 0.70).
+LaBraM canonical recipe (lr=1e-5, elrs=0.1): 0.443 ± 0.068 (3 seeds),
+erosion gap is 16.2 pp. With best HP (lr=1e-4, elrs=1.0), gap narrows
+to 8.1 pp — still erosion, but less dramatic.
 
-→ **The original "method-independent ceiling" framing is wrong.** The
-right framing is: the frozen pretrained representation already contains
-the signal, and fine-tuning under weak psychiatric labels actively
-degrades it. This is the *active erosion* mode — worse than "no-op",
-because the FT actually hurts.
+→ **Erosion is LaBraM-specific on Stress, not model-universal.** LaBraM's
+frozen representation is strong (0.605); FT degrades it. CBraMod and REVE
+have weaker frozen representations (0.452, 0.494); FT improves them.
+This suggests erosion occurs when the frozen representation already
+captures the signal well — FT on weak labels then overwrites it.
 
-### The correct one-line summary (2026-04-10)
-> "On UCSD Stress, fine-tuning LaBraM does not merely fail to improve over
-> a frozen linear probe — it actively degrades the pretrained
-> representation's linearly-separable stress signal by 16 pp and reaches
-> performance statistically indistinguishable from training on randomly
-> shuffled labels. This is a consequence of the label's weak
-> correspondence to established EEG biomarkers, not of small sample size
-> (ADFTD at N=17 is an injection case)."
+**Important caveat:** The cross-dataset taxonomy (ADFTD=injection,
+TDBRAIN=erosion, EEGMAT=mild injection) was tested with **LaBraM only**.
+We do not yet know if CBraMod/REVE would show the same pattern on those
+datasets. The claim "FT mode is driven by label–biomarker strength" is
+supported by cross-dataset LaBraM evidence but the cross-model evidence
+currently only covers Stress.
 
-This is a **much stronger** finding than the 2026-04-07 ceiling framing.
-Active erosion under weak labels is a specific, falsifiable claim about
-FM behavior, not a passive "we couldn't beat 0.66".
+### The correct one-line summary (2026-04-11)
+> "On UCSD Stress, LaBraM fine-tuning degrades a strong frozen
+> representation by 8–16 pp (depending on HP), while CBraMod/REVE
+> fine-tuning improves weaker frozen representations by ~8 pp. Erosion
+> is conditional on frozen representation quality, not universal across
+> FM architectures."
 
 ### Evidence package
-Full numeric breakdown + reproducers at
-`results/studies/2026-04-10_stress_erosion/analysis.json`. Stale numbers
-(canonical 0.656, classical 0.666, subject-dass anything) are retained
-only as "what we thought before 2026-04-09" historical context.
+- HP sweep: `results/hp_sweep/20260410_dass/` (54 runs, 3 models)
+- LaBraM erosion analysis: `results/studies/2026-04-10_stress_erosion/analysis.json`
+- Frozen LP multi-seed: `results/studies/2026-04-10_stress_erosion/frozen_lp/{labram,cbramod,reve}_multi_seed.json`
+- Stale numbers (canonical 0.656, classical 0.666, subject-dass anything)
+  are retained only as "what we thought before 2026-04-09" historical context.
 
 ---
 

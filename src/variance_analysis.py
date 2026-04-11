@@ -41,9 +41,9 @@ contains label SS by construction. We therefore use:
 
 This module is numpy-only at top level — safe to import from `timm_eeg`
 notebooks. `mixed_effects_variance` lazy-imports `statsmodels`, which is
-broken in `timm_eeg` (scipy ABI issue) — call it only from `stats_env`.
+broken in `timm_eeg` (scipy ABI issue) — call it only from `stress`.
 The CLI `scripts/run_variance_analysis.py` should be invoked via
-`conda run -n stats_env python scripts/run_variance_analysis.py`.
+`/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python scripts/run_variance_analysis.py`.
 
 # Reviewer-defensible quantities
 
@@ -324,7 +324,7 @@ def omega_squared_from_ss(ss: dict) -> dict[str, float]:
 
 
 # ----------------------------------------------------------------------
-# Mixed-effects model (statsmodels — must run in stats_env)
+# Mixed-effects model (statsmodels — must run in stress env)
 # ----------------------------------------------------------------------
 def mixed_effects_variance(
     features: np.ndarray,
@@ -359,7 +359,7 @@ def mixed_effects_variance(
     except Exception as exc:  # pragma: no cover
         return {
             "error": f"statsmodels unavailable ({type(exc).__name__}: {exc}). "
-            "Run from stats_env: conda run -n stats_env python ..."
+            "Run from stress env: /raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python ..."
         }
 
     f = np.asarray(features, dtype=np.float64)
@@ -665,6 +665,242 @@ def subsample_matched(
         chosen = np.array(chosen)
         mask = np.isin(s, chosen)
         out.append((f[mask], s[mask], y[mask]))
+    return out
+
+
+def _pooled_label_fraction(ss: dict) -> float:
+    """SS_label / SS_total summed over feature dims (pooled, not per-dim avg)."""
+    return float(ss["label"].sum() / max(ss["total"].sum(), 1e-18))
+
+
+def permute_labels_by_subject(
+    subject: np.ndarray,
+    label: np.ndarray,
+    seed: int = 0,
+) -> np.ndarray:
+    """Shuffle label assignments at the subject level (keeps pure-label).
+
+    Returns a new label array of the same shape as ``label`` in which each
+    recording's label is replaced by the permuted label of its subject.
+    This preserves the within-subject label structure (every recording of
+    a given subject still shares the same label) and the overall class
+    sizes — only the subject→label assignment is randomized.
+
+    Use this as a null for the matched-subsample analysis: under the null
+    hypothesis, any FT−frozen delta should collapse to ~0.
+    """
+    s = np.asarray(subject)
+    y = np.asarray(label)
+    # Build subject → label map in encounter order for determinism.
+    seen = []
+    pid_to_label = {}
+    for pid, lab in zip(s, y):
+        if pid not in pid_to_label:
+            seen.append(pid)
+            pid_to_label[pid] = lab
+    subjects = np.array(seen)
+    labels_ordered = np.array([pid_to_label[p] for p in subjects])
+
+    rng = np.random.RandomState(seed)
+    perm = rng.permutation(len(subjects))
+    new_pid_to_label = {
+        sid: labels_ordered[perm[i]] for i, sid in enumerate(subjects)
+    }
+    return np.array([new_pid_to_label[p] for p in s], dtype=y.dtype)
+
+
+def _pick_subjects_per_label(
+    pid_to_label: dict,
+    n_per_label: dict,
+    rng: np.random.RandomState,
+) -> np.ndarray:
+    """Sample subject IDs without replacement, label-stratified."""
+    unique_subj = np.array(list(pid_to_label.keys()))
+    subj_label = np.array([pid_to_label[sid] for sid in unique_subj])
+    chosen = []
+    for lab, n_take in n_per_label.items():
+        pool = unique_subj[subj_label == lab]
+        if len(pool) < n_take:
+            raise ValueError(
+                f"Label {lab} has only {len(pool)} subjects, need {n_take}"
+            )
+        picked = rng.choice(pool, size=n_take, replace=False)
+        chosen.extend(picked.tolist())
+    return np.array(chosen)
+
+
+def analyze_matched_subsample(
+    frozen: tuple[np.ndarray, np.ndarray, np.ndarray],
+    ft_pooled: tuple[np.ndarray, np.ndarray, np.ndarray],
+    n_per_label: dict,
+    n_draws: int = 100,
+    seed: int = 42,
+) -> dict:
+    """Paired frozen-vs-FT pooled label fraction under matched subsampling.
+
+    For each of `n_draws` draws:
+      1. Pick a label-stratified set of subjects (without replacement) matching
+         `n_per_label`.
+      2. Apply the resulting *subject-ID* mask to BOTH frozen and FT-pooled
+         feature matrices (paired design — the same subjects are held fixed
+         across the two regimes, so the frozen-vs-FT delta has no
+         draw-to-draw subject sampling noise in it).
+      3. Compute the pooled label fraction (SS_label / SS_total summed over
+         feature dims) on each subset, and store the paired delta.
+
+    The FT path collapses the CV-fold structure to one matrix (concat across
+    folds) before subsampling — we are measuring the *representation*
+    property, matching the canonical `ft_pooled` regime in `analyze_dataset`.
+
+    Parameters
+    ----------
+    frozen : (features, subject_ids, labels)
+        Frozen-FM features, one row per recording.
+    ft_pooled : (features, subject_ids, labels)
+        Fine-tuned features, concatenated across all CV folds. Must cover
+        the same subject set as `frozen`.
+    n_per_label : dict[int, int]
+        e.g. ``{0: 8, 1: 9}`` for 17 total with ADFTD's own class ratio.
+    n_draws : int, default 100
+        Number of random draws. Variance of the aggregated mean scales as
+        1/sqrt(n_draws); 100 is a good balance of stability vs runtime.
+    seed : int, default 42
+
+    Returns dict with:
+      - ``config``: n_per_label, n_draws, seed, total_subjects
+      - ``per_draw``: arrays (n_draws,) of frozen_plf, ft_plf, delta
+      - ``per_draw_subjects``: list of chosen-subject ID arrays
+      - ``pooled_label_fraction_frozen``: {mean, std, median, ci_low, ci_high}
+      - ``pooled_label_fraction_ft``: same
+      - ``delta_pooled_label_fraction``: same + ``frac_positive`` (one-sided
+        sign-test statistic: fraction of draws with FT > frozen)
+      - ``identifiable_draws``: how many draws satisfied
+        ``nested_decomposition_is_identifiable`` (should be all of them if
+        ``n_per_label`` has >= 2 per class)
+    """
+    f_fz, s_fz, y_fz = frozen
+    f_ft, s_ft, y_ft = ft_pooled
+    f_fz = np.asarray(f_fz, dtype=np.float64)
+    f_ft = np.asarray(f_ft, dtype=np.float64)
+    s_fz = np.asarray(s_fz)
+    s_ft = np.asarray(s_ft)
+    y_fz = np.asarray(y_fz)
+    y_ft = np.asarray(y_ft)
+
+    # Build a pid->label map. Use the intersection of subject sets so the
+    # same subjects can be drawn from both regimes.
+    pid_to_label_fz: dict = {}
+    for pid, lab in zip(s_fz, y_fz):
+        pid_to_label_fz[pid] = lab
+    pid_to_label_ft: dict = {}
+    for pid, lab in zip(s_ft, y_ft):
+        pid_to_label_ft[pid] = lab
+
+    common = set(pid_to_label_fz.keys()) & set(pid_to_label_ft.keys())
+    if not common:
+        raise ValueError("frozen and FT share zero subjects — cannot pair")
+    # Sanity: labels should agree for shared subjects.
+    for pid in common:
+        if pid_to_label_fz[pid] != pid_to_label_ft[pid]:
+            raise ValueError(
+                f"Subject {pid} has different labels in frozen vs FT "
+                f"({pid_to_label_fz[pid]} vs {pid_to_label_ft[pid]})"
+            )
+    pid_to_label = {pid: pid_to_label_fz[pid] for pid in common}
+
+    # Assert we can actually draw the requested counts.
+    from collections import Counter
+    pool_counts = Counter(pid_to_label.values())
+    for lab, n_take in n_per_label.items():
+        if pool_counts.get(lab, 0) < n_take:
+            raise ValueError(
+                f"Label {lab} has {pool_counts.get(lab, 0)} shared subjects, "
+                f"need {n_take}"
+            )
+
+    master = np.random.RandomState(seed)
+
+    frozen_plf = np.zeros(n_draws)
+    ft_plf = np.zeros(n_draws)
+    frozen_omega2_label = np.zeros(n_draws)
+    ft_omega2_label = np.zeros(n_draws)
+    chosen_per_draw = []
+    n_identifiable = 0
+
+    for d in range(n_draws):
+        rng = np.random.RandomState(master.randint(0, 2**31 - 1))
+        chosen = _pick_subjects_per_label(pid_to_label, n_per_label, rng)
+        chosen_per_draw.append(chosen.tolist())
+
+        mask_fz = np.isin(s_fz, chosen)
+        mask_ft = np.isin(s_ft, chosen)
+
+        ss_fz = nested_ss(f_fz[mask_fz], s_fz[mask_fz], y_fz[mask_fz])
+        ss_ft = nested_ss(f_ft[mask_ft], s_ft[mask_ft], y_ft[mask_ft])
+
+        frozen_plf[d] = _pooled_label_fraction(ss_fz)
+        ft_plf[d] = _pooled_label_fraction(ss_ft)
+
+        # Also compute the df-corrected ω²_label (per-dim averaged scalar)
+        # for cross-reference with the legacy notebook metric.
+        omega_fz = omega_squared_from_ss(ss_fz)
+        omega_ft = omega_squared_from_ss(ss_ft)
+        frozen_omega2_label[d] = omega_fz["omega2_label"]
+        ft_omega2_label[d] = omega_ft["omega2_label"]
+
+        # Identifiability (informational — with >= 2 per class in n_per_label
+        # this should always be True).
+        ident, _ = nested_decomposition_is_identifiable(
+            s_fz[mask_fz], y_fz[mask_fz]
+        )
+        if ident:
+            n_identifiable += 1
+
+    delta_plf = ft_plf - frozen_plf
+    delta_omega2 = ft_omega2_label - frozen_omega2_label
+
+    def _agg(arr: np.ndarray) -> dict:
+        return {
+            "mean": float(arr.mean()),
+            "std": float(arr.std(ddof=1)) if len(arr) >= 2 else 0.0,
+            "median": float(np.median(arr)),
+            "ci_low": float(np.percentile(arr, 2.5)),
+            "ci_high": float(np.percentile(arr, 97.5)),
+        }
+
+    out = {
+        "config": {
+            "n_per_label": {int(k): int(v) for k, v in n_per_label.items()},
+            "n_draws": int(n_draws),
+            "seed": int(seed),
+            "total_subjects_per_draw": int(sum(n_per_label.values())),
+            "pool_subjects_per_label": {
+                int(k): int(v) for k, v in pool_counts.items()
+            },
+        },
+        "per_draw": {
+            "frozen_pooled_label_fraction": frozen_plf.tolist(),
+            "ft_pooled_label_fraction": ft_plf.tolist(),
+            "delta_pooled_label_fraction": delta_plf.tolist(),
+            "frozen_omega2_label": frozen_omega2_label.tolist(),
+            "ft_omega2_label": ft_omega2_label.tolist(),
+            "delta_omega2_label": delta_omega2.tolist(),
+        },
+        "per_draw_subjects": chosen_per_draw,
+        "pooled_label_fraction_frozen": _agg(frozen_plf),
+        "pooled_label_fraction_ft": _agg(ft_plf),
+        "delta_pooled_label_fraction": {
+            **_agg(delta_plf),
+            "frac_positive": float((delta_plf > 0).mean()),
+        },
+        "omega2_label_frozen": _agg(frozen_omega2_label),
+        "omega2_label_ft": _agg(ft_omega2_label),
+        "delta_omega2_label": {
+            **_agg(delta_omega2),
+            "frac_positive": float((delta_omega2 > 0).mean()),
+        },
+        "identifiable_draws": int(n_identifiable),
+    }
     return out
 
 

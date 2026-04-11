@@ -2,19 +2,19 @@
 
 Reads precomputed variance-decomposition results from
 `paper/figures/variance_analysis.json` (produced by
-`scripts/run_variance_analysis.py` under stats_env) and produces a 2-panel
-figure: (a) recording-level BA per dataset; (b) per-fold ω²_subject|label
-ratio for both frozen and fine-tuned features, with error bars from per-fold
-spread.
+`scripts/run_variance_analysis.py` under the `stress` env) and produces
+a 2-panel figure: (a) recording-level BA per dataset; (b) per-fold
+ω²_subject|label ratio for both frozen and fine-tuned features, with
+error bars from per-fold spread.
 
 This script no longer recomputes any statistics — it is figure rendering
 only. All math lives in `src/variance_analysis.py`.
 
 Run from project root:
-    conda run -n timm_eeg python scripts/build_cross_dataset_figure.py
+    /raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python scripts/build_cross_dataset_figure.py
 
 If `variance_analysis.json` is missing, run:
-    conda run -n stats_env python scripts/run_variance_analysis.py
+    /raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python scripts/run_variance_analysis.py
 """
 from __future__ import annotations
 
@@ -26,9 +26,34 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 JSON_PATH = "paper/figures/variance_analysis.json"
+EEGMAT_JSON_PATH = "paper/figures/variance_analysis_eegmat.json"
 OUT_PDF = "paper/figures/cross_dataset_signal_strength.pdf"
 OUT_PNG = "paper/figures/cross_dataset_signal_strength.png"
-DATASET_ORDER = ["Stress", "TDBRAIN", "ADFTD"]
+# Ordered by n_recordings (the dataset-size-dependent taxonomy axis).
+# EEGMAT is the within-subject positive control — starred in the figure.
+DATASET_ORDER = ["Stress", "EEGMAT", "ADFTD", "TDBRAIN"]
+WITHIN_SUBJECT = {"EEGMAT"}
+
+
+def _load_eegmat(path: str) -> dict | None:
+    """Load EEGMAT within-subject analysis and normalize to the main row schema."""
+    if not os.path.isfile(path):
+        print(f"  [skip] EEGMAT JSON missing: {path}")
+        return None
+    with open(path) as fh:
+        e = json.load(fh)
+    fz = e["frozen"]
+    ft = e["ft_pooled"]
+    return {
+        "dataset": "EEGMAT",
+        "ba": e["ba"],
+        "n_subj": fz["crossed"]["n_subjects"],
+        "n_rec": fz["n_recordings"],
+        "frozen_label_frac": fz["pooled_label_fraction"],
+        "ft_pooled_label_frac": ft["pooled_label_fraction"],
+        "nested_identifiable_frozen": True,
+        "nested_identifiable_ft_pooled": True,
+    }
 
 
 def main():
@@ -36,7 +61,7 @@ def main():
         sys.exit(
             f"ERROR: {JSON_PATH} not found.\n"
             f"Generate it first:\n"
-            f"  conda run -n stats_env python scripts/run_variance_analysis.py"
+            f"  /raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python scripts/run_variance_analysis.py"
         )
 
     with open(JSON_PATH) as f:
@@ -44,6 +69,11 @@ def main():
 
     rows = []
     for name in DATASET_ORDER:
+        if name == "EEGMAT":
+            row = _load_eegmat(EEGMAT_JSON_PATH)
+            if row is not None:
+                rows.append(row)
+            continue
         if name not in data["datasets"]:
             print(f"  [skip] {name} not in JSON")
             continue
@@ -94,9 +124,16 @@ def main():
         "figure.dpi": 120,
     })
 
-    fig, axes = plt.subplots(1, 2, figsize=(8.5, 3.6))
+    fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.8))
     names = [r["dataset"] for r in rows]
-    colors = ["#5B9BD5", "#ED7D31", "#70AD47"]
+    # Tick labels include n and a ★ marker for within-subject design.
+    tick_labels = [
+        f"{r['dataset']}{'★' if r['dataset'] in WITHIN_SUBJECT else ''}\n"
+        f"n={r['n_rec']}/{r['n_subj']}"
+        for r in rows
+    ]
+    colors = ["#5B9BD5", "#9B59B6", "#ED7D31", "#70AD47"]
+    colors = colors[: len(names)]
     x = np.arange(len(names))
 
     # Panel A: BA bars
@@ -108,9 +145,9 @@ def main():
         ax.text(b.get_x() + b.get_width() / 2, v + 0.01, f"{v:.3f}",
                 ha="center", va="bottom", fontsize=9)
     ax.set_xticks(x)
-    ax.set_xticklabels(names)
+    ax.set_xticklabels(tick_labels)
     ax.set_ylabel("Subject-level Balanced Accuracy")
-    ax.set_ylim(0.4, 0.85)
+    ax.set_ylim(0.4, 0.88)
     ax.set_title("(a) Fine-tuned LaBraM, subject-level CV")
     ax.legend(loc="upper left", frameon=False)
     ax.spines["top"].set_visible(False)
@@ -144,7 +181,7 @@ def main():
                     f"{sym} {mult:.2f}×", ha="center", fontsize=9,
                     color=color, fontweight="bold")
     ax.set_xticks(x)
-    ax.set_xticklabels(names)
+    ax.set_xticklabels(tick_labels)
     ax.set_ylabel(r"$SS_{\mathrm{label}}\ /\ SS_{\mathrm{total}}$  (%)")
     ax.set_ylim(0, max(max(fz_fracs), max(ft_fracs)) * 1.6)
     ax.set_title("(b) Pooled label variance fraction")
@@ -152,8 +189,12 @@ def main():
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    fig.suptitle("Cross-dataset signal strength: LaBraM on resting-state EEG",
+    fig.suptitle("Cross-dataset signal strength: LaBraM across 4 datasets",
                  fontsize=12, y=1.02)
+    fig.text(0.5, -0.04,
+             "★ = within-subject label design (rest vs. arithmetic task); "
+             "all others are between-subject clinical labels.",
+             ha="center", fontsize=8, style="italic", color="#444")
     fig.tight_layout()
 
     os.makedirs(os.path.dirname(OUT_PDF), exist_ok=True)

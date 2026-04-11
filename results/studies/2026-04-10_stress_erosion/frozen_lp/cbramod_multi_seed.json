@@ -1,0 +1,37 @@
+{
+  "extractor": "cbramod",
+  "source_features": "results/features_cache/frozen_cbramod_stress_19ch.npz",
+  "labels_source": "data/comprehensive_labels.csv Group column (per-recording DASS class)",
+  "protocol": "Subject-level StratifiedGroupKFold(5), LogisticRegression (C=1.0, class_weight=balanced) on StandardScaler-normed 200-d cbramod features.",
+  "n_recordings": 70,
+  "embed_dim": 200,
+  "n_subjects": 17,
+  "n_positive": 14,
+  "n_negative": 56,
+  "seeds": [
+    42,
+    123,
+    2024,
+    7,
+    0,
+    1,
+    99,
+    31337
+  ],
+  "per_seed_ba": {
+    "42": 0.44642857142857145,
+    "123": 0.44642857142857145,
+    "2024": 0.5,
+    "7": 0.3928571428571429,
+    "0": 0.4375,
+    "1": 0.4821428571428571,
+    "99": 0.44642857142857145,
+    "31337": 0.4642857142857143
+  },
+  "mean_8seed": 0.4520089285714286,
+  "std_8seed": 0.02992653499507124,
+  "mean_3seed_42_123_2024": 0.46428571428571425,
+  "std_3seed_42_123_2024": 0.02525381361380526,
+  "min": 0.3928571428571429,
+  "max": 0.5
+}

@@ -1,0 +1,37 @@
+{
+  "extractor": "labram",
+  "source_features": "results/features_cache/frozen_labram_stress_19ch.npz",
+  "labels_source": "data/comprehensive_labels.csv Group column (per-recording DASS class)",
+  "protocol": "Subject-level StratifiedGroupKFold(5), LogisticRegression (C=1.0, class_weight=balanced) on StandardScaler-normed 200-d labram features.",
+  "n_recordings": 70,
+  "embed_dim": 200,
+  "n_subjects": 17,
+  "n_positive": 14,
+  "n_negative": 56,
+  "seeds": [
+    42,
+    123,
+    2024,
+    7,
+    0,
+    1,
+    99,
+    31337
+  ],
+  "per_seed_ba": {
+    "42": 0.6160714285714286,
+    "123": 0.5803571428571428,
+    "2024": 0.6517857142857143,
+    "7": 0.5803571428571428,
+    "0": 0.6160714285714286,
+    "1": 0.5625,
+    "99": 0.5892857142857143,
+    "31337": 0.6428571428571429
+  },
+  "mean_8seed": 0.6049107142857143,
+  "std_8seed": 0.029864036072008177,
+  "mean_3seed_42_123_2024": 0.6160714285714285,
+  "std_3seed_42_123_2024": 0.029160592175990246,
+  "min": 0.5625,
+  "max": 0.6517857142857143
+}
