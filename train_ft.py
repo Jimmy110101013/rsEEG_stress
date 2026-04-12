@@ -103,6 +103,8 @@ def parse_args():
                    help="Path to labels CSV (default: comprehensive_labels_stress.csv)")
     p.add_argument("--max-duration", type=float, default=None,
                    help="Filter out recordings longer than this (seconds). Paper uses 400.")
+    p.add_argument("--window-sec", type=float, default=None,
+                   help="Override window size in seconds (default: from extractor config)")
     # Optimizer (REVE reference: StableAdamW betas=[0.92, 0.999], eps=1e-9, wd=0.01)
     p.add_argument("--weight-decay", type=float, default=1e-2)
     p.add_argument("--adam-beta2", type=float, default=0.999)
@@ -834,8 +836,11 @@ def train_one_fold_ft(
     # Override channel mapping for 19ch datasets (ADFTD, TDBRAIN, HNC dementia/MDD, EEGMAT)
     if args.dataset in ("adftd", "tdbrain", "dementia", "mdd", "eegmat"):
         from pipeline.common_channels import COMMON_19
-        from baseline.labram.channel_map import get_input_chans
-        extractor.input_chans = get_input_chans(COMMON_19)
+        if hasattr(extractor, "input_chans"):
+            from baseline.labram.channel_map import get_input_chans
+            extractor.input_chans = get_input_chans(COMMON_19)
+        if hasattr(extractor, "set_channels"):
+            extractor.set_channels(COMMON_19)
     embed_dim = extractor.embed_dim
     n_subjects = len(np.unique(dataset.get_patient_ids())) if args.adv_weight > 0 else 0
     model = DecoupledStressModel(
@@ -1125,9 +1130,10 @@ def main():
     print(f"Results → {results_dir}/")
 
     # Window size: 5s for LaBraM, 10s for REVE/mock (from extractor config)
+    # --window-sec overrides the extractor default (useful for cross-model comparison)
     from baseline.abstract.factory import EXTRACTOR_REGISTRY
     _, config_cls = EXTRACTOR_REGISTRY[args.extractor]
-    window_sec = config_cls().window_sec
+    window_sec = args.window_sec if args.window_sec else config_cls().window_sec
 
     ch_select_idx = None  # For 19ch selection when using ADFTD extractor on stress
 
