@@ -1,0 +1,48 @@
+CMD: /raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python train_ft.py --mode ft --folds 5 --epochs 80 --patience 20 --batch-size 32 --label dass --loss focal --head-hidden 128 --norm zscore --csv data/comprehensive_labels.csv --weight-decay 0.01 --grad-clip 2.0 --warmup-epochs 5 --encoder-lr-scale 1.0 --warmup-freeze-epochs 0 --aug-overlap 0.75 --llrd 1.0 --extractor shallowconvnet --lr 1e-3 --seed 42 --device cuda:5 --run-id studies/exp15_nonfm_baselines/sweep/shallowconvnet_lr1e-3_s42
+
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Mode: FT | Extractor: shallowconvnet | Folds: 5
+LR: 0.001 | WD: 0.01 | Beta2: 0.999 | Grad clip: 2.0
+Head: hidden=128, dropout=0.0 | Norm: zscore | Loss: focal
+Full FT: encoder_lr_scale=1.0
+Augmentation: 75% overlap for increase class
+
+Results → results/studies/exp15_nonfm_baselines/sweep/shallowconvnet_lr1e-3_s42/
+Dataset: 70 recordings loaded (14 increase, 56 normal)
+Cache: 70 recordings ready (70 cached, 0 new)
+
+============================================================
+Fold 1/5
+============================================================
+  Train:  45 samples, 12 subjects [1, 2, 3, 4, 6, 7, 9, 10, 13, 14, 16, 18], label_0=34, label_1=11
+    Val:  12 samples,  2 subjects [5, 11], label_0=11, label_1=1
+   Test:  13 samples,  3 subjects [8, 12, 17], label_0=11, label_1=2
+  Building window datasets...
+    WindowDataset: 5684 windows (class_0=2641, class_1=3043)
+    WindowDataset: 964 windows (class_0=903, class_1=61)
+    WindowDataset: 1184 windows (class_0=1058, class_1=126)
+[ShallowConvNet] F_t=40 F_s=40 k_time=25 pool=75/15 T=1000 -> embed_dim=2440 (49,120 params)
+  Trainable parameters: 674,403
+  Class weights: [1.0761075019836426, 0.9339467883110046]
+  Fold 1 | Ep   1/80 | t_loss=0.1167 t_acc=0.767 | v_win_bal=0.463 v_rec_bal=0.500 | lr=2.0e-04 | 41.6s
+  Fold 1 | Ep   2/80 | t_loss=0.0316 t_acc=0.954 | v_win_bal=0.505 v_rec_bal=0.500 | lr=4.0e-04 | 11.1s
+  Fold 1 | Ep   3/80 | t_loss=0.0289 t_acc=0.962 | v_win_bal=0.487 v_rec_bal=0.500 | lr=6.0e-04 | 14.1s
+  Fold 1 | Ep   4/80 | t_loss=0.0223 t_acc=0.972 | v_win_bal=0.630 v_rec_bal=0.909 | lr=8.0e-04 | 12.6s
+  Fold 1 | Ep   5/80 | t_loss=0.0218 t_acc=0.974 | v_win_bal=0.662 v_rec_bal=0.955 | lr=1.0e-03 | 13.2s
+  Fold 1 | Ep   6/80 | t_loss=0.0142 t_acc=0.982 | v_win_bal=0.667 v_rec_bal=0.864 | lr=1.0e-03 | 11.6s
+  Fold 1 | Ep   7/80 | t_loss=0.0178 t_acc=0.979 | v_win_bal=0.528 v_rec_bal=0.500 | lr=1.0e-03 | 11.2s
+  Fold 1 | Ep   8/80 | t_loss=0.0084 t_acc=0.992 | v_win_bal=0.576 v_rec_bal=0.455 | lr=1.0e-03 | 11.5s
+  Fold 1 | Ep   9/80 | t_loss=0.0122 t_acc=0.986 | v_win_bal=0.672 v_rec_bal=0.909 | lr=9.9e-04 | 10.4s
+  Fold 1 | Ep  10/80 | t_loss=0.0048 t_acc=0.992 | v_win_bal=0.524 v_rec_bal=0.500 | lr=9.9e-04 | 11.4s
+  Fold 1 | Ep  11/80 | t_loss=0.0043 t_acc=0.995 | v_win_bal=0.589 v_rec_bal=0.500 | lr=9.8e-04 | 11.5s
+  Fold 1 | Ep  12/80 | t_loss=0.0054 t_acc=0.993 | v_win_bal=0.508 v_rec_bal=0.500 | lr=9.8e-04 | 11.1s
+  Fold 1 | Ep  13/80 | t_loss=0.0058 t_acc=0.993 | v_win_bal=0.528 v_rec_bal=0.500 | lr=9.7e-04 | 11.1s
+  Fold 1 | Ep  14/80 | t_loss=0.0038 t_acc=0.996 | v_win_bal=0.523 v_rec_bal=0.773 | lr=9.6e-04 | 10.7s
+  Fold 1 | Ep  15/80 | t_loss=0.0095 t_acc=0.991 | v_win_bal=0.491 v_rec_bal=0.455 | lr=9.6e-04 | 10.8s
+  Fold 1 | Ep  16/80 | t_loss=0.0072 t_acc=0.991 | v_win_bal=0.606 v_rec_bal=0.500 | lr=9.5e-04 | 11.5s
+  Fold 1 | Ep  17/80 | t_loss=0.0041 t_acc=0.995 | v_win_bal=0.522 v_rec_bal=0.409 | lr=9.4e-04 | 10.5s
+  Fold 1 | Ep  18/80 | t_loss=0.0022 t_acc=0.997 | v_win_bal=0.546 v_rec_bal=0.500 | lr=9.3e-04 | 11.3s
+  Fold 1 | Ep  19/80 | t_loss=0.0025 t_acc=0.996 | v_win_bal=0.507 v_rec_bal=0.500 | lr=9.2e-04 | 11.7s
+  Fold 1 | Ep  20/80 | t_loss=0.0050 t_acc=0.994 | v_win_bal=0.683 v_rec_bal=0.955 | lr=9.0e-04 | 11.2s
+  Fold 1 | Ep  21/80 | t_loss=0.0006 t_acc=0.999 | v_win_bal=0.556 v_rec_bal=0.500 | lr=8.9e-04 | 11.4s

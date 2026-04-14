@@ -1,0 +1,28 @@
+CMD: /raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python train_ft.py --mode ft --folds 5 --epochs 50 --patience 15 --batch-size 32 --seed 42 --label dass --loss focal --head-hidden 128 --csv data/comprehensive_labels.csv --weight-decay 0.05 --grad-clip 2.0 --warmup-epochs 3 --warmup-freeze-epochs 1 --aug-overlap 0.75 --llrd 1.0 --extractor cbramod --norm none --lr 1e-5 --encoder-lr-scale 0.1 --device cuda:6 --run-id studies/exp03_stress_erosion/ft_null_cbramod/perm_s0 --permute-labels 0
+
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Mode: FT | Extractor: cbramod | Folds: 5
+LR: 1e-05 | WD: 0.05 | Beta2: 0.999 | Grad clip: 2.0
+Head: hidden=128, dropout=0.0 | Norm: none | Loss: focal
+Full FT: encoder_lr_scale=0.1
+Augmentation: 75% overlap for increase class
+
+Results → results/studies/exp03_stress_erosion/ft_null_cbramod/perm_s0/
+Dataset: 70 recordings loaded (14 increase, 56 normal)
+Cache: 70 recordings ready (70 cached, 0 new)
+[permute-labels] Shuffled labels with rng seed 0. Class balance preserved: 14 pos / 56 neg
+
+============================================================
+Fold 1/5
+============================================================
+  Train:  45 samples, 11 subjects [2, 3, 4, 6, 8, 9, 10, 11, 12, 13, 16], label_0=34, label_1=11
+    Val:  13 samples,  3 subjects [1, 5, 14], label_0=11, label_1=2
+   Test:  12 samples,  3 subjects [7, 17, 18], label_0=11, label_1=1
+  Building window datasets...
+    WindowDataset: 6093 windows (class_0=2990, class_1=3103)
+    WindowDataset: 1055 windows (class_0=913, class_1=142)
+    WindowDataset: 729 windows (class_0=667, class_1=62)
+[CBraMod] Loaded 209/209 params from weights/cbramod-base/pretrained_weights.pth
+  Trainable parameters: 4,935,443
+  Class weights: [1.0188963413238525, 0.9817917943000793]

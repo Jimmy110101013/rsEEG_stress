@@ -48,11 +48,15 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--extractor", default="labram",
                         choices=["labram", "cbramod", "reve"])
+    parser.add_argument("--features-npz", default=None,
+                        help="Override frozen feature npz path (default: auto from extractor)")
+    parser.add_argument("--out-path", default=None,
+                        help="Override output json path")
     args = parser.parse_args()
 
     model = args.extractor
-    features_npz = f"results/features_cache/frozen_{model}_stress_30ch.npz"
-    out_path = Path(f"results/studies/2026-04-10_stress_erosion/frozen_lp/{model}_multi_seed.json")
+    features_npz = args.features_npz or f"results/features_cache/frozen_{model}_stress_30ch.npz"
+    out_path = Path(args.out_path or f"results/studies/exp03_stress_erosion/frozen_lp/{model}_multi_seed.json")
 
     F = np.load(features_npz)["features"]
     csv = pd.read_csv(LABELS_CSV)

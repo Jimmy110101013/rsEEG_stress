@@ -36,7 +36,7 @@ BASE_ARGS = [
 
 
 def run_perm(perm_seed: int, gpu: int, out_root: Path) -> tuple[int, int, float]:
-    run_id = f"studies/2026-04-10_stress_erosion/ft_null/perm_s{perm_seed}"
+    run_id = f"studies/exp03_stress_erosion/ft_null/perm_s{perm_seed}"
     log_path = out_root / f"perm_s{perm_seed}.log"
     cmd = [
         PY, "train_ft.py",
@@ -60,7 +60,7 @@ def main() -> None:
     p.add_argument("--gpus", nargs="+", type=int, required=True)
     args = p.parse_args()
 
-    out_root = Path("results/studies/2026-04-10_stress_erosion/logs")
+    out_root = Path("results/studies/exp03_stress_erosion/logs")
     out_root.mkdir(parents=True, exist_ok=True)
 
     gpu_q: "queue.Queue[int]" = queue.Queue()
