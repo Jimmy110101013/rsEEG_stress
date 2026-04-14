@@ -1,0 +1,15 @@
+==========================================
+exp20 Wang-protocol reve (LLRD=0.65, single split, seeds 0/1/2/42)
+GPU: cuda:5 — 公曆 20廿六年 四月 十四日 週二 廿二時35分34秒
+==========================================
+[22:35] START reve_s0 on cuda:5
+[22:50] OK reve_s0 (bal_acc=0.5)
+[22:50] START reve_s1 on cuda:5
+[23:04] OK reve_s1 (bal_acc=0.4286)
+[23:04] START reve_s2 on cuda:5
+[23:19] OK reve_s2 (bal_acc=0.4643)
+[23:19] START reve_s42 on cuda:5
+[23:33] OK reve_s42 (bal_acc=0.6786)
+==========================================
+DONE exp20 reve — 公曆 20廿六年 四月 十四日 週二 廿三時33分卅秒
+==========================================

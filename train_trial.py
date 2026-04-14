@@ -95,6 +95,11 @@ def parse_args():
                    help="DSS score threshold (only used with --label dss)")
     p.add_argument("--aug-overlap", type=float, default=None,
                    help="Overlap fraction for increase-class augmentation (e.g. 0.75)")
+    p.add_argument("--eval-aug-overlap", type=float, default=None,
+                   help="Overlap fraction for increase-class augmentation on val+test. "
+                        "Wang 2025 applies aug_overlap to val and test increase class too "
+                        "(their Table I sample counts imply ~4x test/val windows for elevated). "
+                        "Default None=no eval aug.")
     p.add_argument("--grad-clip", type=float, default=1.0)
     p.add_argument("--subject-loss-weight", type=float, default=0.0,
                    help="Weight for recording-level aggregated loss (LEAD-style). "
@@ -103,6 +108,18 @@ def parse_args():
                    help="Path to labels CSV (default: comprehensive_labels_stress.csv)")
     p.add_argument("--max-duration", type=float, default=None,
                    help="Filter out recordings longer than this (seconds). Paper uses 400.")
+    p.add_argument("--split-mode", choices=["cv", "wang"], default="cv",
+                   help="cv=StratifiedKFold (default); wang=single 80/10/10 split "
+                        "matching Wang 2025 counts (15/2/2 elev, 50/6/7 normal).")
+    p.add_argument("--layer-decay", type=float, default=1.0,
+                   help="Layer-wise LR decay factor (Wang 2025 uses 0.65). "
+                        "1.0 = disabled. Requires extractor.get_layer_groups().")
+    p.add_argument("--val-metric", choices=["rec_bal", "win_bal", "win_acc"],
+                   default="rec_bal",
+                   help="Metric for best-checkpoint selection. "
+                        "rec_bal=recording-level BA (default, coarse); "
+                        "win_bal=window-level BA; win_acc=window-level accuracy "
+                        "(closest to Wang 2025's 'best validation accuracy').")
     p.add_argument("--adv-weight", type=float, default=0.0,
                    help="Max adversarial lambda for subject-adversarial training (GRL). "
                         "0=off, 0.1 recommended. Ramps from 0 via DANN sigmoid schedule.")
@@ -323,6 +340,66 @@ def train_one_fold_lp(
 # ──────────────────── FT Mode ────────────────────
 
 
+def build_ft_optimizer(model, args):
+    """AdamW with optional layer-wise LR decay (Wang 2025: layer_decay=0.65).
+
+    When layer_decay < 1.0 and extractor exposes get_layer_groups(), assigns
+    LR = args.lr * layer_decay**(n_layers - 1 - i) to each encoder group i,
+    with the classifier head at the full args.lr. Otherwise a single flat LR.
+    """
+    head_params, enc_params_flat = [], []
+    for name, param in model.named_parameters():
+        if not param.requires_grad:
+            continue
+        if "head_cls" in name or "head_reg" in name or "head_subj" in name:
+            head_params.append(param)
+        else:
+            enc_params_flat.append(param)
+
+    param_groups = [{"params": head_params, "lr": args.lr}]
+
+    if args.layer_decay < 1.0 and hasattr(model.extractor, "get_layer_groups"):
+        layer_groups = model.extractor.get_layer_groups()
+        n_layers = len(layer_groups)
+        for i, group_params in enumerate(layer_groups):
+            trainable = [p for p in group_params if p.requires_grad]
+            if trainable:
+                layer_lr = args.lr * (args.layer_decay ** (n_layers - 1 - i))
+                param_groups.append({"params": trainable, "lr": layer_lr})
+        lo = args.lr * (args.layer_decay ** (n_layers - 1))
+        print(f"  LLRD: {n_layers} layer groups, LR ∈ [{lo:.2e}, {args.lr:.2e}] "
+              f"(decay={args.layer_decay})")
+    elif enc_params_flat:
+        param_groups.append({"params": enc_params_flat, "lr": args.lr})
+
+    return torch.optim.AdamW(
+        param_groups, weight_decay=args.weight_decay, betas=(0.9, 0.999),
+    )
+
+
+def wang_split(trial_labels: np.ndarray, seed: int):
+    """Stratified single 80/10/10 split matching Wang 2025 Fig. 1 counts.
+
+    Wang requires exactly 19 elevated and 63 normal (82 total after --max-duration 400).
+    Train/val/test = elev 15/2/2, normal 50/6/7. The seed controls the per-class
+    permutation, so different seeds produce different splits (4 seeds in the paper).
+    """
+    idx_pos = np.where(trial_labels == 1)[0]
+    idx_neg = np.where(trial_labels == 0)[0]
+    if len(idx_pos) != 19 or len(idx_neg) != 63:
+        raise ValueError(
+            f"--split-mode wang requires 19 elevated / 63 normal after filtering; "
+            f"got {len(idx_pos)} / {len(idx_neg)}. Check --csv and --max-duration.")
+
+    rng = np.random.RandomState(seed)
+    rng.shuffle(idx_pos)
+    rng.shuffle(idx_neg)
+    train_idx = np.concatenate([idx_pos[:15], idx_neg[:50]])
+    val_idx   = np.concatenate([idx_pos[15:17], idx_neg[50:56]])
+    test_idx  = np.concatenate([idx_pos[17:19], idx_neg[56:63]])
+    return train_idx, val_idx, test_idx
+
+
 def train_one_fold_ft(
     fold_idx, train_idx, val_idx, test_idx, trial_labels,
     dataset, args, device, threshold_norm,
@@ -336,10 +413,10 @@ def train_one_fold_ft(
     train_win_ds = WindowDataset(dataset, train_idx, aug_overlap=args.aug_overlap,
                                   label_mode=label_mode, threshold_norm=threshold_norm,
                                   label_override=trial_labels)
-    val_win_ds = WindowDataset(dataset, val_idx, aug_overlap=None,
+    val_win_ds = WindowDataset(dataset, val_idx, aug_overlap=args.eval_aug_overlap,
                                 label_mode=label_mode, threshold_norm=threshold_norm,
                                 label_override=trial_labels)
-    test_win_ds = WindowDataset(dataset, test_idx, aug_overlap=None,
+    test_win_ds = WindowDataset(dataset, test_idx, aug_overlap=args.eval_aug_overlap,
                                  label_mode=label_mode, threshold_norm=threshold_norm,
                                  label_override=trial_labels)
 
@@ -394,10 +471,7 @@ def train_one_fold_ft(
     else:
         criterion = nn.CrossEntropyLoss(weight=class_weights)
 
-    optimizer = torch.optim.AdamW(
-        model.parameters(), lr=args.lr,
-        weight_decay=args.weight_decay, betas=(0.9, 0.999),
-    )
+    optimizer = build_ft_optimizer(model, args)
 
     # Cosine annealing with warmup
     total_steps = len(train_loader) * args.epochs // args.grad_accum
@@ -504,8 +578,13 @@ def train_one_fold_ft(
             "lr": lr,
         })
 
-        # Use recording-level bal_acc for model selection
-        val_bal = val_rec_metrics["bal_acc"]
+        # Model-selection metric (configurable per Wang-protocol ablation)
+        if args.val_metric == "win_bal":
+            val_bal = val_metrics["bal_acc"]
+        elif args.val_metric == "win_acc":
+            val_bal = val_metrics["acc"]
+        else:
+            val_bal = val_rec_metrics["bal_acc"]
 
         if val_bal > best_bal_acc:
             best_bal_acc = val_bal
@@ -526,13 +605,22 @@ def train_one_fold_ft(
     if best_state:
         model.load_state_dict(best_state)
 
-    # Test — recording-level predictions
+    # Test — recording-level (majority vote) + window-level (Wang's plotted metric)
     test_rec_metrics = evaluate_recording_level(model, test_loader, dataset, test_idx,
                                                  device, use_amp, label_mode, threshold_norm)
+    test_win_metrics = evaluate_windows(model, test_loader, criterion, device, use_amp)
     y_true = test_rec_metrics["y_true"]
     y_pred = test_rec_metrics["y_pred"]
+    print(f"  -> Test (best@ep{best_epoch}): "
+          f"rec_bal={test_rec_metrics['bal_acc']:.4f}  "
+          f"win_bal={test_win_metrics['bal_acc']:.4f}")
 
-    return y_true, y_pred, best_epoch, curves
+    test_extra = {
+        "test_rec_bal_acc": test_rec_metrics["bal_acc"],
+        "test_win_bal_acc": test_win_metrics["bal_acc"],
+        "test_win_acc": test_win_metrics["acc"],
+    }
+    return y_true, y_pred, best_epoch, curves, test_extra
 
 
 def evaluate_windows(model, loader, criterion, device, use_amp) -> dict:
@@ -652,32 +740,39 @@ def main():
     print(f"Labels ({args.label}): class_0={n0}, class_1={n1} (total={len(trial_labels)})")
     print()
 
-    # Trial-based CV (no subject grouping — matches paper)
-    outer_cv = StratifiedKFold(n_splits=args.folds, shuffle=True, random_state=args.seed)
+    # Build splits: CV (default) or Wang single 80/10/10
+    if args.split_mode == "wang":
+        tr, va, te = wang_split(trial_labels, seed=args.seed)
+        splits = [(tr, va, te)]
+        print(f"Wang single split (seed={args.seed}): "
+              f"train={len(tr)}, val={len(va)}, test={len(te)}")
+    else:
+        outer_cv = StratifiedKFold(n_splits=args.folds, shuffle=True, random_state=args.seed)
+        inner_cv = StratifiedKFold(n_splits=max(args.folds - 1, 2), shuffle=True,
+                                   random_state=args.seed)
+        splits = []
+        for trainval_idx, test_idx in outer_cv.split(np.zeros(len(dataset)), trial_labels):
+            tr_in, va_in = next(inner_cv.split(np.zeros(len(trainval_idx)),
+                                                trial_labels[trainval_idx]))
+            splits.append((trainval_idx[tr_in], trainval_idx[va_in], test_idx))
 
     global_y_true, global_y_pred = [], []
     all_test_pids, all_test_scores = [], []
+    fold_win_bal_accs = []  # window-level BA per fold (for Wang-style reporting)
 
-    for fold_idx, (trainval_idx, test_idx) in enumerate(
-        outer_cv.split(np.zeros(len(dataset)), trial_labels)
-    ):
-        # Inner split for validation
-        inner_cv = StratifiedKFold(n_splits=max(args.folds - 1, 2), shuffle=True, random_state=args.seed)
-        train_inner_idx, val_inner_idx = next(
-            inner_cv.split(np.zeros(len(trainval_idx)), trial_labels[trainval_idx])
-        )
-        train_idx = trainval_idx[train_inner_idx]
-        val_idx = trainval_idx[val_inner_idx]
-
+    for fold_idx, (train_idx, val_idx, test_idx) in enumerate(splits):
         print(f"\n{'='*60}")
-        print(f"Fold {fold_idx+1}/{args.folds}")
+        if args.split_mode == "wang":
+            print(f"Wang split (seed={args.seed})")
+        else:
+            print(f"Fold {fold_idx+1}/{args.folds}")
         print(f"{'='*60}")
         print_split_info("Train", train_idx, trial_labels)
         print_split_info("Val", val_idx, trial_labels)
         print_split_info("Test", test_idx, trial_labels)
 
         if args.mode == "ft":
-            y_true, y_pred, best_epoch, curves = train_one_fold_ft(
+            y_true, y_pred, best_epoch, curves, test_extra = train_one_fold_ft(
                 fold_idx, train_idx, val_idx, test_idx, trial_labels,
                 dataset, args, device, threshold_norm,
             )
@@ -686,6 +781,7 @@ def main():
                 fold_idx, train_idx, val_idx, test_idx, trial_labels,
                 dataset, args, device, threshold_norm,
             )
+            test_extra = {}
 
         global_y_true.append(y_true)
         global_y_pred.append(y_pred)
@@ -715,7 +811,12 @@ def main():
 
         fold_acc = accuracy_score(y_true, y_pred)
         fold_bal = balanced_accuracy_score(y_true, y_pred)
-        print(f"  -> Test (best @ epoch {best_epoch}): acc={fold_acc:.4f}, bal_acc={fold_bal:.4f}")
+        win_bal = test_extra.get("test_win_bal_acc")
+        if win_bal is not None:
+            fold_win_bal_accs.append(float(win_bal))
+        print(f"  -> Fold summary (best @ epoch {best_epoch}): "
+              f"rec_acc={fold_acc:.4f}, rec_bal={fold_bal:.4f}"
+              + (f", win_bal={win_bal:.4f}" if win_bal is not None else ""))
 
     # ── Global Aggregation ──
     y_true_all = np.concatenate(global_y_true)
@@ -727,7 +828,9 @@ def main():
     kappa = cohen_kappa_score(y_true_all, y_pred_all)
 
     print(f"\n{'='*60}")
-    print(f"Global Results ({args.folds}-Fold, trial-level CV, {args.mode.upper()})")
+    proto = f"Wang single split (seed={args.seed})" if args.split_mode == "wang" \
+            else f"{args.folds}-Fold, trial-level CV"
+    print(f"Global Results ({proto}, {args.mode.upper()})")
     print(f"Extractor: {args.extractor} | Label: {args.label} | Loss: {args.loss}")
     if args.aug_overlap:
         print(f"Augmentation: {args.aug_overlap*100:.0f}% overlap for increase class")
@@ -742,6 +845,10 @@ def main():
     summary = {
         "mode": args.mode,
         "label": args.label,
+        "split_mode": args.split_mode,
+        "layer_decay": args.layer_decay,
+        "val_metric": args.val_metric,
+        "loss": args.loss,
         "threshold": args.threshold if args.label == "dss" else None,
         "aug_overlap": args.aug_overlap,
         "acc": round(acc, 4),
@@ -751,6 +858,9 @@ def main():
         "n_samples": len(y_true_all),
         "n_class_1": int(trial_labels.sum()),
         "n_class_0": int(len(trial_labels) - trial_labels.sum()),
+        "win_bal_acc_per_fold": [round(x, 4) for x in fold_win_bal_accs],
+        "win_bal_acc_mean": round(float(np.mean(fold_win_bal_accs)), 4)
+                              if fold_win_bal_accs else None,
     }
 
     # Per-subject breakdown

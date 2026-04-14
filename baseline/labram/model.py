@@ -189,9 +189,12 @@ class NeuralTransformer(nn.Module):
             for i in range(depth)
         ])
 
-        # Normalization: pretrained weights use CLS pooling (norm on all tokens),
-        # but we mean-pool patch tokens with fc_norm for feature extraction
-        self.norm = norm_layer(embed_dim)
+        # Mean pooling path (matches original LaBraM `use_mean_pooling=True`):
+        # discard pretrained `norm` (trained for CLS head), use only fc_norm
+        # on mean-pooled patch tokens. Previously we kept self.norm as a
+        # LayerNorm and loaded pretrained weights into it — this was an
+        # architectural divergence from the original repo.
+        self.norm = nn.Identity()
         self.fc_norm = norm_layer(embed_dim)
 
         # Init

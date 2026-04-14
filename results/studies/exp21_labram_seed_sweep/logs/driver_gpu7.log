@@ -1,0 +1,19 @@
+==========================================
+exp21 LaBraM seed sweep on cuda:7 — 公曆 20廿六年 四月 十四日 週二 廿三時32分十四秒
+Seeds: 13 17 23 31 47 99
+==========================================
+[23:32] START labram_s13 on cuda:7
+[23:39] FAIL labram_s13 (exit=1)
+[23:39] START labram_s17 on cuda:7
+[23:47] FAIL labram_s17 (exit=1)
+[23:47] START labram_s23 on cuda:7
+[23:54] FAIL labram_s23 (exit=1)
+[23:54] START labram_s31 on cuda:7
+[00:01] FAIL labram_s31 (exit=1)
+[00:01] START labram_s47 on cuda:7
+[00:08] FAIL labram_s47 (exit=1)
+[00:08] START labram_s99 on cuda:7
+[00:15] FAIL labram_s99 (exit=1)
+==========================================
+DONE cuda:7 — 公曆 20廿六年 四月 十五日 週三 〇時十五分二秒
+==========================================

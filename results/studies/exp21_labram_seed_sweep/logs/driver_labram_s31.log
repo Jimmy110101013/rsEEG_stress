@@ -1,0 +1,93 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Mode: FT | Extractor: labram | Label: dass
+Device: cuda:7 | Folds: 5 | Loss: focal
+Augmentation: 75% overlap for increase class
+LR: 1e-05 | WD: 0.05 | BS: 32 | Grad-accum: 1 | Grad-clip: 1.0
+
+Results -> results/studies/exp21_labram_seed_sweep/labram_s31/
+Window: 5.0s
+Duration filter: skipped 10 recordings > 400.0s
+Dataset: 82 recordings loaded (19 increase, 63 normal)
+Cache: 82 recordings ready (82 cached, 0 new)
+Labels (dass): class_0=63, class_1=19 (total=82)
+
+Wang single split (seed=31): train=65, val=8, test=9
+
+============================================================
+Wang split (seed=31)
+============================================================
+  Train:  65 trials, label_0=50, label_1=15
+    Val:   8 trials, label_0=6, label_1=2
+   Test:   9 trials, label_0=7, label_1=2
+  Building window datasets...
+    WindowDataset: 6609 windows (class_0=3090, class_1=3519)
+    WindowDataset: 514 windows (class_0=383, class_1=131)
+    WindowDataset: 491 windows (class_0=392, class_1=99)
+[LaBraM] Loaded 221/223 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  Trainable parameters: 5,820,939
+  Class weights: [1.0694174766540527, 0.9390451908111572]
+  LLRD: 14 layer groups, LR ∈ [3.70e-08, 1.00e-05] (decay=0.65)
+  Fold 1 | Ep   1/50 | t_loss=0.2053 t_acc=0.482 | v_loss=0.1980 v_bal=0.532 | v_rec_bal=0.667 | lr=3.3e-06 | 9.5s
+  Fold 1 | Ep   2/50 | t_loss=0.1606 t_acc=0.635 | v_loss=0.1766 v_bal=0.672 | v_rec_bal=0.833 | lr=6.7e-06 | 8.5s
+  Fold 1 | Ep   3/50 | t_loss=0.1347 t_acc=0.738 | v_loss=0.1753 v_bal=0.718 | v_rec_bal=0.917 | lr=1.0e-05 | 8.5s
+  Fold 1 | Ep   4/50 | t_loss=0.1193 t_acc=0.776 | v_loss=0.1852 v_bal=0.735 | v_rec_bal=0.917 | lr=1.0e-05 | 8.6s
+  Fold 1 | Ep   5/50 | t_loss=0.1067 t_acc=0.804 | v_loss=0.2105 v_bal=0.734 | v_rec_bal=0.917 | lr=1.0e-05 | 8.6s
+  Fold 1 | Ep   6/50 | t_loss=0.0961 t_acc=0.829 | v_loss=0.1685 v_bal=0.703 | v_rec_bal=0.667 | lr=9.9e-06 | 8.6s
+  Fold 1 | Ep   7/50 | t_loss=0.0837 t_acc=0.854 | v_loss=0.1965 v_bal=0.723 | v_rec_bal=0.667 | lr=9.8e-06 | 8.5s
+  Fold 1 | Ep   8/50 | t_loss=0.0725 t_acc=0.880 | v_loss=0.2016 v_bal=0.716 | v_rec_bal=0.667 | lr=9.7e-06 | 8.5s
+  Fold 1 | Ep   9/50 | t_loss=0.0610 t_acc=0.900 | v_loss=0.2558 v_bal=0.760 | v_rec_bal=0.917 | lr=9.6e-06 | 8.7s
+  Fold 1 | Ep  10/50 | t_loss=0.0514 t_acc=0.919 | v_loss=0.2208 v_bal=0.755 | v_rec_bal=0.917 | lr=9.5e-06 | 8.5s
+  Fold 1 | Ep  11/50 | t_loss=0.0449 t_acc=0.928 | v_loss=0.2299 v_bal=0.746 | v_rec_bal=0.917 | lr=9.3e-06 | 8.5s
+  Fold 1 | Ep  12/50 | t_loss=0.0369 t_acc=0.946 | v_loss=0.2689 v_bal=0.769 | v_rec_bal=0.917 | lr=9.1e-06 | 8.5s
+  Fold 1 | Ep  13/50 | t_loss=0.0310 t_acc=0.954 | v_loss=0.2664 v_bal=0.752 | v_rec_bal=0.917 | lr=8.9e-06 | 8.1s
+  Fold 1 | Ep  14/50 | t_loss=0.0248 t_acc=0.964 | v_loss=0.3450 v_bal=0.757 | v_rec_bal=0.917 | lr=8.7e-06 | 8.2s
+  Fold 1 | Ep  15/50 | t_loss=0.0209 t_acc=0.971 | v_loss=0.3531 v_bal=0.754 | v_rec_bal=0.917 | lr=8.5e-06 | 8.1s
+  Fold 1 | Ep  16/50 | t_loss=0.0171 t_acc=0.976 | v_loss=0.4571 v_bal=0.770 | v_rec_bal=0.917 | lr=8.2e-06 | 8.4s
+  Fold 1 | Ep  17/50 | t_loss=0.0132 t_acc=0.983 | v_loss=0.4752 v_bal=0.764 | v_rec_bal=0.917 | lr=8.0e-06 | 8.6s
+  Fold 1 | Ep  18/50 | t_loss=0.0112 t_acc=0.986 | v_loss=0.5823 v_bal=0.788 | v_rec_bal=0.917 | lr=7.7e-06 | 8.7s
+  Fold 1 | Ep  19/50 | t_loss=0.0079 t_acc=0.990 | v_loss=0.5062 v_bal=0.746 | v_rec_bal=0.917 | lr=7.4e-06 | 8.9s
+  Fold 1 | Ep  20/50 | t_loss=0.0060 t_acc=0.992 | v_loss=0.6116 v_bal=0.762 | v_rec_bal=0.917 | lr=7.1e-06 | 8.5s
+  Fold 1 | Ep  21/50 | t_loss=0.0055 t_acc=0.993 | v_loss=0.7692 v_bal=0.772 | v_rec_bal=0.917 | lr=6.8e-06 | 8.6s
+  Fold 1 | Ep  22/50 | t_loss=0.0041 t_acc=0.997 | v_loss=0.6886 v_bal=0.770 | v_rec_bal=0.917 | lr=6.5e-06 | 8.5s
+  Fold 1 | Ep  23/50 | t_loss=0.0029 t_acc=0.997 | v_loss=0.7403 v_bal=0.763 | v_rec_bal=0.917 | lr=6.2e-06 | 8.5s
+  Fold 1 | Ep  24/50 | t_loss=0.0023 t_acc=0.998 | v_loss=0.7910 v_bal=0.765 | v_rec_bal=0.917 | lr=5.8e-06 | 8.5s
+  Fold 1 | Ep  25/50 | t_loss=0.0017 t_acc=0.998 | v_loss=0.7888 v_bal=0.759 | v_rec_bal=0.917 | lr=5.5e-06 | 8.5s
+  Fold 1 | Ep  26/50 | t_loss=0.0008 t_acc=0.999 | v_loss=0.7787 v_bal=0.746 | v_rec_bal=0.917 | lr=5.2e-06 | 8.5s
+  Fold 1 | Ep  27/50 | t_loss=0.0005 t_acc=0.999 | v_loss=0.7946 v_bal=0.732 | v_rec_bal=0.917 | lr=4.8e-06 | 8.5s
+  Fold 1 | Ep  28/50 | t_loss=0.0004 t_acc=0.999 | v_loss=0.8523 v_bal=0.751 | v_rec_bal=0.917 | lr=4.5e-06 | 8.5s
+  Fold 1 | Ep  29/50 | t_loss=0.0001 t_acc=1.000 | v_loss=0.8764 v_bal=0.757 | v_rec_bal=0.917 | lr=4.2e-06 | 8.5s
+  Fold 1 | Ep  30/50 | t_loss=0.0001 t_acc=1.000 | v_loss=0.8860 v_bal=0.752 | v_rec_bal=0.917 | lr=3.8e-06 | 8.4s
+  Fold 1 | Ep  31/50 | t_loss=0.0001 t_acc=1.000 | v_loss=0.9036 v_bal=0.744 | v_rec_bal=0.917 | lr=3.5e-06 | 8.5s
+  Fold 1 | Ep  32/50 | t_loss=0.0001 t_acc=1.000 | v_loss=0.8978 v_bal=0.743 | v_rec_bal=0.917 | lr=3.2e-06 | 8.5s
+  Fold 1 | Ep  33/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9344 v_bal=0.757 | v_rec_bal=0.917 | lr=2.9e-06 | 8.4s
+  Fold 1 | Ep  34/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9235 v_bal=0.748 | v_rec_bal=0.917 | lr=2.6e-06 | 8.4s
+  Fold 1 | Ep  35/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9558 v_bal=0.750 | v_rec_bal=0.917 | lr=2.3e-06 | 8.5s
+  Fold 1 | Ep  36/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9591 v_bal=0.747 | v_rec_bal=0.917 | lr=2.0e-06 | 8.4s
+  Fold 1 | Ep  37/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9519 v_bal=0.753 | v_rec_bal=0.917 | lr=1.8e-06 | 8.4s
+  Fold 1 | Ep  38/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9671 v_bal=0.747 | v_rec_bal=0.917 | lr=1.5e-06 | 8.4s
+  Fold 1 | Ep  39/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9449 v_bal=0.746 | v_rec_bal=0.917 | lr=1.3e-06 | 8.5s
+  Fold 1 | Ep  40/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9650 v_bal=0.754 | v_rec_bal=0.917 | lr=1.1e-06 | 8.4s
+  Fold 1 | Ep  41/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9677 v_bal=0.745 | v_rec_bal=0.917 | lr=8.8e-07 | 8.4s
+  Fold 1 | Ep  42/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9701 v_bal=0.751 | v_rec_bal=0.917 | lr=7.0e-07 | 8.6s
+  Fold 1 | Ep  43/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9812 v_bal=0.753 | v_rec_bal=0.917 | lr=5.4e-07 | 8.2s
+  Fold 1 | Ep  44/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9767 v_bal=0.758 | v_rec_bal=0.917 | lr=4.0e-07 | 8.2s
+  Fold 1 | Ep  45/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9735 v_bal=0.753 | v_rec_bal=0.917 | lr=2.8e-07 | 8.1s
+  Fold 1 | Ep  46/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9845 v_bal=0.757 | v_rec_bal=0.917 | lr=1.8e-07 | 8.3s
+  Fold 1 | Ep  47/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9743 v_bal=0.757 | v_rec_bal=0.917 | lr=1.0e-07 | 8.8s
+  Fold 1 | Ep  48/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9859 v_bal=0.744 | v_rec_bal=0.917 | lr=1.0e-07 | 8.4s
+  Fold 1 | Ep  49/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9813 v_bal=0.749 | v_rec_bal=0.917 | lr=1.0e-07 | 8.4s
+  Fold 1 | Ep  50/50 | t_loss=0.0000 t_acc=1.000 | v_loss=0.9785 v_bal=0.750 | v_rec_bal=0.917 | lr=1.0e-07 | 8.4s
+  -> Test (best@ep3): rec_bal=0.2857  win_bal=0.3149
+Traceback (most recent call last):
+  File "/raid/jupyter-linjimmy1003.md10/UCSD_stress/train_trial.py", line 871, in <module>
+    main()
+  File "/raid/jupyter-linjimmy1003.md10/UCSD_stress/train_trial.py", line 778, in main
+    w.writerows(curves)
+  File "/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/csv.py", line 157, in writerows
+    return self.writer.writerows(map(self._dict_to_list, rowdicts))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/csv.py", line 149, in _dict_to_list
+    raise ValueError("dict contains fields not in fieldnames: "
+ValueError: dict contains fields not in fieldnames: 'test_rec_bal_acc', 'test_win_acc', 'test_win_bal_acc'

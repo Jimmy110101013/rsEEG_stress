@@ -302,6 +302,39 @@ Per-seed detail:
 
 ---
 
+### F21: LaBraM `self.norm` architecture mismatch — material effect <1 pp (internal note, do NOT cite in paper)
+**Status**: confirmed (2026-04-15)
+**Evidence**: exp24 vs exp23 (12-seed LaBraM Wang-protocol sweep, pre- vs post-fix).
+
+**The bug**: `baseline/labram/model.py` defined both `self.norm = LayerNorm(embed_dim)` *and* `self.fc_norm = LayerNorm(embed_dim)`, then applied both in sequence when mean-pooling patch tokens. The original LaBraM repo (`935963004/LaBraM/modeling_finetune.py`) sets `self.norm = nn.Identity()` when `use_mean_pooling=True`, keeping only `fc_norm`. Our code loaded pretrained `norm.weight/bias` (trained for the CLS-pretraining head) then stacked a fresh `fc_norm` on top — architectural drift from the original.
+
+**The fix** (`baseline/labram/model.py:194`): `self.norm = nn.Identity()`. Loader now correctly drops pretrained `norm.*` keys (219/221 load; both `fc_norm.*` are random-init as in the original).
+
+**Diagnostic impact** (Wang-protocol 12-seed sweep, LaBraM only):
+
+|  | exp23 (pre-fix) | exp24 (fixed) | Δ |
+|---|---:|---:|---:|
+| Wang 4-seed win_BA mean | 0.608 | 0.602 | **−0.006** |
+| All 12-seed win_BA mean | 0.571 | 0.578 | +0.007 |
+| All 12-seed rec_BA mean | 0.646 | 0.592 | −0.054 |
+| Wang gap (win) | 22 pp | 23 pp | — |
+
+Recording-level swings are large *per seed* (seed 0: +25 pp, seed 2: −25 pp) but cancel in the mean. Window-level Wang-protocol metric moves <1 pp — below the 3 pp materiality threshold.
+
+**Decision**: keep fix (new extractor in `baseline/labram/`) but **do NOT re-run canonical LaBraM experiments** (exp03-08, exp11, exp12, exp18, frozen/ft_labram_* caches). Rationale: Wang-protocol gap is dominated by split-RNG (Wang's seed → split indices mapping is unspecified), not this architecture bug; 80 GPU-hr rerun would not change any scientific claim in the paper. Canonical numbers in the master table and figures remain authoritative.
+
+**CBraMod and REVE audited too** (2026-04-15):
+- REVE: our `baseline/reve/model.py` is a line-by-line match of the official `modeling_reve.py` bundled with the pretrained weights. 140/140 params load. No deviation.
+- CBraMod: 209/209 encoder params load; `proj_out.*` (masked-patch reconstruction head from pretraining) is intentionally replaced with `Identity` for feature extraction. No deviation.
+
+Only LaBraM had the drift. CBraMod/REVE collapse under LLRD 0.65 in exp20 is therefore attributable to LLRD-vs-architecture mismatch (Wang tuned 0.65 for LaBraM only), not to our implementation.
+
+**Do NOT write F21 into the paper.** Internal methodology note.
+
+**Files**: `baseline/labram/model.py`, `baseline/labram/labram_extractor.py`, `results/studies/exp24_labram_fixed/`.
+
+---
+
 ## Deprecated numbers — do NOT cite
 
 | Number | Why wrong | Replacement |

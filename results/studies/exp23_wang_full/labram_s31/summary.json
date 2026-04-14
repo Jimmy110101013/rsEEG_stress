@@ -1,0 +1,65 @@
+{
+  "mode": "ft",
+  "label": "dass",
+  "split_mode": "wang",
+  "layer_decay": 0.65,
+  "val_metric": "win_acc",
+  "loss": "ce",
+  "threshold": null,
+  "aug_overlap": 0.75,
+  "acc": 0.6667,
+  "bal_acc": 0.4286,
+  "f1": 0.6222,
+  "kappa": -0.1739,
+  "n_samples": 9,
+  "n_class_1": 19,
+  "n_class_0": 63,
+  "win_bal_acc_per_fold": [
+    0.4084
+  ],
+  "win_bal_acc_mean": 0.4084,
+  "per_subject": [
+    {
+      "patient_id": 4,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 5,
+      "n_samples": 1.0,
+      "n_correct": 1.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 12,
+      "n_samples": 1.0,
+      "n_correct": 1.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 13,
+      "n_samples": 1.0,
+      "n_correct": 1.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 14,
+      "n_samples": 1.0,
+      "n_correct": 1.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 17,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 18,
+      "n_samples": 1.0,
+      "n_correct": 1.0,
+      "acc": 1.0
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Mode: FT | Extractor: labram | Label: dass
+Device: cuda:5 | Folds: 5 | Loss: ce
+Augmentation: 75% overlap for increase class
+LR: 1e-05 | WD: 0.05 | BS: 32 | Grad-accum: 1 | Grad-clip: 1.0
+
+Results -> results/studies/exp24_labram_fixed/labram_s11/
+Window: 5.0s
+Duration filter: skipped 10 recordings > 400.0s
+Dataset: 82 recordings loaded (19 increase, 63 normal)
+Cache: 82 recordings ready (82 cached, 0 new)
+Labels (dass): class_0=63, class_1=19 (total=82)
+
+Wang single split (seed=11): train=65, val=8, test=9
+
+============================================================
+Wang split (seed=11)
+============================================================
+  Train:  65 trials, label_0=50, label_1=15
+    Val:   8 trials, label_0=6, label_1=2
+   Test:   9 trials, label_0=7, label_1=2
+  Building window datasets...
+    WindowDataset: 6815 windows (class_0=3064, class_1=3751)
+    WindowDataset: 652 windows (class_0=366, class_1=286)
+    WindowDataset: 825 windows (class_0=435, class_1=390)
+[LaBraM] Loaded 219/221 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  Trainable parameters: 5,820,539
+  Class weights: [1.1121083498001099, 0.908424437046051]
+  LLRD: 14 layer groups, LR ∈ [3.70e-08, 1.00e-05] (decay=0.65)
+  Fold 1 | Ep   1/50 | t_loss=0.6915 t_acc=0.555 | v_loss=0.6885 v_bal=0.558 | v_rec_bal=0.500 | lr=3.3e-06 | 10.2s
+  Fold 1 | Ep   2/50 | t_loss=0.6402 t_acc=0.643 | v_loss=0.6203 v_bal=0.665 | v_rec_bal=0.667 | lr=6.7e-06 | 8.8s
+  Fold 1 | Ep   3/50 | t_loss=0.5405 t_acc=0.716 | v_loss=0.6049 v_bal=0.636 | v_rec_bal=0.750 | lr=1.0e-05 | 8.6s
+  Fold 1 | Ep   4/50 | t_loss=0.4802 t_acc=0.766 | v_loss=0.6064 v_bal=0.672 | v_rec_bal=0.750 | lr=1.0e-05 | 8.6s
+  Fold 1 | Ep   5/50 | t_loss=0.4415 t_acc=0.793 | v_loss=0.6321 v_bal=0.693 | v_rec_bal=0.583 | lr=1.0e-05 | 8.9s
+  Fold 1 | Ep   6/50 | t_loss=0.3943 t_acc=0.819 | v_loss=0.6390 v_bal=0.695 | v_rec_bal=0.667 | lr=9.9e-06 | 8.9s
+  Fold 1 | Ep   7/50 | t_loss=0.3493 t_acc=0.840 | v_loss=0.7035 v_bal=0.688 | v_rec_bal=0.750 | lr=9.8e-06 | 8.7s
+  Fold 1 | Ep   8/50 | t_loss=0.3115 t_acc=0.859 | v_loss=0.7146 v_bal=0.669 | v_rec_bal=0.833 | lr=9.7e-06 | 8.9s
+  Fold 1 | Ep   9/50 | t_loss=0.2629 t_acc=0.892 | v_loss=0.7318 v_bal=0.664 | v_rec_bal=0.833 | lr=9.6e-06 | 8.5s
+  Fold 1 | Ep  10/50 | t_loss=0.2235 t_acc=0.910 | v_loss=0.7125 v_bal=0.706 | v_rec_bal=0.917 | lr=9.5e-06 | 8.9s
+  Fold 1 | Ep  11/50 | t_loss=0.1900 t_acc=0.925 | v_loss=0.7263 v_bal=0.711 | v_rec_bal=0.917 | lr=9.3e-06 | 8.5s
+  Fold 1 | Ep  12/50 | t_loss=0.1613 t_acc=0.938 | v_loss=0.7439 v_bal=0.734 | v_rec_bal=0.917 | lr=9.1e-06 | 8.7s
+  Fold 1 | Ep  13/50 | t_loss=0.1331 t_acc=0.951 | v_loss=0.9298 v_bal=0.720 | v_rec_bal=0.833 | lr=8.9e-06 | 8.9s
+  Fold 1 | Ep  14/50 | t_loss=0.1124 t_acc=0.960 | v_loss=0.8030 v_bal=0.747 | v_rec_bal=0.917 | lr=8.7e-06 | 8.7s
+  Fold 1 | Ep  15/50 | t_loss=0.0888 t_acc=0.968 | v_loss=0.8823 v_bal=0.730 | v_rec_bal=0.917 | lr=8.5e-06 | 10.0s
+  Fold 1 | Ep  16/50 | t_loss=0.0717 t_acc=0.976 | v_loss=0.9625 v_bal=0.727 | v_rec_bal=0.917 | lr=8.2e-06 | 8.5s
+  Fold 1 | Ep  17/50 | t_loss=0.0569 t_acc=0.982 | v_loss=0.9329 v_bal=0.740 | v_rec_bal=0.917 | lr=8.0e-06 | 8.5s
+  Fold 1 | Ep  18/50 | t_loss=0.0471 t_acc=0.985 | v_loss=1.0637 v_bal=0.732 | v_rec_bal=0.917 | lr=7.7e-06 | 8.9s
+  Fold 1 | Ep  19/50 | t_loss=0.0362 t_acc=0.990 | v_loss=1.1644 v_bal=0.730 | v_rec_bal=0.917 | lr=7.4e-06 | 8.5s
+  Fold 1 | Ep  20/50 | t_loss=0.0274 t_acc=0.992 | v_loss=1.2316 v_bal=0.729 | v_rec_bal=0.917 | lr=7.1e-06 | 8.5s
+  Fold 1 | Ep  21/50 | t_loss=0.0216 t_acc=0.994 | v_loss=1.2561 v_bal=0.739 | v_rec_bal=0.917 | lr=6.8e-06 | 9.0s
+  Fold 1 | Ep  22/50 | t_loss=0.0195 t_acc=0.995 | v_loss=1.3410 v_bal=0.755 | v_rec_bal=0.917 | lr=6.5e-06 | 8.5s
+  Fold 1 | Ep  23/50 | t_loss=0.0118 t_acc=0.997 | v_loss=1.4638 v_bal=0.743 | v_rec_bal=0.917 | lr=6.2e-06 | 8.9s
+  Fold 1 | Ep  24/50 | t_loss=0.0102 t_acc=0.997 | v_loss=1.7347 v_bal=0.749 | v_rec_bal=0.917 | lr=5.8e-06 | 8.5s
+  Fold 1 | Ep  25/50 | t_loss=0.0081 t_acc=0.998 | v_loss=1.7150 v_bal=0.748 | v_rec_bal=0.917 | lr=5.5e-06 | 8.5s
+  Fold 1 | Ep  26/50 | t_loss=0.0056 t_acc=0.999 | v_loss=1.7555 v_bal=0.754 | v_rec_bal=0.917 | lr=5.2e-06 | 8.9s
+  Fold 1 | Ep  27/50 | t_loss=0.0050 t_acc=0.999 | v_loss=1.8488 v_bal=0.753 | v_rec_bal=0.917 | lr=4.8e-06 | 8.6s
+  Fold 1 | Ep  28/50 | t_loss=0.0043 t_acc=0.999 | v_loss=1.9466 v_bal=0.743 | v_rec_bal=0.917 | lr=4.5e-06 | 8.5s
+  Fold 1 | Ep  29/50 | t_loss=0.0033 t_acc=0.999 | v_loss=1.9868 v_bal=0.746 | v_rec_bal=0.917 | lr=4.2e-06 | 8.5s
+  Fold 1 | Ep  30/50 | t_loss=0.0025 t_acc=0.999 | v_loss=1.9716 v_bal=0.744 | v_rec_bal=0.917 | lr=3.8e-06 | 8.8s
+  Fold 1 | Ep  31/50 | t_loss=0.0019 t_acc=1.000 | v_loss=2.0006 v_bal=0.751 | v_rec_bal=0.917 | lr=3.5e-06 | 8.5s
+  Fold 1 | Ep  32/50 | t_loss=0.0015 t_acc=1.000 | v_loss=2.0490 v_bal=0.755 | v_rec_bal=0.917 | lr=3.2e-06 | 8.5s
+  Fold 1 | Ep  33/50 | t_loss=0.0013 t_acc=1.000 | v_loss=2.0769 v_bal=0.749 | v_rec_bal=0.917 | lr=2.9e-06 | 8.5s
+  Fold 1 | Ep  34/50 | t_loss=0.0009 t_acc=1.000 | v_loss=2.0857 v_bal=0.757 | v_rec_bal=0.917 | lr=2.6e-06 | 8.5s
+  Fold 1 | Ep  35/50 | t_loss=0.0004 t_acc=1.000 | v_loss=2.0932 v_bal=0.746 | v_rec_bal=0.917 | lr=2.3e-06 | 8.5s
+  Fold 1 | Ep  36/50 | t_loss=0.0002 t_acc=1.000 | v_loss=2.0890 v_bal=0.757 | v_rec_bal=0.917 | lr=2.0e-06 | 8.5s
+  Fold 1 | Ep  37/50 | t_loss=0.0006 t_acc=1.000 | v_loss=2.0970 v_bal=0.754 | v_rec_bal=0.917 | lr=1.8e-06 | 8.5s
+  Fold 1 | Ep  38/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1099 v_bal=0.755 | v_rec_bal=0.917 | lr=1.5e-06 | 8.5s
+  Fold 1 | Ep  39/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1495 v_bal=0.755 | v_rec_bal=0.917 | lr=1.3e-06 | 8.5s
+  Fold 1 | Ep  40/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1408 v_bal=0.759 | v_rec_bal=0.917 | lr=1.1e-06 | 8.5s
+  Fold 1 | Ep  41/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1522 v_bal=0.759 | v_rec_bal=0.917 | lr=8.8e-07 | 8.5s
+  Fold 1 | Ep  42/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1802 v_bal=0.757 | v_rec_bal=0.917 | lr=7.0e-07 | 8.5s
+  Fold 1 | Ep  43/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1663 v_bal=0.752 | v_rec_bal=0.917 | lr=5.4e-07 | 8.5s
+  Fold 1 | Ep  44/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1838 v_bal=0.750 | v_rec_bal=0.917 | lr=4.0e-07 | 8.5s
+  Fold 1 | Ep  45/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1758 v_bal=0.753 | v_rec_bal=0.917 | lr=2.8e-07 | 8.5s
+  Fold 1 | Ep  46/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1878 v_bal=0.753 | v_rec_bal=0.917 | lr=1.8e-07 | 8.5s
+  Fold 1 | Ep  47/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1841 v_bal=0.756 | v_rec_bal=0.917 | lr=1.0e-07 | 8.5s
+  Fold 1 | Ep  48/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1996 v_bal=0.755 | v_rec_bal=0.917 | lr=1.0e-07 | 8.5s
+  Fold 1 | Ep  49/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.2022 v_bal=0.756 | v_rec_bal=0.917 | lr=1.0e-07 | 8.5s
+  Fold 1 | Ep  50/50 | t_loss=0.0000 t_acc=1.000 | v_loss=2.1878 v_bal=0.755 | v_rec_bal=0.917 | lr=1.0e-07 | 8.6s
+  -> Test (best@ep22): rec_bal=0.4286  win_bal=0.5832
+  -> Fold summary (best @ epoch 22): rec_acc=0.6667, rec_bal=0.4286, win_bal=0.5832
+
+============================================================
+Global Results (Wang single split (seed=11), FT)
+Extractor: labram | Label: dass | Loss: ce
+Augmentation: 75% overlap for increase class
+============================================================
+           acc: 0.6667
+       bal_acc: 0.4286
+            f1: 0.6222
+         kappa: -0.1739
+  Predictions: 9 (dataset: 82)
+
+Results saved to results/studies/exp24_labram_fixed/labram_s11/

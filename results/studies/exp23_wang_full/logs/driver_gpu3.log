@@ -1,0 +1,15 @@
+==========================================
+exp23 LaBraM Wang-full-aug on cuda:3 — 公曆 20廿六年 四月 十五日 週三 〇時37分57秒
+Seeds: 0 1 2 42
+==========================================
+[00:37] START labram_s0 on cuda:3
+[00:45] OK labram_s0: rec=0.75  win=0.749
+[00:45] START labram_s1 on cuda:3
+[00:52] OK labram_s1: rec=0.6786  win=0.4743
+[00:52] START labram_s2 on cuda:3
+[00:59] OK labram_s2: rec=0.6071  win=0.543
+[00:59] START labram_s42 on cuda:3
+[01:06] OK labram_s42: rec=0.7857  win=0.6645
+==========================================
+DONE cuda:3 — 公曆 20廿六年 四月 十五日 週三 一時六分52秒
+==========================================

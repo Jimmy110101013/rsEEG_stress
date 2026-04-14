@@ -1,0 +1,15 @@
+==========================================
+exp24 LaBraM (fc_norm-only) diagnostic on cuda:3 — 公曆 20廿六年 四月 十五日 週三 二時二分五秒
+Seeds: 0 1 2 42
+==========================================
+[02:02] START labram_s0 on cuda:3
+[02:09] OK labram_s0: rec=1.0  win=0.7216
+[02:09] START labram_s1 on cuda:3
+[02:16] OK labram_s1: rec=0.6071  win=0.4802
+[02:16] START labram_s2 on cuda:3
+[02:24] OK labram_s2: rec=0.3571  win=0.5449
+[02:24] START labram_s42 on cuda:3
+[02:31] OK labram_s42: rec=0.7143  win=0.6621
+==========================================
+DONE cuda:3 — 公曆 20廿六年 四月 十五日 週三 二時卅一分十五秒
+==========================================
