@@ -125,15 +125,19 @@ def main():
                    choices=["stress", "adftd", "tdbrain", "eegmat"])
     p.add_argument("--device", default="cuda:6")
     p.add_argument("--batch-size", type=int, default=16)
+    p.add_argument("--window-sec", type=float, default=5.0,
+                   help="Window size in seconds (default: 5.0)")
+    p.add_argument("--out-suffix", default="",
+                   help="Suffix for output filename (e.g. '_w10' → frozen_labram_adftd_19ch_w10.npz)")
     args = p.parse_args()
 
     model_name = args.extractor
     norm = MODEL_NORM[model_name]
 
     print(f"Extracting frozen {model_name} features for {args.dataset}")
-    print(f"  norm={norm}, device={args.device}")
+    print(f"  norm={norm}, device={args.device}, window_sec={args.window_sec}")
 
-    ds, pids, labels, n_ch = load_dataset(args.dataset, norm)
+    ds, pids, labels, n_ch = load_dataset(args.dataset, norm, window_sec=args.window_sec)
     print(f"  {args.dataset}: {len(ds)} recordings, {len(np.unique(pids))} subjects, {n_ch}ch")
 
     extractor = setup_extractor(model_name, n_ch, args.device)
@@ -146,7 +150,7 @@ def main():
     save_dir = "results/features_cache"
     os.makedirs(save_dir, exist_ok=True)
     ch_tag = f"{n_ch}ch"
-    out_path = os.path.join(save_dir, f"frozen_{model_name}_{args.dataset}_{ch_tag}.npz")
+    out_path = os.path.join(save_dir, f"frozen_{model_name}_{args.dataset}_{ch_tag}{args.out_suffix}.npz")
     np.savez_compressed(
         out_path, features=features, patient_ids=pids_arr, labels=labels_arr)
     print(f"\nSaved: {out_path}")

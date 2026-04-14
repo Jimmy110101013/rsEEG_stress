@@ -1,0 +1,6 @@
+{
+  "extractor": "cbramod",
+  "device": "cuda:4",
+  "norm": "none",
+  "no_bf16": false
+}

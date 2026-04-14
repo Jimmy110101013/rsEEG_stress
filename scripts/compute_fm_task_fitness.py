@@ -351,7 +351,7 @@ def main():
     
     # Save everything
     output = {"per_model_dataset": all_results, "cka_cross_model": cka_results}
-    out_path = "results/studies/2026-04-11_fm_task_fitness/fitness_metrics.json"
+    out_path = "results/studies/exp06_fm_task_fitness/fitness_metrics.json"
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2)

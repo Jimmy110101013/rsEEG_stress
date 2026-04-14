@@ -1,0 +1,62 @@
+{
+  "variance": {
+    "UCSD Stress (chronic stress)": {
+      "eta2_subject": 0.6490601609076717,
+      "eta2_subject_std": 0.10161266375878414,
+      "eta2_label": 0.05919758882414183,
+      "eta2_label_std": 0.06231075858747792,
+      "ratio": 10.96430063791675,
+      "n_subjects": 17,
+      "n_samples": 70
+    },
+    "ADFTD full (N=65)": {
+      "eta2_subject": 0.7831683438202061,
+      "eta2_subject_std": 0.06347640219506835,
+      "eta2_label": 0.02373086949156354,
+      "eta2_label_std": 0.026124287221965203,
+      "ratio": 33.00209223680687,
+      "n_subjects": 65,
+      "n_samples": 195
+    },
+    "ADFTD matched (N=17, mean of 10 draws)": {
+      "eta2_subject": 0.7484370697604057,
+      "eta2_subject_std": 0.04186320159312166,
+      "eta2_label": 0.062046929406343355,
+      "eta2_label_std": 0.01642483587857185,
+      "ratio": 13.04152886857548,
+      "n_subjects": 17,
+      "n_samples": 51
+    }
+  },
+  "cosine": {
+    "UCSD Stress (chronic stress)": {
+      "within_subject": 0.9785809516906738,
+      "between_subject": 0.9431734681129456,
+      "subject_gap": 0.03540748357772827,
+      "same_label_diff_subj": 0.9436424970626831,
+      "diff_label_diff_subj": 0.9426533579826355,
+      "label_gap": 0.0009891390800476074
+    },
+    "ADFTD full (N=65)": {
+      "within_subject": 0.9839770197868347,
+      "between_subject": 0.947382390499115,
+      "subject_gap": 0.03659462928771973,
+      "same_label_diff_subj": 0.9480299949645996,
+      "diff_label_diff_subj": 0.9467396140098572,
+      "label_gap": 0.0012903809547424316
+    },
+    "ADFTD matched (N=17, mean of 10 draws)": {
+      "within_subject": 0.9839627742767334,
+      "between_subject": 0.9443070292472839,
+      "subject_gap": 0.03965574502944946,
+      "same_label_diff_subj": 0.9515372514724731,
+      "diff_label_diff_subj": 0.9374897480010986,
+      "label_gap": 0.014047503471374512
+    }
+  },
+  "classical_ml": {
+    "UCSD Stress (chronic stress)": 0.5356151711378354,
+    "ADFTD full (Alzheimer's, N=65)": 0.7531928480204342,
+    "ADFTD matched (Alzheimer's, N=17)": 0.6833333333333333
+  }
+}

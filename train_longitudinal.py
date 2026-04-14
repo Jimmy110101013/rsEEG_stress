@@ -28,6 +28,8 @@ from sklearn.linear_model import LogisticRegression
 
 import baseline.mock_fm  # noqa: F401
 import baseline.reve  # noqa: F401
+import baseline.labram  # noqa: F401
+import baseline.cbramod  # noqa: F401
 from baseline.abstract import create_extractor
 from pipeline.dataset import StressEEGDataset, stress_collate_fn
 from src.model import DecoupledStressModel
@@ -228,8 +230,9 @@ def main():
     summary["per_subject"] = per_subject_results
 
     # Save
-    run_id = f"{datetime.now():%Y%m%d_%H%M}_longitudinal_{args.extractor}"
-    results_dir = os.path.join("results", run_id)
+    results_dir = os.path.join(
+        "results", "studies", "exp11_longitudinal_dss", args.extractor
+    )
     os.makedirs(results_dir, exist_ok=True)
     with open(os.path.join(results_dir, "summary.json"), "w") as f:
         json.dump(summary, f, indent=2)

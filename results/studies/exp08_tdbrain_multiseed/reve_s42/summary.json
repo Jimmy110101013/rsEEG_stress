@@ -1,0 +1,2163 @@
+{
+  "subject_acc": 0.3869,
+  "subject_bal_acc": 0.476,
+  "subject_f1": 0.4644,
+  "subject_kappa": -0.0178,
+  "n_samples": 734,
+  "per_subject": [
+    {
+      "patient_id": 87974617,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87974621,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 87974665,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 87974709,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 87974841,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87974973,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87976193,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 87976369,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87976413,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 87976457,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 87976461,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87976505,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87976641,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87976773,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87976817,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87976953,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87977045,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 87980197,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87980241,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87980329,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87980373,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 87980417,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87980689,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 87980869,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87980913,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 87982225,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 87982849,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 87999321,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88000181,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88000313,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88000489,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88000533,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88001661,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88002789,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88003869,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88004853,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88005805,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88005849,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88005893,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88005937,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88005941,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88005985,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88006117,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88006161,
+      "n_samples": 4.0,
+      "n_correct": 3.0,
+      "acc": 0.75
+    },
+    {
+      "patient_id": 88006209,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88006477,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88006837,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88008321,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88008681,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88008997,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88009901,
+      "n_samples": 4.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88010033,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88010709,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88010753,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88010929,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88010981,
+      "n_samples": 4.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88011333,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88011833,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88012053,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88012461,
+      "n_samples": 4.0,
+      "n_correct": 4.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88012817,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88013177,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88013813,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88013905,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88015029,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88015205,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88015249,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88015477,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88016105,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88016465,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88017137,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88017409,
+      "n_samples": 4.0,
+      "n_correct": 4.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88017765,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88017821,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88017865,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88018717,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88018937,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88018941,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88018989,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88019393,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88019569,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88019973,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88020017,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88020021,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88020109,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88020153,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88020381,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88020425,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88020557,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88020737,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88020873,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88020917,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88021053,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88021101,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88021145,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88021277,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88021321,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88022001,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88022089,
+      "n_samples": 4.0,
+      "n_correct": 3.0,
+      "acc": 0.75
+    },
+    {
+      "patient_id": 88022133,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88022765,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88023125,
+      "n_samples": 4.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88023485,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88023529,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88024697,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88024789,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88024833,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88024965,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88025013,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88025057,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88025061,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88025105,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88025281,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88025465,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88025597,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88025641,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88025685,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88025873,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88026005,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88026233,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88026321,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88026409,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88026593,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88026769,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88026857,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88027129,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88027173,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88027713,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88028253,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88028565,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88029381,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88029513,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88029601,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88029645,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88029689,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88029777,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88029789,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88029833,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88030193,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88030281,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88030369,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88030549,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88030641,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88032569,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88032621,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88032665,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88032841,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88032973,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88033201,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88033377,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88033561,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88033925,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88034061,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88034105,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88034645,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88034733,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88034781,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88035049,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88035185,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88035229,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88035497,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88035501,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88035589,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88035677,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88035721,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88036037,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88036217,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88038069,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88038921,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88039057,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88039325,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88039417,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88039465,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88039773,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88039957,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88040449,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88041261,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88041397,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88041665,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88041805,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88041893,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88041941,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88042749,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88042837,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88042969,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88043021,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88043065,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88043153,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88043373,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88043381,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88043425,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88043873,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88044497,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88044501,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88044545,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88044681,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88044905,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88045085,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88045353,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88045713,
+      "n_samples": 4.0,
+      "n_correct": 2.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88045809,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88045989,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88046033,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88046257,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88046349,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88046437,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88046569,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88046665,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88046797,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88046885,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88046981,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88047245,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88047377,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88047517,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88047737,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88047789,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88047921,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88048281,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88048325,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88048461,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88048729,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88048817,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88048953,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88049089,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88049405,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88049493,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88049537,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88049585,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88049813,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88049857,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88049905,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88050037,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88050169,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88050713,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88051073,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88052013,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88052061,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88052197,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88052285,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88052329,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88052465,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88052509,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88052869,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88053317,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88053453,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88053545,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88053997,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88054181,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88054313,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88054357,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88054577,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88054629,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88055077,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88055121,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88055301,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88055749,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88056017,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88056785,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88057461,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88057769,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88057869,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88057913,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88058001,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88058229,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88058633,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88058993,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88059125,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88059169,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88059349,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88059397,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88059573,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88059665,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88060249,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88060429,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88061061,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88061105,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88061597,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88061729,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88061961,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88062141,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88062409,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88062545,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88063221,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88063445,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88064565,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88064657,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88064793,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88064837,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88065197,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88065241,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88065329,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88065425,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88066053,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88066145,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88066281,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88066325,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88066729,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88066773,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88066865,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88067177,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88067181,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88067225,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88067357,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88067853,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88067989,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88068213,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88068481,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88068525,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88068665,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88068841,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88068885,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88069069,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88069473,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88069517,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88069605,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88069649,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88069737,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88069741,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88069793,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88069837,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88069925,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88070061,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88070149,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88070285,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88071005,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88071409,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88071589,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88071677,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88071857,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88071949,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88071993,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88072081,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88072125,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88072265,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88072573,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88072581,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88072889,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88072933,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88073029,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88073433,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88073797,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88074201,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88074425,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88075053,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88075233,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88075457,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88075725,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88075769,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88075817,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88076401,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88076445,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88076629,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88076761,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88076849,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88076941,
+      "n_samples": 2.0,
+      "n_correct": 1.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": 88077345,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88077525,
+      "n_samples": 2.0,
+      "n_correct": 2.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": 88077569,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    },
+    {
+      "patient_id": 88077613,
+      "n_samples": 2.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    }
+  ]
+}

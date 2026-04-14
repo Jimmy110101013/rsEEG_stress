@@ -1,0 +1,161 @@
+{
+  "extractor": "reve",
+  "norm": "none",
+  "centroid": {
+    "acc": 0.3333,
+    "bal_acc": 0.3333,
+    "kappa": -0.3333,
+    "n": 54
+  },
+  "1nn": {
+    "acc": 0.4259,
+    "bal_acc": 0.4259,
+    "kappa": -0.1481,
+    "n": 54
+  },
+  "linear": {
+    "acc": 0.0,
+    "bal_acc": 0.0,
+    "kappa": -1.0,
+    "n": 54
+  },
+  "per_subject": [
+    {
+      "patient_id": 1,
+      "n": 5,
+      "median": 81.0,
+      "n_above": 2,
+      "n_below": 2,
+      "n_tied": 1,
+      "centroid_acc": 0.0,
+      "1nn_acc": 0.5,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 3,
+      "n": 6,
+      "median": 54.5,
+      "n_above": 3,
+      "n_below": 3,
+      "n_tied": 0,
+      "centroid_acc": 0.1667,
+      "1nn_acc": 0.1667,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 4,
+      "n": 6,
+      "median": 47.5,
+      "n_above": 3,
+      "n_below": 3,
+      "n_tied": 0,
+      "centroid_acc": 0.8333,
+      "1nn_acc": 0.8333,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 5,
+      "n": 6,
+      "median": 68.0,
+      "n_above": 3,
+      "n_below": 3,
+      "n_tied": 0,
+      "centroid_acc": 0.1667,
+      "1nn_acc": 0.6667,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 6,
+      "n": 5,
+      "median": 57.99999999999999,
+      "n_above": 2,
+      "n_below": 2,
+      "n_tied": 1,
+      "centroid_acc": 0.75,
+      "1nn_acc": 0.0,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 7,
+      "n": 5,
+      "median": 31.0,
+      "n_above": 2,
+      "n_below": 2,
+      "n_tied": 1,
+      "centroid_acc": 0.0,
+      "1nn_acc": 0.0,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 8,
+      "n": 4,
+      "median": 19.5,
+      "n_above": 2,
+      "n_below": 2,
+      "n_tied": 0,
+      "centroid_acc": 0.25,
+      "1nn_acc": 0.0,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 10,
+      "n": 3,
+      "median": 82.0,
+      "n_above": 1,
+      "n_below": 1,
+      "n_tied": 1
+    },
+    {
+      "patient_id": 11,
+      "n": 6,
+      "median": 64.5,
+      "n_above": 3,
+      "n_below": 3,
+      "n_tied": 0,
+      "centroid_acc": 0.6667,
+      "1nn_acc": 0.8333,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 12,
+      "n": 6,
+      "median": 67.0,
+      "n_above": 3,
+      "n_below": 3,
+      "n_tied": 0,
+      "centroid_acc": 0.0,
+      "1nn_acc": 0.6667,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 13,
+      "n": 5,
+      "median": 63.0,
+      "n_above": 2,
+      "n_below": 2,
+      "n_tied": 1,
+      "centroid_acc": 0.0,
+      "1nn_acc": 0.0,
+      "linear_acc": 0.0
+    },
+    {
+      "patient_id": 17,
+      "n": 3,
+      "median": 61.0,
+      "n_above": 1,
+      "n_below": 1,
+      "n_tied": 1
+    },
+    {
+      "patient_id": 18,
+      "n": 4,
+      "median": 13.5,
+      "n_above": 2,
+      "n_below": 2,
+      "n_tied": 0,
+      "centroid_acc": 0.75,
+      "1nn_acc": 0.5,
+      "linear_acc": 0.0
+    }
+  ]
+}

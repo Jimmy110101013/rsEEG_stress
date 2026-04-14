@@ -1,0 +1,6 @@
+{
+  "extractor": "reve",
+  "device": "cuda:5",
+  "norm": "none",
+  "no_bf16": false
+}

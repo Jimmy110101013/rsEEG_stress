@@ -1,0 +1,6 @@
+{
+  "extractor": "labram",
+  "device": "cuda:3",
+  "norm": "zscore",
+  "no_bf16": false
+}
