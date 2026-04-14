@@ -21,7 +21,7 @@ Verdict: **erosion**. `analysis.json` holds the full numeric breakdown.
 ## Layout
 
 ```
-2026-04-10_stress_erosion/
+exp03_stress_erosion/
 ├── README.md            ← you are here
 ├── analysis.json        ← single source of truth for all numbers
 ├── ft_real/             ← real-label FT runs (canonical recipe)
