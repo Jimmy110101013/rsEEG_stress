@@ -1,0 +1,267 @@
+{
+  "cbramod_adftd": {
+    "model": "cbramod",
+    "dataset": "adftd",
+    "design": "nested",
+    "frozen_label_frac": 0.67,
+    "frozen_subject_frac": 61.5574,
+    "ft_label_frac": 5.2988,
+    "ft_subject_frac": 58.3299,
+    "delta_label_frac": 4.6288,
+    "ft_ba": 0.5094,
+    "n_rec": 195,
+    "n_subj": 65,
+    "permanova_frozen": {
+      "pseudo_F": 1.6150374038208726,
+      "p_value": 0.582,
+      "R2": 0.008298625971382234,
+      "n_perm": 499
+    },
+    "permanova_ft": {
+      "pseudo_F": 0.8443506135647386,
+      "p_value": 0.882,
+      "R2": 0.004355817494253315,
+      "n_perm": 499
+    }
+  },
+  "cbramod_eegmat": {
+    "model": "cbramod",
+    "dataset": "eegmat",
+    "design": "crossed",
+    "frozen_label_frac": 3.7221,
+    "frozen_subject_frac": 79.6175,
+    "ft_label_frac": 6.6873,
+    "ft_subject_frac": 55.8676,
+    "delta_label_frac": 2.9652,
+    "ft_ba": 0.5556,
+    "n_rec": 72,
+    "n_subj": 36
+  },
+  "cbramod_stress": {
+    "model": "cbramod",
+    "dataset": "stress",
+    "design": "nested",
+    "frozen_label_frac": 2.545,
+    "frozen_subject_frac": 45.8157,
+    "ft_label_frac": 1.5301,
+    "ft_subject_frac": 22.8126,
+    "delta_label_frac": -1.0148,
+    "ft_ba": 0.5179,
+    "n_rec": 55,
+    "n_subj": 14,
+    "permanova_frozen": {
+      "pseudo_F": 1.7737689265743475,
+      "p_value": 0.59,
+      "R2": 0.032383547112708834,
+      "n_perm": 499
+    },
+    "permanova_ft": {
+      "pseudo_F": 1.2473586803049237,
+      "p_value": 0.92,
+      "R2": 0.022993906259214617,
+      "n_perm": 499
+    }
+  },
+  "cbramod_tdbrain": {
+    "model": "cbramod",
+    "dataset": "tdbrain",
+    "design": "nested",
+    "frozen_label_frac": 1.8246,
+    "frozen_subject_frac": 95.5509,
+    "ft_label_frac": 2.5176,
+    "ft_subject_frac": 94.2321,
+    "delta_label_frac": 0.693,
+    "ft_ba": 0.4978,
+    "n_rec": 734,
+    "n_subj": 359,
+    "permanova_frozen": {
+      "pseudo_F": 13.63172384863708,
+      "p_value": 0.004,
+      "R2": 0.018282113559058163,
+      "n_perm": 499
+    },
+    "permanova_ft": {
+      "pseudo_F": 9.809840681527483,
+      "p_value": 0.016,
+      "R2": 0.013224198633594328,
+      "n_perm": 499
+    }
+  },
+  "labram_adftd": {
+    "model": "labram",
+    "dataset": "adftd",
+    "design": "nested",
+    "frozen_label_frac": 2.5958,
+    "frozen_subject_frac": 66.7847,
+    "ft_label_frac": 13.2478,
+    "ft_subject_frac": 60.0472,
+    "delta_label_frac": 10.652,
+    "ft_ba": 0.7026,
+    "n_rec": 195,
+    "n_subj": 65,
+    "permanova_frozen": {
+      "pseudo_F": 5.444824668999148,
+      "p_value": 0.038,
+      "R2": 0.027437473756652387,
+      "n_perm": 499
+    },
+    "permanova_ft": {
+      "pseudo_F": 6.4354818988221405,
+      "p_value": 0.018,
+      "R2": 0.032268490228268394,
+      "n_perm": 499
+    }
+  },
+  "labram_eegmat": {
+    "model": "labram",
+    "dataset": "eegmat",
+    "design": "crossed",
+    "frozen_label_frac": 5.3485,
+    "frozen_subject_frac": 71.1779,
+    "ft_label_frac": 3.3414,
+    "ft_subject_frac": 82.8489,
+    "delta_label_frac": -2.0072,
+    "ft_ba": 0.7083,
+    "n_rec": 72,
+    "n_subj": 36
+  },
+  "labram_stress": {
+    "model": "labram",
+    "dataset": "stress",
+    "design": "nested",
+    "frozen_label_frac": 4.5278,
+    "frozen_subject_frac": 48.7234,
+    "ft_label_frac": 3.4924,
+    "ft_subject_frac": 11.9706,
+    "delta_label_frac": -1.0354,
+    "ft_ba": 0.5179,
+    "n_rec": 55,
+    "n_subj": 14,
+    "permanova_frozen": {
+      "pseudo_F": 2.950322268911337,
+      "p_value": 0.522,
+      "R2": 0.05273110411645791,
+      "n_perm": 499
+    },
+    "permanova_ft": {
+      "pseudo_F": 1.9664168399760333,
+      "p_value": 0.898,
+      "R2": 0.03577487769852037,
+      "n_perm": 499
+    }
+  },
+  "labram_tdbrain": {
+    "model": "labram",
+    "dataset": "tdbrain",
+    "design": "nested",
+    "frozen_label_frac": 2.413,
+    "frozen_subject_frac": 54.2504,
+    "ft_label_frac": 5.2596,
+    "ft_subject_frac": 54.6668,
+    "delta_label_frac": 2.8467,
+    "ft_ba": 0.6903,
+    "n_rec": 734,
+    "n_subj": 359,
+    "permanova_frozen": {
+      "pseudo_F": 18.52594989130417,
+      "p_value": 0.002,
+      "R2": 0.024683956489428796,
+      "n_perm": 499
+    },
+    "permanova_ft": {
+      "pseudo_F": 12.534026160200145,
+      "p_value": 0.002,
+      "R2": 0.016834725774511776,
+      "n_perm": 499
+    }
+  },
+  "reve_adftd": {
+    "model": "reve",
+    "dataset": "adftd",
+    "design": "nested",
+    "frozen_label_frac": 0.8238,
+    "frozen_subject_frac": 43.8858,
+    "ft_label_frac": 2.1976,
+    "ft_subject_frac": 22.9669,
+    "delta_label_frac": 1.3738,
+    "ft_ba": 0.6624,
+    "n_rec": 195,
+    "n_subj": 65,
+    "permanova_frozen": {
+      "pseudo_F": 2.0622917962183176,
+      "p_value": 0.39,
+      "R2": 0.010572478038824619,
+      "n_perm": 499
+    },
+    "permanova_ft": {
+      "pseudo_F": 1.6627731717101697,
+      "p_value": 0.578,
+      "R2": 0.008541813848729327,
+      "n_perm": 499
+    }
+  },
+  "reve_eegmat": {
+    "model": "reve",
+    "dataset": "eegmat",
+    "design": "crossed",
+    "frozen_label_frac": 2.4596,
+    "frozen_subject_frac": 77.3263,
+    "ft_label_frac": 2.1914,
+    "ft_subject_frac": 79.217,
+    "delta_label_frac": -0.2683,
+    "ft_ba": 0.6944,
+    "n_rec": 72,
+    "n_subj": 36
+  },
+  "reve_stress": {
+    "model": "reve",
+    "dataset": "stress",
+    "design": "nested",
+    "frozen_label_frac": 3.0951,
+    "frozen_subject_frac": 39.3165,
+    "ft_label_frac": 3.2812,
+    "ft_subject_frac": 14.3427,
+    "delta_label_frac": 0.1861,
+    "ft_ba": 0.5089,
+    "n_rec": 55,
+    "n_subj": 14,
+    "permanova_frozen": {
+      "pseudo_F": 1.9611990681640772,
+      "p_value": 0.46,
+      "R2": 0.035683338453583506,
+      "n_perm": 499
+    },
+    "permanova_ft": {
+      "pseudo_F": 1.7833820644974991,
+      "p_value": 0.604,
+      "R2": 0.03255334003289337,
+      "n_perm": 499
+    },
+    "note": "Updated 2026-04-13: FT re-run with window_sec=5 to match frozen"
+  },
+  "reve_tdbrain": {
+    "model": "reve",
+    "dataset": "tdbrain",
+    "design": "nested",
+    "frozen_label_frac": 0.0039,
+    "frozen_subject_frac": 60.6327,
+    "ft_label_frac": 0.9074,
+    "ft_subject_frac": 79.4371,
+    "delta_label_frac": 0.9035,
+    "ft_ba": 0.476,
+    "n_rec": 734,
+    "n_subj": 359,
+    "permanova_frozen": {
+      "pseudo_F": 0.2628504580282303,
+      "p_value": 0.718,
+      "R2": 0.000358956429189079,
+      "n_perm": 499
+    },
+    "permanova_ft": {
+      "pseudo_F": 1.52833456348357,
+      "p_value": 0.452,
+      "R2": 0.0020835385512313837,
+      "n_perm": 499
+    }
+  }
+}

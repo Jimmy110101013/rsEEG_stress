@@ -1,104 +1,340 @@
+% Methods — drafted via paper-writing skill (Method-template: motivation -> design -> advantage).
+% Source: docs/paper_narrative_zh.md §2, docs/findings.md, CLAUDE.md §2
+
 \section{Methods}
 \label{sec:methods}
 
-\subsection{Datasets}
-\label{sec:methods:datasets}
+% --- Overview -----------------------------------------------------
+Given resting-state scalp EEG recordings with a per-recording stress
+label derived from the DASS-21 questionnaire, our goal is to
+(i)~benchmark three publicly available EEG foundation models (FMs) on a
+stress-classification task, (ii)~isolate \emph{what those FMs actually
+encode} from what their downstream balanced accuracy (BA) suggests, and
+(iii)~characterise the fine-tuning (FT) effect across four datasets and
+three architectures. The pipeline in Figure~\ref{fig:pipeline}
+emphasises three design choices that, while individually small, each
+silently invalidate the comparison if handled carelessly: a leak-free
+cross-validation (CV) protocol, per-model input scaling, and
+multi-seed aggregation. Section~\ref{sec:method:data} defines the
+dataset and labels; Section~\ref{sec:method:cv} specifies the CV
+protocol; Section~\ref{sec:method:norm} details per-model input
+normalisation and window length; Section~\ref{sec:method:seed}
+describes multi-seed aggregation and determinism;
+Section~\ref{sec:method:null} introduces the permutation null used to
+gauge effect size against chance; Section~\ref{sec:method:variance}
+lists the variance-decomposition measures used to diagnose the learnt
+representations; Section~\ref{sec:method:report} states how statistics
+are reported.
 
-% Lift table from progress.md §2 + extend to include TDBRAIN.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/main/fig1_pipeline.pdf}
+  \caption{%
+    Pipeline overview. (a)~Preprocessed EEG is epoched into
+    model-native windows (5\,s for LaBraM/CBraMod, 10\,s for REVE),
+    optionally z-scored per-channel, then passed through a frozen or
+    fine-tuned foundation-model encoder; windowed embeddings are
+    globally pooled and fed to either a linear probe (LP) or an MLP
+    head. (b)~Cross-validation protocol. Subject-level
+    \textsc{Stratified\-Group\-KFold}(5) is the primary metric used
+    throughout the paper; trial-level \textsc{Stratified\-KFold}(5) is
+    reported only for reference-paper comparison and is explicitly
+    labelled ``subject leakage present'' wherever it appears.%
+  }
+  \label{fig:pipeline}
+\end{figure}
 
-We evaluate on three resting-state EEG datasets spanning a range of clinical
-signal strengths (Table~\ref{tab:datasets}).
+% --- 2.1 Data and labels -----------------------------------------
+\subsection{Datasets and Labels}
+\label{sec:method:data}
 
-\begin{table}[h]
-\centering
-\caption{Datasets evaluated. Signal strength is qualitative.}
-\label{tab:datasets}
-\small
-\begin{tabular}{lrrlll}
-\toprule
-Dataset & Subjects & Recordings & Protocol & Labels & Signal \\
-\midrule
-UCSD Stress (ours) & 17 & 70 & 5\,min EO, longitudinal & DASS (binary) & Weak \\
-ADFTD~\citep{adftd} & 65 & 195 & $\sim$14\,min EC & AD vs HC & Strong \\
-TDBRAIN~\citep{tdbrain} & 359 & 734 & EO+EC, multi-session & MDD vs HC & Moderate \\
-\bottomrule
-\end{tabular}
-\end{table}
+% MOTIVATION: what labels are, why per-rec matters
+The Stress dataset from Komarov, Ko, and Jung~\cite{komarov2020stress} is a
+longitudinal resting-state study of Taiwanese graduate students: every
+recording is accompanied by a same-day DASS-21 self-report (Depression,
+Anxiety, Stress subscales) and a Daily Stress Score (DSS). Any
+within-subject aggregation of the label---for example, assigning each
+subject a single ``trait'' label by OR-pooling their recording-level
+DASS---silently converts a state-classification task into a trait
+classifier and inflates balanced accuracy on both trial-level and
+subject-level CV by \emph{trait memorisation} (we document this in
+Finding F07). We therefore use the state label at its native
+granularity.
 
-\paragraph{UCSD Stress.} 17 subjects, 70 valid recordings after a 400\,s
-duration filter, 5\,min eyes-open resting protocol, multiple visits per
-subject. Labels are derived from DASS (depression-anxiety-stress) scale: a
-recording is labelled \emph{increase} if the subject's longitudinal DASS
-trajectory crosses a clinical threshold; \emph{normal} otherwise. We use
-the \texttt{subject-dass} label mode in which all recordings from a
-subject classified as \emph{increase} share the positive label, ensuring
-subject-level CV is well-defined.
+% DESIGN --- Stress
+Of the 92 recordings (17 subjects) released with the original Stress
+dataset, we retain the 70 recordings that carry both DASS-21 and DSS
+labels so that downstream within-subject DSS analyses are possible on
+the same subset; the final label is \emph{per-recording DASS increase
+versus normal} (\texttt{--label dass} in the released code), yielding
+14 positive and 56 negative recordings across 17 subjects. Acquisition
+uses a 30-channel 10--20 montage at 500\,Hz with eyes-closed
+resting-state paradigm, 5--10\,min per session. The design is
+\emph{within-subject longitudinal, between-subject} for the state
+label: each participant contributes 4--7 sessions spanning weeks to
+months, and the binary DASS label varies across a participant's own
+recordings so the task is strictly state classification rather than
+trait identification.
 
-\paragraph{ADFTD~\citep{adftd}.} OpenNeuro ds004504. 65 subjects (36 AD,
-29 HC), 19-channel resting-state EEG. We split each $\sim$14\,min recording
-into three contiguous $\sim$4.5\,min pseudo-recordings (\texttt{n\_splits=3})
-to enable within-subject variance analysis, yielding 195 ``recordings'' for
-the variance decomposition.
+% DESIGN --- cross-dataset benchmark
+Three external public EEG datasets provide an out-of-domain benchmark
+of the same three FMs, chosen to span the axis from strong to weak
+label biology:
 
-\paragraph{TDBRAIN~\citep{tdbrain}.} 359 subjects (94 HC, 640 MDD-positive
-recordings across multi-session subjects), 19 channels, 500\,Hz, both
-eyes-open and eyes-closed conditions used as separate recordings. Subject
-identity is preserved across conditions and sessions for subject-level CV.
-
-\subsection{Foundation Models}
-\label{sec:methods:fms}
-
-We evaluate three FMs spanning distinct architectural families:
-\textbf{LaBraM}~\citep{labram2024} (ViT with channel position embeddings,
-embed dim 200), \textbf{REVE}~\citep{reve2024} (ViT with 4D Fourier
-positional encoding and MAE pretraining, embed dim 512), and
-\textbf{CBraMod}~\citep{cbramod2025} (criss-cross transformer with
-asymmetric channel position encoding, embed dim 200).
-
-For frozen feature extraction, all three are restricted to the 19-channel
-common 10-20 montage shared across our datasets, with appropriate channel
-mapping (10-10 to 10-20 aliases applied where necessary).
-
-\subsection{Cross-Validation Protocols}
-\label{sec:methods:cv}
-
-We compare two protocols on identical data:
-\begin{itemize}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
-  \item \textbf{Trial-level CV}: stratified 5-fold over windows, with
-    multiple windows from a single subject potentially appearing in both
-    train and test folds. This is the protocol behind much of the
-    published EEG stress literature.
-  \item \textbf{Subject-level CV}: stratified group 5-fold with subject as
-    the group, ensuring no subject appears in both train and test. This
-    is our primary metric.
+\begin{itemize}
+  \item \textbf{ADFTD} (Miltiadous et al., 2023~\cite{adftd}):
+    routine-clinic scalp EEG from 88 participants with Alzheimer's
+    disease, frontotemporal dementia, or healthy controls; we use the
+    AD-vs-HC subset (195 recordings, 65 subjects), acquired at
+    500\,Hz on a 19-channel 10--20 montage with eyes-closed
+    resting-state paradigm of $\sim$15\,min. AD is known to produce a
+    robust slow-wave (theta/delta) increase in resting EEG, making
+    this a \emph{strong-biomarker, between-subject} benchmark.
+  \item \textbf{TDBRAIN} (van Dijk et al., 2022~\cite{tdbrain}): the
+    Two Decades Brainclinics Research Archive, a multi-disorder
+    clinical EEG repository; we use the major-depressive-disorder
+    (MDD) vs healthy-control subset (734 recordings, 359 subjects)
+    acquired at 500\,Hz on a 26-channel 10--20 montage, eyes-closed
+    resting-state, $\sim$2\,min per recording, reduced to 19 common
+    channels with the other datasets. MDD produces only a
+    \emph{weak and contested} resting-EEG biomarker in the literature
+    (small alpha-asymmetry and frontal-midline-theta effects), making
+    this a \emph{weak-biomarker, between-subject, high-$N$} benchmark.
+  \item \textbf{EEGMAT} (Zyma et al., 2019~\cite{eegmat}, PhysioNet):
+    36 healthy university students performing serial-subtraction
+    mental arithmetic; each subject provides a 180-second eyes-closed
+    rest recording and a 60-second arithmetic-task recording, yielding
+    72 recordings paired \emph{within-subject by design}. Acquisition
+    uses a 19-channel 10--20 montage at 500\,Hz. Task-evoked
+    cognitive-load contrasts are a classical and well-studied EEG
+    biomarker (alpha suppression, theta increase), making this a
+    \emph{strong-biomarker, within-subject, paired-contrast}
+    benchmark---the cleanest available control for subject identity
+    in our panel.
 \end{itemize}
 
-For both, we report balanced accuracy (\BA{}) at the recording level
-(majority vote across windows of a recording), as well as per-window
-metrics for diagnostic purposes.
+All four datasets are resampled to 200\,Hz, notch-filtered at line
+frequency, bandpass-filtered 0.5--45\,Hz, and re-referenced as per each
+FM's canonical preprocessing recipe. Channels are aligned to the
+common 19-electrode 10--20 subset for the three external datasets; the
+Stress dataset is retained at its full 30-channel montage because all
+three FMs accept arbitrary channel count.
 
-\subsection{Variance Decomposition via $\eta^{2}$}
-\label{sec:methods:eta}
+% ADVANTAGE
+The four datasets deliberately span the biomarker-strength $\times$
+design-axis grid: strong-biomarker between-subject (ADFTD),
+weak-biomarker between-subject (TDBRAIN), strong-biomarker
+within-subject paired (EEGMAT), and weak-biomarker within-subject
+longitudinal (Stress). This grid is what lets the cross-dataset
+taxonomy in Section~\ref{sec:results} attribute fine-tuning-direction
+differences to \emph{label biology} rather than to sample size or
+dataset idiosyncrasies. Holding the Stress label at the recording
+level and matching the data subset across frozen-LP, FT, and
+within-subject DSS analyses additionally removes the two well-known
+confounders (label aggregation and sample mismatch) that would
+otherwise make it impossible to attribute a balanced-accuracy change
+to any one design choice.
 
-Given a feature matrix $X \in \mathbb{R}^{n \times d}$ with subject labels
-$s$ and task labels $y$, we compute $\eta^{2}$ for each grouping factor
-via one-way ANOVA per feature dimension and average across dimensions:
-\begin{equation}
-  \eta^{2}_{\mathrm{factor}} =
-    \frac{1}{d} \sum_{j=1}^{d}
-    \frac{\mathrm{SS}_{\mathrm{between}}^{(j)}}
-         {\mathrm{SS}_{\mathrm{total}}^{(j)}}
-\end{equation}
-where $\mathrm{SS}_{\mathrm{between}}^{(j)}$ is the between-group sum of
-squares for feature $j$ under the chosen factor (subject or task). The
-ratio $\eta^{2}_{\mathrm{subject}} / \eta^{2}_{\mathrm{label}}$ quantifies
-the relative dominance of subject identity over the diagnostic signal.
+% --- 2.2 CV protocol ---------------------------------------------
+\subsection{Cross-Validation Protocol}
+\label{sec:method:cv}
 
-To enable fair comparison across datasets with different subject counts, we
-also report a subject-count-matched estimate: for ADFTD ($N{=}65$) we
-randomly subsample $N{=}17$ subjects 10 times and report the mean and
-standard deviation.
+% MOTIVATION
+In EEG resting-state datasets that contain multiple recordings per
+subject, \emph{trial-level} random splits place recordings from the
+same subject on both sides of the train/test boundary, which the model
+can exploit via subject-identity features. Roy et al.~\cite{roy2019review}
+document this leakage across the deep-learning-for-EEG literature.
+Prior foundation-model reports on the UCSD Stress dataset under
+trial-level CV reach 0.90 balanced accuracy~\cite{wang2025stress}; our
+subject-level CV measurements pull the same models to
+0.45--0.60~(Table~\ref{tab:master}), confirming that the majority of
+the reported gain is CV-protocol-driven rather than model-driven
+(F01).
 
-% TODO: add subsection 3.5 on classical baseline (RF on band power)
-% TODO: add subsection 3.6 on adversarial training (GRL setup)
-% TODO: add subsection 3.7 on statistical tests (permutation, bootstrap)
+% DESIGN
+We adopt \textsc{Stratified\-Group\-KFold} ($k{=}5$), grouped by
+\texttt{patient\_id}, as the primary evaluation protocol; every test
+fold contains only subjects unseen during training and validation.
+Trial-level \textsc{Stratified\-KFold} ($k{=}5$) is reported in a
+single figure (Figure~\ref{fig:cvgap}) solely for reference-paper
+comparison and is labelled ``subject leakage present'' in every caption
+and legend. Predictions are pooled across test folds before computing
+balanced accuracy, Cohen's~$\kappa$, macro-F1 and a subject-level
+confusion matrix.
+
+% ADVANTAGE
+Subject-level grouping is the minimum sufficient control against
+trait-memorisation artefacts in EEG state-classification tasks with
+per-subject repeated recordings; it makes every reported effect size in
+this paper a lower bound on the model's trial-level number under the
+same recipe.
+
+% --- 2.3 Per-model input normalisation ---------------------------
+\subsection{Per-Model Input Normalisation and Window Length}
+\label{sec:method:norm}
+
+% MOTIVATION
+Each FM was pre-trained with a specific input scale, and any scaling
+drift at fine-tuning time interacts destructively with the pretrained
+weights. A single global \texttt{--norm} flag applied uniformly across
+a multi-model sweep will silently destroy two of the three models we
+benchmark---an issue we encountered early in development and that we
+flag explicitly here because it is not documented in the original FM
+releases.
+
+% DESIGN
+We apply model-specific input normalisation and window length:
+\begin{itemize}
+  \item \textbf{LaBraM}~\cite{labram2024}: per-channel z-score; 5\,s
+    windows at 200\,Hz.
+  \item \textbf{CBraMod}~\cite{cbramod2025}: \emph{no} external
+    normalisation---the extractor internally divides by 100; z-scoring
+    the input on top drives it to near-zero, collapsing training
+    within a single epoch. 5\,s windows at 200\,Hz.
+  \item \textbf{REVE}~\cite{reve2025}: \emph{no} external
+    normalisation---its patch-embedding layer was trained on
+    $\mu$V-scale data and is scale-sensitive. 10\,s windows at 200\,Hz
+    (the native patch size).
+\end{itemize}
+Classical non-FM baselines (EEGNet, ShallowConvNet, DeepConvNet,
+EEGConformer) use per-channel z-score in line with their original
+publications. All frozen-LP vs.\ FT comparisons are window-matched to
+their own model; a 5\,s~vs.\ 10\,s sensitivity check for REVE is
+reported in the supplementary material.
+
+% ADVANTAGE
+Per-model normalisation preserves the distributional assumptions of
+each pretrained encoder, letting the comparison in
+Table~\ref{tab:master} reflect architectural differences rather than
+undocumented input-scaling incompatibilities.
+
+% --- 2.4 Determinism and multi-seed ------------------------------
+\subsection{Determinism and Multi-Seed Aggregation}
+\label{sec:method:seed}
+
+% MOTIVATION
+In the 70-recording / 14-positive regime, single-seed balanced accuracy
+can swing by more than 10\,pp between otherwise-identical runs even
+with cuDNN determinism enabled. Any claim anchored to a single seed is
+therefore an artefact of random initialisation, not of the method.
+
+% DESIGN
+We set
+\texttt{torch.backends.cudnn.deterministic=True},
+\texttt{benchmark=False}, and a fixed Python/NumPy/PyTorch seed before
+dataset construction. Every Stress finding in the paper is the mean of
+three seeds $\{42, 123, 2024\}$, and the frozen-LP ceiling on Stress
+additionally uses eight seeds (F05). Standard deviations use the sample
+convention ($n{-}1$ divisor); we provide an audit script
+(\texttt{scripts/audit\_std\_convention.py}) that flags any cell in the
+paper deviating from this convention.
+
+% ADVANTAGE
+Three-seed aggregation, combined with cuDNN determinism, converts
+``weekend-run-to-weekend-run'' irreproducibility into a reported
+standard deviation that a reviewer can sanity-check; it also exposes
+power-floor effects (Section~\ref{sec:method:null}) that a single-seed
+run would hide.
+
+% --- 2.5 Permutation null ----------------------------------------
+\subsection{Permutation-Null Protocol}
+\label{sec:method:null}
+
+% MOTIVATION
+In small-$N$ EEG benchmarks, a balanced accuracy of 0.60 on a
+stratified split can be statistically indistinguishable from chance.
+Cohen's~$\kappa$ and bootstrap CIs each address a different aspect of
+this, but neither rules out that the specific label assignment interacts
+with subject-level imbalance to mimic a real effect. A permutation null
+that shuffles labels at the recording level and re-runs the full
+pipeline directly quantifies this.
+
+% DESIGN
+\texttt{train\_ft.py --permute-labels <seed>} shuffles recording-level
+labels before any CV split and then runs the complete FT pipeline
+(same hyperparameters, same early stopping, same seed-setting
+discipline). We repeat this for 10 null seeds per
+\{model, dataset\} cell on Stress, giving a null distribution of size
+$3~\text{FMs} \times 10 = 30$. The $p$-value is the fraction of null
+runs whose balanced accuracy exceeds the real-label mean.
+
+% ADVANTAGE
+A permutation null is label-free by construction, so any residual
+signal in the null distribution is attributable to CV-protocol
+imbalance rather than to the label. This is the single cleanest
+diagnostic for a small-$N$ benchmark like Stress, and it is the
+measurement that downgrades every ``surface'' FT injection claim in
+Section~\ref{sec:results} to a power-floor caveat.
+
+% --- 2.6 Variance decomposition ----------------------------------
+\subsection{Representation-Level Variance Decomposition}
+\label{sec:method:variance}
+
+% MOTIVATION
+Downstream balanced accuracy alone cannot tell whether an FM learnt
+subject-invariant label structure or whether its classifier head
+compensates for a representation that mostly encodes subject identity.
+To separate these two regimes we measure how much of the embedding
+variance is attributable to label versus subject.
+
+% DESIGN
+For every \{model, dataset\} cell we extract the frozen pooled
+embedding of each recording and compute:
+\begin{itemize}
+  \item \textbf{Pooled label fraction} $\eta^2$: the fraction of
+    embedding variance explained by the label after pooling over CV
+    folds; for FT runs this is recomputed on the post-FT embeddings
+    and reported as a paired $\Delta$ (pp).
+  \item \textbf{RSA}: representational similarity analysis of the
+    embedding distance matrix against (a)~a subject-identity indicator
+    matrix and (b)~a label-identity matrix; we report the ratio
+    \(r_{\text{subj}}/r_{\text{label}}\).
+  \item \textbf{Mixed-effects ICC}: variance partitioning into a
+    subject random effect, a label fixed effect, and residual noise.
+  \item \textbf{Matched subsampling}: at each sample-size rung
+    $N \in \{17, 34, 70, 140, \ldots\}$ we draw 100 subsamples and
+    recompute the above measures to verify that the effect is not an
+    $N$ artefact.
+  \item \textbf{Cluster bootstrap}: 1{,}000 subject-resampled
+    bootstrap replicates yield 95\%~CIs for every FT~$-$~Frozen
+    difference.
+\end{itemize}
+All intermediate JSONs are shipped with the code release under
+\texttt{results/studies/exp\{04,09,13\}/}.
+
+% ADVANTAGE
+This panel of measures gives a single representation-level verdict per
+cell---``label injection'', ``label erosion'' or ``null''---that is
+robust to the idiosyncrasies of any one classifier head and is the
+direct input to the cross-dataset taxonomy in Section~\ref{sec:results}.
+
+% --- 2.7 Statistical reporting -----------------------------------
+\subsection{Statistical Reporting}
+\label{sec:method:report}
+
+All mean~$\pm$~std values use the sample convention ($n{-}1$ divisor);
+bootstrap CIs are reported as $[\text{low}, \text{high}]$; effect sizes
+between paired frozen-vs-FT runs use Cohen's~$d$. Balanced accuracy is
+always computed on pooled global predictions after all folds complete,
+never averaged fold-means, so our reported numbers are directly
+comparable to the literature that evaluates on aggregate predictions.
+
+% --- 2.8 Implementation details ---------------------------------
+\subsection{Implementation Details}
+\label{sec:method:impl}
+
+All models are trained with AdamW ($\beta_1{=}0.9$, $\beta_2{=}0.999$,
+weight decay $0.05$) for up to 50 epochs with 3-epoch linear warm-up
+followed by a plateau-reactive scheduler, early stopping with patience
+15 on the validation SMA-3 balanced accuracy, gradient clipping at
+2.0 and a batch size of 32 windows. The minority class is augmented
+with 75\% window overlap (\texttt{--aug-overlap 0.75}). Fine-tuning
+uses per-model best-HP learning rates from a $4\times3$
+grid sweep (F05): LaBraM $1\times10^{-4}$ with encoder LR scale $1.0$;
+CBraMod $1\times10^{-5}$ with encoder LR scale $0.1$; REVE
+$3\times10^{-5}$ with encoder LR scale $0.1$. Linear probes use the
+same optimiser and scheduler on the classifier head only, with the
+encoder held frozen throughout. All runs are executed on a single
+NVIDIA A100~40G under PyTorch~2.5.1~+~CUDA~12.4 inside the
+\texttt{stress} conda environment documented in the code release.

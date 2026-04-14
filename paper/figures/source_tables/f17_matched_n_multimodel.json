@@ -1,0 +1,704 @@
+{
+  "labram_adftd": {
+    "model": "labram",
+    "dataset": "adftd",
+    "full_n": {
+      "frozen_label_frac": 3.1059,
+      "ft_label_frac": 3.2745,
+      "delta": 0.1686,
+      "n_rec": 195,
+      "n_subj": 65
+    },
+    "rungs": {
+      "N17": {
+        "n_per_label": {
+          "0": 8,
+          "1": 9
+        },
+        "observed": {
+          "frozen_mean": 0.0691,
+          "frozen_std": 0.0504,
+          "ft_mean": 0.0812,
+          "ft_std": 0.0352,
+          "delta_mean": 0.0121,
+          "delta_std": 0.0536,
+          "frac_ft_gt_frozen": 0.68,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0455,
+          "frozen_std": 0.0277,
+          "ft_mean": 0.0595,
+          "ft_std": 0.0268,
+          "delta_mean": 0.014,
+          "delta_std": 0.04,
+          "frac_ft_gt_frozen": 0.68,
+          "n_draws": 100
+        }
+      },
+      "N25": {
+        "n_per_label": {
+          "0": 11,
+          "1": 14
+        },
+        "observed": {
+          "frozen_mean": 0.0544,
+          "frozen_std": 0.0376,
+          "ft_mean": 0.0584,
+          "ft_std": 0.0223,
+          "delta_mean": 0.004,
+          "delta_std": 0.0365,
+          "frac_ft_gt_frozen": 0.69,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0316,
+          "frozen_std": 0.0239,
+          "ft_mean": 0.0418,
+          "ft_std": 0.0183,
+          "delta_mean": 0.0102,
+          "delta_std": 0.0292,
+          "frac_ft_gt_frozen": 0.7,
+          "n_draws": 100
+        }
+      },
+      "N35": {
+        "n_per_label": {
+          "0": 16,
+          "1": 19
+        },
+        "observed": {
+          "frozen_mean": 0.0417,
+          "frozen_std": 0.0246,
+          "ft_mean": 0.0462,
+          "ft_std": 0.0152,
+          "delta_mean": 0.0045,
+          "delta_std": 0.0243,
+          "frac_ft_gt_frozen": 0.61,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0224,
+          "frozen_std": 0.016,
+          "ft_mean": 0.0315,
+          "ft_std": 0.0148,
+          "delta_mean": 0.0091,
+          "delta_std": 0.0185,
+          "frac_ft_gt_frozen": 0.74,
+          "n_draws": 100
+        }
+      },
+      "N50": {
+        "n_per_label": {
+          "0": 22,
+          "1": 28
+        },
+        "observed": {
+          "frozen_mean": 0.0346,
+          "frozen_std": 0.0128,
+          "ft_mean": 0.0382,
+          "ft_std": 0.0088,
+          "delta_mean": 0.0037,
+          "delta_std": 0.0141,
+          "frac_ft_gt_frozen": 0.64,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0132,
+          "frozen_std": 0.0068,
+          "ft_mean": 0.0222,
+          "ft_std": 0.007,
+          "delta_mean": 0.009,
+          "delta_std": 0.0099,
+          "frac_ft_gt_frozen": 0.82,
+          "n_draws": 100
+        }
+      }
+    }
+  },
+  "labram_tdbrain": {
+    "model": "labram",
+    "dataset": "tdbrain",
+    "full_n": {
+      "frozen_label_frac": 2.9727,
+      "ft_label_frac": 1.7284,
+      "delta": -1.2444,
+      "n_rec": 734,
+      "n_subj": 359
+    },
+    "rungs": {
+      "N35": {
+        "n_per_label": {
+          "0": 5,
+          "1": 30
+        },
+        "observed": {
+          "frozen_mean": 0.0474,
+          "frozen_std": 0.0346,
+          "ft_mean": 0.0418,
+          "ft_std": 0.0173,
+          "delta_mean": -0.0056,
+          "delta_std": 0.0291,
+          "frac_ft_gt_frozen": 0.5,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0216,
+          "frozen_std": 0.0168,
+          "ft_mean": 0.0283,
+          "ft_std": 0.0132,
+          "delta_mean": 0.0067,
+          "delta_std": 0.0176,
+          "frac_ft_gt_frozen": 0.73,
+          "n_draws": 100
+        }
+      },
+      "N65": {
+        "n_per_label": {
+          "0": 9,
+          "1": 56
+        },
+        "observed": {
+          "frozen_mean": 0.0385,
+          "frozen_std": 0.0252,
+          "ft_mean": 0.0289,
+          "ft_std": 0.0126,
+          "delta_mean": -0.0096,
+          "delta_std": 0.0173,
+          "frac_ft_gt_frozen": 0.37,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0113,
+          "frozen_std": 0.0088,
+          "ft_mean": 0.0143,
+          "ft_std": 0.0067,
+          "delta_mean": 0.0029,
+          "delta_std": 0.0098,
+          "frac_ft_gt_frozen": 0.62,
+          "n_draws": 100
+        }
+      },
+      "N150": {
+        "n_per_label": {
+          "0": 20,
+          "1": 130
+        },
+        "observed": {
+          "frozen_mean": 0.034,
+          "frozen_std": 0.0141,
+          "ft_mean": 0.0216,
+          "ft_std": 0.0061,
+          "delta_mean": -0.0124,
+          "delta_std": 0.0099,
+          "frac_ft_gt_frozen": 0.09,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0043,
+          "frozen_std": 0.0026,
+          "ft_mean": 0.0069,
+          "ft_std": 0.0033,
+          "delta_mean": 0.0026,
+          "delta_std": 0.0035,
+          "frac_ft_gt_frozen": 0.76,
+          "n_draws": 100
+        }
+      },
+      "N300": {
+        "n_per_label": {
+          "0": 39,
+          "1": 261
+        },
+        "observed": {
+          "frozen_mean": 0.0301,
+          "frozen_std": 0.0053,
+          "ft_mean": 0.0177,
+          "ft_std": 0.0025,
+          "delta_mean": -0.0124,
+          "delta_std": 0.0034,
+          "frac_ft_gt_frozen": 0.0,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0019,
+          "frozen_std": 0.0004,
+          "ft_mean": 0.0033,
+          "ft_std": 0.0008,
+          "delta_mean": 0.0013,
+          "delta_std": 0.0009,
+          "frac_ft_gt_frozen": 0.93,
+          "n_draws": 100
+        }
+      }
+    }
+  },
+  "cbramod_adftd": {
+    "model": "cbramod",
+    "dataset": "adftd",
+    "full_n": {
+      "frozen_label_frac": 1.345,
+      "ft_label_frac": 0.4605,
+      "delta": -0.8845,
+      "n_rec": 195,
+      "n_subj": 65
+    },
+    "rungs": {
+      "N17": {
+        "n_per_label": {
+          "0": 8,
+          "1": 9
+        },
+        "observed": {
+          "frozen_mean": 0.0458,
+          "frozen_std": 0.032,
+          "ft_mean": 0.0542,
+          "ft_std": 0.0572,
+          "delta_mean": 0.0084,
+          "delta_std": 0.0655,
+          "frac_ft_gt_frozen": 0.53,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0359,
+          "frozen_std": 0.0298,
+          "ft_mean": 0.059,
+          "ft_std": 0.0553,
+          "delta_mean": 0.0231,
+          "delta_std": 0.0617,
+          "frac_ft_gt_frozen": 0.58,
+          "n_draws": 100
+        }
+      },
+      "N25": {
+        "n_per_label": {
+          "0": 11,
+          "1": 14
+        },
+        "observed": {
+          "frozen_mean": 0.0319,
+          "frozen_std": 0.0196,
+          "ft_mean": 0.0309,
+          "ft_std": 0.036,
+          "delta_mean": -0.0011,
+          "delta_std": 0.0435,
+          "frac_ft_gt_frozen": 0.35,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0207,
+          "frozen_std": 0.0152,
+          "ft_mean": 0.0477,
+          "ft_std": 0.044,
+          "delta_mean": 0.027,
+          "delta_std": 0.0468,
+          "frac_ft_gt_frozen": 0.7,
+          "n_draws": 100
+        }
+      },
+      "N35": {
+        "n_per_label": {
+          "0": 16,
+          "1": 19
+        },
+        "observed": {
+          "frozen_mean": 0.0231,
+          "frozen_std": 0.0161,
+          "ft_mean": 0.0187,
+          "ft_std": 0.0188,
+          "delta_mean": -0.0043,
+          "delta_std": 0.0245,
+          "frac_ft_gt_frozen": 0.39,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0118,
+          "frozen_std": 0.007,
+          "ft_mean": 0.0365,
+          "ft_std": 0.0336,
+          "delta_mean": 0.0247,
+          "delta_std": 0.0334,
+          "frac_ft_gt_frozen": 0.78,
+          "n_draws": 100
+        }
+      },
+      "N50": {
+        "n_per_label": {
+          "0": 22,
+          "1": 28
+        },
+        "observed": {
+          "frozen_mean": 0.0173,
+          "frozen_std": 0.0096,
+          "ft_mean": 0.0108,
+          "ft_std": 0.0108,
+          "delta_mean": -0.0065,
+          "delta_std": 0.0159,
+          "frac_ft_gt_frozen": 0.28,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0066,
+          "frozen_std": 0.0036,
+          "ft_mean": 0.0281,
+          "ft_std": 0.0183,
+          "delta_mean": 0.0215,
+          "delta_std": 0.0187,
+          "frac_ft_gt_frozen": 0.9,
+          "n_draws": 100
+        }
+      }
+    }
+  },
+  "cbramod_tdbrain": {
+    "model": "cbramod",
+    "dataset": "tdbrain",
+    "full_n": {
+      "frozen_label_frac": 2.9474,
+      "ft_label_frac": 2.8868,
+      "delta": -0.0605,
+      "n_rec": 734,
+      "n_subj": 359
+    },
+    "rungs": {
+      "N35": {
+        "n_per_label": {
+          "0": 5,
+          "1": 30
+        },
+        "observed": {
+          "frozen_mean": 0.062,
+          "frozen_std": 0.0768,
+          "ft_mean": 0.0616,
+          "ft_std": 0.0753,
+          "delta_mean": -0.0004,
+          "delta_std": 0.0042,
+          "frac_ft_gt_frozen": 0.54,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0207,
+          "frozen_std": 0.027,
+          "ft_mean": 0.0206,
+          "ft_std": 0.0263,
+          "delta_mean": -0.0001,
+          "delta_std": 0.0023,
+          "frac_ft_gt_frozen": 0.57,
+          "n_draws": 100
+        }
+      },
+      "N65": {
+        "n_per_label": {
+          "0": 9,
+          "1": 56
+        },
+        "observed": {
+          "frozen_mean": 0.0462,
+          "frozen_std": 0.0511,
+          "ft_mean": 0.0458,
+          "ft_std": 0.0503,
+          "delta_mean": -0.0004,
+          "delta_std": 0.0022,
+          "frac_ft_gt_frozen": 0.44,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0095,
+          "frozen_std": 0.011,
+          "ft_mean": 0.0094,
+          "ft_std": 0.0108,
+          "delta_mean": -0.0001,
+          "delta_std": 0.0009,
+          "frac_ft_gt_frozen": 0.54,
+          "n_draws": 100
+        }
+      },
+      "N150": {
+        "n_per_label": {
+          "0": 20,
+          "1": 130
+        },
+        "observed": {
+          "frozen_mean": 0.0353,
+          "frozen_std": 0.0297,
+          "ft_mean": 0.0348,
+          "ft_std": 0.0292,
+          "delta_mean": -0.0005,
+          "delta_std": 0.0012,
+          "frac_ft_gt_frozen": 0.35,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0051,
+          "frozen_std": 0.0052,
+          "ft_mean": 0.0049,
+          "ft_std": 0.005,
+          "delta_mean": -0.0001,
+          "delta_std": 0.0004,
+          "frac_ft_gt_frozen": 0.38,
+          "n_draws": 100
+        }
+      },
+      "N300": {
+        "n_per_label": {
+          "0": 39,
+          "1": 261
+        },
+        "observed": {
+          "frozen_mean": 0.0305,
+          "frozen_std": 0.0106,
+          "ft_mean": 0.0299,
+          "ft_std": 0.0105,
+          "delta_mean": -0.0005,
+          "delta_std": 0.0004,
+          "frac_ft_gt_frozen": 0.06,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0039,
+          "frozen_std": 0.0022,
+          "ft_mean": 0.0037,
+          "ft_std": 0.0022,
+          "delta_mean": -0.0002,
+          "delta_std": 0.0001,
+          "frac_ft_gt_frozen": 0.0,
+          "n_draws": 100
+        }
+      }
+    }
+  },
+  "reve_adftd": {
+    "model": "reve",
+    "dataset": "adftd",
+    "full_n": {
+      "frozen_label_frac": 1.8959,
+      "ft_label_frac": 0.6789,
+      "delta": -1.217,
+      "n_rec": 195,
+      "n_subj": 65
+    },
+    "rungs": {
+      "N17": {
+        "n_per_label": {
+          "0": 8,
+          "1": 9
+        },
+        "observed": {
+          "frozen_mean": 0.0332,
+          "frozen_std": 0.0283,
+          "ft_mean": 0.027,
+          "ft_std": 0.0192,
+          "delta_mean": -0.0062,
+          "delta_std": 0.032,
+          "frac_ft_gt_frozen": 0.47,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0338,
+          "frozen_std": 0.0413,
+          "ft_mean": 0.0276,
+          "ft_std": 0.0212,
+          "delta_mean": -0.0062,
+          "delta_std": 0.0434,
+          "frac_ft_gt_frozen": 0.56,
+          "n_draws": 100
+        }
+      },
+      "N25": {
+        "n_per_label": {
+          "0": 11,
+          "1": 14
+        },
+        "observed": {
+          "frozen_mean": 0.0279,
+          "frozen_std": 0.0212,
+          "ft_mean": 0.0168,
+          "ft_std": 0.0107,
+          "delta_mean": -0.0111,
+          "delta_std": 0.0231,
+          "frac_ft_gt_frozen": 0.4,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0224,
+          "frozen_std": 0.0274,
+          "ft_mean": 0.0167,
+          "ft_std": 0.0112,
+          "delta_mean": -0.0057,
+          "delta_std": 0.0288,
+          "frac_ft_gt_frozen": 0.53,
+          "n_draws": 100
+        }
+      },
+      "N35": {
+        "n_per_label": {
+          "0": 16,
+          "1": 19
+        },
+        "observed": {
+          "frozen_mean": 0.0239,
+          "frozen_std": 0.0179,
+          "ft_mean": 0.0133,
+          "ft_std": 0.0078,
+          "delta_mean": -0.0107,
+          "delta_std": 0.019,
+          "frac_ft_gt_frozen": 0.35,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0143,
+          "frozen_std": 0.0188,
+          "ft_mean": 0.0119,
+          "ft_std": 0.0067,
+          "delta_mean": -0.0024,
+          "delta_std": 0.0192,
+          "frac_ft_gt_frozen": 0.62,
+          "n_draws": 100
+        }
+      },
+      "N50": {
+        "n_per_label": {
+          "0": 22,
+          "1": 28
+        },
+        "observed": {
+          "frozen_mean": 0.0205,
+          "frozen_std": 0.0105,
+          "ft_mean": 0.0089,
+          "ft_std": 0.0039,
+          "delta_mean": -0.0116,
+          "delta_std": 0.0102,
+          "frac_ft_gt_frozen": 0.09,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0111,
+          "frozen_std": 0.0112,
+          "ft_mean": 0.0074,
+          "ft_std": 0.0023,
+          "delta_mean": -0.0038,
+          "delta_std": 0.011,
+          "frac_ft_gt_frozen": 0.49,
+          "n_draws": 100
+        }
+      }
+    }
+  },
+  "reve_tdbrain": {
+    "model": "reve",
+    "dataset": "tdbrain",
+    "full_n": {
+      "frozen_label_frac": 0.0276,
+      "ft_label_frac": 0.3594,
+      "delta": 0.3318,
+      "n_rec": 734,
+      "n_subj": 359
+    },
+    "rungs": {
+      "N35": {
+        "n_per_label": {
+          "0": 5,
+          "1": 30
+        },
+        "observed": {
+          "frozen_mean": 0.0301,
+          "frozen_std": 0.0425,
+          "ft_mean": 0.0346,
+          "ft_std": 0.0407,
+          "delta_mean": 0.0045,
+          "delta_std": 0.0559,
+          "frac_ft_gt_frozen": 0.53,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0156,
+          "frozen_std": 0.0234,
+          "ft_mean": 0.0257,
+          "ft_std": 0.0349,
+          "delta_mean": 0.0101,
+          "delta_std": 0.041,
+          "frac_ft_gt_frozen": 0.62,
+          "n_draws": 100
+        }
+      },
+      "N65": {
+        "n_per_label": {
+          "0": 9,
+          "1": 56
+        },
+        "observed": {
+          "frozen_mean": 0.0116,
+          "frozen_std": 0.0139,
+          "ft_mean": 0.0171,
+          "ft_std": 0.0242,
+          "delta_mean": 0.0056,
+          "delta_std": 0.0284,
+          "frac_ft_gt_frozen": 0.57,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0065,
+          "frozen_std": 0.0088,
+          "ft_mean": 0.011,
+          "ft_std": 0.0136,
+          "delta_mean": 0.0045,
+          "delta_std": 0.0154,
+          "frac_ft_gt_frozen": 0.64,
+          "n_draws": 100
+        }
+      },
+      "N150": {
+        "n_per_label": {
+          "0": 20,
+          "1": 130
+        },
+        "observed": {
+          "frozen_mean": 0.004,
+          "frozen_std": 0.0061,
+          "ft_mean": 0.0083,
+          "ft_std": 0.0101,
+          "delta_mean": 0.0043,
+          "delta_std": 0.0119,
+          "frac_ft_gt_frozen": 0.61,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0021,
+          "frozen_std": 0.0029,
+          "ft_mean": 0.0039,
+          "ft_std": 0.0052,
+          "delta_mean": 0.0018,
+          "delta_std": 0.0057,
+          "frac_ft_gt_frozen": 0.66,
+          "n_draws": 100
+        }
+      },
+      "N300": {
+        "n_per_label": {
+          "0": 39,
+          "1": 261
+        },
+        "observed": {
+          "frozen_mean": 0.0008,
+          "frozen_std": 0.0011,
+          "ft_mean": 0.004,
+          "ft_std": 0.003,
+          "delta_mean": 0.0033,
+          "delta_std": 0.0034,
+          "frac_ft_gt_frozen": 0.91,
+          "n_draws": 100
+        },
+        "null": {
+          "frozen_mean": 0.0007,
+          "frozen_std": 0.0008,
+          "ft_mean": 0.001,
+          "ft_std": 0.0013,
+          "delta_mean": 0.0003,
+          "delta_std": 0.0015,
+          "frac_ft_gt_frozen": 0.6,
+          "n_draws": 100
+        }
+      }
+    }
+  }
+}

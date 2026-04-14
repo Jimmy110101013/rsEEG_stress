@@ -145,12 +145,12 @@
 
 ## 5. Resting-State EEG Stress Classification
 
-### 5.1 Reference Paper: "From Theory to Application" (Lin et al., 2025)
-- **Dataset**: Same UCSD stress dataset (18 subjects, 82 recordings after 400s filter)
+### 5.1 Reference Paper: "From Theory to Application" (Wang et al., 2025)
+- **Dataset**: Komarov 2020 Stress dataset (resting-state EEG, graduate students, longitudinal). Their report uses 18 subjects.
 - **Method**: Fine-tuned LaBraM, 5s windows, trial-level CV
-- **Result**: 81% balanced accuracy (our reproduction: 86.2% with same protocol)
-- **Limitation**: Trial-level CV (subject leakage), not discussed in paper
-- **Ref**: arXiv:2505.23042
+- **Result**: 90.47% balanced accuracy. Senior author (Jung) is shared with the dataset paper (Komarov et al. 2020) — same lab.
+- **Limitation**: Trial-level CV (subject leakage), not discussed in paper. This is the inflated baseline we re-evaluate under subject-level CV.
+- **Ref**: Wang, Zhang, Chen, Truong, Jung. arXiv:2505.23042 (2025-05-29).
 
 ### 5.2 Brain2Vec (2025)
 - CNN-LSTM-Attention for EEG stress on DEAP dataset
@@ -309,9 +309,10 @@ Reviewer-prior coverage: EEG-FM-Bench's CKA/RSA pipeline averages over multi-tas
 9. **Critical Review of EEG FMs (arXiv:2507.11783)** — frames the LP << FT gap as a representation-quality concern.
 
 **Datasets and reference baselines:**
-10. **Lin et al. 2025 (arXiv:2505.23042)** — UCSD stress dataset and the trial-level baseline we replicate then re-evaluate at subject level.
-11. **LEAD (arXiv:2502.01678)** — ADFTD baseline LaBraM number we anchor against (Table 2).
-12. **Wang et al. 2025 (LaBraM, arXiv:2405.18765)** — backbone architecture.
+10. **Komarov, Ko, Jung 2020 (IEEE TNSRE 28(4):795)** — Stress dataset paper. Longitudinal resting-state EEG + DASS-21 + DSS on Taiwan graduate students.
+11. **Wang, Zhang, Chen, Truong, Jung 2025 (arXiv:2505.23042)** — LaBraM FT on Komarov's Stress dataset at trial-level CV, reports 90.47% BA. This is the inflated baseline we re-evaluate at subject level.
+12. **LEAD (arXiv:2502.01678)** — ADFTD baseline LaBraM number we anchor against (Table 2).
+13. **Jiang et al. 2024 (LaBraM, ICLR; arXiv:2405.18765)** — backbone architecture.
 
 **Neurophysiological ceiling (signal-level explanation, complement to representation-level diagnosis):**
 13. Neubauer & Fink 2009 — neural efficiency hypothesis.

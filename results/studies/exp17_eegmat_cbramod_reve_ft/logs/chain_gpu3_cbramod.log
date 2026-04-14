@@ -1,0 +1,12 @@
+==========================================
+exp17 EEGMAT cbramod 3-seed — 公曆 20廿六年 四月 十四日 週二 十七時56分35秒
+GPU: cuda:3
+==========================================
+[17:56] SKIP cbramod_s42 (already complete)
+[17:56] START cbramod_s123 on cuda:3
+[18:07] OK cbramod_s123 (subject_bal_acc=0.6667)
+[18:07] START cbramod_s2024 on cuda:3
+[18:17] OK cbramod_s2024 (subject_bal_acc=0.6389)
+==========================================
+DONE exp17 cbramod — 公曆 20廿六年 四月 十四日 週二 十八時十七分廿二秒
+==========================================

@@ -1,0 +1,272 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Mode: FT | Extractor: reve | Folds: 5
+LR: 3e-05 | WD: 0.05 | Beta2: 0.999 | Grad clip: 2.0
+Head: hidden=128, dropout=0.0 | Norm: none | Loss: focal
+Full FT: encoder_lr_scale=0.1
+Augmentation: 75% overlap for increase class
+
+Results → results/studies/exp17_eegmat_cbramod_reve_ft/reve_s123/
+EEGMAT: 72 recordings from 36 subjects (rest=36, task=36)
+EEGMAT: 72 recordings, 36 subjects (task=36, rest=36)
+
+============================================================
+Fold 1/5
+============================================================
+  Train:  42 samples, 21 subjects [0, 3, 4, 5, 8, 10, 11, 13, 14, 17, 18, 19, 21, 22, 23, 24, 25, 26, 28, 31, 35], label_0=21, label_1=21
+    Val:  14 samples,  7 subjects [1, 9, 12, 15, 20, 29, 30], label_0=7, label_1=7
+   Test:  16 samples,  8 subjects [2, 6, 7, 16, 27, 32, 33, 34], label_0=8, label_1=8
+  Building window datasets...
+    WindowDataset: 1680 windows (class_0=735, class_1=945)
+    WindowDataset: 336 windows (class_0=252, class_1=84)
+    WindowDataset: 384 windows (class_0=288, class_1=96)
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  Trainable parameters: 69,321,347
+  Class weights: [1.1428571939468384, 0.8888888955116272]
+  Fold 1 | Ep   1/50 | t_loss=0.2316 t_acc=0.564 | v_win_bal=0.478 v_rec_bal=0.571 | lr=1.0e-05 | 4.0s
+  Fold 1 | Ep   2/50 | t_loss=0.1982 t_acc=0.591 | v_win_bal=0.500 v_rec_bal=0.643 | lr=2.0e-05 | 2.9s
+  Fold 1 | Ep   3/50 | t_loss=0.1608 t_acc=0.672 | v_win_bal=0.563 v_rec_bal=0.643 | lr=3.0e-05 | 2.9s
+  Fold 1 | Ep   4/50 | t_loss=0.1282 t_acc=0.747 | v_win_bal=0.583 v_rec_bal=0.714 | lr=3.0e-05 | 3.0s
+  Fold 1 | Ep   5/50 | t_loss=0.1019 t_acc=0.829 | v_win_bal=0.609 v_rec_bal=0.786 | lr=3.0e-05 | 3.0s
+  Fold 1 | Ep   6/50 | t_loss=0.0793 t_acc=0.882 | v_win_bal=0.607 v_rec_bal=0.714 | lr=3.0e-05 | 3.0s
+  Fold 1 | Ep   7/50 | t_loss=0.0605 t_acc=0.924 | v_win_bal=0.619 v_rec_bal=0.714 | lr=2.9e-05 | 3.0s
+  Fold 1 | Ep   8/50 | t_loss=0.0438 t_acc=0.953 | v_win_bal=0.633 v_rec_bal=0.714 | lr=2.9e-05 | 3.3s
+  Fold 1 | Ep   9/50 | t_loss=0.0304 t_acc=0.973 | v_win_bal=0.615 v_rec_bal=0.714 | lr=2.9e-05 | 2.8s
+  Fold 1 | Ep  10/50 | t_loss=0.0205 t_acc=0.987 | v_win_bal=0.647 v_rec_bal=0.714 | lr=2.8e-05 | 2.9s
+  Fold 1 | Ep  11/50 | t_loss=0.0133 t_acc=0.995 | v_win_bal=0.637 v_rec_bal=0.714 | lr=2.8e-05 | 2.8s
+  Fold 1 | Ep  12/50 | t_loss=0.0085 t_acc=0.999 | v_win_bal=0.647 v_rec_bal=0.714 | lr=2.7e-05 | 3.3s
+  Fold 1 | Ep  13/50 | t_loss=0.0053 t_acc=1.000 | v_win_bal=0.657 v_rec_bal=0.714 | lr=2.7e-05 | 2.8s
+  Fold 1 | Ep  14/50 | t_loss=0.0036 t_acc=1.000 | v_win_bal=0.651 v_rec_bal=0.714 | lr=2.6e-05 | 3.0s
+  Fold 1 | Ep  15/50 | t_loss=0.0026 t_acc=1.000 | v_win_bal=0.663 v_rec_bal=0.714 | lr=2.5e-05 | 3.0s
+  Fold 1 | Ep  16/50 | t_loss=0.0019 t_acc=1.000 | v_win_bal=0.649 v_rec_bal=0.714 | lr=2.5e-05 | 2.9s
+  Fold 1 | Ep  17/50 | t_loss=0.0015 t_acc=1.000 | v_win_bal=0.653 v_rec_bal=0.714 | lr=2.4e-05 | 3.0s
+  Fold 1 | Ep  18/50 | t_loss=0.0012 t_acc=1.000 | v_win_bal=0.651 v_rec_bal=0.714 | lr=2.3e-05 | 3.1s
+  Fold 1 | Ep  19/50 | t_loss=0.0010 t_acc=1.000 | v_win_bal=0.653 v_rec_bal=0.714 | lr=2.2e-05 | 3.0s
+  Fold 1 | Ep  20/50 | t_loss=0.0008 t_acc=1.000 | v_win_bal=0.649 v_rec_bal=0.714 | lr=2.1e-05 | 2.8s
+  Fold 1 | Ep  21/50 | t_loss=0.0007 t_acc=1.000 | v_win_bal=0.655 v_rec_bal=0.714 | lr=2.0e-05 | 2.8s
+  Early stop at epoch 21
+  Extracting test-fold features (16 recordings)...
+  Features shape: (16, 512)
+  Saved features → results/studies/exp17_eegmat_cbramod_reve_ft/reve_s123/fold1_features.npz
+  -> Test (best @ epoch 5): acc=0.7500, bal_acc=0.7500
+
+============================================================
+Fold 2/5
+============================================================
+  Train:  42 samples, 21 subjects [2, 3, 6, 7, 9, 13, 15, 17, 19, 20, 21, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35], label_0=21, label_1=21
+    Val:  16 samples,  8 subjects [1, 5, 11, 12, 16, 18, 22, 26], label_0=8, label_1=8
+   Test:  14 samples,  7 subjects [0, 4, 8, 10, 14, 23, 30], label_0=7, label_1=7
+  Building window datasets...
+    WindowDataset: 1681 windows (class_0=736, class_1=945)
+    WindowDataset: 384 windows (class_0=288, class_1=96)
+    WindowDataset: 335 windows (class_0=251, class_1=84)
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  Fold 2 | Ep   1/50 | t_loss=0.2856 t_acc=0.518 | v_win_bal=0.476 v_rec_bal=0.500 | lr=1.0e-05 | 3.0s
+  Fold 2 | Ep   2/50 | t_loss=0.2089 t_acc=0.567 | v_win_bal=0.497 v_rec_bal=0.625 | lr=2.0e-05 | 3.0s
+  Fold 2 | Ep   3/50 | t_loss=0.1732 t_acc=0.632 | v_win_bal=0.481 v_rec_bal=0.500 | lr=3.0e-05 | 3.1s
+  Fold 2 | Ep   4/50 | t_loss=0.1456 t_acc=0.699 | v_win_bal=0.521 v_rec_bal=0.500 | lr=3.0e-05 | 3.1s
+  Fold 2 | Ep   5/50 | t_loss=0.1223 t_acc=0.780 | v_win_bal=0.554 v_rec_bal=0.625 | lr=3.0e-05 | 3.0s
+  Fold 2 | Ep   6/50 | t_loss=0.1035 t_acc=0.830 | v_win_bal=0.583 v_rec_bal=0.625 | lr=3.0e-05 | 3.0s
+  Fold 2 | Ep   7/50 | t_loss=0.0868 t_acc=0.874 | v_win_bal=0.609 v_rec_bal=0.625 | lr=2.9e-05 | 3.0s
+  Fold 2 | Ep   8/50 | t_loss=0.0683 t_acc=0.907 | v_win_bal=0.618 v_rec_bal=0.688 | lr=2.9e-05 | 2.9s
+  Fold 2 | Ep   9/50 | t_loss=0.0516 t_acc=0.950 | v_win_bal=0.625 v_rec_bal=0.688 | lr=2.9e-05 | 2.9s
+  Fold 2 | Ep  10/50 | t_loss=0.0378 t_acc=0.965 | v_win_bal=0.642 v_rec_bal=0.625 | lr=2.8e-05 | 2.9s
+  Fold 2 | Ep  11/50 | t_loss=0.0271 t_acc=0.984 | v_win_bal=0.660 v_rec_bal=0.625 | lr=2.8e-05 | 3.1s
+  Fold 2 | Ep  12/50 | t_loss=0.0179 t_acc=0.995 | v_win_bal=0.677 v_rec_bal=0.812 | lr=2.7e-05 | 3.0s
+  Fold 2 | Ep  13/50 | t_loss=0.0122 t_acc=0.999 | v_win_bal=0.655 v_rec_bal=0.750 | lr=2.7e-05 | 3.0s
+  Fold 2 | Ep  14/50 | t_loss=0.0084 t_acc=1.000 | v_win_bal=0.635 v_rec_bal=0.625 | lr=2.6e-05 | 3.0s
+  Fold 2 | Ep  15/50 | t_loss=0.0058 t_acc=1.000 | v_win_bal=0.644 v_rec_bal=0.688 | lr=2.5e-05 | 3.3s
+  Fold 2 | Ep  16/50 | t_loss=0.0043 t_acc=1.000 | v_win_bal=0.644 v_rec_bal=0.688 | lr=2.5e-05 | 3.1s
+  Fold 2 | Ep  17/50 | t_loss=0.0033 t_acc=1.000 | v_win_bal=0.642 v_rec_bal=0.688 | lr=2.4e-05 | 3.0s
+  Fold 2 | Ep  18/50 | t_loss=0.0025 t_acc=1.000 | v_win_bal=0.639 v_rec_bal=0.625 | lr=2.3e-05 | 2.9s
+  Fold 2 | Ep  19/50 | t_loss=0.0020 t_acc=1.000 | v_win_bal=0.646 v_rec_bal=0.688 | lr=2.2e-05 | 2.8s
+  Fold 2 | Ep  20/50 | t_loss=0.0017 t_acc=1.000 | v_win_bal=0.651 v_rec_bal=0.688 | lr=2.1e-05 | 2.9s
+  Fold 2 | Ep  21/50 | t_loss=0.0014 t_acc=1.000 | v_win_bal=0.635 v_rec_bal=0.625 | lr=2.0e-05 | 2.9s
+  Fold 2 | Ep  22/50 | t_loss=0.0012 t_acc=1.000 | v_win_bal=0.635 v_rec_bal=0.625 | lr=1.9e-05 | 2.9s
+  Fold 2 | Ep  23/50 | t_loss=0.0010 t_acc=1.000 | v_win_bal=0.637 v_rec_bal=0.625 | lr=1.8e-05 | 3.0s
+  Fold 2 | Ep  24/50 | t_loss=0.0009 t_acc=1.000 | v_win_bal=0.632 v_rec_bal=0.625 | lr=1.7e-05 | 2.9s
+  Fold 2 | Ep  25/50 | t_loss=0.0008 t_acc=1.000 | v_win_bal=0.639 v_rec_bal=0.625 | lr=1.7e-05 | 2.9s
+  Fold 2 | Ep  26/50 | t_loss=0.0007 t_acc=1.000 | v_win_bal=0.635 v_rec_bal=0.625 | lr=1.6e-05 | 3.0s
+  Fold 2 | Ep  27/50 | t_loss=0.0007 t_acc=1.000 | v_win_bal=0.639 v_rec_bal=0.625 | lr=1.4e-05 | 3.1s
+  Fold 2 | Ep  28/50 | t_loss=0.0006 t_acc=1.000 | v_win_bal=0.637 v_rec_bal=0.625 | lr=1.3e-05 | 3.0s
+  Early stop at epoch 28
+  Extracting test-fold features (14 recordings)...
+  Features shape: (14, 512)
+  Saved features → results/studies/exp17_eegmat_cbramod_reve_ft/reve_s123/fold2_features.npz
+  -> Test (best @ epoch 12): acc=0.9286, bal_acc=0.9286
+
+============================================================
+Fold 3/5
+============================================================
+  Train:  42 samples, 21 subjects [2, 3, 5, 6, 7, 10, 11, 14, 16, 17, 18, 22, 23, 25, 27, 28, 29, 30, 32, 33, 34], label_0=21, label_1=21
+    Val:  16 samples,  8 subjects [0, 4, 8, 9, 12, 15, 21, 24], label_0=8, label_1=8
+   Test:  14 samples,  7 subjects [1, 13, 19, 20, 26, 31, 35], label_0=7, label_1=7
+  Building window datasets...
+    WindowDataset: 1702 windows (class_0=757, class_1=945)
+    WindowDataset: 382 windows (class_0=286, class_1=96)
+    WindowDataset: 316 windows (class_0=232, class_1=84)
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  Fold 3 | Ep   1/50 | t_loss=0.2459 t_acc=0.508 | v_win_bal=0.540 v_rec_bal=0.438 | lr=1.0e-05 | 3.0s
+  Fold 3 | Ep   2/50 | t_loss=0.1953 t_acc=0.584 | v_win_bal=0.552 v_rec_bal=0.438 | lr=2.0e-05 | 3.0s
+  Fold 3 | Ep   3/50 | t_loss=0.1600 t_acc=0.667 | v_win_bal=0.560 v_rec_bal=0.562 | lr=3.0e-05 | 2.9s
+  Fold 3 | Ep   4/50 | t_loss=0.1331 t_acc=0.752 | v_win_bal=0.619 v_rec_bal=0.750 | lr=3.0e-05 | 2.9s
+  Fold 3 | Ep   5/50 | t_loss=0.1105 t_acc=0.812 | v_win_bal=0.610 v_rec_bal=0.750 | lr=3.0e-05 | 2.9s
+  Fold 3 | Ep   6/50 | t_loss=0.0902 t_acc=0.866 | v_win_bal=0.654 v_rec_bal=0.688 | lr=3.0e-05 | 3.1s
+  Fold 3 | Ep   7/50 | t_loss=0.0709 t_acc=0.904 | v_win_bal=0.688 v_rec_bal=0.750 | lr=2.9e-05 | 3.1s
+  Fold 3 | Ep   8/50 | t_loss=0.0544 t_acc=0.942 | v_win_bal=0.681 v_rec_bal=0.688 | lr=2.9e-05 | 3.0s
+  Fold 3 | Ep   9/50 | t_loss=0.0396 t_acc=0.963 | v_win_bal=0.680 v_rec_bal=0.750 | lr=2.9e-05 | 3.1s
+  Fold 3 | Ep  10/50 | t_loss=0.0276 t_acc=0.979 | v_win_bal=0.695 v_rec_bal=0.812 | lr=2.8e-05 | 3.1s
+  Fold 3 | Ep  11/50 | t_loss=0.0175 t_acc=0.994 | v_win_bal=0.690 v_rec_bal=0.750 | lr=2.8e-05 | 3.1s
+  Fold 3 | Ep  12/50 | t_loss=0.0113 t_acc=0.998 | v_win_bal=0.690 v_rec_bal=0.750 | lr=2.7e-05 | 3.0s
+  Fold 3 | Ep  13/50 | t_loss=0.0074 t_acc=0.999 | v_win_bal=0.692 v_rec_bal=0.750 | lr=2.7e-05 | 3.1s
+  Fold 3 | Ep  14/50 | t_loss=0.0050 t_acc=1.000 | v_win_bal=0.697 v_rec_bal=0.750 | lr=2.6e-05 | 3.0s
+  Fold 3 | Ep  15/50 | t_loss=0.0033 t_acc=1.000 | v_win_bal=0.700 v_rec_bal=0.750 | lr=2.5e-05 | 3.1s
+  Fold 3 | Ep  16/50 | t_loss=0.0024 t_acc=1.000 | v_win_bal=0.690 v_rec_bal=0.688 | lr=2.5e-05 | 3.1s
+  Fold 3 | Ep  17/50 | t_loss=0.0018 t_acc=1.000 | v_win_bal=0.706 v_rec_bal=0.750 | lr=2.4e-05 | 3.1s
+  Fold 3 | Ep  18/50 | t_loss=0.0014 t_acc=1.000 | v_win_bal=0.693 v_rec_bal=0.688 | lr=2.3e-05 | 3.1s
+  Fold 3 | Ep  19/50 | t_loss=0.0012 t_acc=1.000 | v_win_bal=0.704 v_rec_bal=0.750 | lr=2.2e-05 | 3.1s
+  Fold 3 | Ep  20/50 | t_loss=0.0009 t_acc=1.000 | v_win_bal=0.700 v_rec_bal=0.750 | lr=2.1e-05 | 3.0s
+  Fold 3 | Ep  21/50 | t_loss=0.0008 t_acc=1.000 | v_win_bal=0.700 v_rec_bal=0.688 | lr=2.0e-05 | 3.1s
+  Fold 3 | Ep  22/50 | t_loss=0.0007 t_acc=1.000 | v_win_bal=0.706 v_rec_bal=0.750 | lr=1.9e-05 | 3.1s
+  Fold 3 | Ep  23/50 | t_loss=0.0006 t_acc=1.000 | v_win_bal=0.702 v_rec_bal=0.688 | lr=1.8e-05 | 3.1s
+  Fold 3 | Ep  24/50 | t_loss=0.0005 t_acc=1.000 | v_win_bal=0.702 v_rec_bal=0.750 | lr=1.7e-05 | 3.3s
+  Fold 3 | Ep  25/50 | t_loss=0.0005 t_acc=1.000 | v_win_bal=0.699 v_rec_bal=0.688 | lr=1.7e-05 | 2.9s
+  Fold 3 | Ep  26/50 | t_loss=0.0004 t_acc=1.000 | v_win_bal=0.697 v_rec_bal=0.688 | lr=1.6e-05 | 3.0s
+  Early stop at epoch 26
+  Extracting test-fold features (14 recordings)...
+  Features shape: (14, 512)
+  Saved features → results/studies/exp17_eegmat_cbramod_reve_ft/reve_s123/fold3_features.npz
+  -> Test (best @ epoch 10): acc=0.7857, bal_acc=0.7857
+
+============================================================
+Fold 4/5
+============================================================
+  Train:  42 samples, 21 subjects [1, 2, 5, 6, 7, 13, 14, 16, 19, 20, 23, 25, 26, 28, 29, 30, 31, 32, 33, 34, 35], label_0=21, label_1=21
+    Val:  16 samples,  8 subjects [0, 4, 8, 10, 15, 18, 24, 27], label_0=8, label_1=8
+   Test:  14 samples,  7 subjects [3, 9, 11, 12, 17, 21, 22], label_0=7, label_1=7
+  Building window datasets...
+    WindowDataset: 1681 windows (class_0=736, class_1=945)
+    WindowDataset: 383 windows (class_0=287, class_1=96)
+    WindowDataset: 336 windows (class_0=252, class_1=84)
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  Fold 4 | Ep   1/50 | t_loss=0.3877 t_acc=0.518 | v_win_bal=0.536 v_rec_bal=0.688 | lr=1.0e-05 | 3.1s
+  Fold 4 | Ep   2/50 | t_loss=0.2262 t_acc=0.538 | v_win_bal=0.572 v_rec_bal=0.688 | lr=2.0e-05 | 3.0s
+  Fold 4 | Ep   3/50 | t_loss=0.1725 t_acc=0.642 | v_win_bal=0.574 v_rec_bal=0.688 | lr=3.0e-05 | 3.1s
+  Fold 4 | Ep   4/50 | t_loss=0.1377 t_acc=0.710 | v_win_bal=0.584 v_rec_bal=0.625 | lr=3.0e-05 | 3.0s
+  Fold 4 | Ep   5/50 | t_loss=0.1160 t_acc=0.781 | v_win_bal=0.643 v_rec_bal=0.625 | lr=3.0e-05 | 3.0s
+  Fold 4 | Ep   6/50 | t_loss=0.0973 t_acc=0.846 | v_win_bal=0.598 v_rec_bal=0.625 | lr=3.0e-05 | 3.1s
+  Fold 4 | Ep   7/50 | t_loss=0.0799 t_acc=0.886 | v_win_bal=0.619 v_rec_bal=0.750 | lr=2.9e-05 | 3.1s
+  Fold 4 | Ep   8/50 | t_loss=0.0631 t_acc=0.929 | v_win_bal=0.631 v_rec_bal=0.750 | lr=2.9e-05 | 3.1s
+  Fold 4 | Ep   9/50 | t_loss=0.0489 t_acc=0.955 | v_win_bal=0.621 v_rec_bal=0.688 | lr=2.9e-05 | 3.1s
+  Fold 4 | Ep  10/50 | t_loss=0.0366 t_acc=0.976 | v_win_bal=0.652 v_rec_bal=0.812 | lr=2.8e-05 | 3.1s
+  Fold 4 | Ep  11/50 | t_loss=0.0265 t_acc=0.986 | v_win_bal=0.656 v_rec_bal=0.812 | lr=2.8e-05 | 3.1s
+  Fold 4 | Ep  12/50 | t_loss=0.0181 t_acc=0.995 | v_win_bal=0.654 v_rec_bal=0.750 | lr=2.7e-05 | 3.0s
+  Fold 4 | Ep  13/50 | t_loss=0.0124 t_acc=0.998 | v_win_bal=0.654 v_rec_bal=0.750 | lr=2.7e-05 | 3.0s
+  Fold 4 | Ep  14/50 | t_loss=0.0088 t_acc=1.000 | v_win_bal=0.665 v_rec_bal=0.750 | lr=2.6e-05 | 3.0s
+  Fold 4 | Ep  15/50 | t_loss=0.0062 t_acc=1.000 | v_win_bal=0.691 v_rec_bal=0.812 | lr=2.5e-05 | 3.0s
+  Fold 4 | Ep  16/50 | t_loss=0.0045 t_acc=1.000 | v_win_bal=0.687 v_rec_bal=0.812 | lr=2.5e-05 | 3.0s
+  Fold 4 | Ep  17/50 | t_loss=0.0033 t_acc=1.000 | v_win_bal=0.682 v_rec_bal=0.812 | lr=2.4e-05 | 3.0s
+  Fold 4 | Ep  18/50 | t_loss=0.0025 t_acc=1.000 | v_win_bal=0.694 v_rec_bal=0.812 | lr=2.3e-05 | 3.1s
+  Fold 4 | Ep  19/50 | t_loss=0.0019 t_acc=1.000 | v_win_bal=0.692 v_rec_bal=0.812 | lr=2.2e-05 | 3.1s
+  Fold 4 | Ep  20/50 | t_loss=0.0016 t_acc=1.000 | v_win_bal=0.694 v_rec_bal=0.812 | lr=2.1e-05 | 2.9s
+  Fold 4 | Ep  21/50 | t_loss=0.0013 t_acc=1.000 | v_win_bal=0.698 v_rec_bal=0.812 | lr=2.0e-05 | 2.9s
+  Fold 4 | Ep  22/50 | t_loss=0.0011 t_acc=1.000 | v_win_bal=0.689 v_rec_bal=0.812 | lr=1.9e-05 | 2.8s
+  Fold 4 | Ep  23/50 | t_loss=0.0009 t_acc=1.000 | v_win_bal=0.694 v_rec_bal=0.812 | lr=1.8e-05 | 2.9s
+  Fold 4 | Ep  24/50 | t_loss=0.0008 t_acc=1.000 | v_win_bal=0.694 v_rec_bal=0.812 | lr=1.7e-05 | 2.9s
+  Fold 4 | Ep  25/50 | t_loss=0.0007 t_acc=1.000 | v_win_bal=0.692 v_rec_bal=0.812 | lr=1.7e-05 | 2.9s
+  Fold 4 | Ep  26/50 | t_loss=0.0007 t_acc=1.000 | v_win_bal=0.694 v_rec_bal=0.812 | lr=1.6e-05 | 2.9s
+  Fold 4 | Ep  27/50 | t_loss=0.0006 t_acc=1.000 | v_win_bal=0.694 v_rec_bal=0.812 | lr=1.4e-05 | 2.9s
+  Fold 4 | Ep  28/50 | t_loss=0.0005 t_acc=1.000 | v_win_bal=0.692 v_rec_bal=0.812 | lr=1.3e-05 | 2.9s
+  Fold 4 | Ep  29/50 | t_loss=0.0005 t_acc=1.000 | v_win_bal=0.691 v_rec_bal=0.812 | lr=1.3e-05 | 2.9s
+  Fold 4 | Ep  30/50 | t_loss=0.0004 t_acc=1.000 | v_win_bal=0.694 v_rec_bal=0.812 | lr=1.2e-05 | 2.8s
+  Fold 4 | Ep  31/50 | t_loss=0.0004 t_acc=1.000 | v_win_bal=0.689 v_rec_bal=0.812 | lr=1.1e-05 | 2.9s
+  Fold 4 | Ep  32/50 | t_loss=0.0004 t_acc=1.000 | v_win_bal=0.691 v_rec_bal=0.812 | lr=9.6e-06 | 3.0s
+  Early stop at epoch 32
+  Extracting test-fold features (14 recordings)...
+  Features shape: (14, 512)
+  Saved features → results/studies/exp17_eegmat_cbramod_reve_ft/reve_s123/fold4_features.npz
+  -> Test (best @ epoch 10): acc=0.6429, bal_acc=0.6429
+
+============================================================
+Fold 5/5
+============================================================
+  Train:  42 samples, 21 subjects [1, 2, 4, 6, 7, 10, 11, 13, 16, 17, 19, 21, 22, 26, 27, 30, 31, 32, 33, 34, 35], label_0=21, label_1=21
+    Val:  16 samples,  8 subjects [0, 3, 8, 9, 12, 14, 20, 23], label_0=8, label_1=8
+   Test:  14 samples,  7 subjects [5, 15, 18, 24, 25, 28, 29], label_0=7, label_1=7
+  Building window datasets...
+    WindowDataset: 1680 windows (class_0=735, class_1=945)
+    WindowDataset: 384 windows (class_0=288, class_1=96)
+    WindowDataset: 336 windows (class_0=252, class_1=84)
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  Fold 5 | Ep   1/50 | t_loss=0.2590 t_acc=0.517 | v_win_bal=0.540 v_rec_bal=0.625 | lr=1.0e-05 | 3.2s
+  Fold 5 | Ep   2/50 | t_loss=0.2031 t_acc=0.577 | v_win_bal=0.552 v_rec_bal=0.625 | lr=2.0e-05 | 2.9s
+  Fold 5 | Ep   3/50 | t_loss=0.1622 t_acc=0.654 | v_win_bal=0.578 v_rec_bal=0.562 | lr=3.0e-05 | 2.9s
+  Fold 5 | Ep   4/50 | t_loss=0.1316 t_acc=0.734 | v_win_bal=0.613 v_rec_bal=0.625 | lr=3.0e-05 | 3.0s
+  Fold 5 | Ep   5/50 | t_loss=0.1060 t_acc=0.819 | v_win_bal=0.653 v_rec_bal=0.750 | lr=3.0e-05 | 2.9s
+  Fold 5 | Ep   6/50 | t_loss=0.0857 t_acc=0.874 | v_win_bal=0.663 v_rec_bal=0.688 | lr=3.0e-05 | 3.0s
+  Fold 5 | Ep   7/50 | t_loss=0.0669 t_acc=0.913 | v_win_bal=0.651 v_rec_bal=0.688 | lr=2.9e-05 | 3.0s
+  Fold 5 | Ep   8/50 | t_loss=0.0509 t_acc=0.945 | v_win_bal=0.684 v_rec_bal=0.750 | lr=2.9e-05 | 2.9s
+  Fold 5 | Ep   9/50 | t_loss=0.0381 t_acc=0.966 | v_win_bal=0.681 v_rec_bal=0.750 | lr=2.9e-05 | 2.9s
+  Fold 5 | Ep  10/50 | t_loss=0.0272 t_acc=0.980 | v_win_bal=0.672 v_rec_bal=0.688 | lr=2.8e-05 | 3.0s
+  Fold 5 | Ep  11/50 | t_loss=0.0194 t_acc=0.987 | v_win_bal=0.667 v_rec_bal=0.688 | lr=2.8e-05 | 3.0s
+  Fold 5 | Ep  12/50 | t_loss=0.0135 t_acc=0.993 | v_win_bal=0.675 v_rec_bal=0.750 | lr=2.7e-05 | 3.0s
+  Fold 5 | Ep  13/50 | t_loss=0.0087 t_acc=0.998 | v_win_bal=0.668 v_rec_bal=0.750 | lr=2.7e-05 | 3.0s
+  Fold 5 | Ep  14/50 | t_loss=0.0057 t_acc=0.999 | v_win_bal=0.663 v_rec_bal=0.688 | lr=2.6e-05 | 2.9s
+  Fold 5 | Ep  15/50 | t_loss=0.0040 t_acc=1.000 | v_win_bal=0.665 v_rec_bal=0.688 | lr=2.5e-05 | 2.9s
+  Fold 5 | Ep  16/50 | t_loss=0.0027 t_acc=1.000 | v_win_bal=0.665 v_rec_bal=0.688 | lr=2.5e-05 | 2.9s
+  Fold 5 | Ep  17/50 | t_loss=0.0020 t_acc=1.000 | v_win_bal=0.670 v_rec_bal=0.688 | lr=2.4e-05 | 2.9s
+  Fold 5 | Ep  18/50 | t_loss=0.0015 t_acc=1.000 | v_win_bal=0.677 v_rec_bal=0.750 | lr=2.3e-05 | 2.9s
+  Fold 5 | Ep  19/50 | t_loss=0.0012 t_acc=1.000 | v_win_bal=0.681 v_rec_bal=0.812 | lr=2.2e-05 | 2.8s
+  Fold 5 | Ep  20/50 | t_loss=0.0010 t_acc=1.000 | v_win_bal=0.679 v_rec_bal=0.750 | lr=2.1e-05 | 2.9s
+  Fold 5 | Ep  21/50 | t_loss=0.0008 t_acc=1.000 | v_win_bal=0.677 v_rec_bal=0.750 | lr=2.0e-05 | 2.8s
+  Fold 5 | Ep  22/50 | t_loss=0.0007 t_acc=1.000 | v_win_bal=0.675 v_rec_bal=0.750 | lr=1.9e-05 | 2.9s
+  Fold 5 | Ep  23/50 | t_loss=0.0006 t_acc=1.000 | v_win_bal=0.684 v_rec_bal=0.750 | lr=1.8e-05 | 2.9s
+  Fold 5 | Ep  24/50 | t_loss=0.0005 t_acc=1.000 | v_win_bal=0.682 v_rec_bal=0.750 | lr=1.7e-05 | 2.9s
+  Fold 5 | Ep  25/50 | t_loss=0.0004 t_acc=1.000 | v_win_bal=0.682 v_rec_bal=0.750 | lr=1.7e-05 | 2.9s
+  Fold 5 | Ep  26/50 | t_loss=0.0004 t_acc=1.000 | v_win_bal=0.684 v_rec_bal=0.750 | lr=1.6e-05 | 2.9s
+  Fold 5 | Ep  27/50 | t_loss=0.0004 t_acc=1.000 | v_win_bal=0.679 v_rec_bal=0.750 | lr=1.4e-05 | 2.9s
+  Fold 5 | Ep  28/50 | t_loss=0.0003 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=1.3e-05 | 2.9s
+  Fold 5 | Ep  29/50 | t_loss=0.0003 t_acc=1.000 | v_win_bal=0.682 v_rec_bal=0.750 | lr=1.3e-05 | 2.8s
+  Fold 5 | Ep  30/50 | t_loss=0.0003 t_acc=1.000 | v_win_bal=0.689 v_rec_bal=0.812 | lr=1.2e-05 | 2.8s
+  Fold 5 | Ep  31/50 | t_loss=0.0003 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=1.1e-05 | 2.8s
+  Fold 5 | Ep  32/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.682 v_rec_bal=0.750 | lr=9.6e-06 | 2.8s
+  Fold 5 | Ep  33/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=8.7e-06 | 2.9s
+  Fold 5 | Ep  34/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=7.8e-06 | 2.9s
+  Fold 5 | Ep  35/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=6.9e-06 | 2.9s
+  Fold 5 | Ep  36/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=6.1e-06 | 2.9s
+  Fold 5 | Ep  37/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=5.3e-06 | 2.9s
+  Fold 5 | Ep  38/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=4.6e-06 | 2.8s
+  Fold 5 | Ep  39/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=3.9e-06 | 2.8s
+  Fold 5 | Ep  40/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=3.2e-06 | 2.9s
+  Fold 5 | Ep  41/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=2.6e-06 | 2.8s
+  Fold 5 | Ep  42/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=2.1e-06 | 2.8s
+  Fold 5 | Ep  43/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=1.6e-06 | 2.8s
+  Fold 5 | Ep  44/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=1.2e-06 | 2.9s
+  Fold 5 | Ep  45/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=8.3e-07 | 2.9s
+  Fold 5 | Ep  46/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=5.3e-07 | 2.9s
+  Fold 5 | Ep  47/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=3.0e-07 | 2.9s
+  Fold 5 | Ep  48/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=3.0e-07 | 2.9s
+  Fold 5 | Ep  49/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=3.0e-07 | 2.9s
+  Fold 5 | Ep  50/50 | t_loss=0.0002 t_acc=1.000 | v_win_bal=0.688 v_rec_bal=0.812 | lr=3.0e-07 | 2.9s
+  Early stop at epoch 50
+  Extracting test-fold features (14 recordings)...
+  Features shape: (14, 512)
+  Saved features → results/studies/exp17_eegmat_cbramod_reve_ft/reve_s123/fold5_features.npz
+  -> Test (best @ epoch 19): acc=0.7143, bal_acc=0.7143
+
+============================================================
+Global Results (5-Fold, subject-level CV)
+Mode: FT | Extractor: reve | Loss: focal
+============================================================
+              acc: 0.7639
+          bal_acc: 0.7639
+               f1: 0.7638
+            kappa: 0.5278
+  Total predictions: 72 (should equal dataset size: 72)
+
+Results saved to results/studies/exp17_eegmat_cbramod_reve_ft/reve_s123/

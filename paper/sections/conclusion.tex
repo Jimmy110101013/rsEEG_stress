@@ -1,27 +1,28 @@
+% Conclusion — outline only.
+% Source: docs/paper_narrative_zh.md §9
+
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented a systematic cross-subject evaluation of three EEG foundation
-models for resting-state stress classification, validated by two clinical
-reference datasets. Three claims are robust to method choice:
+% [Paragraph 1 — Three contributions]
+% We systematically re-evaluated three EEG FMs on four datasets and
+% identified: (i) the literature-to-honest BA gap is ~30+ pp on Stress
+% and reflects CV protocol, not model quality; (ii) frozen FM
+% representations encode subject identity primarily but preserve a
+% classical-inaccessible label subspace; (iii) FT direction is a model
+% $\times$ dataset interaction, with within-subject contrast strength
+% (not framing type) determining rescue potential.
 
-\begin{enumerate}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
-  \item Trial-level cross-validation inflates reported balanced accuracy
-    by $\sim$21~points relative to subject-level cross-validation, across
-    three architecturally distinct foundation models.
-  \item Frozen FM features encode subject identity 11--13$\times$ more
-    than diagnostic labels, on both stress and Alzheimer's data.
-  \item Fine-tuning amplifies label signal only when the underlying
-    biological signal is strong enough; weak signals (chronic stress)
-    saturate at the same $\sim$0.66 \BA{} achievable with classical
-    band-power features and a random forest, and standard mitigations
-    (subject-adversarial, LEAD-style auxiliary losses) degrade rather
-    than improve this.
-\end{enumerate}
+% [Paragraph 2 — Stress as cautionary benchmark]
+% Five independent lines of evidence (cuDNN swing, permutation null,
+% ShallowConvNet parity, band-stop cross-model divergence, within-subject
+% failure) show that 70 rec / 14 pos is below the statistical power
+% floor. This is a benchmark-design caveat for the field.
 
-We do not interpret this as failure of resting-state EEG for stress
-detection. The same data shows that a real but modest stress signature
-exists --- and the same diagnosis tells us which research direction will
-exceed the ceiling: subject identity should be treated as a reference
-frame, not as noise to be removed. Within-subject longitudinal modelling
-is, in our reading, the productive next experiment.
+% [Paragraph 3 — Limitations]
+% - Master Table 2 missing cells: CBraMod / REVE EEGMAT FT pending
+%   (lightweight GPU job).
+% - Mechanism of model $\times$ dataset interaction is hypothesis-level.
+% - HNC private dataset ruled out for this paper due to public
+%   reproducibility constraint.
+TBD.

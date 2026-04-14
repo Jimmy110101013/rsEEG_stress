@@ -1,0 +1,79 @@
+{
+  "comparison": "5s vs 10s window on ADFTD FT (3 seeds each)",
+  "window_5s": {
+    "source": "results/studies/exp07_adftd_multiseed",
+    "labram": {
+      "seeds": [
+        0.7026,
+        0.7243,
+        0.6989
+      ],
+      "mean": 0.709,
+      "std": 0.011
+    },
+    "cbramod": {
+      "seeds": [
+        0.5094,
+        0.5623,
+        0.5399
+      ],
+      "mean": 0.537,
+      "std": 0.022
+    },
+    "reve": {
+      "seeds": [
+        0.6624,
+        0.6853,
+        0.6255
+      ],
+      "mean": 0.658,
+      "std": 0.025
+    }
+  },
+  "window_10s": {
+    "source": "results/studies/exp12_adftd_multiseed_10s",
+    "labram": {
+      "seeds": [
+        0.746,
+        0.6162,
+        0.6103
+      ],
+      "mean": 0.657,
+      "std": 0.063
+    },
+    "cbramod": {
+      "seeds": [
+        0.5508,
+        0.4915,
+        0.5715
+      ],
+      "mean": 0.538,
+      "std": 0.034
+    },
+    "reve": {
+      "seeds": [
+        0.6534,
+        0.5808,
+        0.4938
+      ],
+      "mean": 0.576,
+      "std": 0.065
+    }
+  },
+  "frozen_lp_5s": {
+    "labram": 0.695,
+    "cbramod": 0.558,
+    "reve": 0.692
+  },
+  "frozen_lp_10s": {
+    "labram": 0.669,
+    "cbramod": 0.543,
+    "reve": 0.673
+  },
+  "delta_ft_10s_minus_5s": {
+    "labram": -0.051,
+    "cbramod": 0.001,
+    "reve": -0.082
+  },
+  "finding": "10s windows consistently reduce BA and increase seed variance vs 5s. LaBraM and REVE degrade 5-8pp; CBraMod is unaffected. 10s halves window count per recording, reducing training data diversity."
+}

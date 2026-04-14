@@ -1,0 +1,144 @@
+{
+  "stress": {
+    "labram": {
+      "fm_rdm_shape": 70,
+      "delta": {
+        "rsa_r": 0.2741,
+        "rsa_p": 0.0
+      },
+      "theta": {
+        "rsa_r": 0.1718,
+        "rsa_p": 0.0
+      },
+      "alpha": {
+        "rsa_r": 0.1799,
+        "rsa_p": 0.0
+      },
+      "beta": {
+        "rsa_r": 0.2699,
+        "rsa_p": 0.0
+      },
+      "all_bands": {
+        "rsa_r": 0.578,
+        "rsa_p": 0.0
+      }
+    },
+    "cbramod": {
+      "fm_rdm_shape": 70,
+      "delta": {
+        "rsa_r": 0.3726,
+        "rsa_p": 0.0
+      },
+      "theta": {
+        "rsa_r": 0.31,
+        "rsa_p": 0.0
+      },
+      "alpha": {
+        "rsa_r": 0.3398,
+        "rsa_p": 0.0
+      },
+      "beta": {
+        "rsa_r": 0.2848,
+        "rsa_p": 0.0
+      },
+      "all_bands": {
+        "rsa_r": 0.3873,
+        "rsa_p": 0.0
+      }
+    },
+    "reve": {
+      "fm_rdm_shape": 70,
+      "delta": {
+        "rsa_r": 0.3268,
+        "rsa_p": 0.0
+      },
+      "theta": {
+        "rsa_r": 0.249,
+        "rsa_p": 0.0
+      },
+      "alpha": {
+        "rsa_r": 0.2722,
+        "rsa_p": 0.0
+      },
+      "beta": {
+        "rsa_r": 0.164,
+        "rsa_p": 0.0
+      },
+      "all_bands": {
+        "rsa_r": 0.3575,
+        "rsa_p": 0.0
+      }
+    }
+  },
+  "eegmat": {
+    "labram": {
+      "fm_rdm_shape": 72,
+      "delta": {
+        "rsa_r": 0.098,
+        "rsa_p": 1e-06
+      },
+      "theta": {
+        "rsa_r": 0.1915,
+        "rsa_p": 0.0
+      },
+      "alpha": {
+        "rsa_r": 0.175,
+        "rsa_p": 0.0
+      },
+      "beta": {
+        "rsa_r": 0.0194,
+        "rsa_p": 0.327906
+      },
+      "all_bands": {
+        "rsa_r": 0.4167,
+        "rsa_p": 0.0
+      }
+    },
+    "cbramod": {
+      "fm_rdm_shape": 72,
+      "delta": {
+        "rsa_r": 0.0415,
+        "rsa_p": 0.036014
+      },
+      "theta": {
+        "rsa_r": 0.0838,
+        "rsa_p": 2.2e-05
+      },
+      "alpha": {
+        "rsa_r": 0.1304,
+        "rsa_p": 0.0
+      },
+      "beta": {
+        "rsa_r": 0.1668,
+        "rsa_p": 0.0
+      },
+      "all_bands": {
+        "rsa_r": 0.3249,
+        "rsa_p": 0.0
+      }
+    },
+    "reve": {
+      "fm_rdm_shape": 72,
+      "delta": {
+        "rsa_r": -0.0244,
+        "rsa_p": 0.217643
+      },
+      "theta": {
+        "rsa_r": 0.0414,
+        "rsa_p": 0.036218
+      },
+      "alpha": {
+        "rsa_r": 0.1764,
+        "rsa_p": 0.0
+      },
+      "beta": {
+        "rsa_r": 0.1516,
+        "rsa_p": 0.0
+      },
+      "all_bands": {
+        "rsa_r": 0.2528,
+        "rsa_p": 0.0
+      }
+    }
+  }
+}

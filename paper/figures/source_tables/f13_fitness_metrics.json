@@ -1,0 +1,418 @@
+{
+  "per_model_dataset": {
+    "labram_stress": {
+      "model": "labram",
+      "dataset": "stress",
+      "frozen": {
+        "n_rec": 70,
+        "n_subj": 17,
+        "embed_dim": 200,
+        "sil_label": 0.0132,
+        "sil_subject": 0.0586,
+        "fisher": 0.027773,
+        "knn_ba": 0.4375,
+        "rsa_label_r": -0.0035,
+        "rsa_label_p": 0.862341,
+        "rsa_subject_r": 0.2837,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 2.917
+      },
+      "ft": {
+        "n_rec": 70,
+        "n_subj": 17,
+        "embed_dim": 200,
+        "sil_label": 0.0123,
+        "sil_subject": 0.0526,
+        "fisher": 0.013235,
+        "knn_ba": 0.5179,
+        "rsa_label_r": -0.0074,
+        "rsa_label_p": 0.718007,
+        "rsa_subject_r": 0.3221,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 1.1731
+      }
+    },
+    "labram_adftd": {
+      "model": "labram",
+      "dataset": "adftd",
+      "frozen": {
+        "n_rec": 195,
+        "n_subj": 65,
+        "embed_dim": 200,
+        "sil_label": 0.0235,
+        "sil_subject": 0.0633,
+        "fisher": 0.028212,
+        "knn_ba": 0.5691,
+        "rsa_label_r": 0.0356,
+        "rsa_label_p": 1e-06,
+        "rsa_subject_r": 0.1257,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 3.1059
+      },
+      "ft": {
+        "n_rec": 195,
+        "n_subj": 65,
+        "embed_dim": 200,
+        "sil_label": 0.0285,
+        "sil_subject": 0.2484,
+        "fisher": 0.033344,
+        "knn_ba": 0.5912,
+        "rsa_label_r": 0.0662,
+        "rsa_label_p": 0.0,
+        "rsa_subject_r": 0.1674,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 3.2745
+      }
+    },
+    "labram_tdbrain": {
+      "model": "labram",
+      "dataset": "tdbrain",
+      "frozen": {
+        "n_rec": 734,
+        "n_subj": 359,
+        "embed_dim": 200,
+        "sil_label": 0.0619,
+        "sil_subject": -0.1359,
+        "fisher": 0.025309,
+        "knn_ba": 0.5734,
+        "rsa_label_r": 0.0843,
+        "rsa_label_p": 0.0,
+        "rsa_subject_r": 0.0398,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 2.9727
+      },
+      "ft": {
+        "n_rec": 734,
+        "n_subj": 359,
+        "embed_dim": 200,
+        "sil_label": 0.05,
+        "sil_subject": -0.0197,
+        "fisher": 0.017123,
+        "knn_ba": 0.5773,
+        "rsa_label_r": 0.1352,
+        "rsa_label_p": 0.0,
+        "rsa_subject_r": 0.0625,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 1.7284
+      }
+    },
+    "labram_eegmat": {
+      "model": "labram",
+      "dataset": "eegmat",
+      "frozen": {
+        "n_rec": 72,
+        "n_subj": 36,
+        "embed_dim": 200,
+        "sil_label": 0.0306,
+        "sil_subject": -0.0097,
+        "fisher": 0.046662,
+        "knn_ba": 0.5972,
+        "rsa_label_r": 0.0731,
+        "rsa_label_p": 0.000219,
+        "rsa_subject_r": 0.1194,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 5.3485
+      },
+      "ft": {
+        "n_rec": 72,
+        "n_subj": 36,
+        "embed_dim": 200,
+        "sil_label": 0.015,
+        "sil_subject": -0.0219,
+        "fisher": 0.032928,
+        "knn_ba": 0.6806,
+        "rsa_label_r": 0.0357,
+        "rsa_label_p": 0.070981,
+        "rsa_subject_r": 0.1634,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 3.3414
+      }
+    },
+    "cbramod_stress": {
+      "model": "cbramod",
+      "dataset": "stress",
+      "frozen": {
+        "n_rec": 70,
+        "n_subj": 17,
+        "embed_dim": 200,
+        "sil_label": -0.0273,
+        "sil_subject": -0.0057,
+        "fisher": 0.013758,
+        "knn_ba": 0.4911,
+        "rsa_label_r": -0.0506,
+        "rsa_label_p": 0.012837,
+        "rsa_subject_r": 0.2086,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 1.1398
+      },
+      "ft": {
+        "n_rec": 70,
+        "n_subj": 17,
+        "embed_dim": 200,
+        "sil_label": -0.0167,
+        "sil_subject": 0.0762,
+        "fisher": 0.008437,
+        "knn_ba": 0.5089,
+        "rsa_label_r": -0.0249,
+        "rsa_label_p": 0.220865,
+        "rsa_subject_r": 0.331,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 0.5566
+      }
+    },
+    "cbramod_adftd": {
+      "model": "cbramod",
+      "dataset": "adftd",
+      "frozen": {
+        "n_rec": 195,
+        "n_subj": 65,
+        "embed_dim": 200,
+        "sil_label": 0.0092,
+        "sil_subject": -0.1025,
+        "fisher": 0.008368,
+        "knn_ba": 0.5184,
+        "rsa_label_r": 0.0153,
+        "rsa_label_p": 0.035421,
+        "rsa_subject_r": 0.1043,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 1.345
+      },
+      "ft": {
+        "n_rec": 195,
+        "n_subj": 65,
+        "embed_dim": 200,
+        "sil_label": 0.0013,
+        "sil_subject": 0.0043,
+        "fisher": 0.004375,
+        "knn_ba": 0.4612,
+        "rsa_label_r": -0.0031,
+        "rsa_label_p": 0.673029,
+        "rsa_subject_r": 0.1443,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 0.4605
+      }
+    },
+    "cbramod_tdbrain": {
+      "model": "cbramod",
+      "dataset": "tdbrain",
+      "frozen": {
+        "n_rec": 734,
+        "n_subj": 359,
+        "embed_dim": 200,
+        "sil_label": 0.1284,
+        "sil_subject": 0.5128,
+        "fisher": 0.018623,
+        "knn_ba": 0.5124,
+        "rsa_label_r": 0.0238,
+        "rsa_label_p": 0.0,
+        "rsa_subject_r": 0.0616,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 2.9474
+      },
+      "ft": {
+        "n_rec": 734,
+        "n_subj": 359,
+        "embed_dim": 200,
+        "sil_label": 0.0872,
+        "sil_subject": 0.5813,
+        "fisher": 0.013401,
+        "knn_ba": 0.5058,
+        "rsa_label_r": -0.0044,
+        "rsa_label_p": 0.022768,
+        "rsa_subject_r": 0.0626,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 2.8868
+      }
+    },
+    "cbramod_eegmat": {
+      "model": "cbramod",
+      "dataset": "eegmat",
+      "frozen": {
+        "n_rec": 72,
+        "n_subj": 36,
+        "embed_dim": 200,
+        "sil_label": 0.0245,
+        "sil_subject": -0.0138,
+        "fisher": 0.039898,
+        "knn_ba": 0.625,
+        "rsa_label_r": 0.0354,
+        "rsa_label_p": 0.073776,
+        "rsa_subject_r": 0.1454,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 3.7221
+      },
+      "ft": {
+        "n_rec": 72,
+        "n_subj": 36,
+        "embed_dim": 200,
+        "sil_label": 0.0053,
+        "sil_subject": -0.1339,
+        "fisher": 0.046445,
+        "knn_ba": 0.5139,
+        "rsa_label_r": 0.0124,
+        "rsa_label_p": 0.529318,
+        "rsa_subject_r": 0.1168,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 6.6873
+      }
+    },
+    "reve_stress": {
+      "model": "reve",
+      "dataset": "stress",
+      "frozen": {
+        "n_rec": 70,
+        "n_subj": 17,
+        "embed_dim": 512,
+        "sil_label": -0.0043,
+        "sil_subject": -0.0424,
+        "fisher": 0.023472,
+        "knn_ba": 0.4196,
+        "rsa_label_r": -0.0139,
+        "rsa_label_p": 0.493257,
+        "rsa_subject_r": 0.1851,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 2.1631
+      },
+      "ft": {
+        "n_rec": 70,
+        "n_subj": 17,
+        "embed_dim": 512,
+        "sil_label": -0.0121,
+        "sil_subject": 0.0568,
+        "fisher": 0.018522,
+        "knn_ba": 0.4196,
+        "rsa_label_r": -0.0319,
+        "rsa_label_p": 0.117583,
+        "rsa_subject_r": 0.2593,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 1.6897
+      }
+    },
+    "reve_adftd": {
+      "model": "reve",
+      "dataset": "adftd",
+      "frozen": {
+        "n_rec": 195,
+        "n_subj": 65,
+        "embed_dim": 512,
+        "sil_label": -0.0139,
+        "sil_subject": -0.2177,
+        "fisher": 0.010685,
+        "knn_ba": 0.5771,
+        "rsa_label_r": 0.0019,
+        "rsa_label_p": 0.79656,
+        "rsa_subject_r": 0.0453,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 1.896
+      },
+      "ft": {
+        "n_rec": 195,
+        "n_subj": 65,
+        "embed_dim": 512,
+        "sil_label": -0.0111,
+        "sil_subject": -0.0542,
+        "fisher": 0.008615,
+        "knn_ba": 0.4901,
+        "rsa_label_r": 0.0019,
+        "rsa_label_p": 0.793949,
+        "rsa_subject_r": 0.1074,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 0.6789
+      }
+    },
+    "reve_tdbrain": {
+      "model": "reve",
+      "dataset": "tdbrain",
+      "frozen": {
+        "n_rec": 734,
+        "n_subj": 359,
+        "embed_dim": 512,
+        "sil_label": 0.0841,
+        "sil_subject": -0.1549,
+        "fisher": 0.000359,
+        "knn_ba": 0.4942,
+        "rsa_label_r": 0.0183,
+        "rsa_label_p": 0.0,
+        "rsa_subject_r": 0.0422,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 0.0276
+      },
+      "ft": {
+        "n_rec": 734,
+        "n_subj": 359,
+        "embed_dim": 512,
+        "sil_label": 0.0761,
+        "sil_subject": 0.0367,
+        "fisher": 0.002088,
+        "knn_ba": 0.5158,
+        "rsa_label_r": 0.0088,
+        "rsa_label_p": 5e-06,
+        "rsa_subject_r": 0.0545,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 0.3594
+      }
+    },
+    "reve_eegmat": {
+      "model": "reve",
+      "dataset": "eegmat",
+      "frozen": {
+        "n_rec": 72,
+        "n_subj": 36,
+        "embed_dim": 512,
+        "sil_label": 0.0112,
+        "sil_subject": -0.0836,
+        "fisher": 0.024871,
+        "knn_ba": 0.5278,
+        "rsa_label_r": 0.0137,
+        "rsa_label_p": 0.487507,
+        "rsa_subject_r": 0.1171,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 2.4596
+      },
+      "ft": {
+        "n_rec": 72,
+        "n_subj": 36,
+        "embed_dim": 512,
+        "sil_label": 0.0081,
+        "sil_subject": 0.0048,
+        "fisher": 0.022309,
+        "knn_ba": 0.5972,
+        "rsa_label_r": 0.0143,
+        "rsa_label_p": 0.470432,
+        "rsa_subject_r": 0.1524,
+        "rsa_subject_p": 0.0,
+        "label_frac_pct": 2.1914
+      }
+    }
+  },
+  "cka": {
+    "frozen": {
+      "labram_vs_cbramod_stress": 0.6204,
+      "labram_vs_reve_stress": 0.4033,
+      "cbramod_vs_reve_stress": 0.8679,
+      "labram_vs_cbramod_adftd": 0.0999,
+      "labram_vs_reve_adftd": 0.031,
+      "cbramod_vs_reve_adftd": 0.1792,
+      "labram_vs_cbramod_tdbrain": 0.0595,
+      "labram_vs_reve_tdbrain": 0.0055,
+      "cbramod_vs_reve_tdbrain": 0.0012,
+      "labram_vs_cbramod_eegmat": 0.5828,
+      "labram_vs_reve_eegmat": 0.3909,
+      "cbramod_vs_reve_eegmat": 0.7974
+    },
+    "ft": {
+      "labram_vs_cbramod_stress": 0.4519,
+      "labram_vs_reve_stress": 0.3327,
+      "cbramod_vs_reve_stress": 0.1543,
+      "labram_vs_cbramod_adftd": 0.3223,
+      "labram_vs_reve_adftd": 0.0572,
+      "cbramod_vs_reve_adftd": 0.0184,
+      "labram_vs_cbramod_tdbrain": 0.0484,
+      "labram_vs_reve_tdbrain": 0.1244,
+      "cbramod_vs_reve_tdbrain": 0.0852,
+      "labram_vs_cbramod_eegmat": 0.2202,
+      "labram_vs_reve_eegmat": 0.2631,
+      "cbramod_vs_reve_eegmat": 0.0882
+    }
+  }
+}

@@ -1,0 +1,14 @@
+==========================================
+exp19 Wang 82-rec trial cbramod 3-seed — 公曆 20廿六年 四月 十四日 週二 廿時三分58秒
+GPU: cuda:4
+==========================================
+[20:03] START cbramod_s42 on cuda:4
+[20:28] OK cbramod_s42 (bal_acc=0.5305)
+[20:28] START cbramod_s123 on cuda:4
+[20:58] TIMEOUT cbramod_s123
+[20:58] START cbramod_s2024 on cuda:4
+Terminated
+[21:12] FAIL cbramod_s2024 (exit=143)
+==========================================
+DONE exp19 cbramod — 公曆 20廿六年 四月 十四日 週二 廿一時十二分十六秒
+==========================================

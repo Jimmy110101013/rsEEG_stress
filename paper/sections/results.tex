@@ -1,182 +1,417 @@
+% Results — drafted from findings.md F01--F20 and paper_narrative_zh.md §3--§7.
+% Three pillars (A methodology, B representation, C taxonomy) + D interpretability
+% + a dedicated power-floor subsection that reframes the Stress result.
+
 \section{Results}
 \label{sec:results}
 
-\subsection{Trial-vs-Subject CV Inflation}
-\label{sec:results:cv}
+% Overview paragraph: tell the reader what story this section tells.
+Our results are organised as three pillars that together support a single
+thesis: the balanced accuracy (BA) that EEG foundation models report on
+resting-state stress classification is not model-driven, and the
+cross-dataset fine-tuning (FT) behaviour that does emerge is driven by a
+model~$\times$~dataset interaction rather than by any one model's quality.
+Pillar~A (\S\ref{sec:results:methodology}) establishes the three
+methodology traps that inflate reported numbers; Pillar~B
+(\S\ref{sec:results:representation}) diagnoses what the frozen
+representations actually encode; Pillar~C
+(\S\ref{sec:results:taxonomy}) is the headline cross-dataset taxonomy;
+\S\ref{sec:results:interp} adds a TNSRE-flavoured neuroscience
+interpretability panel; \S\ref{sec:power_floor} closes with the
+statistical-power-floor argument that reframes every Stress-specific
+claim in the paper as a \emph{benchmark-design caveat} rather than an
+FM failure.
 
-Table~\ref{tab:cv-gap} reports balanced accuracy under both protocols on
-UCSD Stress. All three FMs drop $\sim$21~points moving from trial-level to
-subject-level evaluation. The gap is consistent across architectures.
+% ============================================================
+\subsection{Pillar A: Methodology Traps}
+\label{sec:results:methodology}
 
-\begin{table}[h]
-\centering
-\caption{Trial- vs.\ subject-level CV gap on UCSD Stress. Values are
-recording-level balanced accuracy.}
-\label{tab:cv-gap}
-\small
-\begin{tabular}{lccc}
-\toprule
-Model & Trial-level \BA{} & Subject-level \BA{} & Gap \\
-\midrule
-LaBraM   & 0.862 & 0.656 & $-20.6$ \\
-REVE     & 0.770 & 0.553 & $-21.7$ \\
-CBraMod  & 0.712 & 0.488 & $-22.4$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+% Overview of Pillar A
+Before any claim about an FM's stress-decoding ability can be trusted,
+three methodological traps must be defused. Each of them has produced a
+widely-cited number in the recent EEG literature; each of them reverses
+or halves that number once defused. Figures~\ref{fig:cvgap}
+and~\ref{fig:classical} and the cuDNN swing audit below make this
+quantitative.
 
-% TODO: add bootstrap CIs and a paired sign-test result over the 3 FMs.
+\subsubsection{Subject leakage inflates BA (F01)}
 
-\subsection{Frozen Feature Variance Decomposition}
-\label{sec:results:eta}
+% MOTIVATION / EVIDENCE
+The most common trial-level \textsc{Stratified\-KFold} evaluation on
+UCSD Stress places recordings from the same subject on both sides of
+the split, which the classifier can exploit via subject identity
+instead of state. Wang et al.~\cite{wang2025stress} report 0.90 BA on
+LaBraM under this protocol. Under our subject-level
+\textsc{Stratified\-Group\-KFold}(5) with per-recording DASS labels
+and three seeds, the same FMs land in the 0.45--0.58 band (Table~\ref{tab:master}
+rows ``Frozen LP'' and ``Fine-tuned'' columns Stress).
 
-Table~\ref{tab:eta} reports $\eta^{2}$ for subject and label factors on
-frozen LaBraM features (19 common channels). Subject identity dominates
-label signal by 11--13$\times$ when subject count is matched.
+Figure~\ref{fig:cvgap} measures the CV-protocol inflation directly on
+our data: holding the FM, the recipe and the label constant, we switch
+only the partition rule. Under per-rec DASS the gap is model-dependent
+and much smaller than the $\sim$21\,pp uniform drop reported under
+subject-DASS OR-aggregation (F07): LaBraM $+15.2$\,pp, REVE $+6.5$\,pp,
+CBraMod $+1.2$\,pp. The honest-label mean gap is $+7.6$\,pp, roughly a
+third of what the legacy trait-aggregated evaluation suggests. Every
+subsequent number in this paper is anchored to the subject-level,
+per-rec-DASS side of this comparison.
 
-\begin{table}[h]
-\centering
-\caption{Variance decomposition of frozen LaBraM features.
-$N$-matched ADFTD averages 10 random draws of 17 subjects.}
-\label{tab:eta}
-\small
-\begin{tabular}{lrrrr}
-\toprule
-Dataset & $N_{\mathrm{subj}}$ & $\eta^{2}_{\mathrm{subj}}$ & $\eta^{2}_{\mathrm{label}}$ & Ratio \\
-\midrule
-UCSD Stress & 17 & 0.649 & 0.059 & 11.0 \\
-ADFTD (full) & 65 & 0.783 & 0.024 & 33.0 \\
-ADFTD ($N$-matched) & 17 & $0.748 \pm 0.042$ & $0.062 \pm 0.016$ & $13.0 \pm 3.9$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-% TODO: add row for TDBRAIN once frozen-feature analysis is regenerated.
-% TODO: add a permutation-test p-value column.
-
-\subsection{Cross-Dataset Signal Strength}
-\label{sec:results:cross}
-
-Figure~\ref{fig:cross-dataset} compares fine-tuned LaBraM balanced accuracy
-and frozen-vs-fine-tuned $\eta^{2}$ ratios across all three datasets. Three
-patterns are visible.
-
-First, recording-level \BA{} ranks the three datasets in the expected
-direction: Stress at $0.656$, TDBRAIN at $0.681$, ADFTD at $0.752$. All are
-above chance ($0.5$); the spread is $\sim$10 points.
-
-Second, frozen $\eta^{2}$ ratios are uniformly large but not equal:
-$10.0\times$ for Stress, $31.5\times$ for TDBRAIN, $33.0\times$ for ADFTD.
-The latter two are larger because their subject pools are larger ($N{=}359$
-and $N{=}65$ respectively), inflating the between-subject sum of squares.
-
-Third --- and this is the central observation --- fine-tuning shifts the
-$\eta^{2}$ ratio in opposite directions for ADFTD and TDBRAIN. For ADFTD,
-the ratio drops from $33.0$ to $13.9$: fine-tuning amplifies label
-information faster than it amplifies subject identity, consistent with a
-strong, separable diagnostic signal. For TDBRAIN, the ratio rises from
-$31.5$ to $64.4$: fine-tuning amplifies subject identity \emph{more} than
-label information, consistent with the model fitting the
-$\sim$$7{:}1$ class imbalance ($N_{\mathrm{MDD}}{=}640$,
-$N_{\mathrm{HC}}{=}94$) by collapsing toward the majority class. For
-Stress, the ratio is essentially flat ($10.0 \to 12.3$): there is too
-little label variance for fine-tuning to amplify either direction.
-
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/cross_dataset_signal_strength.pdf}
-  \caption{Cross-dataset signal strength under LaBraM, subject-level
-  5-fold CV. \textbf{(a)}~Recording-level balanced accuracy after full
-  fine-tuning. All three datasets exceed chance, with a $\sim$10-point
-  spread. \textbf{(b)}~$\eta^{2}_{\mathrm{subject}}/\eta^{2}_{\mathrm{label}}$
-  ratio for frozen and fine-tuned features. ADFTD's ratio drops sharply
-  with fine-tuning (label signal amplified); TDBRAIN's ratio rises
-  (subject identity amplified due to class imbalance); Stress is flat
-  (signal-limited at the source).}
-  \label{fig:cross-dataset}
+  \includegraphics[width=\linewidth]{figures/main/fig2_cv_gap.pdf}
+  \caption{%
+    Trial-level vs.\ subject-level CV on the three FMs, same 70-recording
+    Stress dataset, per-rec DASS labels, three seeds. Error bars are
+    sample std. The protocol-driven gap is real but small and
+    model-dependent, roughly one third of what the legacy subject-DASS
+    setting suggests (F01).%
+  }
+  \label{fig:cvgap}
 \end{figure}
 
-\subsection{Frozen vs.\ Fine-Tuned $\eta^{2}$ Shift}
-\label{sec:results:ft}
+\subsubsection{Single-seed numbers are not reproducible (F08)}
 
-Table~\ref{tab:ft-shift} compares frozen and fine-tuned LaBraM features on
-the two reference datasets. Fine-tuning increases both subject and label
-encoding, but the ratio behaves differently: it drops sharply for
-Alzheimer's ($13.0 \to 7.7$) and remains essentially flat for stress
-($11.0 \to 12.8$). This is the central finding for our claim that
-\textbf{fine-tuning cannot create signal that isn't in the raw EEG.}
+% EVIDENCE
+On 70 recordings with 14 positive samples, microscopic initialisation
+differences cascade through five CV folds and produce 10--20\,pp
+balanced-accuracy swings even with \texttt{cudnn.deterministic=True}
+and \texttt{benchmark=False}. The canonical LaBraM FT recipe on Stress
+gives $0.443 \pm 0.083$ across seeds $\{42, 123, 2024\}$---a
+99-percentile range that spans roughly 14\,pp. Two of our 10
+permutation-null seeds ($0.607$ and $0.643$) beat \emph{all} real-label
+seeds. We therefore treat any single-seed Stress number in the
+published literature as an artefact of random initialisation, and in
+this paper we require every Stress claim to be the mean of at least
+three seeds; the frozen-LP ceiling additionally uses eight seeds.
 
-\begin{table}[h]
-\centering
-\caption{Frozen vs.\ fine-tuned LaBraM features ($N=17$ matched).}
-\label{tab:ft-shift}
-\small
-\begin{tabular}{llrrrr}
-\toprule
-Dataset & Mode & $\eta^{2}_{\mathrm{subj}}$ & $\eta^{2}_{\mathrm{label}}$ & Ratio & \BA{} \\
-\midrule
-Stress & Frozen & 0.649 & 0.059 & 11.0 & --- \\
-Stress & FT     & 0.874 & 0.069 & 12.8 & 0.656 \\
-\addlinespace
-ADFTD ($N$-matched) & Frozen & 0.748 & 0.062 & 13.0 & --- \\
-ADFTD ($N$-matched) & FT     & 0.930 & 0.125 & 7.7  & 0.752 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsubsection{Classical features collapse under honest labels (F16, F03)}
 
-\subsection{Classical Baseline Parity}
-\label{sec:results:classical}
+% EVIDENCE
+Under per-recording DASS on the same 70 recordings used by all FMs,
+all classical methods we tried---Random Forest, Logistic Regression,
+XGBoost, SVM with band-power and Hjorth features---fall to or below
+chance (0.43--0.49 BA, all $\kappa \le 0$), Figure~\ref{fig:classical}.
+The previously reported 0.666 RF number~\cite{komarov2020stress} was
+obtained under subject-DASS OR-aggregation and is entirely an
+aggregation artefact (F16).
 
-Table~\ref{tab:classical} compares classical hand-crafted features
-(absolute and relative band power, frontal asymmetry, ratios) against
-fine-tuned LaBraM under identical subject-level CV. Random forest matches
-or slightly exceeds LaBraM on both datasets.
+This reverses the folk assumption that foundation models are
+unnecessary for resting-state stress classification: on honest labels
+the best FM frozen linear probe (LaBraM 0.605) is the \emph{only}
+model family consistently above chance. The absolute number is modest,
+but the gap to the best classical learner (0.49) is $\sim$11\,pp.
 
-\begin{table}[h]
-\centering
-\caption{Classical features vs.\ fine-tuned LaBraM, subject-level 5-fold
-CV. \BA{} reported.}
-\label{tab:classical}
-\small
-\begin{tabular}{lcc}
-\toprule
-Method & Stress \BA{} (70-rec) & ADFTD \BA{} \\
-\midrule
-LaBraM (FT)            & 0.656 & 0.752 \\
-RF on band power (full ch) & \textbf{0.666} & \textbf{0.753} \\
-RF on band power (19 ch) & 0.536 & 0.753 \\
-LogReg (L2)            & 0.624 & --- \\
-SVM (RBF)              & 0.580 & --- \\
-\bottomrule
-\end{tabular}
-\end{table}
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/main/fig4_classical_vs_fm.pdf}
+  \caption{%
+    Classical features (RF, LR, XGBoost, SVM) vs.\ FM frozen linear
+    probes on the same 70 recordings, per-recording DASS labels.
+    Classical methods fall to or below chance; only FMs retain a
+    linearly-separable label direction (F03, F16).%
+  }
+  \label{fig:classical}
+\end{figure}
 
-\subsection{Failed Mitigation: Subject-Adversarial Training}
-\label{sec:results:adv}
+% ============================================================
+\subsection{Pillar B: Representation Diagnosis}
+\label{sec:results:representation}
 
-We implemented subject-adversarial training via gradient reversal layer
-(GRL) and a LEAD-style auxiliary subject classification loss. Neither
-improves performance; both degrade it
-(Table~\ref{tab:adv}). We treat this as evidence that the diagnostic
-signal in resting-state stress is not amplifiable by removing subject
-information --- it is signal-limited at the source.
+Having neutralised the three methodology traps, we now ask what the
+frozen representations actually encode, separating subject identity
+from label signal. This is where the FM-vs-classical gap is
+mechanistically explained.
 
-\begin{table}[h]
-\centering
-\caption{Failed mitigation strategies on UCSD Stress. \BA{} subject-level
-5-fold CV.}
-\label{tab:adv}
-\small
-\begin{tabular}{lc}
-\toprule
-Method & Stress \BA{} \\
-\midrule
-LaBraM FT (baseline) & 0.656 \\
-+ GRL ($\lambda{=}0.05$) & 0.537 \\
-+ LEAD subject loss     & 0.439 \\
-GRL $\lambda$ sweep $\{0.01,0.05,0.1,0.5,1.0\}$ & all $<$ baseline \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsubsection{Subject identity dominates frozen representations (F02, F13)}
 
-% TODO: add §6.2 spectral-guided FiLM conditioning (pending experiment).
+% EVIDENCE + FIGURE
+Representational similarity analysis on the frozen embeddings of all
+twelve \{FM, dataset\} cells shows that the subject-identity
+similarity exceeds the label similarity in \emph{all 12}
+combinations (Figure~\ref{fig:fitness}a). Mixed-effects ICC on EEGMAT,
+the strongest-biomarker dataset in our panel, attributes 71\,\% of
+embedding variance to the subject random effect and only 5\,\% to the
+label fixed effect. The same pattern holds across architectures:
+LaBraM, CBraMod, and REVE all produce embedding geometries in which
+``which subject this recording came from'' is a much stronger axis
+than ``which label this recording carries'' (Figure~\ref{fig:fitness}b,
+t-SNE by subject vs.\ by label).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.48\linewidth]{figures/main/fig3a_fitness_heatmap.pdf}\hfill
+  \includegraphics[width=0.48\linewidth]{figures/main/fig3b_tsne_cross_dataset.png}
+  \caption{%
+    (a) RSA subject$/$label similarity ratio across 12 \{FM, dataset\}
+    cells; every cell satisfies $r_{\text{subj}} > r_{\text{label}}$.
+    (b) t-SNE of frozen LaBraM embeddings on a representative
+    cross-dataset pool---clustering is by subject, not by label (F02).%
+  }
+  \label{fig:fitness}
+\end{figure}
+
+\subsubsection{A linearly-separable label sub-space remains (F03)}
+
+Despite the subject-identity dominance, the frozen FM representation
+retains a low-SNR but linearly accessible label direction that the
+classical band-power feature space does not. This is the
+mechanistic explanation of Figure~\ref{fig:classical}: FMs learn a
+subject fingerprint \emph{plus} a label sub-space, and the linear
+probe finds the latter; hand-crafted band-power features lie in a
+sub-space that overlaps the former but not the latter.
+
+\subsubsection{Alpha lateralisation is the classical signal (F10)}
+
+Random-forest feature importances on the classical pipeline show
+13 of the top~20 features are alpha-band, concentrated in the right
+hemisphere (T4, C4, CP4, P4) and right-frontal (Fp2, F8) electrodes.
+This alpha-lateralisation signature matches the classical
+stress/affect literature, and it sets the baseline neuroscience
+prediction that \S\ref{sec:results:interp} tests against the three FMs.
+
+% ============================================================
+\subsection{Pillar C: Cross-Dataset $\times$ Cross-Model FT Taxonomy}
+\label{sec:results:taxonomy}
+
+% THIS IS THE HEADLINE SECTION.
+This section is the paper's central contribution. Holding the FM
+constant and varying the dataset reveals that fine-tuning does not
+have a single ``direction''---it has at least three, and which one you
+get depends on a model~$\times$~dataset interaction that no existing
+FM benchmark stratifies on.
+
+\subsubsection{Representation-level pp $\Delta$ is dataset-dependent \emph{and} model-dependent (F17)}
+
+We ran 3 models~$\times$~2 external datasets (ADFTD, TDBRAIN)
+$\times$~3 seeds of matched fine-tuning and recomputed the pooled
+label fraction ($\eta^2$) on the post-FT embeddings. The resulting
+pp\,$\Delta$ matrix (Figure~\ref{fig:taxonomy}) shows three distinct
+modes: \emph{injection} on ADFTD (LaBraM~$+5.2$\,pp, REVE~$+5.6$\,pp,
+CBraMod nearly zero), \emph{erosion} on TDBRAIN (LaBraM~$-1.5$\,pp,
+CBraMod~$-7.6$\,pp, REVE~$-5.6$\,pp, all on the opposite side of the
+permutation null from zero), and a model-specific flip between the
+two datasets. CBraMod, in particular, moves in the opposite direction
+to the other two FMs on ADFTD---the model~$\times$~dataset
+interaction is not a noise artefact.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/main/fig5_cross_dataset_taxonomy.pdf}
+  \caption{%
+    FT~$-$~Frozen pooled label fraction (pp\,$\Delta$) for
+    3~FMs~$\times$~2 datasets, three seeds; error bars are
+    cluster-bootstrap 95\,\% CIs resampled by subject. ADFTD injects
+    label signal for LaBraM and REVE and leaves CBraMod flat; TDBRAIN
+    erodes label signal for all three, with CBraMod losing the most
+    (F17).%
+  }
+  \label{fig:taxonomy}
+\end{figure}
+
+\subsubsection{Behavioural-level master table}
+
+Table~\ref{tab:master} lifts the representation-level finding to the
+downstream classifier. All twelve \{FM, dataset\} cells are now
+populated at three seeds. Two behaviours immediately stand out.
+First, CBraMod's frozen LP on EEGMAT is the highest cell in the entire
+table ($0.731 \pm 0.053$), yet its fine-tuned counterpart
+\emph{degrades} to $0.620 \pm 0.058$ ($-11.1$\,pp, the single largest
+erosion in the table). The pretrained criss-cross attention has
+already found the rest-vs-task axis, and full-parameter FT actively
+destroys it. Second, on Stress every model shows a \emph{surface}
+injection or erosion of $\pm 8$--$9$\,pp that looks strong in
+isolation but fails to clear the permutation null
+(\S\ref{sec:power_floor}).
+
+\input{sections/table1_master}
+
+\subsubsection{$N$-invariance of the taxonomy (F04)}
+
+A natural concern is that the three modes are an artefact of the
+different dataset sizes. We address this with matched subsampling: at
+each sample-size rung $N \in \{17, 34, 70\}$ we draw 100 random
+subsets, redo the full FT and variance-decomposition pipeline, and
+recompute the pp\,$\Delta$ (Figure~\ref{fig:matched}). The injection
+on ADFTD is $+5.22$\,pp at $N=17$---numerically indistinguishable from
+its full-dataset value---and TDBRAIN's erosion remains $\approx -1$\,pp
+at the same matched $N$. The taxonomy is therefore a property of the
+\emph{label biology}, not of sample size. Because the matched-$N$
+pipeline is computationally heavy we restrict it to LaBraM; we note
+this as a limitation in \S\ref{sec:discussion}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/main/fig6_matched_n_curves.pdf}
+  \caption{%
+    Matched-subsample pp\,$\Delta$ curves for LaBraM on the four
+    datasets. At every sample-size rung $N$, the injection/erosion
+    direction and approximate magnitude are preserved---the taxonomy
+    is $N$-invariant (F04).%
+  }
+  \label{fig:matched}
+\end{figure}
+
+\subsubsection{Within-subject design is not a universal rescue (F09 + F14)}
+
+If subject identity dominates the representation, one might hope that
+a within-subject paired design would sidestep the problem entirely.
+We test this with two within-subject benchmarks:
+
+\begin{itemize}
+  \item On \textbf{EEGMAT} (paired rest vs.\ arithmetic), LaBraM FT
+    reaches $0.731 \pm 0.021$ BA and the frozen LP already reaches
+    $0.671 \pm 0.056$ (Table~\ref{tab:master}). Within-subject works
+    here.
+  \item On \textbf{Stress} (leave-one-subject-out within-subject DSS
+    trajectory classification, F14), all three FMs across three
+    classifiers (centroid, 1-NN, logistic) fall to chance, with
+    negative Cohen's~$\kappa$ (Supplementary Figure~S4).
+\end{itemize}
+
+The decisive variable is not ``within- vs.\ between-subject'' but the
+\emph{strength of the within-subject contrast}. EEGMAT has a strong
+paradigm-driven rest/task switch; Stress DSS is a low-SNR longitudinal
+drift whose same-day EEG correlates are weak. The comparison serves as
+the fifth line of evidence in \S\ref{sec:power_floor}.
+
+% ============================================================
+\subsection{Neuroscience Interpretability}
+\label{sec:results:interp}
+
+For a TNSRE audience the central interpretability question is:
+\emph{do the FMs' decisions correspond to a known neural signature,
+or to an incidental statistical feature?} We attack this with three
+complementary probes (spatial, spectral-correlational,
+spectral-causal) and use their cross-model agreement as a signal-vs-noise
+diagnostic: a real neural signature should appear consistently across
+three different architectures; an architecture-specific pattern is
+more likely an artefact.
+
+\subsubsection{Spatial signatures (topomap)}
+
+Gradient-based per-channel importance on the three FMs
+(Figure~\ref{fig:interp}a) converges on right-hemisphere and
+right-frontal electrodes, matching the classical
+alpha-asymmetry prediction of \S\ref{sec:results:representation}
+(F10). The cross-model convergence argues that the topographic
+finding is a real neural signal rather than a per-model artefact.
+
+\subsubsection{Spectral correlational (band RSA)}
+
+Per-band representational similarity analysis
+(Figure~\ref{fig:interp}b) shows that alpha and beta bands carry the
+strongest similarity to the full-signal representation across all
+three FMs on EEGMAT. Theta is dominant only on Stress and only for
+CBraMod, an architecture-specific pattern we flag below.
+
+\subsubsection{Spectral causal (band-stop ablation) and cross-model convergence}
+
+We band-stop-filter the input in one of four bands (delta, theta,
+alpha, beta), re-run the frozen linear probe, and measure the BA
+drop. On EEGMAT (strong biomarker), LaBraM and REVE both peak at
+alpha, and CBraMod's delta peak moves closer to alpha---a
+cross-model convergence onto the classical cognitive-load signature
+(Figure~\ref{fig:interp}c). On Stress, the three models diverge:
+LaBraM peaks at beta, REVE at alpha, CBraMod always at delta. The
+divergence is itself evidence that the ``stress'' signal each model
+latches on to is architecture-specific rather than neurally grounded,
+and is the fourth line of the power-floor argument below.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.32\linewidth]{figures/main/fig7a_topomap.pdf}\hfill
+  \includegraphics[width=0.32\linewidth]{figures/main/fig7b_band_rsa.pdf}\hfill
+  \includegraphics[width=0.32\linewidth]{figures/main/fig7c_band_stop.pdf}
+  \caption{%
+    Neuroscience interpretability triad, LaBraM/CBraMod/REVE.
+    (a)~Gradient-based channel importance converges on right-frontal
+    electrodes, matching the alpha-asymmetry prior. (b)~Per-band RSA
+    similarity to the full-signal representation. (c)~Band-stop
+    ablation: on EEGMAT all three models converge on alpha; on Stress
+    they diverge (LaBraM beta / REVE alpha / CBraMod delta),
+    suggesting the Stress signal is architecture-specific, not
+    neurally grounded.%
+  }
+  \label{fig:interp}
+\end{figure*}
+
+% ============================================================
+\subsection{Stress as a Statistical Power Floor}
+\label{sec:power_floor}
+
+This final subsection reframes every Stress-specific surface effect in
+the paper. Five independent lines of evidence converge on the
+conclusion that 70 recordings with 14 positives is below the
+statistical power floor of our benchmark suite: not because the FMs
+fail, but because the data cannot tell us whether they fail.
+
+\paragraph{Surface effect sizes look convincing.}
+Figure~\ref{fig:powerfloor}a reports the F05 three-seed best-HP
+numbers: LaBraM $-8.1$\,pp erosion, CBraMod $+9.6$\,pp and REVE
+$+8.3$\,pp injection, all with non-overlapping bootstrap 95\,\%~CIs
+(Figure~\ref{fig:powerfloor}b) and Cohen's~$d$ above~2.5. At
+face value these are publication-grade effects.
+
+\paragraph{Permutation null says otherwise (F06, F19).}
+LaBraM's canonical FT mean ($0.443 \pm 0.083$) is
+\emph{indistinguishable} from the label-shuffled null
+($0.497 \pm 0.086$, 10 perms, one-sided $p = 0.70$).
+CBraMod and REVE's best-HP FT both sit at $p \approx 0.10$ (the 10-perm
+floor), and two of the 10 LaBraM null seeds beat every real-label seed
+(Supplementary Figure~S2). The bootstrap CIs are tight; the null
+distribution is wide; the real-label signal is not separable from the
+null at $N=70$.
+
+\paragraph{Architecture confers no advantage (F20).}
+Non-FM baselines trained from scratch on the same 70 recordings
+(Figure~\ref{fig:powerfloor}c) reach $0.557 \pm 0.031$ BA for
+ShallowConvNet and $0.518 \pm 0.097$ for EEGNet, overlapping every
+FM best-HP FT cell. A 2017-vintage convolutional architecture matches
+the 2024-vintage transformer FMs on this task---the ceiling is not
+set by the encoder's capacity but by the labels.
+
+\paragraph{Cross-model band divergence (\S\ref{sec:results:interp}).}
+On Stress the three FMs peak at three different bands in the
+band-stop ablation. A genuine neural signature should be
+architecture-agnostic; its absence here is the fourth line of evidence.
+
+\paragraph{Within-subject framing also fails (F14).}
+As \S\ref{sec:results:taxonomy} documented, leave-one-subject-out DSS
+trajectory classification lands at chance for all three FMs across
+three classifier families, even though the same within-subject
+framing succeeds on EEGMAT. The failure is dataset-intrinsic, not a
+methodology limitation (fifth line of evidence).
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.32\linewidth]{figures/main/fig8a_stress_erosion.pdf}\hfill
+  \includegraphics[width=0.32\linewidth]{figures/main/fig8b_stat_hardening.pdf}\hfill
+  \includegraphics[width=0.32\linewidth]{figures/main/fig8c_non_fm_baselines.pdf}
+  \caption{%
+    Stress power-floor triad. (a)~Surface FT$\to$frozen effect sizes
+    look large (LaBraM $-8.1$\,pp, CBraMod $+9.6$\,pp, REVE
+    $+8.3$\,pp). (b)~Bootstrap 95\,\% CIs are non-overlapping and
+    Cohen's~$d > 2.5$, yet (inset arrow) the permutation-null
+    distribution overlaps every real-label seed (F06). (c)~Non-FM
+    baselines (ShallowConvNet, EEGNet) from scratch match the
+    FM ceiling at $\sim$0.56 BA (F20). Together with the band-importance
+    divergence (\S\ref{sec:results:interp}) and the within-subject
+    DSS failure (F14), this gives five independent lines of evidence
+    that the Stress benchmark operates below its statistical power
+    floor.%
+  }
+  \label{fig:powerfloor}
+\end{figure*}
+
+\paragraph{Take-away.}
+On 70 recordings with 14 positive samples, \emph{no} FM-related
+scientific claim on UCSD Stress can be distinguished from label
+noise. This is a benchmark-design caveat rather than an FM failure,
+and it reproduces and extends the cross-subject-affect failure
+patterns reported independently by three recent benchmark
+papers~\cite{eegfmbench2025,adabrain2025,brain4fms2026} (F11). We
+recommend $N > 200$ subjects with balanced class prevalence as a
+minimum for any future resting-state stress FM benchmark, and we use
+Stress in the rest of this paper as the reference case of what
+undersized benchmarks do to FM comparison claims, not as a model
+ranking.

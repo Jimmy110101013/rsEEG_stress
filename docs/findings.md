@@ -4,14 +4,29 @@ Single source of truth for confirmed scientific findings.
 Each finding has a stable ID (F##), status, evidence, and date metadata.
 **Read this file at session start to know what is current.**
 
+> **Notation**: All `mean ± std` values use **sample std** (divide by n−1) —
+> the scientific convention for estimating population variability from a
+> sample. Bootstrap 95% CIs are a separate statistic and labelled `[low, high]`.
+> Audit script: `scripts/audit_std_convention.py` (re-run to verify).
+
 ---
 
-### F01: Subject leakage inflates EEG classification by 20+ pp
-**Status**: confirmed
-**Evidence**: All 3 FMs show ~21 pp BA drop from trial-level to subject-level CV (LaBraM 0.862→0.656, REVE 0.770→0.553, CBraMod 0.712→0.488 under subject-dass; gap persists under per-rec dass).
+### F01: Subject leakage inflates EEG classification (effect size shrinks under honest labels)
+**Status**: confirmed (refined 2026-04-14 with per-rec DASS)
+**Evidence (subject-dass, 2026-04-03)**: All 3 FMs showed ~21 pp BA drop from trial to subject CV — LaBraM 0.862→0.656, REVE 0.770→0.553, CBraMod 0.712→0.488. Under subject-dass labels (OR-aggregated trait).
+**Evidence (per-rec DASS, 3 seeds, 2026-04-14)**: Gap persists but is much smaller and model-dependent:
+
+| Model   | Trial BA (3-seed) | Subject BA (3-seed) | Δ (pp) |
+|---------|-------------------|---------------------|--------|
+| LaBraM  | 0.676 ± 0.052     | 0.524 ± 0.010       | +15.2  |
+| REVE    | 0.643 ± 0.063     | 0.577 ± 0.051       |  +6.5  |
+| CBraMod | 0.560 ± 0.049     | 0.548 ± 0.031       |  +1.2  |
+| **Mean**| —                 | —                   | **+7.6** |
+
+Source: `results/studies/exp18_trial_dass_multiseed/` (trial) vs `results/hp_sweep/20260410_dass/{model}/` F05 best-HP (subject).
 **First observed**: 2026-04-03
-**Last updated**: 2026-04-10
-**Notes**: Wang et al. (arXiv:2505.23042) report 90% BA on UCSD Stress using trial-level splits — our result explains their inflated number.
+**Last updated**: 2026-04-14
+**Notes**: Wang et al. (arXiv:2505.23042) report 90% BA on UCSD Stress using trial-level splits — our result explains their inflated number. Under per-rec DASS the leakage inflation drops from ~21 pp to ~8 pp on average, and nearly vanishes for CBraMod (+1.2 pp). This strengthens F07: subject-dass aggregation artifactually inflates both trial *and* subject CV; honest per-rec labels reveal that subject-leakage inflation is model-dependent and dominated by LaBraM.
 
 ---
 
@@ -65,11 +80,11 @@ Each finding has a stable ID (F##), status, evidence, and date metadata.
 
 | Model | Frozen LP (8-seed) | Best FT (3-seed) | Best FT config | Δ | Mode |
 |---|---|---|---|---|---|
-| **LaBraM** | **0.605 ± 0.030** | 0.524 ± 0.008 | lr=1e-4, elrs=1.0 | **−8.1 pp** | erosion |
-| **CBraMod** | 0.452 ± 0.030 | **0.548 ± 0.026** | lr=1e-5, elrs=0.1 | **+8.3 pp** | injection |
-| **REVE** | 0.494 ± 0.017 | **0.577 ± 0.041** | lr=3e-5, elrs=0.1 | **+8.0 pp** | injection |
+| **LaBraM** | **0.605 ± 0.032** | 0.524 ± 0.010 | lr=1e-4, elrs=1.0 | **−8.1 pp** | erosion |
+| **CBraMod** | 0.452 ± 0.032 | **0.548 ± 0.031** | lr=1e-5, elrs=0.1 | **+9.6 pp** | injection |
+| **REVE** | 0.494 ± 0.018 | **0.577 ± 0.051** | lr=3e-5, elrs=0.1 | **+8.3 pp** | injection |
 
-LaBraM canonical recipe (lr=1e-5, elrs=0.1): 0.443 ± 0.068 (−16.2 pp gap).
+LaBraM canonical recipe (lr=1e-5, elrs=0.1): 0.443 ± 0.083 (−16.2 pp gap).
 
 **Key insight**: Erosion requires the frozen representation to already be strong. LaBraM frozen 0.605 >> CBraMod 0.452 / REVE 0.494.
 
@@ -79,7 +94,7 @@ LaBraM canonical recipe (lr=1e-5, elrs=0.1): 0.443 ± 0.068 (−16.2 pp gap).
 
 ### F06: LaBraM FT on Stress is indistinguishable from permutation null
 **Status**: confirmed (canonical recipe only; best-HP not yet null-tested)
-**Evidence**: Real FT 0.443 ± 0.068 (3 seeds) vs null FT 0.497 ± 0.081 (10 perm), one-sided p=0.70. Two null seeds (s4=0.607, s8=0.643) beat all real-label seeds. Source: `results/studies/exp03_stress_erosion/analysis.json`.
+**Evidence**: Real FT 0.443 ± 0.083 (3 seeds) vs null FT 0.497 ± 0.086 (10 perm), one-sided p=0.70. Two null seeds (s4=0.607, s8=0.643) beat all real-label seeds. Source: `results/studies/exp03_stress_erosion/analysis.json`.
 **First observed**: 2026-04-10
 **Last updated**: 2026-04-10
 
@@ -108,7 +123,7 @@ LaBraM canonical recipe (lr=1e-5, elrs=0.1): 0.443 ± 0.068 (−16.2 pp gap).
 **Evidence**: EEGMAT pooled label fraction 5.35%→5.82% (within bootstrap noise) despite paired rest/task per subject. Mixed-effects ICC for subject increases 0.56→0.63 under FT. BA=0.736 achieved via projection, not representation rewrite.
 **First observed**: 2026-04-08
 **Last updated**: 2026-04-10
-**Notes**: Falsifies "label-structure alone explains FM ceiling" hypothesis. EEGMAT LaBraM FT 3-seed: 0.731 ± 0.017 (`results/studies/exp04_eegmat_feat_multiseed/`).
+**Notes**: Falsifies "label-structure alone explains FM ceiling" hypothesis. EEGMAT LaBraM FT 3-seed: 0.731 ± 0.021 (`results/studies/exp04_eegmat_feat_multiseed/`).
 
 ---
 
@@ -154,9 +169,9 @@ LaBraM canonical recipe (lr=1e-5, elrs=0.1): 0.443 ± 0.068 (−16.2 pp gap).
 
 | Model | ADFTD Δ (mean ± std) | Stable? | TDBRAIN Δ (mean ± std) | Stable? |
 |---|---|---|---|---|
-| **LaBraM** | **+1.03 ± 0.61** | ✅ direction stable | **−1.56 ± 0.23** | ✅ very stable |
-| **CBraMod** | **+0.83 ± 2.73** | ❌ unstable | **−0.02 ± 0.03** | ✅ stable (≈0) |
-| **REVE** | **−1.53 ± 0.23** | ✅ very stable | **+0.44 ± 0.26** | ✅ direction stable |
+| **LaBraM** | **+1.03 ± 0.74** | ✅ direction stable | **−1.56 ± 0.28** | ✅ very stable |
+| **CBraMod** | **+0.83 ± 3.35** | ❌ unstable | **−0.02 ± 0.04** | ✅ stable (≈0) |
+| **REVE** | **−1.53 ± 0.28** | ✅ very stable | **+0.44 ± 0.32** | ✅ direction stable |
 
 Per-seed detail:
 
@@ -256,8 +271,8 @@ Per-seed detail:
 
 | Model | Real FT (3-seed) | Null FT (10-perm) | Δ | p (one-sided) |
 |---|---|---|---|---|
-| CBraMod | 0.5476 ± 0.0256 | 0.4839 ± 0.0472 | +6.4pp | **0.100** |
-| REVE | 0.5774 ± 0.0414 | 0.4857 ± 0.0656 | +9.2pp | **0.100** |
+| CBraMod | 0.5476 ± 0.0314 | 0.4839 ± 0.0498 | +6.4pp | **0.100** |
+| REVE | 0.5774 ± 0.0508 | 0.4857 ± 0.0692 | +9.2pp | **0.100** |
 
 **Key insight**: With only 10 perms, minimum non-zero p-value is 0.1 — both CBraMod and REVE injection are at this floor (1/10 null seeds beat real mean). Weak but not absent evidence. LaBraM null already confirmed indistinguishable (F06, p=0.70).
 
@@ -271,11 +286,11 @@ Per-seed detail:
 
 | Model | Best LR | 3-seed BA | Notes |
 |---|---|---|---|
-| ShallowConvNet | 1e-4 | **0.557 ± 0.026** | Matches FM range |
-| EEGNet | 5e-4 | 0.518 ± 0.079 | Below FM range, high variance |
-| LaBraM FT (F05) | — | 0.524 ± 0.008 | |
-| CBraMod FT (F05) | — | 0.548 ± 0.026 | |
-| REVE FT (F05) | — | 0.577 ± 0.041 | |
+| ShallowConvNet | 1e-4 | **0.557 ± 0.031** | Matches FM range |
+| EEGNet | 5e-4 | 0.518 ± 0.097 | Below FM range, high variance |
+| LaBraM FT (F05) | — | 0.524 ± 0.010 | |
+| CBraMod FT (F05) | — | 0.548 ± 0.031 | |
+| REVE FT (F05) | — | 0.577 ± 0.051 | |
 
 **Key insight**: ShallowConvNet trained from scratch on 70 recordings reaches 0.557, within the FM FT range (0.524-0.577). FM pretraining does NOT provide task-specific advantage on Stress. Subject-dominated Stress is a **task property**, not an FM property.
 
@@ -291,7 +306,7 @@ Per-seed detail:
 
 | Number | Why wrong | Replacement |
 |---|---|---|
-| LaBraM FT subject-dass 0.656 | Single-seed, cuDNN noise, OR-aggregation | Multi-seed per-rec dass: 0.443 ± 0.068 (canonical) or 0.524 ± 0.008 (best HP) |
+| LaBraM FT subject-dass 0.656 | Single-seed, cuDNN noise, OR-aggregation | Multi-seed per-rec dass: 0.443 ± 0.083 (canonical) or 0.524 ± 0.010 (best HP) |
 | Classical RF subject-dass 0.666 | OR-aggregation artifact (F16) | Per-rec dass: RF=0.44, all classical below chance |
 | Trial-level LaBraM 0.862 | Subject leakage, OR-aggregation | Not comparable to per-rec subject-level CV |
 | "34× subject/label η² ratio" | Naive one-way η² with nesting confound | Pooled label fraction (2.8–7.2%) |

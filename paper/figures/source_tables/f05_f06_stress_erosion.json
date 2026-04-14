@@ -1,0 +1,134 @@
+{
+  "study": "Stress FT erosion vs Frozen LP comparison under per-recording DASS labels",
+  "date": "2026-04-10",
+  "question": "Does fine-tuning LaBraM on UCSD Stress per-recording DASS labels beat a frozen linear probe on the same features, or does it actively erode the pretrained representation?",
+  "headline": {
+    "frozen_lp_ba_mean_8seed": 0.6049107142857143,
+    "frozen_lp_ba_std_8seed": 0.029864036072008177,
+    "real_ft_ba_mean_3seed": 0.4434333333333333,
+    "real_ft_ba_std_3seed": 0.06773548224937616,
+    "null_ft_ba_mean_10perm": 0.49733,
+    "null_ft_ba_std_10perm": 0.08123725807780566,
+    "delta_frozen_minus_real": 0.161477380952381,
+    "delta_real_minus_null": -0.053896666666666704,
+    "p_one_sided_null_ge_real": 0.7,
+    "verdict": "EROSION. Frozen LP (0.605 \u00b1 0.030 across 8 seeds) beats real-label FT (0.443 \u00b1 0.068 across 3 seeds) by +16.1 pp. Real-label FT is statistically indistinguishable from training on shuffled labels (null mean 0.497 \u00b1 0.081, p=0.70 one-sided). Fine-tuning under weak cross-subject DASS labels actively degrades the pretrained encoder's linearly-separable stress signal."
+  },
+  "frozen_lp": {
+    "description": "Linear probe on cached mean-pooled LaBraM features (no fine-tuning).",
+    "reproducer": "scripts/stress_frozen_lp_multiseed.py",
+    "source_features": "results/cross_dataset/features_stress_19ch.npz",
+    "protocol": "Subject-level StratifiedGroupKFold(5), LogisticRegression (C=1.0, class_weight=balanced) on StandardScaler-normed 200-d LaBraM features.",
+    "n_recordings": 70,
+    "n_subjects": 17,
+    "class_balance": {
+      "pos": 14,
+      "neg": 56
+    },
+    "per_seed_ba": {
+      "42": 0.6160714285714286,
+      "123": 0.5803571428571428,
+      "2024": 0.6517857142857143,
+      "7": 0.5803571428571428,
+      "0": 0.6160714285714286,
+      "1": 0.5625,
+      "99": 0.5892857142857143,
+      "31337": 0.6428571428571429
+    },
+    "mean_8seed": 0.6049107142857143,
+    "std_8seed": 0.029864036072008177,
+    "mean_3seed_42_123_2024": 0.6160714285714285,
+    "range": [
+      0.5625,
+      0.6517857142857143
+    ]
+  },
+  "ft_real": {
+    "description": "Fine-tune LaBraM on real per-recording DASS labels. Canonical recipe: lr=1e-5, encoder_lr_scale=0.1, llrd=1.0 or 0.65, epochs=50, patience=15, warmup_freeze_epochs=1, loss=focal, aug_overlap=0.75.",
+    "runs": {
+      "s42_llrd1.0": {
+        "subject_bal_acc": 0.5357,
+        "subject_acc": 0.6,
+        "subject_f1": 0.636,
+        "subject_kappa": 0.0541,
+        "path": "ft_real/s42_llrd1.0"
+      },
+      "s42_llrd0.65": {
+        "subject_bal_acc": 0.5536,
+        "subject_acc": 0.5857,
+        "subject_f1": 0.6259,
+        "subject_kappa": 0.0764,
+        "path": "ft_real/s42_llrd0.65"
+      },
+      "s123_llrd1.0": {
+        "subject_bal_acc": 0.4196,
+        "subject_acc": 0.4143,
+        "subject_f1": 0.4683,
+        "subject_kappa": -0.0963,
+        "path": "ft_real/s123_llrd1.0"
+      },
+      "s2024_llrd1.0": {
+        "subject_bal_acc": 0.375,
+        "subject_acc": 0.5571,
+        "subject_f1": 0.5803,
+        "subject_kappa": -0.2205,
+        "path": "ft_real/s2024_llrd1.0"
+      }
+    },
+    "primary_3seed_llrd1.0": {
+      "seeds": [
+        42,
+        123,
+        2024
+      ],
+      "bas": [
+        0.5357,
+        0.4196,
+        0.375
+      ],
+      "mean": 0.4434333333333333,
+      "std": 0.06773548224937616
+    }
+  },
+  "ft_null": {
+    "description": "Label-permutation null. For each perm_seed in [0..9] we shuffle recording-level labels (preserving class balance) before CV and train under the same canonical recipe + training seed=42. Enabled via new --permute-labels flag in train_ft.py.",
+    "launcher": "scripts/run_perm_null.py",
+    "n_perms": 10,
+    "per_perm_ba": {
+      "perm_s0": 0.4911,
+      "perm_s1": 0.4286,
+      "perm_s2": 0.5357,
+      "perm_s3": 0.4732,
+      "perm_s4": 0.6071,
+      "perm_s5": 0.4554,
+      "perm_s6": 0.3661,
+      "perm_s7": 0.5446,
+      "perm_s8": 0.6429,
+      "perm_s9": 0.4286
+    },
+    "mean": 0.49733,
+    "std": 0.08123725807780566,
+    "min": 0.3661,
+    "max": 0.6429
+  },
+  "ft_drift_check": {
+    "description": "Reproducibility check. HEAD code + canonical recipe + subject-dass label + seed=42 should reproduce the archived canonical 0.6559 BA. Any gap indicates cuDNN non-determinism or hidden code drift.",
+    "path": "ft_drift_check/subjectdass_canonical_s42",
+    "head_ba": 0.4505,
+    "archived_canonical_ba": 0.6559,
+    "gap": 0.20540000000000003,
+    "root_cause": "No functional code drift. pipeline/dataset.py, baseline/labram/, and src/model.py are unchanged since 6defff4. train_ft.py only added cross-dataset branching that does not touch the stress path. The 20.5 pp gap is attributable to cuDNN non-determinism: train_ft.py:1053-1056 seeds numpy+torch but does NOT set torch.backends.cudnn.deterministic=True, and the 70-recording class-imbalanced regime amplifies small init perturbations into 10-20 pp BA swings across runs. The archived 0.6559 is a lucky-tail draw, not a reproducible ceiling."
+  },
+  "paths": {
+    "ft_real": "ft_real/",
+    "ft_null": "ft_null/",
+    "ft_drift_check": "ft_drift_check/",
+    "frozen_lp": "frozen_lp/multi_seed.json",
+    "logs": "logs/"
+  },
+  "notes": [
+    "All FT runs were archived subject-dass experiments before 2026-04-09.",
+    "This study uses the per-recording DASS label (Group column, matches Lin et al. 2025 protocol) instead of our previous --label subject-dass OR-aggregation which was reclassified as a trait-memorization artifact on 2026-04-09.",
+    "The 0.6161 \u00b1 0.0292 number in snapshot_2026-04-09_analysis.json is the 3-seed subset; the more robust 8-seed estimate is 0.6049 \u00b1 0.0299."
+  ]
+}

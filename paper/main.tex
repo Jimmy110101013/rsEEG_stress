@@ -1,22 +1,31 @@
+% Main LaTeX entry point.
+% Narrative source: docs/paper_narrative_zh.md
+% Strategy: docs/paper_strategy.md
+% Findings (F01-F20): docs/findings.md
+%
+% Target venue: IEEE TNSRE (primary). Fallback: J. Neural Eng, TMLR.
+% Current state: outlines only; prose TBD after advisor alignment on D1/D2.
+
 \documentclass{article}
 \usepackage{arxiv}
+\usepackage{booktabs}
+ \usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{amsmath}
 
-\title{Subject Identity Dominance Bounds Foundation-Model Performance \\
-       on Resting-State Affective EEG: \\
-       Diagnosis and Implications for Personalized Modeling}
+\title{Beyond Accuracy: What EEG Foundation Models Encode, \\
+       and Why Fine-Tuning Direction Depends on \\
+       Model $\times$ Dataset Interactions}
 
 \author{%
-  Jimmy Lin\thanks{Corresponding author. \texttt{TODO@ucsd.edu}} \\
-  University of California, San Diego
+  Jimmy Lin\thanks{Corresponding author. \texttt{linjimmy1003.md10@nycu.edu.tw}} \\
+  Affiliation School of Medicine National Yang Ming Chiao Tung University Taipei, Taiwan\\
   \and
-  Co-author 1 \\
-  Affiliation
-  \and
-  Co-author 2 \\
-  Affiliation
+  Tzyy-Ping Jung \\
+  Swartz Center for Computational Neuroscience, University of California, San Diego, La Jolla, CA 92037, USA
 }
 
-\def\headeright{Preprint --- work in progress}
+\def\headeright{Preprint --- draft 2026-04-14}
 
 \begin{document}
 \maketitle

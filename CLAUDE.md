@@ -17,7 +17,7 @@ Use the `stress` conda env for **all** work — training, feature extraction, an
 
 ## 1. Project Overview
 
-Resting-state EEG stress classification with EEG Foundation Models. 17 subjects, 92 recordings total (`comprehensive_labels_stress.csv`), 82 with duration ≤ 400 s (Lin 2025 protocol), 70 with valid DASS scores (`comprehensive_labels.csv`). Our experiments use the 70-recording subset (`--label dass`); paper notes the difference from Lin's 82. `Binary_Stress` column was removed — all labelling goes through `--label dass` with `--threshold`.
+Resting-state EEG stress classification with EEG Foundation Models. Dataset from Komarov, Ko, Jung (2020, IEEE TNSRE 28(4):795) — Taiwan graduate students, longitudinal resting-state EEG with DASS-21 + DSS collected per recording. 17 subjects, 92 recordings total (`comprehensive_labels_stress.csv`); we use the 70 recordings that have **both DASS-21 and DSS labels** (`comprehensive_labels.csv`, `--label dass`). Wang et al. (2025, arXiv:2505.23042, same lab) reports 90.47% BA on this dataset under trial-level CV — we treat this as the inflated baseline. `Binary_Stress` column was removed — all labelling goes through `--label dass` with `--threshold`.
 
 ---
 
@@ -34,7 +34,7 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
   - `reve` → `none` (patch embedding is a `Linear(patch_size → embed_dim)` trained on µV-scale pretraining data; scale-sensitive)
   - `eegnet` / `shallowconvnet` / `deepconvnet` / `eegconformer` → `zscore` (Lawhern/Schirrmeister/Song conventions + early BatchNorm)
 - **Training determinism**: `train_ft.py` sets `torch.backends.cudnn.deterministic=True` and `benchmark=False` (added 2026-04-10). Seed variance on 70-rec / 14-positive regime is still ±5–10 pp. All Stress BA claims require multi-seed (≥3).
-- **Dataset**: `data/comprehensive_labels.csv`, `--max-duration 400`, label mode **`dass`** (per-recording, matches Lin 2025 protocol), cache at `data/cache/*.pt` → `(M, 30, 1000)` at 200 Hz × 5 s windows.
+- **Dataset**: `data/comprehensive_labels.csv` (70 rows — recordings with both DASS-21 and DSS labels), label mode **`dass`** (per-recording), cache at `data/cache/*.pt` → `(M, 30, 1000)` at 200 Hz × 5 s windows. `--max-duration` flag exists but is not used in the main pipeline; no 400 s filter is applied.
 - **Evaluation**:
   - Subject-level CV — `StratifiedGroupKFold(5)` by patient_id — **primary metric**.
   - Trial-level CV — `StratifiedKFold(5)` on recordings — reference-paper comparison only (subject leakage).

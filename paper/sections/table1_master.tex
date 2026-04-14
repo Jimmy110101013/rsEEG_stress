@@ -1,0 +1,50 @@
+% Master frozen-LP vs FT balanced accuracy across 3 FMs and 4 datasets.
+% Source: paper/figures/source_tables/master_frozen_ft_table.{md,json}
+% Regenerate with: scripts/build_frozen_vs_ft_table.py
+% All std values use sample convention (n-1 divisor).
+
+\begin{table*}[t]
+\centering
+\caption{%
+  Frozen linear probe (LP) and best-HP fine-tuned (FT) balanced accuracy
+  across three EEG foundation models and four datasets. Values are
+  subject-level StratifiedGroupKFold(5) mean $\pm$ sample standard
+  deviation ($n-1$ divisor). Stress uses per-recording DASS labels;
+  ADFTD uses AD vs.\ HC; TDBRAIN uses MDD vs.\ HC; EEGMAT uses rest vs.\
+  mental-arithmetic task (paired within-subject). Stress frozen LP uses
+  8 seeds; all other cells use 3 seeds.%
+}
+\label{tab:master}
+\small
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{l l c c c c}
+\toprule
+Model & Phase & Stress & ADFTD & TDBRAIN & EEGMAT \\
+\midrule
+\multirow{2}{*}{LaBraM}
+  & Frozen LP  & $0.605 \pm 0.032$ & $0.695 \pm 0.006$ & $0.679 \pm 0.009$ & $0.671 \pm 0.056$ \\
+  & Fine-tuned & $0.524 \pm 0.010$ & $0.709 \pm 0.014$ & $0.665 \pm 0.045$ & $0.731 \pm 0.021$ \\
+\midrule
+\multirow{2}{*}{CBraMod}
+  & Frozen LP  & $0.452 \pm 0.032$ & $0.558 \pm 0.022$ & $0.564 \pm 0.007$ & $\mathbf{0.731 \pm 0.053}$ \\
+  & Fine-tuned & $0.548 \pm 0.031$ & $0.537 \pm 0.027$ & $0.488 \pm 0.014$ & $0.620 \pm 0.058$ \\
+\midrule
+\multirow{2}{*}{REVE}
+  & Frozen LP  & $0.494 \pm 0.018$ & $0.692 \pm 0.026$ & $0.544 \pm 0.009$ & $0.671 \pm 0.021$ \\
+  & Fine-tuned & $0.577 \pm 0.051$ & $0.658 \pm 0.030$ & $0.488 \pm 0.019$ & $0.727 \pm 0.035$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+\begin{tabular}{l c c c c}
+\multicolumn{5}{l}{\textit{$\Delta$ (Fine-tuned $-$ Frozen), pp}} \\
+\toprule
+Model & Stress & ADFTD & TDBRAIN & EEGMAT \\
+\midrule
+LaBraM   & $\mathbf{-8.1}$ & $+1.3$ & $-1.5$ & $\mathbf{+6.0}$ \\
+CBraMod  & $\mathbf{+9.6}$ & $-2.1$ & $-7.6$ & $\mathbf{-11.1}$ \\
+REVE     & $\mathbf{+8.3}$ & $-3.5$ & $-5.6$ & $+5.6$ \\
+\bottomrule
+\end{tabular}
+\end{table*}

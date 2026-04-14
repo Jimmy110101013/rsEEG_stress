@@ -1,78 +1,75 @@
 \section{Introduction}
 \label{sec:intro}
 
-% TODO: refine narrative; this is a stub from progress.md §1 + §8.
+Electroencephalography (EEG) foundation models --- transformer encoders
+pretrained on large unlabelled EEG corpora via masked reconstruction or
+contrastive objectives --- have been proposed as a general-purpose feature
+extractor for clinical and affective decoding
+\citep{labram2024,cbramod2025,reve2025}. On resting-state stress
+detection, a high-impact clinical target where self-report instruments
+such as the Depression--Anxiety--Stress Scale (DASS) provide trustworthy
+labels and acquisition is cheap, recent work reports balanced accuracy
+(BA) above 90\%: Wang et al.\ \citep{wang2025stress} fine-tune LaBraM on
+the Komarov et al.\ Stress dataset \citep{komarov2020stress} and achieve
+$\mathrm{BA} = 0.9047$. Taken at face value, this suggests near
+clinical-grade stress screening from a five-minute eyes-open recording.
 
-EEG foundation models trained on large unlabelled corpora have been proposed
-as a general-purpose feature extractor for clinical and affective EEG tasks.
-Recent models including LaBraM~\citep{labram2024}, CBraMod~\citep{cbramod2025},
-and REVE~\citep{reve2024} report strong downstream performance on a range of
-benchmarks, raising hope that pretrained representations could enable
-data-efficient diagnosis on small clinical cohorts where supervised
-end-to-end training is infeasible.
+We attempted to reproduce this result and found a 30+ percentage-point
+gap that does not reflect model quality. The key divergence lies in
+cross-validation protocol: the reported headline uses \emph{trial-level}
+splits, in which different recordings from the same subject may appear
+in both the training and test partitions. Because EEG exhibits strong
+individual stability, trial-level splits implicitly reward subject
+re-identification rather than stress-state classification. Under
+\emph{subject-level} StratifiedGroupKFold with honest per-recording DASS
+labels, cuDNN-deterministic training, and a multi-seed protocol, the
+same three foundation models --- LaBraM, CBraMod, and REVE --- yield
+frozen linear-probe BA between $0.45$ and $0.60$ and best-hyperparameter
+fine-tuned BA between $0.52$ and $0.58$ on Stress.
 
-Resting-state stress detection is a natural target. The clinical use case
---- pre-diagnosing prolonged stress from a short eyes-open recording --- is
-high-impact, the labels (validated psychometric instruments such as DASS) are
-trustworthy, and the data acquisition is cheap. Prior work using
-trial-level cross-validation has reported balanced accuracies above 90\% on
-this task~\citep{wang2025stress}, suggesting the problem is essentially
-solved.
+The gap between trial-level and subject-level evaluation is not a novel
+observation in itself. Roy et al.\ \citep{roy2019review} documented
+subject leakage as a pervasive issue across the EEG deep learning
+literature. Three independent 2025--2026 benchmarks ---
+Brain4FMs~\citep{brain4fms2026}, EEG-FM-Bench~\citep{eegfmbench2025}, and
+AdaBrain-Bench~\citep{adabrain2025} --- have since converged on the
+finding that EEG foundation models fail to outperform classical
+baselines on cross-subject affective and cognitive tasks. Our
+contribution is not to re-validate this failure, but to provide the
+\emph{mechanistic} explanation these benchmarks lack.
 
-\paragraph{Our findings.}
-We show that this optimistic picture is an artefact of evaluation
-methodology, not of model capacity. Concretely:
+We organise the diagnosis around three questions.
+\textbf{(Q1) What do frozen EEG foundation-model representations
+encode?} We show via representational similarity analysis (RSA) and
+mixed-effects variance decomposition that subject identity dominates the
+learned feature space across twelve model$\times$dataset combinations,
+yet a low signal-to-noise linearly separable label subspace survives ---
+one that classical band-power features cannot access. \textbf{(Q2) When
+does fine-tuning help, when does it hurt, and why?} Across three
+foundation models and four datasets (Stress, ADFTD, TDBRAIN, EEGMAT) we
+find that fine-tuning direction is a model$\times$dataset interaction:
+LaBraM injects label signal on ADFTD but erodes it on TDBRAIN, while
+REVE does the opposite on the same labels. Within-subject contrast
+strength, not the presence of a within-subject design, determines
+whether fine-tuning rescues a given dataset. \textbf{(Q3) Can
+small-sample EEG benchmarks support claims of foundation-model
+superiority?} Using the 70-recording Stress dataset as a cross-pillar
+stress test, we present five independent lines of evidence
+(cuDNN-induced single-seed variance, permutation-null indistinguishability,
+a 2017-vintage ShallowConvNet matching foundation-model performance
+from scratch, cross-model divergence in band-stop ablation, and
+within-subject longitudinal failure) that converge on a single
+conclusion: this regime lies below the statistical power floor required
+to support any foundation-model scientific claim.
 
-\begin{enumerate}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
-  \item \textbf{The trial-vs-subject cross-validation gap is large and
-    consistent.} All three foundation models we evaluate drop $\sim$21
-    balanced-accuracy points when moving from trial-level to subject-level
-    splits. The previously-reported 90\% headline numbers fail to generalise
-    to unseen subjects.
-
-  \item \textbf{Frozen FM features encode subject identity, not diagnostic
-    signal.} Variance decomposition via $\eta^{2}$ shows subject identity
-    explains 11--13$\times$ more feature variance than task labels --- a
-    pattern that holds across three architecturally distinct FMs and two
-    clinical datasets (stress and Alzheimer's).
-
-  \item \textbf{Classical features match FM performance.} A random forest on
-    156 hand-crafted band-power features achieves $0.666$ \BA{} on stress,
-    statistically indistinguishable from fine-tuned LaBraM ($0.656$). The
-    same parity holds on Alzheimer's ($0.753$ vs.\ $0.752$).
-
-  \item \textbf{Standard mitigations fail.} Subject-adversarial training via
-    gradient reversal degrades stress classification from $0.656$ to
-    $0.537$. LEAD-style auxiliary subject losses behave similarly. The
-    diagnostic signal is too weak to amplify by removing subject information
-    alone.
-
-  \item \textbf{The ceiling is method-independent and signal-limited.}
-    Across foundation models, classical baselines, and adversarial
-    variants, balanced accuracy on subject-level CV converges to
-    $\sim$0.65 with $N{=}17$. We characterise this as the upper bound for
-    binary cross-subject zero-shot prediction under our task framing.
-\end{enumerate}
-
-We argue this is not a refutation of resting-state EEG for stress, but a
-characterisation of the wrong question. Subject identity dominance is a
-\emph{useful} structural property if the question is reframed: ``has this
-person's EEG drifted from \emph{their own} baseline?'' rather than ``does
-this generic EEG segment come from a stressed person?''. Section~\ref{sec:discussion}
-develops this implication and motivates personalised within-subject
-modelling as the productive path forward.
-
-\paragraph{Contributions.}
-\begin{itemize}[topsep=0.25em,itemsep=0.1em,leftmargin=1.5em]
-  \item First multi-FM, multi-dataset cross-subject evaluation for
-    resting-state stress detection with rigorous subject-level CV.
-  \item Quantitative diagnosis of subject-identity dominance via variance
-    decomposition, validated across three FMs and three datasets (Stress,
-    ADFTD, TDBRAIN).
-  \item Negative results for two standard mitigation strategies
-    (subject-adversarial and LEAD-style subject losses).
-  \item Evidence that classical band-power features match FMs at this
-    signal level, with no GPU and no pretraining.
-  \item A reframing of the task that preserves the underlying clinical hope
-    and points at a tractable next experiment.
-\end{itemize}
+The rest of the paper is organised as follows. Section~\ref{sec:related}
+situates our work among EEG foundation models, the Stress dataset, and
+the 2025--2026 benchmark literature. Section~\ref{sec:methods} describes
+our dataset preparation, cross-validation protocol, per-model input
+normalisation (a silent failure mode if mishandled), multi-seed
+determinism, and statistical reporting conventions. Section~\ref{sec:results}
+presents the three-pillar diagnosis and the neuroscience interpretability
+triad, culminating in the Stress power-floor case study
+(Section~\ref{sec:power_floor}). Section~\ref{sec:discussion} offers
+hypotheses for the model$\times$dataset interaction and field-level
+recommendations; Section~\ref{sec:conclusion} summarises.

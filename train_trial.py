@@ -106,6 +106,8 @@ def parse_args():
     p.add_argument("--adv-weight", type=float, default=0.0,
                    help="Max adversarial lambda for subject-adversarial training (GRL). "
                         "0=off, 0.1 recommended. Ramps from 0 via DANN sigmoid schedule.")
+    p.add_argument("--run-id", default=None,
+                   help="Custom run id (subpath under results/). Overrides timestamped default.")
     return p.parse_args()
 
 
@@ -624,7 +626,10 @@ def main():
     # Results directory
     label_tag = args.label.replace("-", "") if args.label.startswith("dass") or args.label.startswith("subject") else f"t{int(args.threshold)}"
     aug_tag = f"_aug{int(args.aug_overlap*100)}" if args.aug_overlap else ""
-    run_id = f"{datetime.now():%Y%m%d_%H%M}_trial_{args.mode}_{label_tag}{aug_tag}_{args.extractor}"
+    if args.run_id:
+        run_id = args.run_id
+    else:
+        run_id = f"{datetime.now():%Y%m%d_%H%M}_trial_{args.mode}_{label_tag}{aug_tag}_{args.extractor}"
     results_dir = os.path.join("results", run_id)
     os.makedirs(results_dir, exist_ok=True)
     with open(os.path.join(results_dir, "config.json"), "w") as f:
