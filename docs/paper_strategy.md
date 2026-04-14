@@ -60,8 +60,8 @@ currently only covers Stress.
 
 ### Evidence package
 - HP sweep: `results/hp_sweep/20260410_dass/` (54 runs, 3 models)
-- LaBraM erosion analysis: `results/studies/2026-04-10_stress_erosion/analysis.json`
-- Frozen LP multi-seed: `results/studies/2026-04-10_stress_erosion/frozen_lp/{labram,cbramod,reve}_multi_seed.json`
+- LaBraM erosion analysis: `results/studies/exp03_stress_erosion/analysis.json`
+- Frozen LP multi-seed: `results/studies/exp03_stress_erosion/frozen_lp/{labram,cbramod,reve}_multi_seed.json`
 - Stale numbers (canonical 0.656, classical 0.666, subject-dass anything)
   are retained only as "what we thought before 2026-04-09" historical context.
 
@@ -93,9 +93,9 @@ currently only covers Stress.
 | §3 Methods | Lock | — |
 | §4.1 Trial vs subject CV gap | Lock | progress.md §4.2 |
 | §4.2 Variance decomposition (η²) | Re-run needed for Stress row (per-rec dass) | progress.md §4.3 + `results/archive/2026-04-05_fm_diagnosis/` (historical) |
-| §4.3 Cross-dataset signal strength | Lock (ADFTD/TDBRAIN/EEGMAT) | `results/studies/2026-04-09_cross_dataset_signal/` |
+| §4.3 Cross-dataset signal strength | Lock (ADFTD/TDBRAIN/EEGMAT) | `results/studies/exp01_cross_dataset_signal/` |
 | §4.4 Classical baseline parity | STALE — classical RF needs re-run under per-rec dass | `results/archive/2026-04-05_classical_baselines_subjectdass/` |
-| §4.6 Behavioral erosion on Stress (new) | Lock | `results/studies/2026-04-10_stress_erosion/` |
+| §4.6 Behavioral erosion on Stress (new) | Lock | `results/studies/exp03_stress_erosion/` |
 | §4.5 Frozen vs FT η² shift | Lock | progress.md §4.4 |
 | §5.1 Failed mitigation: adversarial | Lock | progress.md §6 |
 | **§5.2 Spectral-guided FiLM** | **OPEN** | — pending |

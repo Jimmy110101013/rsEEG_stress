@@ -135,7 +135,7 @@ EEGMAT analysis (within-subject design needs the crossed decomposition path):
 > `scripts/run_variance_analysis.py` after adding the new ft_dir to its
 > DATASETS dict. The 2026-04-10 Stress result is currently only
 > available at the **behavioral** level: Frozen LP 0.605 ± 0.030 vs
-> Real FT 0.443 ± 0.068 (`results/studies/2026-04-10_stress_erosion/`).
+> Real FT 0.443 ± 0.068 (`results/studies/exp03_stress_erosion/`).
 
 Supporting metrics, all consistent with the primary result:
 
