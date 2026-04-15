@@ -4,21 +4,44 @@
 \subsection{Datasets}
 \label{sec:methods_data}
 \textbf{UCSD Stress} (primary). Resting-state EEG from
-\citep{komarov2020stress}: 17 graduate students, 92 recordings with
-DASS-21 \citep{lovibond1995} and Daily Stress Scale (DSS)
-self-reports per session. We use the 70 recordings with both DASS-21
-and DSS available. Epochs are 5\,s at 200\,Hz $\times$ 30 channels;
-the per-recording binary label is a DASS-21 threshold at $50$,
-matching the Wang et al.\ \citep{wang2025stress} protocol. DASS-21
-is a past-week trait/state screener and DSS a daily-stress
-aggregate; neither was psychometrically validated as a per-recording
-single-session classification label. We reproduce this thresholding
-for independent audit, acknowledging that FM failure on this label
-is a joint statement about FM capability and
-instrument--temporal-resolution mismatch. Under SDL this is
-expected: the label's within-subject neural correlate is not
-established.
+\citep{komarov2020stress}: 17 graduate students, 92 recordings.
+Each recording carries two behavioural labels supplied by the source
+release: a categorical DASS-21 \citep{lovibond1995} state assignment
+(\textit{increase} or \textit{normal}, per recording) used as the
+primary binary target, and a continuous Daily Stress Scale (DSS)
+self-report score (normalised to $[0, 100]$). We use the 70
+recordings with both labels available; epochs are $5$\,s at
+$200$\,Hz $\times$ $30$ channels. The primary binary label
+(\textit{increase} vs \textit{normal}) is taken directly from the
+source \texttt{Group} field and matches the label used by Wang et
+al.\ \citep{wang2025stress} on this cohort. DASS-21 is a past-week
+trait/state screener and DSS a daily-stress aggregate; neither was
+psychometrically validated as a per-recording single-session EEG
+classification label, and we reproduce both label conventions for
+independent audit rather than endorsing either as a per-recording
+neural ground truth.
 \label{sec:methods_dass_scope}
+
+\emph{Sample-size conventions.} Three distinct subsets are used
+across the paper, and figure/table captions name the subset used
+locally:
+\begin{itemize}
+  \item $70$ recordings / $17$ subjects --- subject-level
+    fine-tuning and cross-validation against the DASS-21 binary
+    target (Secs.~\ref{sec:results_paired},
+    \ref{sec:results_fm_adds}; Fig.~\ref{fig:cv_gap}).
+  \item $55$ recordings / $14$ subjects --- variance decomposition
+    of frozen embeddings (Sec.~\ref{sec:results_atlas}). The nested
+    decomposition used there requires each subject to carry a
+    single target label, so the three DASS-mixed subjects (pids
+    with recordings in both the \textit{increase} and
+    \textit{normal} classes, $15$ recordings in total) are removed
+    for this analysis only.
+  \item $14$ subjects with $\geq\!2$ recordings --- within-subject
+    longitudinal DSS trajectory classification
+    (Sec.~\ref{sec:results_paired} Arm 2), where each recording is
+    labelled above vs below that subject's personal-median DSS.
+\end{itemize}
 
 \textbf{EEGMAT} \citep{eegmat} (paired within-subject comparator).
 36 healthy subjects $\times$ 2 recordings (resting baseline plus
@@ -95,24 +118,59 @@ Logistic Regression ($L_2$), and SVM via
 \label{sec:methods_variance}
 For the variance decomposition
 (Sec.~\ref{sec:results_atlas}, Fig.~\ref{fig:variance_atlas}) we
-compute three measurements per cell.
-\textbf{(i) Pooled variance fractions}: sum-of-squares decomposition
-of frozen FM embeddings into label, subject, and residual components,
-reported as $\mathrm{SS}_\text{factor} / \mathrm{SS}_\text{total}$. A
-nested decomposition (subject within label) is used for
-between-subject datasets (UCSD Stress, ADFTD, TDBRAIN); a crossed
-decomposition (subject $\times$ label) is used for the
-within-subject EEGMAT design.
-\textbf{(ii) RSA}: Spearman correlation between the embedding
-representational dissimilarity matrix (RDM, cosine-distance) and the
-subject-identity RDM, and separately the label-identity RDM, across
-all recording pairs.
-\textbf{(iii) Cluster bootstrap}: $1000$ iterations resampling
-subjects (not recordings) with replacement, recomputing the
-subject/label variance ratio on each iteration and reporting
-log-percentile $95$\% confidence intervals. Subject-level resampling
-preserves within-subject non-independence that a naive
-recording-level bootstrap would violate.
+compute three measurements on the frozen embedding matrix
+$\mathbf{X} = (\mathbf{x}_1, \ldots, \mathbf{x}_N) \in
+\mathbb{R}^{N \times D}$ for each cell, with per-recording subject
+identifiers $s_i$ and target labels $y_i$.
+
+\textbf{(i) Pooled variance fractions.} Let $\bar{\mathbf{x}}$
+denote the grand mean. The total sum of squares is
+$\mathrm{SS}_\text{total} = \sum_i \| \mathbf{x}_i -
+\bar{\mathbf{x}} \|^2$. For datasets where each subject in the
+analyzed subset carries a single target label --- ADFTD, TDBRAIN,
+and the $55$-recording Stress subset after dropping DASS-mixed
+subjects (Sec.~\ref{sec:methods_data}) --- we use a nested
+decomposition (subject within label):
+\begin{align*}
+\mathrm{SS}_\text{label}      &= \sum_{\ell} n_\ell \, \| \bar{\mathbf{x}}_\ell - \bar{\mathbf{x}} \|^2, \\
+\mathrm{SS}_\text{subj|label} &= \sum_{\ell} \sum_{s \in \ell} n_{s,\ell} \, \| \bar{\mathbf{x}}_{s,\ell} - \bar{\mathbf{x}}_\ell \|^2, \\
+\mathrm{SS}_\text{residual}   &= \sum_i \| \mathbf{x}_i - \bar{\mathbf{x}}_{s_i, y_i} \|^2,
+\end{align*}
+where $\bar{\mathbf{x}}_\ell$ and $\bar{\mathbf{x}}_{s,\ell}$ are
+the label-group and subject-within-label means, and $n_\ell$,
+$n_{s,\ell}$ the corresponding counts. For EEGMAT, each subject
+contributes recordings of both labels (rest and arithmetic), so the
+design is crossed subject $\times$ label:
+\begin{align*}
+\mathrm{SS}_\text{label}    &= \sum_{\ell} n_\ell \, \| \bar{\mathbf{x}}_\ell - \bar{\mathbf{x}} \|^2, \\
+\mathrm{SS}_\text{subject}  &= \sum_{s} n_s \, \| \bar{\mathbf{x}}_s - \bar{\mathbf{x}} \|^2, \\
+\mathrm{SS}_\text{residual} &= \mathrm{SS}_\text{total} - \mathrm{SS}_\text{label} - \mathrm{SS}_\text{subject}.
+\end{align*}
+Pooled variance fractions are reported as
+$\mathrm{SS}_\text{factor} / \mathrm{SS}_\text{total}$, with the
+squared norms summed over all $D$ feature dimensions before
+ratio-taking.
+
+\textbf{(ii) RSA} \citep{kriegeskorte2008rsa}. The feature
+dissimilarity matrix uses cosine distance,
+$\mathrm{RDM}_\text{feat}[i,j] = 1 - \cos(\mathbf{x}_i,
+\mathbf{x}_j)$, while the identity matrices are binary,
+$\mathrm{RDM}_\text{label}[i,j] = \mathbb{1}[y_i \neq y_j]$ and
+$\mathrm{RDM}_\text{subj}[i,j] = \mathbb{1}[s_i \neq s_j]$. We
+report Spearman rank correlations between the feature RDM and the
+subject and label RDMs on the upper-triangular off-diagonal
+entries.
+
+\textbf{(iii) Cluster bootstrap}
+\citep{field2007clusterbootstrap}. A $95$\% confidence interval on
+the subject/label variance ratio is obtained by resampling subjects
+(not recordings) with replacement for $B = 1000$ iterations; each
+iteration concatenates the drawn subjects' recordings and recomputes
+$\mathrm{SS}_\text{subject} / \mathrm{SS}_\text{label}$ under
+whichever decomposition applies. The ratio statistic is
+heavy-tailed, so we report percentile bounds on the
+log-transformed distribution and exponentiate them back for
+reporting.
 
 \subsection{Contrast-strength anchoring protocol}
 \label{sec:methods_anchor}
