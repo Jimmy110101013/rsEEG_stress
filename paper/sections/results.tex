@@ -17,24 +17,54 @@ recording by global-mean-pooling the final-layer patch tokens of the
 pretrained FM with no gradient flow, no classifier head, and no
 fine-tuning.
 
-\textbf{Nested variance decomposition.}
-Table~\ref{tab:subject_atlas} reports the pooled label and subject
-fractions per cell. The label fraction is below $6$\% in every cell;
-the subject/label ratio is at least $10\times$ and in some cells
-exceeds $50\times$. This is not a fringe property of one
-(model, dataset) pair --- it is uniformly true for every combination
-of FM and dataset tested, and therefore describes a property of
-pretrained-FM representations of clinical EEG.
+Fig.~\ref{fig:variance_atlas} triangulates the subject-dominance
+claim from three independent representation-level measurements.
+Panel A reports the pooled variance decomposition (nested for
+between-subject labels, crossed for the within-subject EEGMAT
+design): the label fraction is below $6$\% in every cell and the
+subject fraction sits between $40$\% and $95$\%. Panel B is a
+rank-based corroboration --- the Spearman correlation between the
+embedding representational dissimilarity matrix (RDM) and the
+subject-identity RDM exceeds the correlation with the
+label-identity RDM in 11 of 12 cells; the single exception
+(LaBraM $\times$ TDBRAIN) has subject-$r = 0.040$ and label-$r =
+0.084$, both near zero. Panel C reports cluster-bootstrap 95\%
+confidence intervals on the subject/label variance ratio,
+resampling subjects (not recordings) with replacement. All 12 cells
+have lower CI bound $> 1$, establishing subject-dominance as
+significant at the bootstrap level uniformly across FMs and
+datasets. Full per-cell numbers are in Table~\ref{tab:subject_atlas}.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/main/fig_variance_atlas.pdf}
+\caption{Three independent representation-level measurements of
+  subject-dominance on frozen EEG FM embeddings, across twelve
+  (FM $\times$ dataset) cells. \textbf{(A)} Pooled variance
+  decomposition: Label, Subject, and Residual fractions. Nested
+  decomposition is used for between-subject labels; a crossed
+  (subject $\times$ label) decomposition is used for the
+  within-subject EEGMAT design. \textbf{(B)} Rank-based RSA: Spearman
+  correlation between the embedding RDM and the subject-identity
+  RDM (y-axis) vs the label-identity RDM (x-axis). Points above the
+  dashed diagonal are subject-dominated. \textbf{(C)} Cluster
+  bootstrap (1000 iterations, subject-level resample) 95\%
+  confidence interval on the Subject/Label variance ratio.
+  Reference line at ratio = 1 marks the subject $=$ label boundary.
+  Dot colour encodes the FM (LaBraM, CBraMod, REVE); marker shape
+  in Panel B encodes the dataset.}
+\label{fig:variance_atlas}
+\end{figure*}
 
 \begin{table}[!t]
 \centering
 \small
-\caption{Frozen-embedding nested variance decomposition across 12
-  model$\times$dataset cells (single-run point estimates; the
-  subject-dominant direction is corroborated by five auxiliary
-  metrics reported in supplementary). Label \% and Subject \% sum to
-  less than 100 because the residual (subject-within-label)
-  component is omitted for compactness.}
+\caption{Frozen-embedding pooled variance decomposition across 12
+  model$\times$dataset cells (single-run point estimates, also
+  visualised in Fig.~\ref{fig:variance_atlas}A). Between-subject
+  labels use a nested decomposition; EEGMAT uses a crossed
+  decomposition. Label \% and Subject \% sum to less than 100
+  because the residual component is omitted for compactness.}
 \label{tab:subject_atlas}
 \begin{tabular}{llrrrr}
 \toprule
@@ -55,25 +85,6 @@ REVE    & TDBRAIN  & 734 & 0.004 & 60.6 & $\gg\!10^3\times$ \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\textbf{RSA unanimity.} Across all 12 cells, the Spearman correlation
-between the embedding RDM and the subject-identity RDM exceeds the
-correlation between the embedding RDM and the label-identity RDM. No
-cell falls on the label-dominant side of the diagonal. Five auxiliary
-subject-separability metrics (silhouette, Fisher, nearest-neighbour
-subject-recovery accuracy, LogME, H-score) agree in every cell; see
-supplementary for the full tabulation.
-
-\textbf{PermANOVA, where power permits.} On the three datasets where
-$n$ is large enough for PermANOVA to have adequate power
-(ADFTD, TDBRAIN), the subject-factor $p$-value from 499-permutation
-PermANOVA is $\leq\!0.04$ for 5 of 6 model$\times$dataset cells. On
-UCSD Stress ($n_\text{rec}=55$, $n_\text{subj}=14$), PermANOVA
-$p$-values are uniformly $0.46$--$0.59$, consistent with known
-small-sample power limits \citep{smalln2025biorxiv} rather than
-absence of subject clustering --- variance decomposition and RSA
-measures confirm the subject-dominant structure on UCSD Stress, they
-merely cannot be bootstrapped to permutation-significance at $n = 55$.
 
 Downstream classification on these representations is constrained
 to work against a representation in which task-label variance is a

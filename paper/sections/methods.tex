@@ -94,23 +94,25 @@ Logistic Regression ($L_2$), and SVM via
 \subsection{Variance decomposition and representational similarity}
 \label{sec:methods_variance}
 For the variance decomposition
-(Sec.~\ref{sec:results_atlas}) we compute:
-\textbf{(i) Pooled label fraction}: nested sum-of-squares
-decomposition of frozen FM embeddings into label-mean,
-subject-within-label, and residual components, reported as
-$\mathrm{SS}_\text{label} / \mathrm{SS}_\text{total}$.
-\textbf{(ii) Mixed-effects ICC} with subject as random intercept on
-frozen embedding principal components.
-\textbf{(iii) RSA}: Spearman correlation between the embedding
-representational dissimilarity matrix (RDM) and the subject-identity
-RDM, and separately the label-identity RDM. We tabulate the sign of
-(subject-$r$ $-$ label-$r$) across 3 FMs $\times$ 4 datasets = 12
-cells.
-\textbf{(iv) PermANOVA} (499 permutations) on the recording-level
-embeddings with subject as the factor.
-Five auxiliary subject-separability metrics (silhouette, Fisher,
-nearest-neighbour subject-recovery accuracy, LogME, H-score) are
-reported in the supplementary for robustness.
+(Sec.~\ref{sec:results_atlas}, Fig.~\ref{fig:variance_atlas}) we
+compute three measurements per cell.
+\textbf{(i) Pooled variance fractions}: sum-of-squares decomposition
+of frozen FM embeddings into label, subject, and residual components,
+reported as $\mathrm{SS}_\text{factor} / \mathrm{SS}_\text{total}$. A
+nested decomposition (subject within label) is used for
+between-subject datasets (UCSD Stress, ADFTD, TDBRAIN); a crossed
+decomposition (subject $\times$ label) is used for the
+within-subject EEGMAT design.
+\textbf{(ii) RSA}: Spearman correlation between the embedding
+representational dissimilarity matrix (RDM, cosine-distance) and the
+subject-identity RDM, and separately the label-identity RDM, across
+all recording pairs.
+\textbf{(iii) Cluster bootstrap}: $1000$ iterations resampling
+subjects (not recordings) with replacement, recomputing the
+subject/label variance ratio on each iteration and reporting
+log-percentile $95$\% confidence intervals. Subject-level resampling
+preserves within-subject non-independence that a naive
+recording-level bootstrap would violate.
 
 \subsection{Contrast-strength anchoring protocol}
 \label{sec:methods_anchor}
