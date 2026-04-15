@@ -5,11 +5,20 @@
 \label{sec:methods_data}
 \textbf{UCSD Stress} (primary). Resting-state EEG from
 \citep{komarov2020stress}: 17 graduate students, 92 recordings with
-DASS-21 and Daily Stress Scale (DSS) self-reports per session. We use
-the 70 recordings with both DASS-21 and DSS available. Epochs are
-5\,s at 200\,Hz $\times$ 30 channels; the per-recording binary label
-is a DASS-21 threshold at $50$, matching the Wang et al.\
-\citep{wang2025stress} protocol.
+DASS-21 \citep{lovibond1995} and Daily Stress Scale (DSS)
+self-reports per session. We use the 70 recordings with both DASS-21
+and DSS available. Epochs are 5\,s at 200\,Hz $\times$ 30 channels;
+the per-recording binary label is a DASS-21 threshold at $50$,
+matching the Wang et al.\ \citep{wang2025stress} protocol. DASS-21
+is a past-week trait/state screener and DSS a daily-stress
+aggregate; neither was psychometrically validated as a per-recording
+single-session classification label. We reproduce this thresholding
+for independent audit, acknowledging that FM failure on this label
+is a joint statement about FM capability and
+instrument--temporal-resolution mismatch. Under SDL this is
+expected: the label's within-subject neural correlate is not
+established.
+\label{sec:methods_dass_scope}
 
 \textbf{EEGMAT} \citep{eegmat} (paired within-subject comparator).
 36 healthy subjects $\times$ 2 recordings (resting baseline plus
@@ -18,19 +27,27 @@ This dataset provides the \emph{strong within-subject
 alpha-desynchronisation contrast} side of our paired experiment
 (Sec.~\ref{sec:results_paired}).
 
-\textbf{ADFTD} \citep{adftd} (for subject-atlas cross-dataset
-coverage). Alzheimer's disease vs healthy controls, 195 recordings /
-65 subjects / 19 channels.
+\textbf{ADFTD} \citep{adftd} (for variance-decomposition
+cross-dataset coverage). Alzheimer's disease vs healthy controls,
+65 subjects $\times$ 19 channels. ADFTD is natively
+single-recording-per-subject; for the nested variance decomposition
+we require multiple observations per subject, so each subject's
+$\sim\!14$-min resting recording is partitioned into $3$
+non-overlapping contiguous segments (195 pseudo-observations from 65
+subjects, all three segments of a subject carrying the same AD/HC
+label, kept in the same fold by subject-level CV). Full rationale
+and the semantic-asymmetry caveat vs other datasets are in
+App.~\ref{app:adftd_split}.
 
-\textbf{TDBRAIN} \citep{tdbrain} (for subject-atlas cross-dataset
-coverage). MDD vs HC, 734 recordings / 359 subjects / 26 channels
-(downsampled to 19 for FM compatibility).
+\textbf{TDBRAIN} \citep{tdbrain} (for variance-decomposition
+cross-dataset coverage). MDD vs HC, 734 recordings / 359 subjects /
+26 channels (downsampled to 19 for FM compatibility).
 
-ADFTD is used in this paper for subject-atlas variance
+ADFTD is used in this paper for frozen-representation variance
 decomposition (Sec.~\ref{sec:results_atlas}) and as a single
 suggestive-but-not-controlled cross-subject anchored datapoint
-(Sec.~\ref{sec:results_fm_adds}). TDBRAIN is used for subject-atlas
-variance decomposition and additionally as the single
+(Sec.~\ref{sec:results_fm_adds}). TDBRAIN is used for variance
+decomposition and additionally as the single
 intermediate-anchor case study discussed in
 Sec.~\ref{sec:discussion}, where its role in refining the binary
 anchored/bounded SDL classification is explained.
@@ -53,7 +70,7 @@ included only as a literature-comparison reference (e.g., reproducing
 Wang et al.\ \citep{wang2025stress}) and reported transparently
 alongside subject-level numbers; it carries subject leakage and
 inflates reported BA on this dataset by $20$--$30$\,pp
-(Sec.~\ref{sec:results_audit}).
+(Sec.~\ref{sec:results_paired}).
 
 All training uses cuDNN determinism. Seed variance on the UCSD Stress
 $70$-recording / $14$-positive regime nevertheless remains
@@ -67,18 +84,16 @@ A batched helper runs ten permutation seeds per FM; real FT and null
 FT are compared by a one-sided Mann--Whitney test on the pooled
 balanced-accuracy distributions.
 
-\textbf{Class imbalance handling for classical baselines.} Random
-Forest, Logistic Regression ($L_2$), and SVM all use
-\texttt{class\_weight = `balanced'}; gradient-boosted trees were
-retroactively fixed with \texttt{sample\_weight} computed via
-\texttt{sklearn.utils.compute\_sample\_weight} after an initial
-methodology review found that only this one classical baseline had
-lacked balancing. Results before and after this correction are
-reported side-by-side in Sec.~\ref{sec:results_audit}.
+\textbf{Class imbalance handling for classical baselines.} All
+classical baselines use class-balanced weighting: Random Forest,
+Logistic Regression ($L_2$), and SVM via
+\texttt{class\_weight = `balanced'}; gradient-boosted trees via
+\texttt{sample\_weight} from
+\texttt{sklearn.utils.compute\_sample\_weight}.
 
 \subsection{Variance decomposition and representational similarity}
 \label{sec:methods_variance}
-For the subject-atlas quantification
+For the variance decomposition
 (Sec.~\ref{sec:results_atlas}) we compute:
 \textbf{(i) Pooled label fraction}: nested sum-of-squares
 decomposition of frozen FM embeddings into label-mean,
@@ -141,29 +156,27 @@ topographic summaries for all three datasets we anchor quantitatively
 The rationale is to falsify SDL if an anchor disagrees with the
 behavioural pattern, rather than merely confirm it post hoc.
 
-\subsection{DASS-21 psychometric scope}
-\label{sec:methods_dass_scope}
-DASS-21 \citep{lovibond1995} is a past-week trait/state screener;
-DSS is a daily-stress aggregate. Neither was psychometrically
-validated as a per-recording single-session classification label.
-We reproduce \citep{wang2025stress}'s per-recording DASS-21
-thresholding for independent audit, acknowledging that the failure
-of FMs on this label is a joint statement about FM capability and
-about instrument--temporal-resolution mismatch. Under SDL this is
-expected: the label's within-subject neural correlate is not
-established.
-
 \subsection{Hyperparameter selection}
 \label{sec:methods_hp}
-Hyperparameters for each FM's best fine-tuning configuration on UCSD
-Stress were selected via a $3 \times 2 \times 3$ grid (3 learning
-rates $\times$ 2 encoder-learning-rate scales $\times$ 3 seeds)
-independently per model. The selected configurations differ between
-models. The per-model best-hyperparameter numbers are presented as
-observations, not as controlled comparisons between architectures.
-Sec.~\ref{sec:results_ceiling}'s architecture-independence claim
-relies on each architecture at its own best hyperparameters falling
-inside a common band, not on a cross-architecture ranking.
+Hyperparameters for each FM's best fine-tuning configuration on the
+primary UCSD Stress cohort were selected via a $3 \times 2 \times 3$
+grid (3 learning rates $\times$ 2 encoder-learning-rate scales $\times$
+3 seeds) independently per model. The selected configurations differ
+between models: LaBraM $\text{lr} = 10^{-4}$, $\text{elrs} = 1.0$;
+CBraMod $\text{lr} = 10^{-5}$, $\text{elrs} = 0.1$; REVE
+$\text{lr} = 3 \times 10^{-5}$, $\text{elrs} = 0.1$. On the three
+secondary datasets (EEGMAT, ADFTD, TDBRAIN) we did not re-sweep the
+full grid; instead we used a per-model conservative fine-tuning
+configuration identical across secondary datasets to control for
+hyperparameter choice as a source of cross-dataset variation
+(CBraMod and REVE at their Stress-sweep best HP; LaBraM at
+$\text{lr} = 10^{-5}$, $\text{elrs} = 0.1$, the
+reference-implementation default \citep{labram2024}). The per-model
+best-hyperparameter numbers on Stress are presented as observations,
+not as controlled comparisons between architectures;
+Sec.~\ref{sec:results_paired}'s architecture-independence claim
+relies on each architecture at its own best HP on Stress falling
+inside a common band, not on cross-architecture ranking.
 
 \subsection{Reproducibility}
 All code, training configurations, frozen and fine-tuned checkpoints,

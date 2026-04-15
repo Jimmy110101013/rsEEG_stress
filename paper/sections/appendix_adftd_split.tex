@@ -1,0 +1,75 @@
+\section{ADFTD Split-3 Methodology (Supplementary)}
+\label{app:adftd_split}
+
+The ADFTD cohort is natively single-recording-per-subject, and our
+nested variance decomposition (Sec.~\ref{sec:methods_variance})
+requires multiple observations per subject to identify the
+within-subject variance component. This appendix documents the
+split-3 protocol, its role in the decomposition, and one semantic
+caveat that should be held in mind when comparing variance fractions
+across datasets.
+
+\paragraph{Protocol.} Each subject's original eyes-closed resting
+recording ($\sim\!14$ minutes, 500\,Hz, 19 channels at standard
+10--20 positions) is partitioned into $3$ non-overlapping contiguous
+segments of $\sim\!4.5$ minutes each. The segmentation is strictly
+temporal: segment $1$ is the first third of the raw recording, segment
+$2$ the second, segment $3$ the third. No epoch-level shuffling is
+performed before segmentation, so segment boundaries do not mix data
+from different time periods. All three segments of a subject carry
+the same AD/HC diagnostic label. Subject-level cross-validation
+groups all three segments of a subject into the same fold, so no
+label leakage is introduced.
+
+\paragraph{Why the split is methodologically necessary.} The pooled
+variance decomposition used throughout Sec.~\ref{sec:results_atlas}
+partitions frozen-FM representation variance into a subject component
+$\sigma^2_\text{subj}$, a label-within-subject component
+$\sigma^2_\text{label|subj}$, and a residual
+$\sigma^2_\text{res}$ via a two-level nested ANOVA on $(n_\text{obs},
+d_\text{feat})$ feature matrices. With one observation per subject,
+$\sigma^2_\text{subj}$ and $\sigma^2_\text{res}$ are mutually
+unidentifiable: each subject is represented by a single point in
+feature space, and no estimate of the replicate spread around that
+point is available. Multiple observations per subject are therefore
+a prerequisite, not a methodological choice. The other three
+datasets used in the variance-decomposition analysis (UCSD Stress,
+EEGMAT, TDBRAIN) natively contribute multiple recordings per subject
+and require no analogous splitting.
+
+\paragraph{The split is not used for classification.} ADFTD
+classification numbers reported in Sec.~\ref{sec:results_fm_adds}
+use global prediction pooling: all three segments of a subject
+contribute to a single per-subject prediction, and balanced accuracy
+is computed at the subject level. The split-3 structure never
+inflates the effective classification $N$ --- it is strictly a
+device for making the within-subject variance component in
+Sec.~\ref{sec:results_atlas}'s ANOVA identifiable.
+
+\paragraph{Semantic-asymmetry caveat.} ADFTD within-subject variance
+estimated from temporal segments of a single recording is not
+semantically identical to within-subject variance on UCSD Stress or
+EEGMAT, where subjects contribute multiple separate sessions (or a
+rest-vs-task pair). The ADFTD estimate captures short-timescale
+temporal fluctuation within a single seated 14-minute recording;
+the Stress/EEGMAT estimates capture across-session or across-task
+variability that includes setup, alertness, and task-structure
+differences. Any literal numeric comparison of
+$\sigma^2_\text{within}$ fractions across datasets with different
+observation structures should therefore be read with this semantic
+asymmetry in mind. In our reporting we use the ratio
+$\sigma^2_\text{label|subj} / \sigma^2_\text{subj}$ as the primary
+SDL-relevant metric, which is within-dataset and does not require
+cross-dataset comparability of the residual component. The
+qualitative subject-dominance ordering (subject variance
+$\gg$ label variance) holds across all four datasets;
+quantitative magnitudes of variance fractions should not be read as
+directly commensurable across datasets.
+
+\paragraph{Direction of any bias.} If the autocorrelation between
+ADFTD temporal segments makes within-subject variance smaller than
+it would be across separate sessions, the effect is a \emph{smaller}
+denominator in the subject-dominance ratio, and therefore a
+\emph{larger} ratio. Any bias introduced by the split-3 structure
+thus works against the conservative reading of our ADFTD
+subject-dominance claim, not in favour of it.

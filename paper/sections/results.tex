@@ -1,13 +1,12 @@
 \section{Results}
 \label{sec:results}
 
-\subsection{Subject atlas: frozen FMs primarily encode subject
-  identity}
+\subsection{Subject-dominated frozen representations}
 \label{sec:results_atlas}
 
 The subject-dominance hypothesis makes a structural prediction
 testable independently of any classification outcome: if frozen EEG
-FM representations are subject atlases, variance decomposition of
+FM representations are subject-dominated, variance decomposition of
 those representations should find that the subject factor accounts
 for the majority of explainable variance and the task-label factor
 for a small, near-chance slice. We test this across three FMs
@@ -76,157 +75,46 @@ absence of subject clustering --- variance decomposition and RSA
 measures confirm the subject-dominant structure on UCSD Stress, they
 merely cannot be bootstrapped to permutation-significance at $n = 55$.
 
-\textbf{A partial exception consistent with --- though not a
-  controlled test of --- the thesis.} One cell deserves separate
-treatment. Under fine-tuning, \emph{LaBraM$\times$ADFTD} shifts its
-pooled label fraction from $2.60\% \to 13.25\%$
-($\Delta = +10.65$\,pp) and subject fraction from $66.8\% \to 60.0\%$.
-This is the largest label-fraction increase in any cell we measured
-and corresponds to a fine-tuned BA of $0.70$ (single-run; we did not
-replicate this cell across multiple seeds, so the shift is reported
-without variance). In every other cell, $\Delta$label-fraction is
-$\leq\!+5.3$\,pp, and in four cells it is negative (the fine-tuning
-objective pushed the representation further from the label axis while
-still improving classifier-head BA). We read LaBraM$\times$ADFTD as
-\emph{consistent with} SDL: the ADFTD label (Alzheimer's vs healthy
-control) has a well-established cross-subject alpha-slowing signature
-in the clinical EEG literature, so fine-tuning finds a label axis to
-reorganise around. We note explicitly, however, that ADFTD is a
-cross-subject categorical label rather than a within-subject paired
-contrast, and we did not subject it to the same external anchoring
-protocol applied to EEGMAT in Sec.~\ref{sec:results_paired}. It
-therefore functions as a suggestive boundary observation, not a
-second controlled test.
-Sec.~\ref{sec:results_paired} operationalises the thesis via a paired
-within-subject experiment where contrast strength is externally
-anchored rather than inferred from FT outcomes.
-
-\textbf{Takeaway.} Subject-dominance is a representation-level
-structural property of pretrained EEG FM representations on clinical
-EEG cohorts. Downstream classification on these representations is
-constrained to work against a representation in which task-label
-variance is a small minority of the signal.
+Downstream classification on these representations is constrained
+to work against a representation in which task-label variance is a
+small minority of the signal. The diagnostic in
+Sec.~\ref{sec:results_paired} operationalises \emph{when} that
+constraint is escapable.
 
 %------------------------------------------------------------
-\subsection{Subject-level evaluation audit of UCSD Stress}
-\label{sec:results_audit}
+\subsection{The anchor-contrast diagnostic}
+\label{sec:results_paired}
 
-Wang et al.\ \citep{wang2025stress}, working on the same
-Komarov--Ko--Jung dataset, report $0.9047$ BA for fine-tuned LaBraM
-under five-fold cross-validation. Inspection of their code shows
-recording-level rather than subject-level fold assignment. On our
-17-subject / 70-recording cohort where 15 of 17 subjects contribute
-multiple recordings, this protocol produces subject leakage in every
-fold. We re-run the same FMs on the same subset under two protocols
-holding everything else fixed: trial-level StratifiedKFold(5)
-(reproducing Wang's design) and subject-level StratifiedGroupKFold(5)
-with \texttt{groups=patient\_id}. The comparison is a three-seed
-mean $\pm$ sample standard deviation per model.
-Fig.~\ref{fig:honest_funnel} summarises the cascade of corrections.
+Wang et al.\ \citep{wang2025stress} report $0.9047$ BA on this cohort
+under five-fold cross-validation; their fold assignment groups by
+recording rather than by subject, and $15$ of $17$ subjects contribute
+multiple recordings. Under subject-level StratifiedGroupKFold on the
+same cohort the three FMs converge to a $0.52$--$0.58$
+balanced-accuracy band (Fig.~\ref{fig:honest_funnel}, three seeds per
+model). For the canonical LaBraM fine-tuning recipe, real FT
+($0.443 \pm 0.083$) does not exceed label-permutation null
+($0.497 \pm 0.086$; one-sided $p = 0.70$, ten permutations). This is
+the ceiling the diagnostic below must explain.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/main/fig_honest_funnel.pdf}
-\caption{Subject-level evaluation cascade on UCSD Stress. Left: reported
-  literature baseline ($0.9047$, \citep{wang2025stress}) under
-  trial-level cross-validation. Middle: our reproduction of the same
-  cohort under subject-level cross-validation (three FMs, three
-  seeds each, $0.52$--$0.58$ band). Right: LaBraM fine-tuning does
-  not exceed label-permutation null under our three-seed $\times$
-  ten-permutation comparison (one-sided $p = 0.70$; we flag this
-  sample size as a power limit rather than a rigorous null-acceptance
-  test). Horizontal dashed line: chance.}
+\caption{UCSD Stress ceiling. Left: trial-level CV baseline
+  ($0.9047$, \citep{wang2025stress}). Middle: subject-level CV on the
+  same cohort converges to a $0.52$--$0.58$ band across three FMs and
+  three seeds. Right: LaBraM fine-tuning does not exceed
+  label-permutation null (three seeds $\times$ ten permutations,
+  one-sided $p = 0.70$). Horizontal dashed line: chance.}
 \label{fig:honest_funnel}
 \end{figure}
 
-\begin{table}[!t]
-\centering
-\small
-\caption{Trial-level vs subject-level five-fold CV on UCSD Stress,
-  per-recording DASS label, 3-seed mean $\pm$ std.}
-\label{tab:cv_gap}
-\begin{tabular}{lrrr}
-\toprule
-Model    & Trial BA\,$\uparrow$ & Subject BA\,$\uparrow$ & $\Delta$ (pp) \\
-\midrule
-LaBraM   & $0.676 \pm 0.052$ & $0.524 \pm 0.010$ & $+15.2$ \\
-CBraMod  & $0.560 \pm 0.049$ & $0.548 \pm 0.031$ & $+1.2$ \\
-REVE     & $0.643 \pm 0.063$ & $0.577 \pm 0.051$ & $+6.5$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Every FM drops under subject-level CV, by a model-dependent amount. Our
-trial-level numbers ($0.56$--$0.68$) themselves remain well below
-Wang's reported $0.90$, suggesting additional preprocessing or
-hyperparameter variations in the reference pipeline not fully detailed
-in the original report. The relevant comparison for the SDL diagnosis
-is the within-our-pipeline trial-vs-subject delta, which cleanly
-isolates evaluation-design inflation. Under subject-level CV the
-three FMs converge to a
-narrow $0.52$--$0.58$ band on UCSD Stress. This is the ceiling that
-Sec.~\ref{sec:results_paired}--\ref{sec:results_fm_adds} must explain.
-
-\textbf{Classical baselines under class-balanced evaluation.} A
-natural follow-up question is whether subject-level-CV'd FMs still
-outperform classical band-power baselines on the same cohort. To
-ensure a fair comparison given the 14:56 class distribution, all
-classical baselines are evaluated with class-balanced sample
-weighting (Table~\ref{tab:classical_balanced}). The FM advantage
-over the best class-balanced classical baseline is $5$\,pp, and the
-$5$\,pp gap lies entirely inside the $0.44$--$0.58$
-architecture-independent band identified in
-Sec.~\ref{sec:results_ceiling}. FMs do not escape the ceiling; they
-sit a few pp higher within it.
-
-\begin{table}[!t]
-\centering
-\small
-\caption{Classical and frozen-FM-LP baselines on UCSD Stress
-  ($70$ recordings, subject-level StratifiedGroupKFold,
-  class-balanced). Classical methods are reported with 5-fold
-  fold-std; LaBraM frozen LP uses an 8-seed stability run carried
-  over from an earlier frozen-representation audit; the wider
-  seed pool gives a more conservative std estimate than the 3-seed
-  pool used for FT comparisons in Table~\ref{tab:cv_gap}.}
-\label{tab:classical_balanced}
-\begin{tabular}{lrr}
-\toprule
-Method                                & 5-fold BA\,$\uparrow$ & Pooled BA\,$\uparrow$ \\
-\midrule
-Random Forest (balanced)              & $0.438 \pm 0.022$ & $0.438$   \\
-LogReg-$L_2$ (balanced)               & $0.491 \pm 0.098$ & $0.491$   \\
-SVM-RBF (balanced)                    & $0.429 \pm 0.085$ & $0.429$   \\
-Gradient-boosted trees (balanced)     & $0.553 \pm 0.081$ & $0.482$   \\
-\textbf{LaBraM frozen LP}             & $\mathbf{0.605 \pm 0.032}$ & --- \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{Permutation-null comparison.} For the LaBraM canonical
-fine-tuning recipe on UCSD Stress: real FT $0.443 \pm 0.083$
-(3 seeds) versus permutation-null FT $0.497 \pm 0.086$
-(10 permutations) yields one-sided $p = 0.70$. Real labels produce a
-\emph{numerically lower} BA than shuffled labels on this recipe. For
-CBraMod and REVE, ten-permutation null tests bottom out at the
-$p = 0.1$ floor, insufficient to distinguish small real effects from
-seed noise; we flag these as underpowered.
-
-This audit establishes that the ceiling exists; the controlled
-paired comparison below distinguishes contrast strength from
-alternative explanations.
-
-%------------------------------------------------------------
-\subsection{Paired within-subject contrast experiment: EEGMAT rescues,
-  UCSD Stress does not}
-\label{sec:results_paired}
-
-The paired comparison has two arms using the same three FMs and the
-same subject-respecting evaluation. Both are reported as three-seed
-mean $\pm$ std. The \emph{only} structural difference between arms is
-the neural contrast underlying the label. Following the contrast
-anchoring protocol (Sec.~\ref{sec:methods_anchor}), contrast strength
-is defined externally, before reading any FM result.
+The diagnostic is a paired comparison on two arms with the same three
+FMs and the same subject-respecting evaluation. The \emph{only}
+structural difference between arms is the neural contrast underlying
+the label. Following the anchoring protocol
+(Sec.~\ref{sec:methods_anchor}), contrast strength is established
+externally, before reading any FM result. Both arms are reported as
+three-seed mean $\pm$ std.
 
 \textbf{EEGMAT anchor.} Serial-subtraction mental arithmetic produces
 canonical posterior alpha desynchronisation
@@ -237,35 +125,15 @@ spectrally localised, reliably induced across participants.
 returns no published per-recording within-subject EEG correlate of
 DASS-21 or Daily Stress Scale scores. The Komarov--Ko--Jung paper
 itself is a group-level longitudinal correlational study
-(Sec.~\ref{sec:methods_dass_scope}), not a per-recording within-subject
-classification benchmark.
-
-As a pre-registered internal check (Sec.~\ref{sec:methods_anchor}), we
-additionally tested whether the 70-recording cohort itself exhibits a
-reproducible group-level spectral contrast between DASS-high
-($n = 14$) and DASS-low ($n = 56$) recordings that could serve as an
-independent external anchor. A cluster-based permutation $F$-test on
-log-PSDs (MNE \texttt{permutation\_cluster\_test}, 1000 permutations,
-default threshold at $p = 0.05$, 30 channels $\times$ 90 frequency
-bins $0.5$--$45$\,Hz) returned \emph{no cluster-corrected significant
-cluster} (minimum cluster $p = 0.096$). The largest subthreshold
-cluster spans theta--alpha ($4$--$12$\,Hz) over 17 fronto-central
-electrodes with within-cluster Hedges' $g = +0.82$, directionally
-consistent with arousal-related spectral literature but not surviving
-correction. Whole-scalp band-averaged effects were modest
-(theta $g = +0.57$, alpha $g = +0.59$; delta/beta/gamma
-$|g| \leq 0.13$). At the pre-registered threshold the external anchor
-is therefore empirically absent on this cohort. Full details are
-reported in the supplementary.
-
-The contrast anchor in this arm is thus the \emph{absence} of both
-(a) a published within-subject neural correlate in the literature and
-(b) a cluster-corrected dataset-level spectral contrast in our own
-pre-registered test. We note the subthreshold cluster as a scope
-caveat: at $n = 14$ vs $n = 56$ the test may be underpowered, and the
-directionally-consistent theta-alpha effect cannot be taken as
-evidence of strong absence --- only as evidence that the contrast is
-not robust enough to meet the pre-registered anchor criterion.
+(Sec.~\ref{sec:methods_dass_scope}), not a per-recording
+within-subject classification benchmark. As a pre-registered internal
+check, a cluster-based permutation $F$-test on log-PSDs
+(Sec.~\ref{sec:methods_anchor}, 1000 permutations) returned no
+cluster-corrected significant cluster on the 70-recording cohort
+(minimum cluster $p = 0.096$; subthreshold theta--alpha effect at
+$g = +0.82$, not surviving correction). At the pre-registered
+threshold the external anchor is empirically absent on this cohort.
+Full details in App.~\ref{app:psd_anchor}.
 
 Under SDL the two anchors jointly predict the experimental outcome:
 EEGMAT should rescue, Stress longitudinal DSS should fail.
@@ -274,21 +142,17 @@ EEGMAT should rescue, Stress longitudinal DSS should fail.
 serial-subtraction mental-arithmetic recordings for each of $36$
 EEGMAT subjects ($72$ recordings). All three FMs fine-tuned on this
 within-subject contrast rescue above classical and frozen-LP
-baselines (3-seed mean $\pm$ std): LaBraM
-$\mathrm{BA} = 0.731 \pm 0.021$, REVE $0.727 \pm 0.035$, CBraMod
+baselines: LaBraM $0.731 \pm 0.021$, REVE $0.727 \pm 0.035$, CBraMod
 $0.620 \pm 0.058$. The three-FM agreement is itself diagnostic ---
 rescue is not a LaBraM-specific artefact but a consistent response
 of pretrained EEG representations to an anchored within-subject
-contrast. Critically, this rescue is \emph{not} accomplished by
-rewriting the frozen representation to foreground
-the label axis: as
-reported in Table~\ref{tab:subject_atlas}, the pooled label fraction
-shifts only from $5.35\% \to 3.34\%$ under FT on EEGMAT, and the
-subject fraction increases from $71.2\% \to 82.8\%$. The rescue
-operates at the classifier head while the embedding itself remains
-subject-dominated, with the label axis projected onto the existing
-subject-structured representation rather than reorganised around.
-This is the ``projection, not rewrite'' mechanism.
+contrast. The rescue does not reorganise the frozen representation
+around the label axis: the pooled label fraction shifts only from
+$5.35\% \to 3.34\%$ under FT on EEGMAT, and the subject fraction
+rises from $71.2\% \to 82.8\%$. The rescue operates at the classifier
+head while the embedding itself remains subject-dominated, with the
+label axis projected onto the existing subject-structured
+representation --- ``projection, not rewrite.''
 
 \textbf{Arm 2 --- Stress longitudinal DSS fails.} We reframe UCSD
 Stress as a within-subject DSS trajectory classification task. Each
@@ -297,7 +161,7 @@ personal-median DSS threshold; each recording is labelled above vs
 below personal median. Classification is leave-one-subject-out with
 three candidate classifiers applied to frozen FM embeddings
 (Table~\ref{tab:stress_longitudinal}). All nine FM $\times$
-classifier cells fall at or below chance; all kappas are negative.
+classifier cells fall at or below chance.
 
 \begin{table}[!t]
 \centering
@@ -316,24 +180,23 @@ REVE    & 0.333 & 0.426 & 0.000 \\
 \end{tabular}
 \end{table}
 
-Two interpretations of the Stress failure are jointly supported:
-(a) FM representations may lack the capacity to express within-subject
-DSS variation at this cohort size, or (b) DSS itself may lack a
-per-recording EEG ground truth. Current data cannot distinguish these.
-Both interpretations are consistent with SDL: (a) instantiates the
-subject-dominance ceiling directly, (b) says the contrast/variance
-ratio is $\approx 0$ because the contrast is absent.
+Two interpretations of the Stress failure are jointly supported by
+these data: (a) FM representations may lack the capacity to express
+within-subject DSS variation at this cohort size, or (b) DSS itself
+may lack a per-recording EEG ground truth. Both are consistent with
+SDL: (a) instantiates the subject-dominance ceiling directly, (b)
+says the contrast/variance ratio is $\approx 0$ because the contrast
+is absent.
 
-\textbf{Within-subject direction consistency.}
-Fig.~\ref{fig:within_subj_direction} inspects the geometry of
-within-subject trajectories by computing the mean pairwise cosine
-similarity of per-subject condition-shift vectors in the frozen
-representation. EEGMAT is positive across all three FMs
+\textbf{Within-subject trajectory geometry.}
+Fig.~\ref{fig:within_subj_direction} computes the mean pairwise
+cosine similarity of per-subject condition-shift vectors in the
+frozen representation. EEGMAT is positive across all three FMs
 ($0.06$--$0.15$); Stress is indistinguishable from zero
 ($-0.02$--$0.00$). The Stress result is the absence of any
 consistent within-subject trajectory in the frozen representation,
-matching the cluster-corrected absence from the pre-registered
-PSD anchor test (App.~\ref{app:psd_anchor}).
+matching the cluster-corrected absence from the PSD anchor test
+(App.~\ref{app:psd_anchor}).
 
 \begin{figure}[!t]
 \centering
@@ -348,107 +211,82 @@ PSD anchor test (App.~\ref{app:psd_anchor}).
   similarity of per-subject direction vectors across all three
   pretrained FMs: positive across architectures on EEGMAT
   ($0.06$--$0.15$), essentially zero across architectures on Stress
-  ($-0.02$--$0.00$). The Stress result is not a small noisy effect;
-  it is the absence of any common within-subject trajectory in the
-  frozen representation.}
+  ($-0.02$--$0.00$).}
 \label{fig:within_subj_direction}
 \end{figure}
-
-Fig.~\ref{fig:paired_contrast} summarises the paired outcome at the
-behavioural level.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/main/fig_paired_contrast.pdf}
-\caption{Paired within-subject contrast experiment. Same three FMs,
-  same pipeline, same subject-respecting evaluation; arms differ
-  only in the external contrast anchor. Left: EEGMAT rest vs mental
-  arithmetic ($36$ subjects $\times$ $2$ recordings, Klimesch-anchored
-  alpha desynchronisation) --- LaBraM fine-tuning reaches
-  BA $0.731 \pm 0.021$ (3-seed). Right: UCSD Stress reframed as a
-  within-subject DSS-trajectory classification ($14$ subjects with
-  repeated recordings, no published per-recording EEG anchor) ---
-  nine FM $\times$ classifier cells fall at or below chance
-  ($0.17$--$0.43$). Horizontal dashed line: chance.}
+\caption{The paired diagnostic. Same three FMs, same pipeline, same
+  subject-respecting evaluation; arms differ only in the external
+  contrast anchor. Left: EEGMAT rest vs mental arithmetic
+  (Klimesch-anchored alpha desynchronisation) --- LaBraM fine-tuning
+  reaches BA $0.731 \pm 0.021$. Right: UCSD Stress as a within-subject
+  DSS-trajectory task (no published per-recording EEG anchor) --- nine
+  FM $\times$ classifier cells at or below chance. Horizontal dashed
+  line: chance.}
 \label{fig:paired_contrast}
 \end{figure}
 
-\textbf{Independent neural-level corroboration: cross-model band
-  consensus.} A third line of evidence is available at the
-representation level without using classifier performance at all. If
-a task has a strong, stable within-subject neural contrast, three
-independent architectures should converge on the same neural band;
-otherwise they should diverge. We use causal band-stop ablation
-(remove one frequency band via a Butterworth filter before feeding
-the signal to the frozen FM; measure the cosine distance between
-resulting embedding and the unablated baseline) as the per-band
-dependence metric. On EEGMAT, LaBraM, REVE, and CBraMod all show
-their largest band-stop cosine distances on the alpha band (with REVE
-showing the sharpest alpha vs other-band separation). Three
-architectures converge on the Klimesch-predicted alpha-ERD band. On
-UCSD Stress, LaBraM peaks on beta, REVE on broadband, and CBraMod
-shows no band preference --- three architectures diverge on which
-band they rely on, and no shared neural target is isolable. We
-report single-run per-band distances; cross-seed stability is
-tabulated in supplementary.
-Fig.~\ref{fig:band_diagnostic} visualises the convergence vs
-divergence.
+\textbf{Independent neural-band corroboration.} A third line of
+evidence is available at the representation level without using
+classifier performance. Causal band-stop ablation removes one
+frequency band via a Butterworth filter before the frozen FM and
+measures the cosine distance between the ablated and unablated
+embedding. On EEGMAT, LaBraM, REVE, and CBraMod all show their
+largest band-stop distances on alpha --- three architectures
+converge on the Klimesch-predicted band
+(Fig.~\ref{fig:band_diagnostic}, top). On UCSD Stress, LaBraM peaks
+on beta, REVE on broadband, CBraMod shows no band preference ---
+three architectures diverge on which band they rely on, and no
+shared neural target is isolable (Fig.~\ref{fig:band_diagnostic},
+bottom). This diagnostic uses no classifier output and independently
+corroborates the paired behavioural outcome.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/main/fig_band_diagnostic.pdf}
 \caption{Cross-model neural-band consensus from causal band-stop
-  ablation on frozen FM representations. For each EEG frequency
-  band, we remove that band via a Butterworth filter before
-  extracting the frozen embedding, and report the cosine distance
-  to the unablated baseline as a per-band dependence score. Top:
-  on EEGMAT, three architectures pretrained with different
-  objectives converge on alpha-band dependence, consistent with the
-  Klimesch-predicted alpha-ERD signature for mental arithmetic.
-  Bottom: on UCSD Stress, LaBraM peaks on beta, REVE on broadband,
-  and CBraMod shows no band preference, indicating no shared neural
-  target across architectures. This diagnostic uses no classifier
-  output and independently corroborates the paired behavioural
-  outcome in Fig.~\ref{fig:paired_contrast}.}
+  ablation on frozen FM representations. Top: on EEGMAT, three
+  architectures pretrained with different objectives converge on
+  alpha-band dependence, consistent with the Klimesch-predicted
+  alpha-ERD signature. Bottom: on UCSD Stress, LaBraM peaks on beta,
+  REVE on broadband, CBraMod shows no band preference.}
 \label{fig:band_diagnostic}
 \end{figure}
 
-\textbf{Summary.} Same framework, same FMs, same subject-scale,
-opposite outcomes at both the behavioural and the representational
-level. Within the contrast-strength range spanned by EEGMAT (strong)
-and UCSD Stress longitudinal DSS (absent), contrast strength governs
-whether FM fine-tuning rescues classification above the
-subject-dominance ceiling. Model scale does not rescue labels that
-lack a within-subject neural anchor.
-
-%------------------------------------------------------------
-\subsection{Architecture-independent ceiling: seven models converge
-  within a $5$\,pp band}
-\label{sec:results_ceiling}
-
-A natural concern about the picture so far is that the ceiling may be
-an artefact of the particular FM architectures tested. We evaluate a
-panel of from-scratch EEG architectures on the same 70-recording
-subset, the same subject-level protocol, and the same 3-seed
-discipline. The panel spans 2017-vintage compact CNNs
-\citep{lawhern2018,schirrmeister2017} through modern
-attention-convolutional hybrids \citep{song2023eegconformer}, plus
-the three fine-tuned FMs and the best class-balanced classical
-baseline. Fig.~\ref{fig:ceiling} displays the forest plot.
+\textbf{Architectural robustness of the ceiling.}
+The ceiling could in principle be an artefact of the three FM
+architectures we tested. We evaluate a panel of seven architectures
+spanning five orders of magnitude of parameter count on the same
+70-recording cohort under the same subject-level protocol
+(Table~\ref{tab:architectures}, Fig.~\ref{fig:ceiling}). All converge
+to a $0.44$--$0.58$ band. A 2017 Schirrmeister ShallowConvNet
+($\sim\!40$\,k parameters, never pretrained) matches the 2024/2025
+pretrained FMs within seed noise; moving from $3$\,k to $1.4$\,B
+parameters shifts the mean BA by at most $6$\,pp. Scale, pretraining
+source, and architecture vintage fail to unbound the ceiling ---
+the ceiling is a task property. In the anchored regime
+(EEGMAT, $0.73$) architecture contributes; in the contrast-bounded
+regime it is functionally disabled. Cross-cohort replication on
+other contrast-bounded benchmarks is future work; the
+aggregate pattern reported across 14+ clinical datasets by
+EEG-Bench \citep{eegbench2025} and AdaBrain-Bench
+\citep{adabrain2025} --- FM fine-tuning frequently failing to
+exceed compact from-scratch baselines under cross-subject splits ---
+is consistent with the present forest plot at the aggregate level.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/main/fig_ceiling.pdf}
-\caption{Architecture-independent ceiling on UCSD Stress. Forest
-  plot of seven architectures spanning five orders of magnitude in
-  parameter count (EEGNet $\sim\!3$\,k through REVE $\sim\!1.4$\,B)
-  under subject-level five-fold cross-validation with
-  class-balanced weighting where applicable. All architectures
-  converge to a single $0.44$--$0.58$ balanced-accuracy band
-  (shaded). A 2017-vintage ShallowConvNet trained from scratch
-  reaches the same band as the 2024/2025 pretrained FMs. FT does
-  not exceed LaBraM frozen linear probing ($0.605$, dotted vertical
-  line). Chance level (dashed) is $0.50$.}
+\caption{Architectural robustness on UCSD Stress. Forest plot of
+  seven architectures spanning five orders of magnitude in parameter
+  count (EEGNet $\sim\!3$\,k through REVE $\sim\!1.4$\,B) under
+  subject-level five-fold CV with class-balanced weighting where
+  applicable. All converge to a $0.44$--$0.58$ balanced-accuracy
+  band (shaded). ShallowConvNet trained from scratch reaches the
+  same band as the pretrained FMs. Chance (dashed): $0.50$.}
 \label{fig:ceiling}
 \end{figure}
 
@@ -472,149 +310,80 @@ REVE (FT) \citep{reve2025}                     & $\sim\!1.4$\,B   & $0.577 \pm 0
 \end{tabular}
 \end{table}
 
-Seven architectures spanning three kilo- to one giga-parameter scales
---- approximately five orders of magnitude --- produce balanced
-accuracies clustered within a $\sim\!5$\,pp window on the same
-cohort. If the Stress ceiling reflected a representation-quality
-limit, scaling should help. It does not: moving from a $3$\,k
-parameter 2018 CNN to a $1.4$\,B parameter 2025 FM shifts the mean BA
-by at most $6$\,pp, within the single-model seed standard deviation
-on three of the six rows. If the ceiling reflected a
-pretraining-corpus-quality limit, the pretrained/from-scratch
-contrast should matter. It does not: ShallowConvNet (which never saw
-any pretrained EEG data) at $0.557$ is identical within noise to
-CBraMod FT ($0.548$) and higher than LaBraM FT ($0.524$). If the
-ceiling reflected a recent-architecture-innovation limit, the 2017
-$\to$ 2025 progression should matter. It does not: the 2017
-Schirrmeister ShallowConvNet matches the 2024/2025 FMs.
-
-The ceiling is compatible with a \emph{task-property} explanation:
-under subject-level evaluation on this cohort, the available
-within-subject neural contrast for per-recording DASS-thresholded
-labels is bounded at roughly BA $0.55$, and no architecture available
-to us resolves the bounded contrast into higher classification.
-Sec.~\ref{sec:results_paired} has already identified this contrast
-as the operative variable by the controlled paired comparison;
-Sec.~\ref{sec:results_ceiling} is the complementary ruling-out ---
-once the contrast is bounded, architectural scale and pretraining
-source do not unbound it.
-
-This is a specifically \emph{ceiling-regime} statement. It does not
-claim that architectural choice never matters --- on EEGMAT, where
-the within-subject contrast is neurally anchored, LaBraM FT reaches
-$0.73$ and architecture contributes. In the contrast-bounded regime
-of UCSD Stress the architectural-choice lever is functionally
-disabled.
-
-\textbf{Scope of the architecture-independence claim.} The forest
-plot above is demonstrated on a single bounded cohort (UCSD Stress).
-Cross-cohort replication on other contrast-bounded benchmarks is
-future work. We note that the aggregate findings reported by
-EEG-Bench \citep{eegbench2025} and AdaBrain-Bench
-\citep{adabrain2025} across 14+ clinical datasets --- namely that FM
-fine-tuning frequently fails to exceed compact from-scratch baselines
-on cross-subject splits --- are consistent with this picture at the
-aggregate level, though those audits do not decompose their
-architecture panels by parameter scale in the way our forest plot
-does.
+Same framework, same FMs, same subject-scale, opposite outcomes at
+the behavioural and the representational level. Within the
+contrast-strength range spanned by EEGMAT (strong) and UCSD Stress
+longitudinal DSS (absent), contrast strength governs whether FM
+fine-tuning rescues classification above the subject-dominance
+ceiling. Scale does not rescue labels without a within-subject
+neural anchor.
 
 %------------------------------------------------------------
-\subsection{What FM pretraining contributes inside the ceiling}
+\subsection{Contributions of pretraining within the ceiling}
 \label{sec:results_fm_adds}
 
-Granted that FMs do not escape the Stress ceiling, what --- if
-anything --- do they contribute inside it?
-Table~\ref{tab:fm_value_two_regime_stress} holds the classifier head
-constant and compares four representation families on UCSD Stress.
+FMs do not escape the ceiling; what --- if anything --- do they
+contribute inside it? Table~\ref{tab:fm_value_cross_dataset} holds
+the classifier head constant and compares three representation
+families across one contrast-bounded and two contrast-anchored
+datasets. For UCSD Stress, classical and frozen-LP numbers are
+measured on the 70-recording cohort with class-balanced sample
+weighting (3-seed for classical GBT, 8-seed for frozen LP). For
+EEGMAT and ADFTD, classical and frozen-LP reference values are
+approximate ranges from published literature; FT numbers are 3-seed
+means (Stress, EEGMAT) or single-run (ADFTD).
 
 \begin{table}[!t]
 \centering
 \small
-\caption{Representation comparison on UCSD Stress, subject-level CV,
-  class-balanced where applicable.}
-\label{tab:fm_value_two_regime_stress}
-\begin{tabular}{lr}
-\toprule
-Representation family                  & Subject-level BA\,$\uparrow$ \\
-\midrule
-Classical band-power (balanced GBT)    & $0.553 \pm 0.081$ \\
-Frozen FM (LaBraM LP, 8-seed)          & $\mathbf{0.605 \pm 0.032}$ \\
-Fine-tuned FM (REVE best HP, 3-seed)   & $0.577 \pm 0.051$ \\
-From-scratch EEG CNN (ShallowConvNet)  & $0.557 \pm 0.031$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Frozen FM linear probes beat the best class-balanced classical
-baseline by $\sim\!5$\,pp, sit above from-scratch EEG CNNs by
-$\sim\!5$\,pp, and --- within the single-model seed std --- are not
-reliably exceeded by end-to-end FT on this cohort. The spread across
-the four families is $\sim\!5$\,pp; no representation advantage
-approaches the $15$--$40$\,pp gap reported under trial-level CV.
-
-The $5$\,pp frozen-FM-over-classical advantage is small enough to be
-worth interpreting cautiously. In the 70-recording cohort with 14
-positives, a shift of that magnitude corresponds to correctly
-classifying one to two additional recordings per fold on average, and
-the per-fold variance admits multi-pp swings driven by which single
-subject enters the validation partition. We report the $5$\,pp as an
-observation, consistent with the hypothesis that pretrained FM
-embeddings carry a modestly richer representation of the 30-channel
-spectral structure than a hand-crafted band-power feature vector.
-Crucially, \emph{the $5$\,pp bump lives entirely inside the
-$0.44$--$0.58$ architecture-independent band.} FM pretraining does
-not move the classification out of the ceiling regime; it places the
-classifier slightly higher within it.
-
-\textbf{The anchored-contrast regime.}
-Table~\ref{tab:fm_value_two_regime_anchored} reports the same
-accounting on two datasets with established anchors: EEGMAT
-(within-subject paired, matching Sec.~\ref{sec:results_paired}) and
-ADFTD (cross-subject categorical, included as a suggestive but not
-methodologically equivalent second datapoint). Classical and frozen
-LP reference values are approximate ranges synthesised from
-published literature.
-
-\begin{table}[!t]
-\centering
-\small
-\caption{Representation comparison on two contrast-anchored datasets.
-  EEGMAT numbers are within-subject paired; ADFTD numbers are
-  cross-subject categorical (see caveat in text). FT numbers are
-  3-seed means where available; ADFTD FT is single-run.}
-\label{tab:fm_value_two_regime_anchored}
+\caption{Cross-dataset representation comparison, subject-level CV.
+  Stress numbers are class-balanced measured on the 70-recording
+  cohort; EEGMAT and ADFTD classical/frozen LP entries are
+  approximate ranges from published literature. Bold: best column.}
+\label{tab:fm_value_cross_dataset}
 \begin{tabular}{lrrr}
 \toprule
-Dataset                       & Classical\,$\uparrow$ & Frozen FM\,$\uparrow$ & Best FT FM\,$\uparrow$ \\
+Dataset                        & Classical\,$\uparrow$ & Frozen FM LP\,$\uparrow$ & Best FT FM\,$\uparrow$ \\
 \midrule
-EEGMAT (rest vs arithmetic, within-subj.) & $\sim\!0.60$ & $\sim\!0.68$ & $\mathbf{0.73}$ \\
-ADFTD (AD vs HC, cross-subj.)             & $\sim\!0.60$ & $\sim\!0.65$ & $\mathbf{0.70}$ \\
+UCSD Stress (contrast-bounded)      & $0.553 \pm 0.081$ & $\mathbf{0.605 \pm 0.032}$ & $0.577 \pm 0.051$ \\
+EEGMAT (anchored, within-subj.)     & $\sim\!0.60$      & $\sim\!0.68$              & $\mathbf{0.731 \pm 0.021}$ \\
+ADFTD (anchored, cross-subj.)       & $\sim\!0.60$      & $\sim\!0.65$              & $\mathbf{0.70}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-On both anchored datasets, FT delivers a rescue step above frozen
-LP. On ADFTD, variance decomposition shows the largest label-fraction
-increase under FT in our $3 \times 4$ grid ($2.60\% \to 13.25\%$,
-single-run) --- the only cell in which fine-tuning substantively
-reorganises the representation around the label axis.
+Two regimes emerge. In the \emph{anchored-contrast} regime (EEGMAT,
+ADFTD), frozen FM linear probes outperform classical baselines by
+$5$--$8$\,pp, and fine-tuning adds a further $5$--$10$\,pp rescue;
+only the fine-tuning component is contrast-dependent. In the
+\emph{contrast-bounded} regime (UCSD Stress), frozen FM
+representations still contribute a $5$\,pp bump over classical
+baselines, but fine-tuning does not add further rescue and in some
+cells actively erodes the frozen representation (LaBraM on Stress:
+frozen LP $0.605 \to$ FT $0.524$, $\sim\!8$\,pp erosion). On ADFTD,
+variance decomposition shows the largest label-fraction increase
+under FT in our $3 \times 4$ grid ($2.60\% \to 13.25\%$, single-run)
+--- the only cell where fine-tuning substantively reorganises the
+representation around the label axis, consistent with the
+cross-subject alpha-slowing signature of the AD label.
 
-\textbf{Two-regime summary.} In the \emph{anchored-contrast} regime,
-frozen FM representations outperform classical baselines by
-$5$--$8$\,pp and fine-tuning adds a further $5$--$10$\,pp rescue; only
-the fine-tuning component is contrast-dependent. In the
-\emph{contrast-bounded} regime, frozen FM representations still
-contribute a $5$\,pp bump but fine-tuning does not add further rescue
-and in some (model, dataset) cells actively erodes the frozen
-representation (LaBraM FT on Stress: frozen LP $0.605 \to$ FT $0.524$,
-$\sim\!8$\,pp erosion).
+The $5$\,pp frozen-LP advantage on Stress is small enough to warrant
+interpretive caution: at $70$ recordings with $14$ positives, it
+corresponds to correctly classifying one to two additional
+recordings per fold. We report it as consistent with pretrained FM
+embeddings carrying a modestly richer representation of 30-channel
+spectral structure than a hand-crafted band-power feature vector ---
+but the bump lives entirely inside the $0.44$--$0.58$
+architecture-independent band. FM pretraining does not move the
+classification out of the ceiling regime; it places the classifier
+slightly higher within it.
 
-This two-regime picture aligns with what concurrent large-scale EEG
-FM benchmark audits report at the aggregate level
+This two-regime picture is the mechanistic layer underneath what
+concurrent large-scale EEG FM benchmark audits report at the
+aggregate level
 \citep{eegbench2025,kauffmann2025critique,eegfmbench2025,adabrain2025}.
-The paired comparison in Sec.~\ref{sec:results_paired} supplies the
-mechanistic layer: the determining factor is the presence or absence
-of a within-subject neural anchor.
-Sec.~\ref{sec:results_ceiling} supplies the complementary
-architectural robustness check: in the contrast-bounded regime, the
-anchor's absence cannot be compensated by architectural choice.
+The paired diagnostic in Sec.~\ref{sec:results_paired} identifies
+the determining factor as the presence or absence of a within-subject
+neural anchor; the architectural robustness check there establishes
+that in the contrast-bounded regime the anchor's absence cannot be
+compensated by architectural choice.

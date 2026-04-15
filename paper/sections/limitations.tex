@@ -3,7 +3,7 @@
 
 \subsection{Cohort size and single-seed fragility}
 The primary UCSD Stress cohort used throughout
-Sec.~\ref{sec:results_audit}--\ref{sec:results_ceiling} consists of 70
+Sec.~\ref{sec:results_paired} consists of 70
 recordings from 17 subjects, with a 14:56 positive:negative class
 split. At this scale, single-seed balanced accuracies are known to
 swing by $5$--$10$\,pp on the same pipeline with no code changes
@@ -37,7 +37,7 @@ rather than within-subject, and is therefore not directly comparable
 to the paired design.
 
 \subsection{Architecture panel breadth and per-model HP selection}
-The architecture panel in Sec.~\ref{sec:results_ceiling} includes
+The architecture panel in Sec.~\ref{sec:results_paired} includes
 seven from-scratch and pretrained models spanning five orders of
 magnitude in parameter count but omits two classes worth flagging:
 graph-based EEG models over sensor adjacency, and state-space /
@@ -54,7 +54,7 @@ cross-model comparison. The per-model headline numbers
 (LaBraM $0.524$, CBraMod $0.548$, REVE $0.577$) should be read as
 ``each FM at its own best tested HP,'' not as a controlled ranking
 between architectures. The architecture-independent-ceiling claim in
-Sec.~\ref{sec:results_ceiling} does not rely on cross-FM ranking; it
+Sec.~\ref{sec:results_paired} does not rely on cross-FM ranking; it
 relies only on every tested architecture at its own best HP falling
 inside the same $5$\,pp window.
 
