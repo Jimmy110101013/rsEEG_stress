@@ -1,47 +1,139 @@
-% Discussion — outline only.
-% Source: docs/paper_narrative_zh.md §8
-
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{Why Does FT Direction Depend on Model $\times$ Dataset?}
-% Hypothesis-level --- not proven, requires architectural ablation.
-% - CBraMod criss-cross attention splits space and time; may engage
-%   differently with ADFTD's delta-rich structure. Seed instability on
-%   ADFTD hints at over-reliance on training trajectory.
-% - REVE's linear patch embedding is scale-sensitive and window-sensitive.
-% - LaBraM's neural tokenizer discretizes EEG before transformer; subtle
-%   spectral differences in MDD (TDBRAIN) may be lost under FT.
-% Flag this as open for future work.
-TBD.
+\subsection{Two regimes and the SDL diagnostic}
+SDL separates two regimes of practical consequence. In the
+\emph{anchored-contrast} regime, where the target label has an
+externally-anchored within-subject neural correlate (EEGMAT
+mental-arithmetic alpha desynchronisation; Alzheimer's-disease
+resting alpha slowing), fine-tuning projects the label axis onto
+the subject-dominated representation and delivers measurable rescue
+above classical baselines. In the \emph{contrast-bounded} regime
+(UCSD Stress per-recording DASS or longitudinal DSS), no
+architecture within five orders of magnitude of parameter scale
+exceeds a shared $0.52$--$0.58$ ceiling, and fine-tuning does not
+reliably distinguish itself from label-shuffle null. SDL locates the
+mechanism behind the aggregate observation from concurrent
+benchmarks~\citep{eegbench2025,kauffmann2025critique,eegfmbench2025,
+adabrain2025} that EEG FMs sometimes underperform simpler models:
+the governing variable is a testable property of the downstream
+label (neural-anchor strength), not a training-recipe or scale
+artefact. The projection-not-rewrite dynamic we observe also
+parallels Chen et al.\ \citep{chen2025sft}'s 757-model LLM
+supervised-fine-tuning finding that ``inductive biases of the base
+model outweigh the specific SFT corpus''.
 
-\subsection{Ruled-Out Alternatives}
-% - Subject-adversarial GRL/DANN/LEAD (F12): $\lambda$ sweep 0.01--1.0,
-%   all worse than baseline. Subject variance and label signal are
-%   entangled in representation space.
-% - Within-subject longitudinal DSS reframing (F14): all 3 FMs, 3
-%   classifiers fail. Not salvageable.
-% - Sparse-label-subspace hypothesis: directly refuted.
-% - Spectral-guided FiLM: dropped from scope.
-TBD.
+\subsection{Pre-benchmark contrast-anchoring protocol}
+The operational consequence of SDL is a pre-registration-style
+diagnostic that any research group deploying EEG FMs on a new
+clinical cohort can apply before investing in benchmark work. Three
+steps:
+\begin{enumerate}
+  \item For the target label, conduct a systematic search for
+    published within-subject EEG correlates at the temporal
+    resolution of the intended classifier (single-recording,
+    trial-level, or trajectory).
+  \item If such a literature exists, extract the expected effect size
+    and spectral locus and pre-register them as the contrast-strength
+    anchor.
+  \item If no such literature exists, declare the dataset a
+    \emph{contrast-bounded benchmark candidate}, pre-commit to
+    subject-level CV plus class-balanced baselines plus
+    permutation-null comparison, and report the resulting FM numbers
+    as bounded by the subject-dominance ceiling rather than as an
+    absolute FM capability claim.
+\end{enumerate}
+This protocol recasts FM-on-small-clinical-cohort work as a two-stage
+enterprise: first anchor the task, then benchmark the architecture.
+It inverts the common current practice in which benchmarks are run
+first and the absence of a within-subject neural anchor is
+discovered, if at all, only when headline numbers fail to replicate
+across groups.
 
-\subsection{Clinical Implications (TNSRE Angle)}
-% Frozen FM representations retain diagnostic value above classical
-% (LaBraM 0.605 on Stress). But subject dominance means any clinical
-% deployment requires per-individual calibration --- no generic model
-% will generalize cold to new subjects.
-% Personalized fine-tuning / few-shot adaptation is the pragmatic path.
-% Requires larger datasets than 70 recordings to validate systematically;
-% HNC (308+400 subjects, private Dementia+MDD) noted as potential
-% high-powered follow-up.
-TBD.
+\subsection{Intermediate-anchor case study: TDBRAIN MDD}
+\label{sec:discussion_intermediate}
+Our paired comparison in Sec.~\ref{sec:results_paired} contrasts a
+strong within-subject anchor (EEGMAT alpha-ERD) with an absent
+within-subject anchor (UCSD Stress longitudinal DSS). One additional
+public dataset in our subject-atlas analysis,
+TDBRAIN \citep{tdbrain} MDD vs HC ($734$ recordings,
+$359$ subjects), occupies an intermediate position on the anchor
+spectrum under our three-dimension rubric
+(Sec.~\ref{sec:methods_anchor}).
 
-\subsection{Field-Level Recommendations}
-% 1. Subject-level CV as default. Trial-level acceptable only for
-%    literature comparison, with explicit leakage disclosure.
-% 2. Statistical-power reporting: n\_subjects, n\_positive, multi-seed
-%    std, permutation null distribution, bootstrap CI. Single-seed numbers
-%    in small-sample regimes are not reproducible.
-% 3. Window size is a first-class experimental factor; frozen/FT must be
-%    window-matched.
-TBD.
+\textbf{Empirical anchor result.} Under the same cluster-permutation
+protocol used for UCSD Stress, TDBRAIN produces two
+cluster-corrected-significant clusters at $p = 0.012$ and $p = 0.014$,
+spanning $12.5$--$45$\,Hz over $7$--$8$ fronto-central channels with
+within-cluster Hedges' $g \approx 0.4$ (MDD $>$ HC). Whole-scalp
+band-averaged effects are beta $g = +0.34$ and gamma $g = +0.33$, with
+alpha $g = -0.16$ (weak). This is a different spectral locus from the
+published MDD alpha-asymmetry literature the classification was
+originally motivated by (broadly traceable to Davidson-tradition
+frontal alpha asymmetry); it is directionally consistent with beta/
+gamma-band hyperarousal effects reported at cross-subject group level
+\citep{olbrich2013mddarousal} but not with a per-recording
+within-subject correlate. Full topomap and cluster table are in
+App.~A.
+
+\textbf{Interpretation under the three-dimension rubric.} TDBRAIN
+satisfies Dimension 2 (empirical cluster survives correction) but
+fails Dimension 1 (no published within-subject per-recording
+correlate) and Dimension 3 (cluster locus is beta/gamma, not the
+published alpha-asymmetry locus). Under our rubric this places
+TDBRAIN in the \emph{Intermediate} regime. The three FMs at their
+respective best fine-tuning hyperparameters on TDBRAIN MDD reach BAs
+of $0.69$ (LaBraM), $0.50$ (CBraMod), and $0.48$ (REVE) under
+subject-level cross-validation --- a $19$\,pp spread, substantially
+wider than the $5$\,pp band observed on UCSD Stress
+(Sec.~\ref{sec:results_ceiling}).
+
+We read this not as a counterexample to SDL but as an empirical
+refinement of the binary anchored/no-anchor classification. In the
+strictly-anchored regime the architecture choice is dominated by the
+contrast (EEGMAT, ADFTD); in the strictly-bounded regime architecture
+is dominated by the subject-dominance ceiling (UCSD Stress); in the
+\emph{intermediate-anchor regime} --- where an empirical cluster
+exists but misaligns with the published within-subject locus ---
+architecture-specific inductive bias appears to dominate in a way
+that is neither contrast-driven nor subject-dominance-driven,
+producing the observed wide spread. This positions TDBRAIN as a
+candidate dataset for the graded-anchor-strength refinement and
+points future SDL extensions toward explaining \emph{within-regime}
+architectural variance separately from \emph{across-regime} contrast
+effects. The Fig.~\ref{fig:sdl_spectrum} spectrum visualises this
+position.
+
+\subsection{What SDL does not claim}
+We are explicit about three statements SDL does not make. (i) SDL
+does not claim that EEG FMs are without value. The anchored-contrast
+regime is where EEG FMs deliver meaningful rescue, and this regime
+includes well-established clinical targets (dementia, epilepsy,
+certain cognitive-load paradigms) whose neural anchors are mature.
+(ii) SDL does not claim that the contrast-bounded ceiling is a
+permanent limit. A future finding that establishes a robust
+per-recording within-subject EEG correlate of DASS or DSS would
+change the contrast-bounded classification of UCSD Stress to an
+anchored-contrast one, and SDL would correctly predict that FM
+fine-tuning would begin to rescue on the newly-anchored task. SDL is
+a statement about the current state of the anchoring literature, not
+a metaphysical limit on EEG FMs. (iii) SDL does not claim the
+two-regime picture is exhaustive. Our controlled paired comparison
+spans one strong anchor (alpha-ERD) and one absent anchor (DSS);
+intermediate-anchor regimes are outside our tested range and a
+productive next step is refining the binary anchor/no-anchor
+criterion into a graded anchor-strength score.
+
+\subsection{Implications for pretraining design}
+A secondary implication is that SDL suggests pretraining objectives
+specifically designed to \emph{reduce} subject-dominance in the
+frozen representation --- subject-adversarial pretraining,
+subject-invariant contrastive losses, cross-subject covariance
+alignment --- would, if successful, shift the contrast-bounded
+regime upward even in the absence of an external label anchor.
+\citep{multidataset2025} is an early entry in this direction. SDL
+predicts that such objectives should show the largest gains
+specifically on contrast-bounded benchmarks (where current FMs are
+stuck) and smaller gains on contrast-anchored benchmarks (where
+current FMs already reach rescue) --- a falsifiable prediction that
+future pretraining work can test against our SDL diagnostic.

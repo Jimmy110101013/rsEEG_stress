@@ -1,0 +1,13 @@
+Dataset: 70 recordings loaded (14 increase, 56 normal)
+Cache: 70 recordings ready (70 cached, 0 new)
+N=70, pos=14, neg=56
+Features (70, 156) in 0.7s
+
+[plain   ] 5-fold BA: 0.5079 ± 0.1529 | pooled: 0.4375
+
+[balanced] 5-fold BA: 0.5530 ± 0.0805 | pooled: 0.4821
+
+Saved → results/studies/exp02_classical_dass/rerun_70rec_xgb_balanced/summary.json
+
+Δ(balanced − plain) = +0.0452
+VERDICT: class imbalance has +4.5% effect — revisit F-B framing

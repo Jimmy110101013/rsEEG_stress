@@ -1,0 +1,72 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\subsection{Cohort size and single-seed fragility}
+The primary UCSD Stress cohort used throughout
+Sec.~\ref{sec:results_audit}--\ref{sec:results_ceiling} consists of 70
+recordings from 17 subjects, with a 14:56 positive:negative class
+split. At this scale, single-seed balanced accuracies are known to
+swing by $5$--$10$\,pp on the same pipeline with no code changes
+\citep{smalln2025biorxiv}. All headline numbers are reported as
+three-seed mean $\pm$ sample standard deviation; seed counts are
+held constant across the trial-level / subject-level / class-balance
+/ architecture / HP arms. A reader interpreting a given three-seed
+point estimate should weight it against the $\pm 5$\,pp (typical) to
+$\pm 10$\,pp (worst observed) envelope; the relative claims, not the
+absolute BA digits, carry the weight of the argument. A consequence
+for the permutation-null analysis is that our comparison budget is
+ten permutation seeds per FM, below the hundreds that would drive
+$p$-floor well below $0.01$. For CBraMod and REVE this means the
+null test bottoms out at $p \approx 0.1$. The SDL diagnostic does not
+hinge on these two cells --- the paired comparison carries the
+thesis's weight --- but a larger permutation pool would sharpen the
+audit claim and is a natural replication target.
+
+\subsection{Single anchor on the rescue arm}
+Our controlled paired comparison anchors one rescue dataset (EEGMAT,
+Klimesch-type alpha desynchronisation) against one bounded dataset
+(UCSD Stress longitudinal DSS, absent literature anchor). A natural
+follow-up would use multiple anchored contrasts --- at minimum
+EEGMAT, ADFTD, and perhaps a motor-imagery beta-ERD task --- and
+multiple bounded contrasts, to map a contrast-strength gradient
+rather than a binary. The observation in
+Sec.~\ref{sec:results_fm_adds} that ADFTD produces a similar
+classical-to-frozen-to-FT cascade to EEGMAT is a preliminary step in
+this direction, but ADFTD's contrast-strength anchor is cross-subject
+rather than within-subject, and is therefore not directly comparable
+to the paired design.
+
+\subsection{Architecture panel breadth and per-model HP selection}
+The architecture panel in Sec.~\ref{sec:results_ceiling} includes
+seven from-scratch and pretrained models spanning five orders of
+magnitude in parameter count but omits two classes worth flagging:
+graph-based EEG models over sensor adjacency, and state-space /
+Mamba-style models. Our panel is representative of the convolutional
+and transformer families currently dominant in EEG-FM literature, but
+a reader who suspects an inductive bias specific to these omitted
+families might escape the ceiling has a legitimate concern the panel
+does not directly address.
+
+Separately, the three FM fine-tuning results use per-model best-HP
+selection over a small $3 \times 2 \times 3$ grid independently per
+model. This is an argmax over HP selection, not a factorial
+cross-model comparison. The per-model headline numbers
+(LaBraM $0.524$, CBraMod $0.548$, REVE $0.577$) should be read as
+``each FM at its own best tested HP,'' not as a controlled ranking
+between architectures. The architecture-independent-ceiling claim in
+Sec.~\ref{sec:results_ceiling} does not rely on cross-FM ranking; it
+relies only on every tested architecture at its own best HP falling
+inside the same $5$\,pp window.
+
+\subsection{Reproducibility}
+All code, trained checkpoints, variance-decomposition outputs,
+permutation-null logs, per-seed training curves, the pre/post LaBraM
+diagnostic, the class-balanced classical audit, and the contrast-
+strength anchoring protocol specification will be released at the
+project repository upon publication. We invite independent groups to
+(i) reproduce the trial-vs-subject CV decomposition on their own
+Stress pipelines, (ii) replicate the paired EEGMAT vs Stress
+longitudinal comparison under their own FM weights and HP budgets,
+and (iii) apply the pre-benchmark contrast-anchoring protocol to
+their own clinical cohorts and report whether SDL's prediction
+holds.

@@ -1,0 +1,317 @@
+{
+  "analysis": "group_level_cluster_permutation_PSD",
+  "dataset": "UCSD Stress (70 recordings; DASS-high=14 / DASS-low=56)",
+  "label_convention": "--label dass (Group=='increase' -> positive)",
+  "welch": {
+    "sfreq_hz": 200.0,
+    "nperseg_sec": 2.0,
+    "overlap": 0.5,
+    "fmin_hz": 0.5,
+    "fmax_hz": 45.0,
+    "n_freq_bins": 90,
+    "df_hz": 0.5
+  },
+  "permutation_test": {
+    "implementation": "mne.stats.permutation_cluster_test",
+    "n_permutations": 1000,
+    "threshold": "default (F at p=0.05)",
+    "tail": 0,
+    "adjacency": null,
+    "seed": 42
+  },
+  "cohort": {
+    "n_total": 70,
+    "n_high": 14,
+    "n_low": 56
+  },
+  "n_candidate_clusters": 5,
+  "n_significant_clusters_p05": 0,
+  "min_cluster_p": 0.096,
+  "cluster_pvalues_sorted": [
+    0.096,
+    0.299,
+    0.346,
+    0.426,
+    0.607
+  ],
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "p_value": 0.096,
+      "n_cells": 147,
+      "freq_range_hz": [
+        4.0,
+        12.0
+      ],
+      "n_channels": 17,
+      "channels": [
+        "FP1",
+        "FP2",
+        "F7",
+        "F3",
+        "FZ",
+        "F4",
+        "F8",
+        "FT7",
+        "FC3",
+        "FCZ",
+        "FC4",
+        "FT8",
+        "T3",
+        "C3",
+        "CZ",
+        "C4",
+        "T4"
+      ],
+      "hedges_g_on_mean_power": 0.8159866814099337,
+      "mean_power_high_db": 4.82483035272952,
+      "mean_power_low_db": 2.128458488416839,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 1,
+      "p_value": 0.299,
+      "n_cells": 14,
+      "freq_range_hz": [
+        5.5,
+        7.5
+      ],
+      "n_channels": 3,
+      "channels": [
+        "FC3",
+        "FCZ",
+        "FC4"
+      ],
+      "hedges_g_on_mean_power": 0.8688473169393354,
+      "mean_power_high_db": 6.226057544773032,
+      "mean_power_low_db": 4.068025169731349,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 2,
+      "p_value": 0.346,
+      "n_cells": 15,
+      "freq_range_hz": [
+        9.5,
+        12.0
+      ],
+      "n_channels": 4,
+      "channels": [
+        "CP3",
+        "CPZ",
+        "CP4",
+        "TP8"
+      ],
+      "hedges_g_on_mean_power": 0.6935597013420955,
+      "mean_power_high_db": 6.325707495923496,
+      "mean_power_low_db": 3.650625641958532,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 3,
+      "p_value": 0.426,
+      "n_cells": 8,
+      "freq_range_hz": [
+        9.5,
+        11.5
+      ],
+      "n_channels": 2,
+      "channels": [
+        "PZ",
+        "P4"
+      ],
+      "hedges_g_on_mean_power": 0.6997057112071602,
+      "mean_power_high_db": 7.390101405553062,
+      "mean_power_low_db": 4.475294394707001,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 4,
+      "p_value": 0.607,
+      "n_cells": 1,
+      "freq_range_hz": [
+        10.0,
+        10.0
+      ],
+      "n_channels": 1,
+      "channels": [
+        "O2"
+      ],
+      "hedges_g_on_mean_power": 0.6341043654477392,
+      "mean_power_high_db": 8.56435752256784,
+      "mean_power_low_db": 5.619104097611836,
+      "significant_at_p05": false
+    }
+  ],
+  "band_descriptive": {
+    "delta": {
+      "freq_range_hz": [
+        0.5,
+        4.0
+      ],
+      "mean_high_db": 8.261788099063784,
+      "mean_low_db": 7.945616335584278,
+      "hedges_g": 0.12805233797286644
+    },
+    "theta": {
+      "freq_range_hz": [
+        4.0,
+        8.0
+      ],
+      "mean_high_db": 4.047345611410093,
+      "mean_low_db": 2.7211807481010744,
+      "hedges_g": 0.5708767896689607
+    },
+    "alpha": {
+      "freq_range_hz": [
+        8.0,
+        13.0
+      ],
+      "mean_high_db": 4.535875810036411,
+      "mean_low_db": 2.4581654611021486,
+      "hedges_g": 0.586486665681573
+    },
+    "beta": {
+      "freq_range_hz": [
+        13.0,
+        30.0
+      ],
+      "mean_high_db": -0.8363743777768649,
+      "mean_low_db": -1.0090810810797712,
+      "hedges_g": 0.05258499799564296
+    },
+    "gamma": {
+      "freq_range_hz": [
+        30.0,
+        45.0
+      ],
+      "mean_high_db": -2.761124134659305,
+      "mean_low_db": -3.13379920664799,
+      "hedges_g": 0.08769934678286799
+    }
+  },
+  "channels": [
+    "FP1",
+    "FP2",
+    "F7",
+    "F3",
+    "FZ",
+    "F4",
+    "F8",
+    "FT7",
+    "FC3",
+    "FCZ",
+    "FC4",
+    "FT8",
+    "T3",
+    "C3",
+    "CZ",
+    "C4",
+    "T4",
+    "TP7",
+    "CP3",
+    "CPZ",
+    "CP4",
+    "TP8",
+    "T5",
+    "P3",
+    "PZ",
+    "P4",
+    "T6",
+    "O1",
+    "OZ",
+    "O2"
+  ],
+  "freq_axis_hz": [
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    2.5,
+    3.0,
+    3.5,
+    4.0,
+    4.5,
+    5.0,
+    5.5,
+    6.0,
+    6.5,
+    7.0,
+    7.5,
+    8.0,
+    8.5,
+    9.0,
+    9.5,
+    10.0,
+    10.5,
+    11.0,
+    11.5,
+    12.0,
+    12.5,
+    13.0,
+    13.5,
+    14.0,
+    14.5,
+    15.0,
+    15.5,
+    16.0,
+    16.5,
+    17.0,
+    17.5,
+    18.0,
+    18.5,
+    19.0,
+    19.5,
+    20.0,
+    20.5,
+    21.0,
+    21.5,
+    22.0,
+    22.5,
+    23.0,
+    23.5,
+    24.0,
+    24.5,
+    25.0,
+    25.5,
+    26.0,
+    26.5,
+    27.0,
+    27.5,
+    28.0,
+    28.5,
+    29.0,
+    29.5,
+    30.0,
+    30.5,
+    31.0,
+    31.5,
+    32.0,
+    32.5,
+    33.0,
+    33.5,
+    34.0,
+    34.5,
+    35.0,
+    35.5,
+    36.0,
+    36.5,
+    37.0,
+    37.5,
+    38.0,
+    38.5,
+    39.0,
+    39.5,
+    40.0,
+    40.5,
+    41.0,
+    41.5,
+    42.0,
+    42.5,
+    43.0,
+    43.5,
+    44.0,
+    44.5,
+    45.0
+  ]
+}

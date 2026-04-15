@@ -1,11 +1,14 @@
 # CLAUDE.md — UCSD_stress Technical Reference
 
-**Findings**: `docs/findings.md` (single source of truth for all scientific claims)
+**Findings** (paper claims): `docs/findings.md` — 5 CLAIMs, `F-A`…`F-E`
+**Methodology notes**: `docs/methodology_notes.md` — guardrails (G-F07/F08), internal notes (N-F11/F12/F15/F18/F19/F21), archived (A-F04)
 **Priorities**: `docs/TODO.md` (living task list)
 **Paper strategy**: `docs/paper_strategy.md`
 **Literature**: `docs/related_work.md`
-**Methodology**: `docs/eta_squared_pipeline_explanation.md`
+**η² pipeline**: `docs/eta_squared_pipeline_explanation.md`
 **History**: `docs/progress.md` (append-only log, not authoritative — findings.md supersedes)
+
+> **ID migration (2026-04-15)**: old `F01`–`F21` were consolidated into 5 paper claims (`F-A`…`F-E`) plus guardrails/notes. Each claim's `Absorbs:` line in `findings.md` lists the original F## IDs, so prior references resolve via that mapping.
 
 ---
 
@@ -77,10 +80,10 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
 
 ## 4. Guard rails
 
-- **`--label subject-dass` is deprecated.** OR-aggregation = trait memorization. Use `--label dass` (per-recording). See `docs/findings.md` F07.
-- **Single-seed BAs on Stress are not reproducible.** ±5–10 pp swings even with `cudnn.deterministic=True`. Always multi-seed (≥3). See F08.
+- **`--label subject-dass` is deprecated.** OR-aggregation = trait memorization. Use `--label dass` (per-recording). See `docs/methodology_notes.md` G-F07.
+- **Single-seed BAs on Stress are not reproducible.** ±5–10 pp swings even with `cudnn.deterministic=True`. Always multi-seed (≥3). See G-F08.
 - **Per-fold ω² is degenerate on Stress** (1 subject per positive class per fold). `analyze_regime` emits `nested_identifiable: false`; refuse to cite per-fold numbers.
 - **Sparse-label-subspace hypothesis was refuted.** FT does not concentrate label signal into fewer dims.
-- **Cross-dataset taxonomy is LaBraM-only.** Do not generalize to other FMs without running those experiments. See F04.
+- **Cross-dataset FT taxonomy is now 3-model × 3-dataset** (F-C in `findings.md`). The old "LaBraM-only" constraint was F04 (now archived as A-F04 in `methodology_notes.md`).
 - **FM input norm is per-model.** Never use a global `--norm` in multi-model sweeps. See §2 above.
 - **GPU usage limit: max 3 GPUs.** Leave the remaining GPUs free for the user's own work. Chain sequential jobs on the same GPU with `&&` if needed.

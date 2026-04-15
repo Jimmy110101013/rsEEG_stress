@@ -2,6 +2,8 @@
 
 *Last updated: 2026-04-08. Major reframe after EEG-FM-Bench (Xiong et al. 2025) closest-prior pressure test: TDBRAIN fold-drift dilution is now the headline novelty; Stress and ADFTD are the framing endpoints. See §2.1 and §9.*
 
+**2026-04-15 — R4 literature audit note.** External novelty audit (`docs/review_R4_literature.md`) confirms no 2024–2026 publication scoops either F-A (subject-dominance via variance decomposition) or F-C (model × dataset FT direction-flip taxonomy). **EEG-Bench (Scherer et al., arXiv:2512.08959, NeurIPS 2025)** is the single most important adjacent paper and now appears as a fourth independent clinical-EEG benchmark (§2.5). The November 2025 bioRxiv sample-size psychiatry paper (§2A below) is added as a direct anchor for the §8 power-floor framing, the NeurIPS 2025 EEG Foundation Challenge (§10) provides field-level endorsement of cross-subject clinical decoding as the open problem, and the Massive-SFT / Robustness-Tradeoff papers (§4.6–§4.7) provide cross-modality precedent for F-C. All five paper claims (F-A…F-E) remain defensible.
+
 ---
 
 ## 1. EEG Foundation Models
@@ -74,6 +76,31 @@
 - Evaluations are heterogeneous, making cross-paper comparison difficult
 - **Ref**: arXiv:2507.11783
 
+### 2.5 EEG-Bench (Scherer et al., NeurIPS 2025)
+- **Scope**: 14 datasets × 11 clinical tasks (epilepsy, schizophrenia, Parkinson, OCD, TBI) under strict cross-subject evaluation.
+- **Headline finding**: *"Foundation models achieve strong performance in certain settings, but simpler models often remain competitive, particularly under clinical distribution shifts."*
+- **Relevance**: Fourth independent clinical-EEG benchmark (alongside EEG-FM-Bench, AdaBrain-Bench, Brain4FMs) converging on "FMs are not universally superior on clinical cross-subject tasks." Does not preempt F-A (variance decomposition), F-C (direction-flipping FT), or F-D (Stress power-floor); strengthens F-B.
+- **Ref**: arXiv:2512.08959
+
+### 2.6 Recent EEG FM Reviews / Surveys
+- **Kwon et al. 2026** — *Eur J Neurosci*, DOI 10.1111/ejn.70376. Review of EEG FMs toward unified representations; useful field-survey cite.
+- **"Foundation Models for EEG Decoding"** (PubMed 41145005) — recent review synthesis.
+- **"Inter- and Intra-Subject Variability in EEG: A Systematic Survey"** (arXiv:2602.01019, Feb 2026) — systematic review framing for the inter-subject variability problem our F-A quantifies.
+
+---
+
+## 2A. Statistical Power & Small-N Reliability
+
+### 2A.1 Sample-Size Reliability in Psychiatric EEG (bioRxiv 2025)
+- **Title**: "Sample Size Critically Shapes the Reliability of EEG Case-Control Findings in Psychiatry" (bioRxiv 2025.11.10.687610, PMID 41292863, posted 2025-11-12).
+- **Scope**: Multisite N = 2,874 resting-state EEG across ADHD/ASD/anxiety/learning disorders.
+- **Key quote**: *"Results from small samples were unstable, with inflated and highly variable effect sizes across iterations. Larger samples produced consistent findings, converging on uniformly small but robust effects."*
+- **Relevance**: Direct citation for our §8 power-floor framing — supports F-D.1 (FT null-indistinguishable on N=70 / 14-positive) and F-B G-F08 (cuDNN ±5–10 pp swings on small Stress cohort).
+
+### 2A.2 Robust EEG Brain-Behavior Associations Require Large N (bioRxiv 2026)
+- **Title**: "Robust EEG Brain-Behavior Associations Emerge Only at Large Sample Sizes" (bioRxiv 2026.02.06.704323).
+- **One-liner**: Same large-N-required conclusion from the brain-behavior correlation angle; independent precedent for the §8 power-floor argument.
+
 ---
 
 ## 3. Subject Leakage / Evaluation Protocol
@@ -84,6 +111,11 @@
 - **Task**: Alzheimer's, epilepsy classification
 - **Relevance**: DEFINITIVE reference for our trial-level vs subject-level argument
 - **Ref**: Frontiers in Neuroscience, 2024, DOI: 10.3389/fnins.2024.1373515
+
+### 3.1a "Impact of Trial-wise and Test Data Leakage on EEG-Based Emotion Classification" (CEUR-WS Vol-4115 paper7, 2024)
+- **One-liner**: Quantifies inflation from trial-wise leakage specifically in affect classification.
+- **Relevance**: Emotion-specific precedent for our Wang 2025 subject-level reanalysis — strengthens the §3 leakage case beyond Brookshire's clinical framing.
+- **Ref**: CEUR-WS Vol-4115 paper 7, 2024.
 
 ### 3.2 "The Role of Data Partitioning on EEG-Based Deep Learning Models" (Computers in Biology and Medicine, 2025)
 - **Method**: Trained 100,000+ models comparing sample-based vs subject-based CV
@@ -136,6 +168,23 @@
 - **Practical implication**: LP-FT is the canonical *fix* to try on Stress as a sanity check that our diagnostic is actionable.
 - **Ref**: arXiv:2202.10054
 
+### 4.4a Multi-dataset Joint Pre-training of Emotional EEG (arXiv:2510.22197, NeurIPS 2025)
+- **Group**: NCClab-SUSTech.
+- **Method**: Cross-dataset covariance alignment loss for affective EEG pretraining.
+- **Result**: +4.57% AUROC few-shot and +11.92% zero-shot over SOTA large EEG FMs on emotion tasks.
+- **Relevance**: Acknowledges inter-subject variability as the dominant FM failure mode on affect and proposes an alignment-based rescue; complementary to our diagnostic framing. Our paper should note this as an active research direction our F-D Stress-ceiling analysis does not rule out.
+- **Ref**: arXiv:2510.22197.
+
+### 4.4b Massive Supervised Fine-tuning Experiments (arXiv:2506.14681)
+- **Scope**: 757 fine-tuned models × 10 base architectures × 10 datasets (LLM domain).
+- **Key quote**: *"The inductive biases of the base model outweigh the specific SFT corpus in determining the final representation."*
+- **Relevance**: LLM cross-modality precedent for F-C (FT outcome is governed by the pretrained architecture more than by the downstream data). Independently supports our model × dataset interaction finding rather than scooping it.
+- **Ref**: arXiv:2506.14681.
+
+### 4.4c Li et al., "On the Robustness Tradeoff in Fine-Tuning" (ICCV 2025)
+- **One-liner**: Full fine-tuning systematically trades robustness against accuracy in vision models.
+- **Relevance**: Vision-domain analogue of our TDBRAIN active-erosion finding — FT can damage pretrained features even when downstream accuracy looks flat. Supports the generality of the erosion mode we document.
+
 ### 4.5 Huang, "Using Cluster Bootstrapping to Analyze Nested Data with a Few Clusters" (Educational and Psychological Measurement, 2018)
 - **Methodological claim**: For nested data (observations within clusters), the standard percentile bootstrap underestimates SE because it treats correlated observations as independent. The fix is to resample *clusters* with replacement and include all observations from each resampled cluster.
 - **Why it matters for our paper**: Justifies our cluster bootstrap (resampling subjects, not recordings) for the pooled label fraction confidence intervals. Without this, an n=195 ADFTD bootstrap would treat 195 recordings as independent when the effective n is ~65 subjects, producing anti-conservative CIs that a stats reviewer would catch immediately.
@@ -168,6 +217,11 @@
 - Reported accuracies: 85–99%+, but most use within-subject or trial-level splits
 - Notes lack of standardized evaluation as a field-wide gap
 - **Ref**: Springer, 2024
+
+### 5.5 DeepAttNet / Ear-EEG Stress (Frontiers Human Neuroscience, 2025)
+- **Scope**: Subject-independent stress decoding on ear-EEG with a cross-attention architecture.
+- **Relevance**: Current competitor to our stress pipeline on a different (ear-EEG) modality, under subject-independent evaluation. Useful comparator for §5 positioning.
+- **Ref**: Frontiers in Human Neuroscience, 2025, DOI: 10.3389/fnhum.2025.1685087.
 
 ---
 
@@ -318,3 +372,13 @@ Reviewer-prior coverage: EEG-FM-Bench's CKA/RSA pipeline averages over multi-tas
 13. Neubauer & Fink 2009 — neural efficiency hypothesis.
 14. McEwen 2010 — allostatic load framework.
 15. Saeed et al. 2020 — DASS-based EEG stress, closest comparison.
+
+---
+
+## 10. Field-level Framing: Cross-Subject Clinical Decoding as the Open Problem
+
+### 10.1 EEG Foundation Challenge 2025 (Truong et al., NeurIPS 2025 competition)
+- **Title**: "EEG Foundation Challenge: From Cross-Task to Cross-Subject EEG Decoding."
+- **Scope**: NeurIPS 2025 competition track explicitly framed around cross-subject generalization and psychopathology prediction (CBCL p-factor, internalizing, externalizing, attention).
+- **Relevance**: Strongest field-level marker that cross-subject + clinical psychopathology decoding is *the* open problem for EEG FMs. Provides external validation of the F-A (subject dominance) and F-D (Stress power-floor) framings our paper advances.
+- **Ref**: arXiv:2506.19141.

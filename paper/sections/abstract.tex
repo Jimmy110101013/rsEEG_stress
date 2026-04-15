@@ -1,27 +1,28 @@
-% Abstract — outline only.
-% Source narrative: docs/paper_narrative_zh.md §Abstract
-% Target length: ~200 words, one paragraph.
-
 \begin{abstract}
-% [Outline]
-% 1. Problem: EEG FM literature reports saturating accuracy on downstream
-%    tasks, but evaluation setups often permit subject leakage.
-% 2. Setup: We systematically re-evaluate three mainstream EEG FMs
-%    (LaBraM, CBraMod, REVE) across four public datasets (Stress, ADFTD,
-%    TDBRAIN, EEGMAT) under subject-level CV with honest per-recording
-%    labels, multi-seed protocol, and sample-std reporting.
-% 3. Finding 1 (methodology): On Stress, literature 0.90 BA drops to
-%    0.45--0.60 frozen / 0.52--0.58 FT under honest protocol.
-% 4. Finding 2 (representation): Frozen FM representations primarily
-%    encode subject identity (RSA subject > label in 12/12 cells);
-%    they still beat classical features, but the margin is modest.
-% 5. Finding 3 (FT direction): Model x dataset interaction dominates.
-%    LaBraM and REVE show opposite directions on ADFTD / TDBRAIN.
-% 6. Stress as power-floor case study: 5 independent lines of evidence
-%    (cuDNN swings, permutation null, ShallowConvNet parity, band-stop
-%    cross-model divergence, within-subject longitudinal failure) show
-%    70-rec benchmarks cannot support FM superiority claims.
-% 7. Recommendations: subject-level CV as default; statistical-power
-%    reporting as field norm.
-TBD.
+A recent study reported $0.9047$ balanced accuracy (BA) for
+fine-tuned LaBraM on the Komarov--Ko--Jung resting-state stress
+cohort \citep{wang2025stress,komarov2020stress}, suggesting
+near-clinical-grade EEG-foundation-model (FM) performance on
+cross-subject decoding. We ask when such claims should be expected
+to hold. Across three FMs (LaBraM, CBraMod, REVE) and four datasets
+(UCSD Stress, EEGMAT, ADFTD, TDBRAIN) we show that (i) frozen FM
+representations encode subject identity $10$--$50\times$ more
+strongly than task labels in all 12 model-dataset cells; (ii)
+trial-to-subject-level cross-validation contributes a $1$--$15$\,pp
+component of the reduction to our reproduced $0.52$--$0.58$ Stress
+band, with the remaining gap to $0.9047$ attributable to unreported
+preprocessing or hyperparameter variations in the reference pipeline; (iii) seven
+architectures spanning five orders of magnitude in parameter count
+converge to a single $5$\,pp window on Stress; and (iv) a controlled
+paired within-subject comparison --- EEGMAT rest-vs-arithmetic
+(anchored by Klimesch alpha desynchronisation) versus UCSD Stress
+longitudinal DSS (no published within-subject EEG correlate and no
+cluster-corrected dataset-level spectral contrast in our
+pre-registered anchor test) --- produces opposite rescue outcomes
+(BA $0.73$ vs $0.17$--$0.43$), mirrored by cross-model neural-band
+consensus. We call this pattern the \emph{Subject-Dominance Limit}
+(SDL): cross-subject FM classification is bounded by the
+within-subject neural contrast strength of the target label, not by
+model capacity. We release a pre-benchmark contrast-anchoring
+protocol.
 \end{abstract}

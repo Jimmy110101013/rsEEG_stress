@@ -1,0 +1,447 @@
+{
+  "analysis": "group_level_cluster_permutation_PSD",
+  "dataset": "TDBRAIN MDD vs HC (734 recordings; MDD=640 / HC=94)",
+  "label_convention": "label=1 MDD vs label=0 HC",
+  "welch": {
+    "sfreq_hz": 200.0,
+    "nperseg_sec": 2.0,
+    "overlap": 0.5,
+    "fmin_hz": 0.5,
+    "fmax_hz": 45.0,
+    "n_freq_bins": 90,
+    "df_hz": 0.5
+  },
+  "permutation_test": {
+    "implementation": "mne.stats.permutation_cluster_test",
+    "n_permutations": 1000,
+    "threshold": "default (F at p=0.05)",
+    "tail": 0,
+    "adjacency": null,
+    "seed": 42
+  },
+  "cohort": {
+    "n_total": 734,
+    "n_mdd": 640,
+    "n_hc": 94
+  },
+  "n_candidate_clusters": 11,
+  "n_significant_clusters_p05": 2,
+  "min_cluster_p": 0.012,
+  "cluster_pvalues_sorted": [
+    0.012,
+    0.014,
+    0.056,
+    0.084,
+    0.1,
+    0.151,
+    0.183,
+    0.306,
+    0.33,
+    0.754,
+    0.761
+  ],
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "p_value": 0.306,
+      "n_cells": 29,
+      "freq_range_hz": [
+        4.5,
+        8.5
+      ],
+      "n_channels": 7,
+      "channels": [
+        "FP1",
+        "FP2",
+        "F7",
+        "F3",
+        "FZ",
+        "F4",
+        "F8"
+      ],
+      "hedges_g_on_mean_power": 0.33888094052791545,
+      "mean_power_mdd_db": 7.030501102223387,
+      "mean_power_hc_db": 5.807271197473927,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 1,
+      "p_value": 0.761,
+      "n_cells": 2,
+      "freq_range_hz": [
+        10.0,
+        10.5
+      ],
+      "n_channels": 1,
+      "channels": [
+        "FP1"
+      ],
+      "hedges_g_on_mean_power": -0.24316577179275206,
+      "mean_power_mdd_db": 5.1724688281016835,
+      "mean_power_hc_db": 6.123247448778958,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 2,
+      "p_value": 0.012,
+      "n_cells": 398,
+      "freq_range_hz": [
+        12.5,
+        45.0
+      ],
+      "n_channels": 8,
+      "channels": [
+        "FP1",
+        "FP2",
+        "F7",
+        "F3",
+        "FZ",
+        "F4",
+        "F8",
+        "T3"
+      ],
+      "hedges_g_on_mean_power": 0.42208387628564725,
+      "mean_power_mdd_db": -2.6752209194418866,
+      "mean_power_hc_db": -3.8329955565501637,
+      "significant_at_p05": true
+    },
+    {
+      "cluster_id": 3,
+      "p_value": 0.754,
+      "n_cells": 2,
+      "freq_range_hz": [
+        0.5,
+        1.0
+      ],
+      "n_channels": 1,
+      "channels": [
+        "F7"
+      ],
+      "hedges_g_on_mean_power": -0.27353934557510023,
+      "mean_power_mdd_db": 17.858884538390974,
+      "mean_power_hc_db": 19.20386436979287,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 4,
+      "p_value": 0.1,
+      "n_cells": 76,
+      "freq_range_hz": [
+        9.5,
+        12.5
+      ],
+      "n_channels": 17,
+      "channels": [
+        "F7",
+        "F3",
+        "FZ",
+        "F4",
+        "F8",
+        "T3",
+        "C3",
+        "CZ",
+        "C4",
+        "T4",
+        "T5",
+        "P3",
+        "PZ",
+        "P4",
+        "T6",
+        "O1",
+        "O2"
+      ],
+      "hedges_g_on_mean_power": -0.39527388024042115,
+      "mean_power_mdd_db": 4.4515993411012245,
+      "mean_power_hc_db": 6.035455315557211,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 5,
+      "p_value": 0.33,
+      "n_cells": 18,
+      "freq_range_hz": [
+        0.5,
+        4.5
+      ],
+      "n_channels": 4,
+      "channels": [
+        "F8",
+        "T3",
+        "C3",
+        "CZ"
+      ],
+      "hedges_g_on_mean_power": -0.38624870654237986,
+      "mean_power_mdd_db": 8.423123431003308,
+      "mean_power_hc_db": 9.388801831068019,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 6,
+      "p_value": 0.151,
+      "n_cells": 38,
+      "freq_range_hz": [
+        13.0,
+        19.5
+      ],
+      "n_channels": 3,
+      "channels": [
+        "C3",
+        "CZ",
+        "C4"
+      ],
+      "hedges_g_on_mean_power": 0.40774511677009423,
+      "mean_power_mdd_db": 1.1159342164797952,
+      "mean_power_hc_db": -0.13418285214312028,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 7,
+      "p_value": 0.056,
+      "n_cells": 144,
+      "freq_range_hz": [
+        20.5,
+        45.0
+      ],
+      "n_channels": 3,
+      "channels": [
+        "C3",
+        "CZ",
+        "C4"
+      ],
+      "hedges_g_on_mean_power": 0.3809373900934535,
+      "mean_power_mdd_db": -4.938461840084947,
+      "mean_power_hc_db": -6.077427355548193,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 8,
+      "p_value": 0.084,
+      "n_cells": 70,
+      "freq_range_hz": [
+        0.5,
+        5.5
+      ],
+      "n_channels": 8,
+      "channels": [
+        "T4",
+        "T5",
+        "P3",
+        "PZ",
+        "P4",
+        "T6",
+        "O1",
+        "O2"
+      ],
+      "hedges_g_on_mean_power": -0.46189682175411845,
+      "mean_power_mdd_db": 6.151805272654245,
+      "mean_power_hc_db": 7.265612626917201,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 9,
+      "p_value": 0.183,
+      "n_cells": 53,
+      "freq_range_hz": [
+        13.5,
+        19.0
+      ],
+      "n_channels": 7,
+      "channels": [
+        "T5",
+        "P3",
+        "PZ",
+        "P4",
+        "T6",
+        "O1",
+        "O2"
+      ],
+      "hedges_g_on_mean_power": 0.3166695078979111,
+      "mean_power_mdd_db": 0.3822405393374335,
+      "mean_power_hc_db": -0.6066195075228102,
+      "significant_at_p05": false
+    },
+    {
+      "cluster_id": 10,
+      "p_value": 0.014,
+      "n_cells": 325,
+      "freq_range_hz": [
+        21.5,
+        45.0
+      ],
+      "n_channels": 7,
+      "channels": [
+        "T5",
+        "P3",
+        "PZ",
+        "P4",
+        "T6",
+        "O1",
+        "O2"
+      ],
+      "hedges_g_on_mean_power": 0.40000139378741784,
+      "mean_power_mdd_db": -5.747812556015416,
+      "mean_power_hc_db": -7.007636885120378,
+      "significant_at_p05": true
+    }
+  ],
+  "band_descriptive": {
+    "delta": {
+      "freq_range_hz": [
+        0.5,
+        4.0
+      ],
+      "mean_mdd_db": 9.917375851878854,
+      "mean_hc_db": 10.571524650336341,
+      "hedges_g": -0.23088954904946585
+    },
+    "theta": {
+      "freq_range_hz": [
+        4.0,
+        8.0
+      ],
+      "mean_mdd_db": 4.604938939846791,
+      "mean_hc_db": 4.471152291072291,
+      "hedges_g": 0.04481452479194705
+    },
+    "alpha": {
+      "freq_range_hz": [
+        8.0,
+        13.0
+      ],
+      "mean_mdd_db": 4.545675178686645,
+      "mean_hc_db": 5.1079026357001265,
+      "hedges_g": -0.15642148016630472
+    },
+    "beta": {
+      "freq_range_hz": [
+        13.0,
+        30.0
+      ],
+      "mean_mdd_db": -1.4139872047413813,
+      "mean_hc_db": -2.274702557895631,
+      "hedges_g": 0.3453523456540326
+    },
+    "gamma": {
+      "freq_range_hz": [
+        30.0,
+        45.0
+      ],
+      "mean_mdd_db": -5.661436759821029,
+      "mean_hc_db": -6.72843146841824,
+      "hedges_g": 0.3331720474288225
+    }
+  },
+  "channels": [
+    "FP1",
+    "FP2",
+    "F7",
+    "F3",
+    "FZ",
+    "F4",
+    "F8",
+    "T3",
+    "C3",
+    "CZ",
+    "C4",
+    "T4",
+    "T5",
+    "P3",
+    "PZ",
+    "P4",
+    "T6",
+    "O1",
+    "O2"
+  ],
+  "freq_axis_hz": [
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    2.5,
+    3.0,
+    3.5,
+    4.0,
+    4.5,
+    5.0,
+    5.5,
+    6.0,
+    6.5,
+    7.0,
+    7.5,
+    8.0,
+    8.5,
+    9.0,
+    9.5,
+    10.0,
+    10.5,
+    11.0,
+    11.5,
+    12.0,
+    12.5,
+    13.0,
+    13.5,
+    14.0,
+    14.5,
+    15.0,
+    15.5,
+    16.0,
+    16.5,
+    17.0,
+    17.5,
+    18.0,
+    18.5,
+    19.0,
+    19.5,
+    20.0,
+    20.5,
+    21.0,
+    21.5,
+    22.0,
+    22.5,
+    23.0,
+    23.5,
+    24.0,
+    24.5,
+    25.0,
+    25.5,
+    26.0,
+    26.5,
+    27.0,
+    27.5,
+    28.0,
+    28.5,
+    29.0,
+    29.5,
+    30.0,
+    30.5,
+    31.0,
+    31.5,
+    32.0,
+    32.5,
+    33.0,
+    33.5,
+    34.0,
+    34.5,
+    35.0,
+    35.5,
+    36.0,
+    36.5,
+    37.0,
+    37.5,
+    38.0,
+    38.5,
+    39.0,
+    39.5,
+    40.0,
+    40.5,
+    41.0,
+    41.5,
+    42.0,
+    42.5,
+    43.0,
+    43.5,
+    44.0,
+    44.5,
+    45.0
+  ]
+}

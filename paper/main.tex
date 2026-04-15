@@ -12,10 +12,22 @@
  \usepackage{multirow}
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{placeins}  % \FloatBarrier — keeps floats inside their section
+\usepackage{xcolor}    % colored markers in fig captions
 
-\title{Beyond Accuracy: What EEG Foundation Models Encode, \\
-       and Why Fine-Tuning Direction Depends on \\
-       Model $\times$ Dataset Interactions}
+% Loosen LaTeX's default float-placement parameters so figures/tables
+% don't get queued up at the end of the document. Defaults are too
+% conservative for figure-heavy single-column drafts.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.7}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
+\title{Subject Dominance Limits: A Mechanistic Diagnostic \\
+       for EEG Foundation Models}
 
 \author{%
   Jimmy Lin\thanks{Corresponding author. \texttt{linjimmy1003.md10@nycu.edu.tw}} \\
@@ -25,19 +37,29 @@
   Swartz Center for Computational Neuroscience, University of California, San Diego, La Jolla, CA 92037, USA
 }
 
-\def\headeright{Preprint --- draft 2026-04-14}
+\def\headeright{Preprint --- draft 2026-04-15 (SDL)}
 
 \begin{document}
 \maketitle
 
 \input{sections/abstract}
 \input{sections/introduction}
+\FloatBarrier
 \input{sections/related_work}
+\FloatBarrier
 \input{sections/methods}
+\FloatBarrier
 \input{sections/results}
+\FloatBarrier
 \input{sections/discussion}
+\FloatBarrier
+\input{sections/limitations}
+\FloatBarrier
 \input{sections/conclusion}
+\FloatBarrier
 
 \bibliography{references}
+
+\input{sections/appendix_psd_anchor}
 
 \end{document}

@@ -1,75 +1,77 @@
 \section{Introduction}
 \label{sec:intro}
 
-Electroencephalography (EEG) foundation models --- transformer encoders
-pretrained on large unlabelled EEG corpora via masked reconstruction or
-contrastive objectives --- have been proposed as a general-purpose feature
-extractor for clinical and affective decoding
-\citep{labram2024,cbramod2025,reve2025}. On resting-state stress
-detection, a high-impact clinical target where self-report instruments
-such as the Depression--Anxiety--Stress Scale (DASS) provide trustworthy
-labels and acquisition is cheap, recent work reports balanced accuracy
-(BA) above 90\%: Wang et al.\ \citep{wang2025stress} fine-tune LaBraM on
-the Komarov et al.\ Stress dataset \citep{komarov2020stress} and achieve
-$\mathrm{BA} = 0.9047$. Taken at face value, this suggests near
-clinical-grade stress screening from a five-minute eyes-open recording.
+Foundation models (FMs) pretrained on large unlabelled EEG corpora have
+recently reported strong performance on downstream clinical tasks
+\citep{labram2024,cbramod2025,reve2025,kauffmann2025critique}. A
+representative claim comes from Wang et al.\ \citep{wang2025stress},
+who report $0.9047$ balanced accuracy (BA) on the Komarov--Ko--Jung
+resting-state stress dataset \citep{komarov2020stress} ---
+17 subjects, 92 recordings, per-recording DASS-21 self-reports.
+Independent EEG FM
+benchmarks~\citep{brain4fms2026,eegfmbench2025,adabrain2025,eegbench2025},
+meanwhile, converge on the empirical observation that FMs do not
+consistently outperform simpler models on cross-subject clinical
+tasks. We ask \emph{when} an EEG FM claim on a small clinical cohort
+should be expected to hold. Our contribution is not a new
+architecture, a new loss, or a new dataset, but a \emph{diagnosis}:
+frozen FM representations overwhelmingly encode subject identity;
+under subject-respecting evaluation, the Wang headline is
+attenuated to a $0.52$--$0.58$ band shared by seven architectures
+spanning five orders of magnitude in parameter count; and a
+controlled paired comparison isolates the operative variable as the
+within-subject neural contrast strength of the target label, not
+model capacity.
 
-We attempted to reproduce this result and found a 30+ percentage-point
-gap that does not reflect model quality. The key divergence lies in
-cross-validation protocol: the reported headline uses \emph{trial-level}
-splits, in which different recordings from the same subject may appear
-in both the training and test partitions. Because EEG exhibits strong
-individual stability, trial-level splits implicitly reward subject
-re-identification rather than stress-state classification. Under
-\emph{subject-level} StratifiedGroupKFold with honest per-recording DASS
-labels, cuDNN-deterministic training, and a multi-seed protocol, the
-same three foundation models --- LaBraM, CBraMod, and REVE --- yield
-frozen linear-probe BA between $0.45$ and $0.60$ and best-hyperparameter
-fine-tuned BA between $0.52$ and $0.58$ on Stress.
+We call this pattern \textbf{Subject-Dominance Limits (SDL)}: when the
+downstream label corresponds to a within-subject neural contrast that
+is strong relative to subject-level representational variance, FM
+fine-tuning projects the label variance onto an otherwise
+subject-dominated representation and delivers measurable rescue.
+When the neural contrast is weak or absent, no architecture available
+to us escapes the subject-dominance ceiling. SDL supplies the
+mechanistic layer under the aggregate benchmark observation.
 
-The gap between trial-level and subject-level evaluation is not a novel
-observation in itself. Roy et al.\ \citep{roy2019review} documented
-subject leakage as a pervasive issue across the EEG deep learning
-literature. Three independent 2025--2026 benchmarks ---
-Brain4FMs~\citep{brain4fms2026}, EEG-FM-Bench~\citep{eegfmbench2025}, and
-AdaBrain-Bench~\citep{adabrain2025} --- have since converged on the
-finding that EEG foundation models fail to outperform classical
-baselines on cross-subject affective and cognitive tasks. Our
-contribution is not to re-validate this failure, but to provide the
-\emph{mechanistic} explanation these benchmarks lack.
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/main/fig_sdl_spectrum.pdf}
+\caption{\textbf{SDL Spectrum.} Subject-level fine-tuned balanced
+  accuracy across datasets ordered by within-subject neural-contrast
+  anchor strength, the operative axis of the SDL diagnostic. Bounded
+  regime (left, yellow): UCSD Stress per-recording DASS classification
+  and within-subject longitudinal DSS classification, both with no
+  published per-recording within-subject EEG correlate. Intermediate
+  regime (centre, grey): TDBRAIN MDD vs HC --- group-level alpha
+  asymmetry and theta-power literature exists but no robust
+  within-subject per-recording correlate, and three FMs span 19\,pp.
+  Anchored regime (right, green): EEGMAT rest vs mental arithmetic,
+  anchored by Klimesch alpha desynchronisation. Outlier (left,
+  detached): ADFTD AD vs HC --- a cross-subject categorical label
+  with established group-level alpha-slowing signature, included
+  here only to mark its position outside the within-subject SDL
+  scope. Markers are LaBraM (\textcolor{red!80!black}{$\bullet$}),
+  CBraMod (\textcolor{blue!70!black}{$\blacksquare$}), and REVE
+  (\textcolor{green!50!black}{$\blacktriangle$}). Reference lines:
+  chance ($0.50$, dashed) and best class-balanced classical baseline
+  on UCSD Stress ($0.55$, dotted).}
+\label{fig:sdl_spectrum}
+\end{figure}
 
-We organise the diagnosis around three questions.
-\textbf{(Q1) What do frozen EEG foundation-model representations
-encode?} We show via representational similarity analysis (RSA) and
-mixed-effects variance decomposition that subject identity dominates the
-learned feature space across twelve model$\times$dataset combinations,
-yet a low signal-to-noise linearly separable label subspace survives ---
-one that classical band-power features cannot access. \textbf{(Q2) When
-does fine-tuning help, when does it hurt, and why?} Across three
-foundation models and four datasets (Stress, ADFTD, TDBRAIN, EEGMAT) we
-find that fine-tuning direction is a model$\times$dataset interaction:
-LaBraM injects label signal on ADFTD but erodes it on TDBRAIN, while
-REVE does the opposite on the same labels. Within-subject contrast
-strength, not the presence of a within-subject design, determines
-whether fine-tuning rescues a given dataset. \textbf{(Q3) Can
-small-sample EEG benchmarks support claims of foundation-model
-superiority?} Using the 70-recording Stress dataset as a cross-pillar
-stress test, we present five independent lines of evidence
-(cuDNN-induced single-seed variance, permutation-null indistinguishability,
-a 2017-vintage ShallowConvNet matching foundation-model performance
-from scratch, cross-model divergence in band-stop ablation, and
-within-subject longitudinal failure) that converge on a single
-conclusion: this regime lies below the statistical power floor required
-to support any foundation-model scientific claim.
+If the failure locus is contrast strength rather than model capacity,
+the natural next step is to ask \emph{how to decide, before running a
+benchmark, whether a target clinical task will admit FM rescue}. We
+propose a \emph{pre-benchmark diagnostic question}: \emph{does the
+label have a within-subject neural contrast in the published
+neuroscience literature?} If no independent evidence exists for such
+a contrast, reported subject-level benchmarks should be interpreted
+as bounded by the subject-dominance ceiling --- regardless of how
+large the pretrained model or how careful the fine-tuning recipe ---
+and the reader should expect compact from-scratch baselines to match
+or exceed the FM result.
 
-The rest of the paper is organised as follows. Section~\ref{sec:related}
-situates our work among EEG foundation models, the Stress dataset, and
-the 2025--2026 benchmark literature. Section~\ref{sec:methods} describes
-our dataset preparation, cross-validation protocol, per-model input
-normalisation (a silent failure mode if mishandled), multi-seed
-determinism, and statistical reporting conventions. Section~\ref{sec:results}
-presents the three-pillar diagnosis and the neuroscience interpretability
-triad, culminating in the Stress power-floor case study
-(Section~\ref{sec:power_floor}). Section~\ref{sec:discussion} offers
-hypotheses for the model$\times$dataset interaction and field-level
-recommendations; Section~\ref{sec:conclusion} summarises.
+Section~\ref{sec:results} presents four experimental chapters
+delivering the SDL diagnosis --- subject-atlas quantification, the
+Wang-protocol audit, the paired within-subject contrast experiment,
+and the architecture-independence check --- followed by the
+pre-benchmark contrast-anchoring protocol in
+Sec.~\ref{sec:discussion}.

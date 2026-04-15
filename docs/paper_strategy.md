@@ -1,13 +1,26 @@
 # Paper Strategy
 
-**Date**: 2026-04-14 (full rewrite — supersedes 2026-04-07/10/11 versions)
+**Date**: 2026-04-15 (ID migration) / 2026-04-14 (full rewrite — supersedes 2026-04-07/10/11)
 **Status**: Active — narrative locked pending advisor alignment on D1/D2
-**Companion docs**: `findings.md` (F01–F20 evidence), `TODO.md` (D1/D2 open decisions), `related_work.md`, `eta_squared_pipeline_explanation.md`
+**Companion docs**: `findings.md` (F-A…F-E paper claims), `methodology_notes.md` (guardrails + internal notes + archived), `TODO.md` (D1/D2 open decisions), `related_work.md`, `eta_squared_pipeline_explanation.md`
 
 This document captures the current paper narrative, structure, and figure plan.
-It integrates all 20 findings, not just recent results. Historical framings
-(FiLM-centric, within-subject longitudinal, Stress-erosion-main, LaBraM-only
-taxonomy) are **superseded** and retained only in §8 as context.
+Historical framings (FiLM-centric, within-subject longitudinal, Stress-erosion-main,
+LaBraM-only taxonomy) are **superseded** and retained only in §8 as context.
+
+> **ID mapping (2026-04-15 migration)** — inline `F##` references below remain
+> resolvable via each claim's `Absorbs:` line in `findings.md`:
+>
+> | New | Covers (absorbs) |
+> |---|---|
+> | **F-A** subject dominance | F02, F13 |
+> | **F-B** honest baselines | F01, F03, F16 |
+> | **F-C** FT model × dataset | F17, F05, F09, F18 caveat · supersedes F04 |
+> | **F-D** Stress ceiling | F06, F14, F20 |
+> | **F-E** alpha lateralization | F10 |
+> | **G-F07**, **G-F08** | pipeline guardrails |
+> | **N-F11**, **N-F12**, **N-F15**, **N-F19**, **N-F21** | internal methodology notes |
+> | **A-F04** | archived LaBraM-only 10s taxonomy |
 
 ---
 
@@ -29,22 +42,22 @@ NeurIPS D&B Track, TMLR.
 
 ## 2. Three-pillar narrative
 
-The paper integrates F01–F20 across three pillars. Stress is not a pillar;
+The paper integrates the 5 paper claims across three pillars. Stress is not a pillar;
 it is a **stress test** that runs through all three pillars as a
 statistical-power-floor case study.
 
 | Pillar | Claim | Core findings |
 |---|---|---|
-| **A. Methodology traps** | EEG FM literature is systematically inflated by subject leakage, OR-aggregated labels, and single-seed cuDNN noise | F01, F07, F08, F11, F16 |
-| **B. Representation diagnosis** | Frozen FM representations primarily encode subject identity, not diagnostic signal — but they still beat classical features under honest labels | F02, F03, F10, F13, F16 |
-| **C. Fine-tuning interaction** | FT direction is a model × dataset interaction, not a property of either alone; within-subject contrast strength (not just design type) determines whether within-subject framing rescues FM | F09, F14, F17 |
+| **A. Methodology traps** | EEG FM literature is systematically inflated by subject leakage, OR-aggregated labels, and single-seed cuDNN noise | **F-B** (Axis 1+2), **G-F07**, **G-F08**, N-F11 |
+| **B. Representation diagnosis** | Frozen FM representations primarily encode subject identity, not diagnostic signal — but they still beat classical features under honest labels | **F-A**, **F-B** (Axis 2 classical collapse), **F-E** |
+| **C. Fine-tuning interaction** | FT direction is a model × dataset interaction, not a property of either alone; within-subject contrast strength (not just design type) determines whether within-subject framing rescues FM | **F-C** (C.1 ADFTD/TDBRAIN, C.2 Stress, C.3 EEGMAT, C.4 window caveat), **F-D.3** (longitudinal negative) |
 
-**Stress as cross-pillar stress test** (§8): F05 headline numbers look like
+**Stress as cross-pillar stress test** (§8): F-C.2 headline numbers look like
 injection/erosion, but **five** independent lines of evidence converge on
-power-floor noise: F06 (p=0.70), F19 (p=0.10), F08 (±20pp swings), F20
+power-floor noise: F-D.1 (p=0.70), N-F19 (p=0.10), G-F08 (±20pp swings), F-D.2
 (ShallowConvNet matches FMs), and cross-model band-importance divergence
-(§7). F14 within-subject longitudinal failure is the 5th line, paired with
-F09 EEGMAT success to establish "within-subject contrast strength" as the
+(§7). F-D.3 within-subject longitudinal failure is the 5th line, paired with
+F-C.3 EEGMAT success to establish "within-subject contrast strength" as the
 operative factor. This is the paper's central caveat to the field: benchmark
 design must report statistical power before claiming FM superiority.
 
