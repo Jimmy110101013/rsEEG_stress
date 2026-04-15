@@ -84,11 +84,11 @@ fig, ax = plt.subplots(figsize=(7.8, 4.4))
 bars_t = ax.bar(x - w / 2, trial_m, w, yerr=trial_s, capsize=4,
                 color="#d62728", edgecolor="black", linewidth=0.8,
                 error_kw={"ecolor": "#222", "lw": 1.0},
-                label="Trial-level CV\n(Wang 2025-style, subject leakage)")
+                label="Trial-level CV")
 bars_s = ax.bar(x + w / 2, subj_m,  w, yerr=subj_s, capsize=4,
                 color="#4c78a8", edgecolor="black", linewidth=0.8,
                 error_kw={"ecolor": "#222", "lw": 1.0},
-                label="Subject-level CV\n(StratifiedGroupKFold, ours)")
+                label="Subject-level CV (group-stratified)")
 
 for rect, v, sd in zip(bars_t, trial_m, trial_s):
     ax.text(rect.get_x() + rect.get_width() / 2, v + sd + 0.012,
@@ -116,24 +116,13 @@ ax.text(len(keys) - 0.5, 0.51, "chance", fontsize=8, color="#666")
 
 ax.set_xticks(x)
 ax.set_xticklabels(models_label, fontsize=11)
-ax.set_ylabel("Balanced Accuracy on Stress (70 recordings)")
-ax.set_title(
-    "Trial-level vs subject-level CV on the same 3 FMs\n"
-    "Same data, per-rec DASS labels, 3 seeds — gap is protocol-driven (F01)"
-)
+ax.set_ylabel("Balanced accuracy")
 ax.set_ylim(0.35, 0.90)
 ax.grid(True, axis="y", alpha=0.25)
 ax.legend(loc="upper right", framealpha=0.95, fontsize=9)
 
-fig.text(
-    0.5, -0.02,
-    "Labels: --label dass (per-recording). Bars show mean ± sample std over seeds {42,123,2024}. "
-    "Trial-level inherits subject leakage; subject-level uses StratifiedGroupKFold(5).",
-    ha="center", fontsize=8, style="italic", color="#555",
-)
-
 plt.tight_layout()
-out_pdf = "paper/figures/main/fig2_cv_gap.pdf"
+out_pdf = "paper/figures/main/fig_cv_gap.pdf"
 out_png = out_pdf.replace(".pdf", ".png")
 plt.savefig(out_pdf, dpi=300, bbox_inches="tight")
 plt.savefig(out_png, dpi=200, bbox_inches="tight")

@@ -96,28 +96,41 @@ constraint is escapable.
 \subsection{The anchor-contrast diagnostic}
 \label{sec:results_paired}
 
-Wang et al.\ \citep{wang2025stress} report $0.9047$ BA on this cohort
-under five-fold cross-validation; their fold assignment groups by
-recording rather than by subject, and $15$ of $17$ subjects contribute
-multiple recordings. Under subject-level StratifiedGroupKFold on the
-same cohort the three FMs converge to a $0.52$--$0.58$
-balanced-accuracy band (Fig.~\ref{fig:honest_funnel}, three seeds per
-model). For the canonical LaBraM fine-tuning recipe, real FT
-($0.443 \pm 0.083$) does not exceed label-permutation null
-($0.497 \pm 0.086$; one-sided $p = 0.70$, ten permutations). This is
-the ceiling the diagnostic below must explain.
+Under trial-level five-fold CV on the 70-recording Stress cohort the
+three FMs reach $0.56$--$0.68$ BA; under subject-level
+StratifiedGroupKFold on the same cohort they fall to a $0.52$--$0.58$
+band (Fig.~\ref{fig:cv_gap}, three seeds per model). The gap is
+largest for LaBraM ($+15.2$\,pp) and smallest for CBraMod
+($+1.2$\,pp), reflecting protocol-induced leakage rather than model
+capacity: $15$ of $17$ subjects contribute multiple recordings, so
+trial-level partitioning places the same subject in both train and
+test folds. An earlier literature single-seed reference on this
+dataset under the trial-level protocol reports $0.9047$
+\citep{wang2025stress}, bracketed by our trial-level numbers and
+reinforcing the protocol-gap reading. The subject-level band is what
+the anchor-contrast diagnostic below must explain.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.95\linewidth]{figures/main/fig_honest_funnel.pdf}
-\caption{UCSD Stress ceiling. Left: trial-level CV baseline
-  ($0.9047$, \citep{wang2025stress}). Middle: subject-level CV on the
-  same cohort converges to a $0.52$--$0.58$ band across three FMs and
-  three seeds. Right: LaBraM fine-tuning does not exceed
-  label-permutation null (three seeds $\times$ ten permutations,
-  one-sided $p = 0.70$). Horizontal dashed line: chance.}
-\label{fig:honest_funnel}
+\includegraphics[width=0.95\linewidth]{figures/main/fig_cv_gap.pdf}
+\caption{Trial-level vs subject-level CV on UCSD Stress. Same cohort
+  (70 recordings), same per-recording DASS label, same fine-tuning
+  recipe per FM; arms differ only in fold assignment. Bars: mean
+  balanced accuracy $\pm$ sample std over three seeds. The
+  trial-level bar inherits subject leakage (multiple recordings of
+  the same subject across train/test folds); subject-level uses
+  StratifiedGroupKFold with \texttt{groups = patient\_id}. Dashed
+  line: chance.}
+\label{fig:cv_gap}
 \end{figure}
+
+As a secondary check on the subject-level ceiling, we ran
+label-shuffle fine-tuning on LaBraM with $30$ permutation seeds.
+Real subject-level FT ($0.443 \pm 0.083$, three seeds) sits inside
+the permutation-null distribution ($0.506 \pm 0.063$, thirty
+permutations; null max $0.661$), well below the one-sided $p < 0.05$
+threshold. Full null densities for both Stress and EEGMAT are in
+App.~\ref{app:perm_null}.
 
 The diagnostic is a paired comparison on two arms with the same three
 FMs and the same subject-respecting evaluation. The \emph{only}
