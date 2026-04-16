@@ -76,6 +76,19 @@ REVE paper uses 10s windows natively → use **10s-matched (+12.8pp)** as primar
   (if Stress power floor becomes central narrative, HNC could provide the
   high-powered counter-example)
 
+## HHSA / WSCI pipeline
+
+- **Rebuild HHSA L1 cache with N_ENSEMBLES=100** — current cache uses N=24
+  (monkey-patched in `hhsa_build_cache.py:39-40`), design doc specifies 100.
+  Residual noise is 2× higher. Sufficient for relative WSCI comparison across
+  datasets, but rebuild if absolute holospectrum values look unclear or noisy.
+  Affects all 5 datasets (stress, eegmat, sleep_dep, sam40, meditation).
+  Cost: ~4× slower cache build (~6 hr for all datasets).
+- **WSCI analysis** — run `scripts/run_wsci_from_holospectra.py` after
+  holospectrum computation completes. Compare EEGMAT vs Stress as validation.
+- **Extend WSCI to sleep_dep + sam40 + meditation** — L1 cache building;
+  holospectrum + WSCI scripts need dataset-specific condition splits.
+
 ## On hold (not pursuing unless narrative shifts)
 
 - **Extend perm null to 20 perms** (would bring CBraMod/REVE p=0.100 → potentially p≤0.05
