@@ -59,16 +59,24 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
 | `src/model.py` | `DecoupledStressModel` (extract_pooled + classify) |
 | `src/variance_analysis.py` | Nested SS, mixed-effects, cluster bootstrap, PERMANOVA, label-subspace |
 
-**Analysis + figure scripts**
+**Scripts layout** (reorganised into subdirectories)
+| Subdirectory | Contents |
+|---|---|
+| `scripts/figures/` | Paper figure generation (`build_*.py`, 24 scripts) |
+| `scripts/hhsa/` | HHSA pipeline — cache, holospectra, analysis directions (8 scripts) |
+| `scripts/experiments/` | Experiment launchers — `.sh` drivers + `run_*.py` orchestrators (19 scripts) |
+| `scripts/features/` | Feature extraction — frozen + FT (5 scripts) |
+| `scripts/analysis/` | Statistical analysis, PSD anchors, variance, WSCI, visualization (21 scripts) |
+
+**Key analysis + figure scripts**
 | Path | Purpose |
 |---|---|
-| `scripts/run_variance_analysis.py` | Regenerates `paper/figures/variance_analysis.json` |
-| `scripts/stress_frozen_lp_multiseed.py` | Multi-seed Frozen LP |
-| `scripts/run_perm_null.py` | Pool-launches permutation-null FT runs |
-| `scripts/run_hp_sweep.py` + `summarize_sweep.py` | HP grid sweep + leaderboard |
-| `scripts/build_cross_dataset_figure.py` | Cross-dataset bar figure |
-| `scripts/build_matched_curve_figure.py` | Matched-subsample curves figure |
-| `scripts/build_label_subspace_figure.py` | Label-subspace PCA figure |
+| `scripts/analysis/run_variance_analysis.py` | Regenerates `paper/figures/variance_analysis.json` |
+| `scripts/experiments/stress_frozen_lp_multiseed.py` | Multi-seed Frozen LP |
+| `scripts/experiments/run_perm_null.py` | Pool-launches permutation-null FT runs |
+| `scripts/experiments/run_hp_sweep.py` | HP grid sweep |
+| `scripts/analysis/summarize_sweep.py` | HP sweep leaderboard |
+| `src/wsci.py` | WSCI (Within-Subject Contrast Index) metric |
 
 **Results layout** (see `results/README.md` for full guide)
 - `results/features_cache/` — cached frozen + FT features
