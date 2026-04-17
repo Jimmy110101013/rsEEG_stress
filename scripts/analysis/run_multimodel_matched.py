@@ -15,7 +15,7 @@ import time
 
 import numpy as np
 
-sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 from src import variance_analysis as va
 
 FEATURES_CACHE = "results/features_cache"

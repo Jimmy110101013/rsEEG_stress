@@ -34,16 +34,33 @@ Guardrails, methodology notes, and archived findings live in `docs/methodology_n
 > stress state), FMs revert to subject-fingerprint representations and no
 > architecture — pretrained FM or from-scratch CNN — exceeds the ceiling.
 
-All six claims below are facets of this thesis:
+### Mapping to paper sections (tex is authoritative; updated 2026-04-17)
 
-| Claim | Thesis role |
-|---|---|
-| **F-A** subject variance dominates frozen FM reps | the denominator (always large) |
-| **F-B** honest CV is required to measure the ratio | measurement protocol (removes evaluation inflation) |
-| **F-C** FT is a model × dataset interaction | the *mechanism* by which architecture + contrast interact |
-| **F-D** contrast strength governs FM rescue | the *outcome*: EEGMAT rescues, Stress does not |
-| **F-NEURO** cross-model neural band consensus diagnoses contrast | *independent mechanism test* (neural, not behavioural) |
-| **F-E** classical features rely on alpha lateralization | minor/context |
+| tex Section | Content | Claims used |
+|---|---|---|
+| **§3.1** Variance Atlas | Subject dominance in 12/12 FM×dataset cells | **F-A** |
+| **§3.2** Anchor-Contrast Diagnostic | CV gap (intro) → paired EEGMAT vs Stress → band-stop corroboration → architecture ceiling | **F-D** (core), **F-B** (intro only), **F-NEURO** (integrated), **F-E** (minor) |
+| **§3.3** FM Value Within Ceiling | Frozen LP +5pp over classical, two regimes | Partial **F-C** (cross-dataset table, but **no FT direction reversal**) |
+| **Discussion** | SDL protocol + TDBRAIN intermediate case + HHSA contrast gradient | **F-HHSA** (new) |
+
+> **Sync note (2026-04-17)**: F-C (FT direction reversal / model × dataset interaction)
+> is **not in the tex main results**. ADFTD/TDBRAIN appear only in §3.1 (variance
+> decomposition) and Discussion (TDBRAIN intermediate case). The master table
+> cross-dataset taxonomy was the old narrative; the tex has moved to SDL
+> (Subject-Dominance Limit) with the paired EEGMAT-vs-Stress comparison as
+> the core experiment. F-C data remains valid but is supporting/archived.
+
+All claims below are facets of this thesis:
+
+| Claim | Thesis role | tex status |
+|---|---|---|
+| **F-A** subject variance dominates frozen FM reps | the denominator (always large) | §3.1 — **core** |
+| **F-B** honest CV is required to measure the ratio | measurement protocol | §3.2 intro — **supporting** |
+| **F-C** FT is a model × dataset interaction | cross-dataset taxonomy | **not in tex results** (archived from old narrative) |
+| **F-D** contrast strength governs FM rescue | the *outcome*: EEGMAT rescues, Stress does not | §3.2 — **core** |
+| **F-NEURO** cross-model neural band consensus | independent mechanism test (neural, not behavioural) | §3.2 integrated — **core** |
+| **F-HHSA** holospectral contrast gradient | model-independent signal-level contrast measure | Discussion — **new** |
+| **F-E** classical features rely on alpha lateralization | minor/context | §3.2 — **minor** |
 
 ---
 
@@ -114,9 +131,19 @@ Source: `results/studies/exp02_classical_dass/rerun_70rec/summary.json` (4 metho
 
 ## F-C: Fine-tuning is a model × dataset interaction, not label biology
 
-**Status**: confirmed (3-dataset triangulation)
+**Status**: confirmed experimentally, but **not in tex main results** (2026-04-17)
 **Absorbs**: F17 (ADFTD/TDBRAIN multi-model taxonomy), F05 (Stress HP sweep), F09 (EEGMAT projection-not-rewrite), F18 (REVE window caveat). **Supersedes F04** (LaBraM-only 10s historical version).
-**Thesis role**: mechanism — FT direction (injection vs erosion) depends on architecture × dataset contrast structure, not on label biology alone.
+**Thesis role (original)**: mechanism — FT direction (injection vs erosion) depends on architecture × dataset contrast structure, not on label biology alone.
+
+> **Tex status (2026-04-17)**: The tex has moved to SDL (Subject-Dominance Limit)
+> framing. FT direction reversal (C.1 ADFTD/TDBRAIN opposite directions) is
+> **not discussed in Results**. ADFTD/TDBRAIN are used only for variance
+> decomposition (§3.1) and TDBRAIN as intermediate-anchor case in Discussion.
+> The master table (C.2) appears in §3.3 as "FM value within ceiling" but
+> only compares classical/frozen/FT within each dataset — no cross-dataset
+> direction-reversal narrative. C.3 EEGMAT projection-not-rewrite is in §3.2.
+> C.4 REVE window caveat is methods-only. **Keep this data for potential
+> reviewer questions but do not re-introduce as main result.**
 
 ### C.1 — ADFTD and TDBRAIN (representation-level, 3-seed variance decomp)
 
@@ -247,6 +274,38 @@ All 3 FMs prioritize **posterior/occipital channels** (O2, OZ, PZ, P4) on Stress
 **Key insight**: on EEGMAT, LaBraM and REVE **converge on alpha** — independent architectures locking onto the same neural signature (alpha desynchronization, Klimesch 1999). Cross-model convergence = real neural signal. On Stress, the dominant band **diverges by model** (LaBraM beta, REVE broadband, CBraMod uniform) — no shared neural target = the "signal" is architecture-specific artifact, not a stable neural contrast.
 
 This is the **neural-level diagnostic** that complements F-D's behavioural diagnostic. The two together argue that Stress's failure is not an ML problem (D.3 shows architecture doesn't matter) and not an evaluation problem (F-B rules that out) — it is a **neural contrast-strength problem**.
+
+---
+
+## F-HHSA: Holospectral contrast gradient provides model-independent SDL evidence
+
+**Status**: confirmed (2026-04-17)
+**Thesis role**: model-independent, signal-level measurement of condition contrast strength — quantifies the SDL "numerator" without any FM or classifier.
+
+Holo-Hilbert Spectral Analysis (HHSA; Huang et al. 2016, Ho et al. 2026) decomposes EEG into a 2D holospectrum (carrier frequency × AM frequency) via two-layer CEEMDAN. Condition contrast is measured as the between-group t-statistic on per-recording mean holospectra. Unlike F-NEURO (which probes FM representations), HHSA operates on raw EEG — it is truly model-free.
+
+### Cross-dataset holospectral contrast (4 datasets, 60s windows)
+
+| Dataset | Condition contrast | n_rec | mean\|t\| | max\|t\| | Bonf sig bins | AM coherence |
+|---|---|---|---|---|---|---|
+| **EEGMAT** | rest vs task (within-subject) | 72 | **1.40** | 4.85 | **2** | 0.979 ± 0.015 |
+| **Sleep Dep** | normal vs deprived (within-subject) | 213 | **1.32** | 3.86 | 0 | 0.943 ± 0.045 |
+| **Stress** | Normal vs Increase (between-group DASS) | 70 | 1.08 | 4.81 | 1 | 0.959 ± 0.036 |
+| **Meditation** | ses-1 vs ses-2 (no real manipulation) | 39 | 0.55 | 2.94 | 0 | 0.969 ± 0.022 |
+
+Source: `results/hhsa/cross_dataset_comparison/`, `scripts/hhsa_cross_dataset_comparison.py`.
+
+### Interpretation for SDL
+
+HHSA provides the **contrast-strength gradient** that the tex's Limitation §6.2 identifies as needed: SDL currently uses a binary anchored/bounded classification; HHSA shows it is actually a continuum (EEGMAT > Sleep Dep > Stress > Meditation).
+
+- EEGMAT's strong focal contrast (2 Bonferroni-significant bins in the alpha-carrier × slow-AM region) aligns with Klimesch alpha-ERD anchor
+- Stress's weaker, diffuse contrast (mean|t| 24% lower than EEGMAT) is consistent with the absent neural anchor diagnosis
+- Sleep Dep is the **key intermediate case**: strong diffuse contrast (mean|t| = 1.32) from a genuine within-subject physiological manipulation — FM performance on this dataset (exp_newdata, pending) will test whether diffuse-but-strong contrast enables FM rescue
+
+**Paper placement**: Discussion, as empirical evidence for the graded-anchor-strength refinement of SDL. Figures in `results/hhsa/cross_dataset_comparison/`.
+
+**Caveat**: Stress contrast here is between-group (DASS), not within-subject. EEGMAT and Sleep Dep are true within-subject designs. Meditation has no real condition manipulation (both sessions are meditation). The ranking is descriptive, not a formal regression.
 
 ---
 

@@ -21,7 +21,7 @@ from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.utils import compute_sample_weight
 
 warnings.filterwarnings("ignore")
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from pipeline.dataset import StressEEGDataset  # noqa
 from train_classical import extract_features, SFREQ  # noqa

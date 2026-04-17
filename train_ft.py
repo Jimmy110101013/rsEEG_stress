@@ -149,11 +149,13 @@ def parse_args():
                    help="Gradient accumulation steps (0=auto: 4 for LoRA, 1 for LP)")
     # Cross-dataset support
     p.add_argument("--dataset",
-                   choices=["stress", "adftd", "tdbrain", "dementia", "mdd", "eegmat"],
+                   choices=["stress", "adftd", "tdbrain", "dementia", "mdd", "eegmat",
+                            "sam40", "meditation", "sleepdep"],
                    default="stress",
                    help="Dataset to use (stress=UCSD, adftd=Alzheimer's, "
                         "tdbrain=Brainclinics MDD, dementia=HNC dementia, mdd=HNC MDD, "
-                        "eegmat=PhysioNet mental arithmetic — within-subject positive control)")
+                        "eegmat=PhysioNet mental arithmetic, sam40=SAM40 stress, "
+                        "meditation=OpenNeuro meditation, sleepdep=sleep deprivation)")
     p.add_argument("--hnc-data-root", default="data/hnc",
                    help="Directory containing HNC dementia/MDD HDF5 + .pkl files")
     p.add_argument("--hnc-channels", default=None,
@@ -355,6 +357,15 @@ def train_one_fold(
 
     # Fresh model per fold (embed_dim auto-detected from extractor)
     extractor = create_extractor(args.extractor)
+    # Override channel mapping for 19ch datasets
+    if args.dataset in ("adftd", "tdbrain", "dementia", "mdd", "eegmat",
+                        "sam40", "meditation", "sleepdep"):
+        from pipeline.common_channels import COMMON_19
+        if hasattr(extractor, "input_chans"):
+            from baseline.labram.channel_map import get_input_chans
+            extractor.input_chans = get_input_chans(COMMON_19)
+        if hasattr(extractor, "set_channels"):
+            extractor.set_channels(COMMON_19)
     embed_dim = extractor.embed_dim
     # Adversarial only for FT mode (LP/LoRA freeze backbone — no gradients to reverse)
     model = DecoupledStressModel(
@@ -834,7 +845,8 @@ def train_one_fold_ft(
     # Fresh model — all params trainable
     extractor = create_extractor(args.extractor)
     # Override channel mapping for 19ch datasets (ADFTD, TDBRAIN, HNC dementia/MDD, EEGMAT)
-    if args.dataset in ("adftd", "tdbrain", "dementia", "mdd", "eegmat"):
+    if args.dataset in ("adftd", "tdbrain", "dementia", "mdd", "eegmat",
+                        "sam40", "meditation", "sleepdep"):
         from pipeline.common_channels import COMMON_19
         if hasattr(extractor, "input_chans"):
             from baseline.labram.channel_map import get_input_chans
@@ -1212,6 +1224,60 @@ def main():
         patient_ids = dataset.get_patient_ids()
         labels = dataset.get_labels()
         args.label = f"hnc-{args.dataset}"
+    elif args.dataset == "sam40":
+        from pipeline.sam40_dataset import SAM40Dataset
+        dataset = SAM40Dataset(
+            "data/sam40/Data/filtered_data",
+            target_sfreq=200.0,
+            window_sec=window_sec,
+            stride_sec=2.5,
+            norm=args.norm,
+            cache_dir=f"data/cache_sam40{'_nnone' if args.norm == 'none' else ''}",
+        )
+        patient_ids = dataset.get_patient_ids()
+        labels = dataset.get_labels()
+        n1, n0 = int(labels.sum()), int(len(labels) - labels.sum())
+        print(f"SAM40: {len(dataset)} recordings, {len(np.unique(patient_ids))} subjects "
+              f"(stress={n1}, relax={n0})")
+        args.label = "sam40"
+        # Pre-build cache (WindowDataset in FT mode needs it)
+        for rec in dataset.records:
+            dataset._preprocess(rec)
+    elif args.dataset == "meditation":
+        from pipeline.meditation_dataset import MeditationDataset
+        dataset = MeditationDataset(
+            "data/meditation",
+            target_sfreq=200.0,
+            window_sec=window_sec,
+            norm=args.norm,
+            cache_dir=f"data/cache_meditation{'_nnone' if args.norm == 'none' else ''}",
+            crop_sec=300.0,
+        )
+        patient_ids = dataset.get_patient_ids()
+        labels = dataset.get_labels()
+        n1, n0 = int(labels.sum()), int(len(labels) - labels.sum())
+        print(f"Meditation: {len(dataset)} recordings, {len(np.unique(patient_ids))} subjects "
+              f"(expert={n1}, novice={n0})")
+        args.label = "meditation"
+        for rec in dataset.records:
+            dataset._preprocess(rec)
+    elif args.dataset == "sleepdep":
+        from pipeline.sleepdep_dataset import SleepDepDataset
+        dataset = SleepDepDataset(
+            "data/sleep_deprivation",
+            target_sfreq=200.0,
+            window_sec=window_sec,
+            norm=args.norm,
+            cache_dir=f"data/cache_sleepdep{'_nnone' if args.norm == 'none' else ''}",
+        )
+        patient_ids = dataset.get_patient_ids()
+        labels = dataset.get_labels()
+        n1, n0 = int(labels.sum()), int(len(labels) - labels.sum())
+        print(f"SleepDep: {len(dataset)} recordings, {len(np.unique(patient_ids))} subjects "
+              f"(SD={n1}, NS={n0})")
+        args.label = "sleepdep"
+        for rec in dataset.records:
+            dataset._preprocess(rec)
     else:
         dataset = StressEEGDataset(args.csv, DATA_ROOT, window_sec=window_sec,
                                    stride_sec=args.stride, norm=args.norm,

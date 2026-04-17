@@ -34,12 +34,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from src.variance_analysis import nested_ss, cluster_bootstrap  # noqa: E402
 # Stress/ADFTD/TDBRAIN use nested (subject-in-label); EEGMAT is within-subject
 # so the decomposition is crossed (subject × label).
-from scripts.analyze_eegmat import crossed_decomposition  # noqa: E402
+from scripts.analysis.analyze_eegmat import crossed_decomposition  # noqa: E402
 
 CACHE = REPO / "results/features_cache"
 VAR_JSON = REPO / "paper/figures/source_tables/variance_analysis_all.json"

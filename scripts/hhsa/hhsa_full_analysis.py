@@ -18,7 +18,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy import stats
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 import pipeline.hhsa as hhsa
 
 L1_CACHE = "results/hhsa/cache"
@@ -33,9 +33,28 @@ COMMON_19_NAMES = ['Fp1','Fp2','F7','F3','Fz','F4','F8','T3','C3','Cz',
 
 
 def load_l1_cache(dataset):
-    """Load all L1 cache files for a dataset. Returns list of dicts."""
+    """Load all L1 cache files for a dataset. Returns list of dicts.
+
+    For large datasets (>100 files), returns lightweight metadata only —
+    actual IF/IA loaded on-demand in streaming analysis functions.
+    """
+    files = sorted(glob.glob(f"{L1_CACHE}/{dataset}/*.npz"))
+    if len(files) > 100:
+        # Streaming mode: only load metadata from first file for ch_names
+        d0 = np.load(files[0])
+        ch_names = list(d0["ch_names"])
+        recs = []
+        for f in files:
+            recs.append({
+                "path": f,
+                "rec_id": os.path.basename(f).replace(".npz", ""),
+                "ch_names": ch_names,
+                "_lazy": True,
+            })
+        return recs
+    # Small dataset: load everything into memory
     recs = []
-    for f in sorted(glob.glob(f"{L1_CACHE}/{dataset}/*.npz")):
+    for f in files:
         d = np.load(f)
         recs.append({
             "path": f,
@@ -44,8 +63,15 @@ def load_l1_cache(dataset):
             "IA": d["IA"],
             "ch_names": list(d["ch_names"]),
             "n_imf_per_ch": d["n_imf_per_ch"],
+            "_lazy": False,
         })
     return recs
+
+
+def _load_one_l1(rec):
+    """Load IF/IA from a single L1 cache file (for streaming mode)."""
+    d = np.load(rec["path"])
+    return d["IF"], d["IA"], d["n_imf_per_ch"]
 
 
 def load_holospectra(dataset):
@@ -76,12 +102,14 @@ def dir04_topography(dataset, recs_l1, out_dir):
     ch_names = recs_l1[0]["ch_names"]
     n_ch = len(ch_names)
 
-    for rec in recs_l1:
-        IF, IA = rec["IF"], rec["IA"]
+    for ri, rec in enumerate(recs_l1):
+        if rec.get("_lazy"):
+            IF, IA, n_imf_per_ch = _load_one_l1(rec)
+        else:
+            IF, IA, n_imf_per_ch = rec["IF"], rec["IA"], rec["n_imf_per_ch"]
         per_ch = []
         for ci in range(n_ch):
-            # Find IMFs whose median IF falls in alpha band
-            n_imf = int(rec["n_imf_per_ch"][ci])
+            n_imf = int(n_imf_per_ch[ci])
             alpha_power = 0.0
             for k in range(n_imf):
                 med_if = np.nanmedian(IF[ci, :, k])
@@ -89,6 +117,9 @@ def dir04_topography(dataset, recs_l1, out_dir):
                     alpha_power += np.mean(IA[ci, :, k] ** 2)
             per_ch.append(alpha_power)
         all_alpha_power.append(per_ch)
+        del IF, IA
+        if rec.get("_lazy") and (ri + 1) % 50 == 0:
+            print(f"    dir04: {ri+1}/{len(recs_l1)}")
 
     alpha_arr = np.array(all_alpha_power)  # (n_rec, n_ch)
     mean_alpha = alpha_arr.mean(axis=0)
@@ -121,7 +152,10 @@ def dir05_nonlinearity(dataset, recs_l1, out_dir):
     all_cv = []  # (n_rec, n_imf)
 
     for rec in recs_l1:
-        IF = rec["IF"]
+        if rec.get("_lazy"):
+            IF, _, _ = _load_one_l1(rec)
+        else:
+            IF = rec["IF"]
         n_ch = IF.shape[0]
         rec_cv = np.zeros(max_imf)
         for k in range(max_imf):
@@ -133,6 +167,7 @@ def dir05_nonlinearity(dataset, recs_l1, out_dir):
                     cvs.append(np.std(valid) / (np.mean(valid) + 1e-12))
             rec_cv[k] = np.mean(cvs) if cvs else 0.0
         all_cv.append(rec_cv)
+        del IF
 
     cv_arr = np.array(all_cv)
     mean_cv = cv_arr.mean(axis=0)
@@ -161,7 +196,10 @@ def dir06_imf_energy(dataset, recs_l1, out_dir):
     all_frac = []
 
     for rec in recs_l1:
-        IA = rec["IA"]
+        if rec.get("_lazy"):
+            _, IA, _ = _load_one_l1(rec)
+        else:
+            IA = rec["IA"]
         n_ch = IA.shape[0]
         # Mean across channels
         energy_per_imf = np.zeros(max_imf)
@@ -169,6 +207,7 @@ def dir06_imf_energy(dataset, recs_l1, out_dir):
             energy_per_imf[k] = np.mean([np.mean(IA[ci, :, k] ** 2) for ci in range(n_ch)])
         total = energy_per_imf.sum() + 1e-12
         all_frac.append(energy_per_imf / total)
+        del IA
 
     frac_arr = np.array(all_frac)
     mean_frac = frac_arr.mean(axis=0)
@@ -343,9 +382,49 @@ def meditation_condition_split(recs):
     return ses1, ses2, "Session 1", "Session 2"
 
 
+def sleepdep_condition_split(recs):
+    """Sleep deprivation: ses-1 = normal sleep, ses-2 = sleep deprived."""
+    normal = [r["rec_id"] for r in recs if "_ses-1_" in r["rec_id"]]
+    deprived = [r["rec_id"] for r in recs if "_ses-2_" in r["rec_id"]]
+    return normal, deprived, "Normal Sleep", "Sleep Deprived"
+
+
+def stress_condition_split(recs):
+    """Stress: normal vs increase DASS group."""
+    import pandas as pd
+    df = pd.read_csv("data/comprehensive_labels.csv")
+    normal_ids = set()
+    increase_ids = set()
+    for _, row in df.iterrows():
+        pid = int(row["Patient_ID"])
+        rid = int(row["Recording_ID"])
+        group = row["Group"]
+        rec_id = f"{group}_p{pid:02d}_rec{rid}"
+        if group == "Normal":
+            normal_ids.add(rec_id)
+        else:
+            increase_ids.add(rec_id)
+    normal = [r["rec_id"] for r in recs if r["rec_id"] in normal_ids]
+    increase = [r["rec_id"] for r in recs if r["rec_id"] in increase_ids]
+    return normal, increase, "Normal", "Increase"
+
+
 def main():
-    for dataset, split_fn in [("eegmat", eegmat_condition_split),
-                               ("meditation", meditation_condition_split)]:
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", type=str, default=None,
+                        help="Run only this dataset (eegmat, stress, meditation, sleep_deprivation)")
+    cli_args = parser.parse_args()
+
+    all_datasets = [("eegmat", eegmat_condition_split),
+                    ("meditation", meditation_condition_split),
+                    ("stress", stress_condition_split),
+                    ("sleep_deprivation", sleepdep_condition_split)]
+
+    if cli_args.dataset:
+        all_datasets = [(n, fn) for n, fn in all_datasets if n == cli_args.dataset]
+
+    for dataset, split_fn in all_datasets:
         print(f"\n{'#'*60}")
         print(f"# Dataset: {dataset}")
         print(f"{'#'*60}")

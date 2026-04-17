@@ -32,7 +32,7 @@ import numpy as np
 warnings.filterwarnings("ignore", message=".*boundary.*", category=RuntimeWarning)
 warnings.filterwarnings("ignore", message=".*annotation.*", category=RuntimeWarning)
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 import pipeline.hhsa as hhsa
 import emd
 

@@ -1,276 +1,180 @@
 # Paper Strategy
 
-**Date**: 2026-04-15 (ID migration) / 2026-04-14 (full rewrite — supersedes 2026-04-07/10/11)
-**Status**: Active — narrative locked pending advisor alignment on D1/D2
-**Companion docs**: `findings.md` (F-A…F-E paper claims), `methodology_notes.md` (guardrails + internal notes + archived), `TODO.md` (D1/D2 open decisions), `related_work.md`, `eta_squared_pipeline_explanation.md`
+**Date**: 2026-04-17 (synced to tex) / 2026-04-15 (ID migration) / 2026-04-14 (full rewrite)
+**Status**: Active — SDL narrative implemented in tex; HHSA added as Discussion evidence
+**Companion docs**: `findings.md` (F-A…F-E + F-HHSA paper claims), `methodology_notes.md` (guardrails + internal notes + archived), `TODO.md` (D1/D2 open decisions), `related_work.md`, `eta_squared_pipeline_explanation.md`
 
 This document captures the current paper narrative, structure, and figure plan.
-Historical framings (FiLM-centric, within-subject longitudinal, Stress-erosion-main,
-LaBraM-only taxonomy) are **superseded** and retained only in §8 as context.
+**The tex files (`paper/sections/*.tex`) are authoritative for the actual paper content.**
+This doc tracks strategy and maps claims to sections.
 
-> **ID mapping (2026-04-15 migration)** — inline `F##` references below remain
-> resolvable via each claim's `Absorbs:` line in `findings.md`:
->
-> | New | Covers (absorbs) |
-> |---|---|
-> | **F-A** subject dominance | F02, F13 |
-> | **F-B** honest baselines | F01, F03, F16 |
-> | **F-C** FT model × dataset | F17, F05, F09, F18 caveat · supersedes F04 |
-> | **F-D** Stress ceiling | F06, F14, F20 |
-> | **F-E** alpha lateralization | F10 |
-> | **G-F07**, **G-F08** | pipeline guardrails |
-> | **N-F11**, **N-F12**, **N-F15**, **N-F19**, **N-F21** | internal methodology notes |
-> | **A-F04** | archived LaBraM-only 10s taxonomy |
+> **Sync note (2026-04-17)**: The old "three-pillar" narrative (Methodology traps /
+> Representation diagnosis / FT interaction) is **superseded** by the SDL
+> (Subject-Dominance Limit) framing now implemented in the tex. F-C (FT direction
+> reversal) is not in the tex main results. See §2 below for the current structure.
 
 ---
 
 ## 1. Title
 
-**Beyond Accuracy: What EEG Foundation Models Encode, and Why Fine-Tuning
-Direction Depends on Model × Dataset Interactions**
+**Subject Dominance Limits: A Mechanistic Diagnostic for EEG Foundation Models**
 
-Chosen over earlier "…why fine-tuning fails on weak psychiatric labels"
-because F17 shows FT direction is **bidirectional** (LaBraM injects on ADFTD,
-erodes on TDBRAIN; REVE the opposite), not a universal failure on weak
-labels. The new title covers both halves of the paper — representation
-diagnosis and FT interaction — without overclaiming.
+(Updated in tex. Old title "Beyond Accuracy: What EEG Foundation Models Encode,
+and Why Fine-Tuning Direction Depends on Model × Dataset Interactions" was
+superseded when F-C direction reversal was removed from the main narrative.)
 
 Venue: **IEEE TNSRE** (primary target). Backup: J. Neural Engineering,
 NeurIPS D&B Track, TMLR.
 
 ---
 
-## 2. Three-pillar narrative
+## 2. Paper structure (matches tex as of 2026-04-17)
 
-The paper integrates the 5 paper claims across three pillars. Stress is not a pillar;
-it is a **stress test** that runs through all three pillars as a
-statistical-power-floor case study.
+The paper has **three Results sections + Discussion**, not three pillars.
+The logic is a single deductive chain:
 
-| Pillar | Claim | Core findings |
-|---|---|---|
-| **A. Methodology traps** | EEG FM literature is systematically inflated by subject leakage, OR-aggregated labels, and single-seed cuDNN noise | **F-B** (Axis 1+2), **G-F07**, **G-F08**, N-F11 |
-| **B. Representation diagnosis** | Frozen FM representations primarily encode subject identity, not diagnostic signal — but they still beat classical features under honest labels | **F-A**, **F-B** (Axis 2 classical collapse), **F-E** |
-| **C. Fine-tuning interaction** | FT direction is a model × dataset interaction, not a property of either alone; within-subject contrast strength (not just design type) determines whether within-subject framing rescues FM | **F-C** (C.1 ADFTD/TDBRAIN, C.2 Stress, C.3 EEGMAT, C.4 window caveat), **F-D.3** (longitudinal negative) |
+```
+§3.1 Subject dominance is universal (F-A)
+  → representations are subject-dominated in all 12 FM×dataset cells
+  → any classifier must work against this structural constraint
+       ↓
+§3.2 The anchor-contrast diagnostic (F-D + F-NEURO)
+  → CV gap intro (F-B, brief)
+  → Paired experiment: EEGMAT rescue (0.73) vs Stress fail (≤ chance)
+  → Band-stop corroboration: alpha convergence (EEGMAT) vs divergence (Stress)
+  → Architecture ceiling: 7 architectures in 0.44-0.58 band
+  → Conclusion: contrast strength, not architecture, governs rescue
+       ↓
+§3.3 FM value within the ceiling (partial F-C)
+  → Frozen LP +5pp over classical (real but modest)
+  → Two regimes: anchored (FT adds rescue) vs bounded (FT doesn't help)
+  → No FT direction reversal narrative
+       ↓
+Discussion: SDL diagnostic protocol + TDBRAIN intermediate case + HHSA gradient
+```
 
-**Stress as cross-pillar stress test** (§8): F-C.2 headline numbers look like
-injection/erosion, but **five** independent lines of evidence converge on
-power-floor noise: F-D.1 (p=0.70), N-F19 (p=0.10), G-F08 (±20pp swings), F-D.2
-(ShallowConvNet matches FMs), and cross-model band-importance divergence
-(§7). F-D.3 within-subject longitudinal failure is the 5th line, paired with
-F-C.3 EEGMAT success to establish "within-subject contrast strength" as the
-operative factor. This is the paper's central caveat to the field: benchmark
-design must report statistical power before claiming FM superiority.
+### What is NOT in the tex (archived from old narrative)
 
-**Master table** (`paper/figures/source_tables/master_frozen_ft_table.md`):
-3 FMs × 4 datasets × 2 phases (frozen LP / FT), subject-level BA, sample std.
-This table is the foundation for Results §5 (Pillar C behavioral evidence).
+- **F-C direction reversal** (LaBraM vs REVE opposite on ADFTD/TDBRAIN) — valid data but removed to avoid defocusing the SDL argument
+- **Master table cross-dataset FT taxonomy** — §3.3 uses a simplified 3-dataset table (Stress/EEGMAT/ADFTD), not the full 3×4 grid
+- **Stress as power-floor case study** (old §8) — absorbed into §3.2 as the "bounded" arm of the paired comparison
 
 ---
 
-## 3. Paper structure
-
-Section numbering below is for the **English paper**. Chinese reading guide
-(`paper_narrative_zh.md`) folds Related Work into the Introduction; English
-paper keeps them separate per TNSRE convention.
+## 3. Paper structure (synced to tex 2026-04-17)
 
 ### §1 Introduction
-- Hook: Wang et al. (2025, arXiv:2505.23042) — **same lab as the Stress
-  dataset paper (Komarov et al. 2020, TNSRE)** — reports 90.47% BA on this
-  dataset under trial-level CV. Our subject-level, honest-per-rec-DASS
-  reproduction falls to 0.45–0.60 frozen LP / 0.52–0.58 best-HP FT.
-- Three questions: (a) What do frozen EEG FMs encode? (b) When does FT help,
-  when does it hurt, and why? (c) Can small-sample EEG benchmarks support FM
-  superiority claims?
+- Hook: Wang et al. (2025) 0.9047 BA → our subject-level 0.52–0.58
+- Define SDL: FM performance bounded by within-subject neural contrast / subject variance ratio
+- Fig 1 (SDL Spectrum): datasets ordered by anchor strength, showing the two regimes
+- Pre-benchmark diagnostic question: does the label have a within-subject neural contrast?
 
-### §2 Related work
-- Dataset: Komarov, Ko, Jung (2020, TNSRE 28(4):795) — Taiwan-recorded
-  longitudinal resting-state EEG with DASS-21 + DSS per recording.
-- EEG FMs: LaBraM (Jiang et al. 2024 ICLR), CBraMod, REVE.
-- Wang et al. 2025 — inflated baseline we re-evaluate.
-- Brain4FMs / EEG-FM-Bench / AdaBrain-Bench convergence (F11).
-- Subject leakage history (Roy et al. 2019 systematic review).
+### §2 Related work + §3 Methods
+- Datasets: UCSD Stress (primary), EEGMAT (paired comparator), ADFTD + TDBRAIN (variance decomposition coverage)
+- Three sample-size conventions (70/55/14) clearly documented
+- Contrast-strength anchoring protocol (3 dimensions: published correlate, empirical cluster, locus concordance)
+- Variance decomposition: pooled fractions, RSA, cluster bootstrap
 
-### §3 Methods
-- Dataset: 70 recordings / 17 subjects with **both DASS-21 and DSS labels**.
-  (No 400 s duration filter — that was a documentation artifact.)
-- Pipeline: StressEEGDataset → FM backbone → global pool → classifier.
-- Per-model normalization (LaBraM zscore; CBraMod / REVE none) — silently
-  destroys runs if wrong.
-- Window size is a first-class factor: LaBraM / CBraMod 5 s; REVE 10 s
-  (matches pretraining). All frozen-vs-FT comparisons are window-matched.
-- Subject-level StratifiedGroupKFold(5) (primary) vs trial-level
-  StratifiedKFold(5) (literature reference only).
-- cuDNN determinism + multi-seed protocol (≥ 3 seeds for all Stress claims).
-- Permutation null via recording-level label shuffling (`--permute-labels`).
-- Variance decomposition: pooled label fraction, mixed-effects ICC, matched
-  subsampling, cluster bootstrap.
-- **All std values reported with sample convention (n−1 divisor).**
-  Bootstrap 95% CIs labelled `[low, high]`.
+### §3.1 Results — Subject-dominated frozen representations (F-A)
+- Variance atlas: 12/12 FM×dataset cells show subject >> label (10–50×)
+- Three independent measurements: pooled variance, RSA, cluster bootstrap
+- Fig (variance_atlas): 3-panel triangulation
+- Table (subject_atlas): all 12 cells with exact fractions
 
-### §4 Results — Pillar A: Methodology traps
-- F01 trial-vs-subject CV gap: on Stress, ~30+ pp drop from literature 0.90
-  (Wang 2025, same lab, trial-level) to our subject-level 0.45–0.60.
-- F08 cuDNN ±20pp single-seed swings on 70 rec / 14 pos.
-- F16 classical RF 0.666 was also an OR-aggregation artifact; under honest
-  per-rec DASS, all classical methods at or below chance (RF 0.44 etc.).
-- F07 subject-dass deprecation rationale referenced; **no subject-dass
-  numbers cited** (per revision 2026-04-14).
+### §3.2 Results — The anchor-contrast diagnostic (F-D core)
+- **CV gap** (intro): trial vs subject gap on Stress (brief, Fig cv_gap)
+- **Permutation null**: LaBraM real FT inside null distribution (p=0.70)
+- **Paired experiment** (core):
+  - Arm 1 EEGMAT: LaBraM 0.731, REVE 0.727, CBraMod 0.620 — rescue succeeds
+  - Arm 2 Stress longitudinal DSS: all 9 FM×classifier cells ≤ chance — rescue fails
+  - "Projection, not rewrite": label fraction doesn't increase under FT
+- **Within-subject trajectory geometry**: EEGMAT positive cosine (0.06–0.15), Stress zero
+- **Band-stop corroboration** (F-NEURO integrated): alpha convergence on EEGMAT, divergence on Stress
+- **Architecture ceiling**: 7 architectures (3k–1.4B params) all in 0.44–0.58 band on Stress
 
-### §5 Results — Pillar B: Representation diagnosis
-- F13 RSA subject r > label r in 12/12 frozen model×dataset combinations.
-- F02 subject identity dominates 71% of EEGMAT representation variance.
-- F03 classical band-power collapses under per-rec dass; LaBraM frozen LP
-  retains 0.605 BA on Stress — FM advantage over classical is real but the
-  ceiling is low.
-- F10 alpha lateralization (right hemisphere) is the dominant classical
-  stress feature — consistent with neuroscience literature.
+### §3.3 Results — FM value within the ceiling
+- Classical vs Frozen LP vs FT across Stress/EEGMAT/ADFTD
+- Two regimes: anchored (FT adds rescue) vs bounded (frozen LP +5pp, no FT rescue)
+- Note: simplified table, NOT the full 3×4 master table
 
-### §6 Results — Pillar C: Cross-dataset × cross-model FT taxonomy
-**Headline section. Four subsections.**
+### §4 Discussion
+- **SDL two regimes** + pre-benchmark protocol (3-step)
+- **TDBRAIN intermediate case**: empirical cluster survives but wrong locus → 19pp FM spread
+- **HHSA contrast gradient** (F-HHSA, new): model-independent evidence that contrast is a continuum, not binary
+- What SDL does not claim (3 explicit non-claims)
+- Implications for pretraining design (subject-adversarial objectives)
 
-**§6.1 Representation-level pp Δ (F17)** — 3 models × 2 datasets × 3 seeds:
-| Model | ADFTD Δ | TDBRAIN Δ |
-|---|---|---|
-| LaBraM | +1.03 ± 0.74 | −1.56 ± 0.28 |
-| CBraMod | +0.83 ± 3.35 (σ > |μ|) | −0.02 ± 0.04 |
-| REVE | −1.53 ± 0.28 | +0.44 ± 0.32 |
+### §5 Limitations
+- Cohort size + single-seed fragility
+- Single anchor on rescue arm (→ HHSA partially addresses this)
+- Architecture panel breadth
 
-LaBraM / REVE directions are opposite on same labels — model × dataset
-interaction, not label biology.
-
-**§6.2 Behavioral-level (Master Table, 3×4)** — frozen LP + FT BA across all
-four datasets. Source: `master_frozen_ft_table.md`. Will appear as **Table 1**
-in the paper. Two cells missing: CBraMod / REVE EEGMAT FT (TODO).
-
-**§6.3 N-invariance (F04 matched-N)** — LaBraM-only; taxonomy persists at
-matched N=17.
-
-**§6.4 Within-subject design is not a universal rescue (F09 + F14)** — new.
-EEGMAT paired rest/task: LaBraM FT 0.731 ± 0.021 (success). Stress
-within-subject DSS trajectory (F14): all 3 FMs × 3 classifiers ≤ chance.
-Principle: contrast strength matters, not just within-subject framing.
-
-### §7 Neuroscience interpretability (exp14 triad + cross-model consistency)
-TNSRE-flavor section. Reframed 2026-04-14 around **cross-model consistency
-as a signal-vs-noise test**.
-- Spatial: channel-importance topomap (gradient-based).
-- Correlational spectral: per-band RSA.
-- Causal spectral: band-stop ablation across 4 bands (delta/theta/alpha/beta).
-- **Cross-model convergence test**: on EEGMAT, LaBraM and REVE both peak at
-  alpha → real neural signature. On Stress, LaBraM peak=beta, REVE peak=alpha
-  → divergence → noise floor. CBraMod always peaks at delta (architecture
-  artifact, noted separately).
-
-Claim: FMs capture physiological structure when the contrast is clean; the
-divergence on Stress is the 4th line of power-floor evidence (§8).
-
-### §8 Stress as statistical power floor (cross-pillar case study)
-**Five** independent lines of evidence on 70 rec / 14 positive:
-1. F08 cuDNN ±14 pp single-seed swings (non-reproducibility).
-2. F06 LaBraM null-indistinguishable (p=0.70).
-3. F19 CBraMod/REVE null borderline (p=0.10, 10-perm floor).
-4. §7 band-stop cross-model divergence on Stress (alpha/beta/delta split vs
-   EEGMAT's alpha convergence).
-5. F20 ShallowConvNet from scratch hits 0.557, within FM range — architecture
-   confers no advantage; **F14** within-subject DSS trajectory classification
-   fails for all 3 FMs × 3 classifiers (failure points to Stress contrast
-   weakness, confirmed by EEGMAT success in §6.4).
-
-**Conclusion of §8**: On 70 rec / 14 positive, no method claim
-(FM superiority, FT direction, architecture, band causality, within-subject)
-is distinguishable from noise. This is a benchmark-design caveat, not a
-statement about any specific model.
-
-### §9 Discussion
-- Why FT direction depends on model × dataset: CBraMod's criss-cross
-  attention may interact differently with spectral structure; REVE's linear
-  patch embedding is scale-sensitive; LaBraM's neural tokenizer may discard
-  subtle spectral differences under FT.
-- Window size as a first-class factor (F18, but kept in supplementary per
-  2026-04-14 decision; methods §3 notes it).
-- Ruled-out alternatives: F12 GRL/DANN/LEAD, F14 within-subject longitudinal,
-  sparse-label-subspace hypothesis, spectral-FiLM.
-- Recommendations for the field: (1) subject-level CV as default; (2) report
-  statistical power (n_subjects, n_positive, multi-seed std, permutation
-  null, bootstrap CI).
-- Clinical implication (TNSRE angle): frozen FM representations retain
-  diagnostic value (e.g. LaBraM 0.605 on Stress beats classical), but
-  deployment requires per-individual calibration given subject dominance.
-
-### §10 Conclusion + limitations
-- Untested: CBraMod / REVE on EEGMAT FT (2 cells of Master Table); cross
-  3-FM × 4-dataset matrix otherwise complete.
-- Mechanism of model × dataset interaction remains a hypothesis requiring
-  architectural ablation.
-- HNC private dataset (308+400 subjects) as potential high-powered
-  validation if power-floor narrative becomes central.
+### §6 Conclusion
 
 ---
 
-## 4. Figure & table plan
+## 4. Figure & table plan (synced to tex 2026-04-17)
 
-**Target**: 1 main table + 8 main figures + 7 supplementary. TNSRE norm is
-6–9 main figures; each figure must carry exactly one claim.
+The tex already has figures referenced. Below maps to what exists in the tex.
 
-### Main table
+### Main figures (as referenced in tex)
 
-| # | Title | Source | Status |
-|---|---|---|---|
-| **Table 1** | Master frozen-LP + FT BA across 3 FMs × 4 datasets | `paper/figures/source_tables/master_frozen_ft_table.{md,json}` | **READY** (2 missing cells: CBraMod / REVE EEGMAT FT — TODO) |
-
-Will appear in §6.2 as the canonical behavioral-level evidence. Sample std
-convention; LaTeX version in `paper/sections/table1_master.tex`.
-
-### Main figures
-
-| # | Title | File | Status | Notes |
+| Fig | tex label | Title | Source | Status |
 |---|---|---|---|---|
-| 1 | Pipeline + CV protocol schematic | `paper/figures/main/fig1_pipeline.pdf` | **MISSING** | Conceptual vector diagram |
-| 2 | Trial vs subject CV gap | `paper/figures/main/fig2_cv_gap.pdf` | **MISSING** | Bar: Wang 2025 0.90 vs our 0.45–0.60 frozen / 0.52–0.58 FT, with asymmetric-protocol caveat in caption |
-| 3 | Subject dominance (composite) | `fig3a_fitness_heatmap.pdf` + `fig3b_tsne_cross_dataset.png` | **REWORK** | Merge into single 2-panel figure |
-| 4 | Classical vs FM under honest labels | `fig4_classical_vs_fm.pdf` | **READY** (verified 70-rec) | — |
-| 5 | **Cross-dataset × model FT taxonomy** (headline) | `fig5_cross_dataset_taxonomy.pdf` | **READY** (rebuilt with sample-std CIs 2026-04-14) | CBraMod×ADFTD `σ > \|μ\|` annotation |
-| 6 | Matched-N subsample curves | `fig6_matched_n_curves.pdf` | **READY** | LaBraM-only caveat in caption |
-| 7 | Interpretability triad + cross-model consistency | `fig7a_topomap.pdf` / `fig7b_band_rsa.pdf` / `fig7c_band_stop.pdf` | **READY** (7c rebuilt 2026-04-14: EEGMAT converges at alpha, Stress diverges) | — |
-| 8 | Stress power floor (composite) | `fig8a_stress_erosion.pdf` / `fig8b_stat_hardening.pdf` / `fig8c_non_fm_baselines.pdf` | **READY** (8c new 2026-04-14) | Caption must point to §8 power-floor framing |
+| 1 | `fig_sdl_spectrum` | SDL Spectrum — datasets ordered by anchor strength | `paper/figures/main/fig_sdl_spectrum.pdf` | **IN TEX** |
+| 2 | `fig_variance_atlas` | 3-panel variance atlas (fractions + RSA + bootstrap) | `paper/figures/main/fig_variance_atlas.pdf` | **IN TEX** |
+| 3 | `fig_cv_gap` | Trial vs subject CV gap on Stress | `paper/figures/main/fig_cv_gap.pdf` | **IN TEX** |
+| 4 | `fig_within_subj_direction` | Within-subject trajectory (UMAP + cosine) | `paper/figures/main/fig_within_subject_direction.pdf` | **IN TEX** |
+| 5 | `fig_paired_contrast` | Paired diagnostic: EEGMAT rescue vs Stress fail | `paper/figures/main/fig_paired_contrast.pdf` | **IN TEX** |
+| 6 | `fig_band_diagnostic` | Band-stop cross-model consensus | `paper/figures/main/fig_band_diagnostic.pdf` | **IN TEX** |
+| 7 | `fig_ceiling` | Architecture ceiling forest plot (7 architectures) | `paper/figures/main/fig_ceiling.pdf` | **IN TEX** |
 
-### Supplementary
+### Main tables (as referenced in tex)
 
-| S# | Title | Source | Status |
+| Table | tex label | Title | Status |
 |---|---|---|---|
-| S1 | Signal-strength spectrum | `exp01/signal_strength_spectrum` | **READY** |
-| S2 | Permutation null histograms | `exp03/ft_null_{labram,cbramod,reve}` | **MISSING** — create overlays |
-| S3 | Matched-N BA curve alt view | `exp09/matched_n_ba_curve` | **READY** |
-| S4 | Within-subject longitudinal failure (F14) | `exp11/feature_space_analysis`, `within_subject_supplementary` | **READY** — promoted narrative weight via §6.4 |
-| S5 | REVE window robustness (5s vs 10s, F18) | `exp12` vs `exp07`, `f18_*_window.json` | **MISSING** — plot from JSON |
-| S6 | EEGMAT paired-design supporting (F09) | `exp04_eegmat_feat_multiseed` | **MISSING** |
-| S7 | GRL/DANN/LEAD full λ sweep (F12) | F12 table (text-only or small bar) | **MISSING** |
+| 1 | `tab_subject_atlas` | Variance decomposition 12 cells | **IN TEX** |
+| 2 | `tab_stress_longitudinal` | Within-subject DSS classification (9 cells) | **IN TEX** |
+| 3 | `tab_architectures` | 7 architectures BA on Stress | **IN TEX** |
+| 4 | `tab_fm_value_cross_dataset` | Classical vs Frozen vs FT (3 datasets) | **IN TEX** |
 
-### Work remaining (prioritized by paper-review severity)
-1. Fig 1 pipeline schematic (conceptual, vector)
-2. Fig 2 trial-vs-subject bar + protocol asymmetry caveat
-3. Fig 3 composite merge (a)+(b)
-4. S2 / S5 / S6 / S7 supplementary plots
-5. CBraMod + REVE EEGMAT FT (2 missing Master Table cells) — requires GPU
+### Figures NOT in tex (archived or available for reviewer response)
+
+| Old # | Title | Status |
+|---|---|---|
+| Cross-dataset FT taxonomy (F-C) | 3×4 master table direction reversal | **Not in tex** — available if reviewers ask |
+| Matched-N curves | LaBraM-only N-invariance | **Not in tex** |
+| Interpretability topomap + band RSA | Spatial + correlational (exp14) | **Not in tex** (only band-stop causal in tex) |
+
+### Potential additions
+
+| Fig | Title | Source | Status |
+|---|---|---|---|
+| Discussion | HHSA holospectral contrast gradient (4 datasets) | `results/hhsa/cross_dataset_comparison/` | **NEW** — condition contrast t-maps + summary bar chart |
+| Discussion | Sleep Dep FM BA vs HHSA contrast (if exp_newdata confirms) | Pending exp_newdata | **PENDING** |
 
 ---
 
-## 5. Lock / pending / open
+## 5. Status (synced to tex 2026-04-17)
 
-| Section | Status | Blocker |
+| Section | Status | Notes |
 |---|---|---|
-| Title, §1–§5, §7 | Lock (content; outline LaTeX in progress) | — |
-| §6 (Pillar C + Master Table) | Lock; §6.2 awaiting CBraMod+REVE EEGMAT FT | GPU job |
-| §8 (power floor case study) | Lock pending D1 advisor sign-off | Does advisor agree Stress is power-floor, not main result? |
-| §9 (discussion) | Draft after §8 locked | — |
-| §10 (limitations, HNC note) | Draft; HNC inclusion pending D1 | — |
+| §1 Introduction | **Written** | SDL framing, Fig 1 SDL Spectrum |
+| §2 Related work | **Written** | |
+| §3 Methods | **Written** | Anchoring protocol, variance decomposition, HP selection |
+| §3.1 Variance Atlas | **Written** | Fig variance_atlas, Table subject_atlas |
+| §3.2 Anchor-Contrast Diagnostic | **Written** | Core section — CV gap, paired comparison, band-stop, ceiling |
+| §3.3 FM Value Within Ceiling | **Written** | Table fm_value_cross_dataset |
+| §4 Discussion | **Written** | SDL protocol, TDBRAIN intermediate, pretraining implications |
+| §5 Limitations | **Written** | Cohort size, single anchor, architecture panel |
+| §6 Conclusion | **Written** | |
+| Appendices | **Written** | PSD anchor, ADFTD split, perm null |
 
-**D1 (narrative framing)** — tentative: Option B+C hybrid (task-property +
-cross-dataset taxonomy), Stress as power floor. **Needs advisor.**
+### Open items
 
-**D2 (REVE window presentation)** — tentative: 10s-matched primary (native
-REVE config), 5s-matched supplementary. Window moved out of Results main
-text into Methods + supplementary per 2026-04-14 decision. **Needs advisor.**
+- **HHSA paragraph in Discussion**: Add holospectral contrast gradient evidence (F-HHSA) as empirical support for graded anchor-strength refinement. Figures ready in `results/hhsa/cross_dataset_comparison/`.
+- **Sleep Dep FM results** (exp_newdata running): If FM performance on Sleep Dep aligns with HHSA ranking, add as third data point in Discussion.
+- **Advisor alignment**: Confirm SDL framing is acceptable for TNSRE submission.
 
 ---
 
@@ -318,17 +222,21 @@ text into Methods + supplementary per 2026-04-14 decision. **Needs advisor.**
 | 2026-04-11 | "FT mode driven by label biology" | F17 (model × dataset interaction, not label biology alone) |
 | All pre-04-14 | "Within-subject longitudinal highest leverage" | F14 (all 3 FMs fail on within-subject DSS) |
 | All pre-04-14 | "FiLM as §5.2" | Scope-cut; not run |
+| 2026-04-14 | "Three-pillar narrative (Methodology traps / Rep diagnosis / FT interaction)" | SDL framing in tex — single deductive chain, not three pillars |
+| 2026-04-15 | "F-C direction reversal as main result" | Removed from tex; ADFTD/TDBRAIN used only for variance decomposition + Discussion |
 
 ---
 
 ## 9. Mindset note
 
-Understanding *why* a task is hard — with quantitative diagnosis,
-cross-dataset taxonomy, and statistical-power awareness — is the
-contribution. Three independent 2026 benchmarks converge on our empirical
-claim (F11); our addition is the mechanistic explanation (subject dominance
-via variance decomposition) and the model × dataset FT interaction (F17)
-they do not have.
+The paper's contribution is the **SDL diagnostic**: a mechanistic explanation
+for why EEG FMs sometimes fail, grounded in the ratio of task contrast to
+subject variance. Three independent 2026 benchmarks converge on the empirical
+observation (F11); our addition is the mechanistic explanation (subject
+dominance via variance decomposition) and the **paired controlled comparison**
+(EEGMAT rescue vs Stress fail) that isolates contrast strength as the
+governing variable.
 
-Stress stays in the paper as the cautionary tale, not as evidence of
-anything positive or negative about any specific model.
+The tex implements this as a single deductive chain (subject dominance →
+paired diagnostic → architecture ceiling → FM value within ceiling), not
+as multiple pillars or a cross-dataset taxonomy.

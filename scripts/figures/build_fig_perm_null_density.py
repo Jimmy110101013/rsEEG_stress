@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import gaussian_kde
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = Path(__file__).resolve().parents[2]
 OUT = REPO / "paper/figures/main/fig_perm_null_density.pdf"
 OUT_PNG = OUT.with_suffix(".png")
 

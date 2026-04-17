@@ -28,7 +28,7 @@ import seaborn as sns
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-REPO = Path(__file__).resolve().parents[1]
+REPO = Path(__file__).resolve().parents[2]
 EXP04 = REPO / "results/studies/exp04_eegmat_feat_multiseed"
 EXP17 = REPO / "results/studies/exp17_eegmat_cbramod_reve_ft"
 OUT_DIR = REPO / "paper/figures/main"

@@ -199,7 +199,7 @@ def phase_frozen_10s(gpu: int):
 
         # Run frozen LP on 10s features
         print(f"\n  Running frozen LP on 10s features...")
-        from scripts.stress_frozen_lp_multiseed import run_frozen_lp
+        from scripts.experiments.stress_frozen_lp_multiseed import run_frozen_lp
         # We'll do this inline since it's just sklearn, no GPU needed
     else:
         status = "FAIL" if rc != 0 else "output missing"

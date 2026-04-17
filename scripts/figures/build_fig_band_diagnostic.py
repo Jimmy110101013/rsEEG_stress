@@ -15,7 +15,7 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 DATA_JSON = ROOT / "results/studies/exp14_channel_importance/band_stop_ablation.json"
 OUT_DIR = ROOT / "paper/figures/main"
 OUT_DIR.mkdir(parents=True, exist_ok=True)

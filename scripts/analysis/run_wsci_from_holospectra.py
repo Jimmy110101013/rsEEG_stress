@@ -15,8 +15,8 @@ import time
 
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from analysis.wsci import wsci_subject, wsci_dataset
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from src.wsci import wsci_subject, wsci_dataset
 
 HOLO_DIR = "results/hhsa/holospectra"
 OUT_DIR = "results/hhsa/wsci"

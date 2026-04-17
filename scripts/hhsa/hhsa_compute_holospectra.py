@@ -15,7 +15,7 @@ import time
 
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 CACHE_DIR = "results/hhsa/cache"
 OUT_DIR = "results/hhsa/holospectra"
