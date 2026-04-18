@@ -1,0 +1,42 @@
+[exp30 main] study dir: /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp_30_sdl_vs_between
+[exp30 A] collecting FM performance
+[exp30 IO] saved fm_performance.csv (rows=60)
+[exp30 B] loading / computing variance decomposition
+[exp30 IO] saved variance_decomposition.csv (rows=18)
+[exp30 C] computing RSA (frozen feature RDM vs subject/label RDMs)
+[exp30 IO] saved rsa.csv (rows=18)
+[exp30 D] computing subject-ID decodability (LR multinomial)
+[exp30 D]   labram/stress: subj_id_ba=0.445 (n_subj=17, n=70, cv=loo)
+[exp30 D]   cbramod/stress: subj_id_ba=0.000 (n_subj=17, n=70, cv=loo)
+[exp30 D]   reve/stress: subj_id_ba=0.373 (n_subj=17, n=70, cv=loo)
+[exp30 D]   labram/eegmat: subj_id_ba=0.458 (n_subj=36, n=72, cv=skf2)
+[exp30 D]   cbramod/eegmat: subj_id_ba=0.125 (n_subj=36, n=72, cv=skf2)
+[exp30 D]   reve/eegmat: subj_id_ba=0.181 (n_subj=36, n=72, cv=skf2)
+[exp30 D]   labram/sleepdep: subj_id_ba=0.250 (n_subj=36, n=72, cv=skf2)
+[exp30 D]   cbramod/sleepdep: subj_id_ba=0.097 (n_subj=36, n=72, cv=skf2)
+[exp30 D]   reve/sleepdep: subj_id_ba=0.236 (n_subj=36, n=72, cv=skf2)
+[exp30 D]   labram/adftd: subj_id_ba=0.713 (n_subj=65, n=195, cv=skf3)
+[exp30 D]   cbramod/adftd: subj_id_ba=0.159 (n_subj=65, n=195, cv=skf3)
+[exp30 D]   reve/adftd: subj_id_ba=0.108 (n_subj=65, n=195, cv=skf3)
+[exp30 D]   labram/tdbrain: subj_id_ba=0.223 (n_subj=359, n=734, cv=skf2)
+[exp30 D]   cbramod/tdbrain: subj_id_ba=0.026 (n_subj=359, n=734, cv=skf2)
+[exp30 D]   reve/tdbrain: subj_id_ba=0.006 (n_subj=359, n=734, cv=skf2)
+[exp30 D]   labram/meditation: subj_id_ba=0.146 (n_subj=24, n=40, cv=loo)
+[exp30 D]   cbramod/meditation: subj_id_ba=0.014 (n_subj=24, n=40, cv=loo)
+[exp30 D]   reve/meditation: subj_id_ba=0.042 (n_subj=24, n=40, cv=loo)
+[exp30 IO] saved subject_decodability.csv (rows=18)
+[exp30 E] collecting / computing PERMANOVA
+[exp30 IO] saved permanova.csv (rows=18)
+[exp30 F] collecting existing HHSA contrast outputs
+[exp30 IO] saved hhsa_contrast.csv (rows=6)
+[exp30 G] building master table
+[exp30 IO] saved master_table.csv (rows=18)
+[exp30 H] computing Spearman correlations + bootstrap CIs
+/raid/jupyter-linjimmy1003.md10/UCSD_stress/scripts/analysis/exp30_run_pipeline.py:765: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rho, p = spearmanr(xf, yf)
+[exp30 IO] saved correlations.csv (rows=24)
+[exp30 I] rendering 2-panel figure
+[exp30 I] saved fig_sdl_benchmark_critique.pdf + .png
+[exp30 J] writing REPORT.md
+[exp30 J] wrote results/studies/exp_30_sdl_vs_between/REPORT.md
+[exp30 main] pipeline complete

@@ -1,6 +1,6 @@
 # TODO — Current Priorities
 
-**Last updated**: 2026-04-15
+**Last updated**: 2026-04-18 (narrative pivot to Type C critique)
 
 Update this file as priorities shift. Delete completed items; don't accumulate history.
 
@@ -10,93 +10,128 @@ Update this file as priorities shift. Delete completed items; don't accumulate h
 
 ---
 
-## Narrative direction (2026-04-14 decision)
+## Narrative direction (2026-04-18 pivot)
 
-**Stress digging paused**. Every Stress injection/erosion claim (F-C.2, ex-F05) has been
-weakened by follow-ups (D.1 LaBraM p=0.70, F-C.4 REVE window-artifact, N-F19
-CBraMod/REVE p=0.100, D.2 ShallowConvNet matches FMs). 70 rec / 14 positive regime is
-below the statistical power floor — further Stress experiments will keep producing
-"borderline" results.
+**Active paper framing**: Type C benchmark critique. See
+`docs/paper_strategy_sdl_critique.md` (revised 2026-04-18). Only two
+main-text claims now:
 
-**Paper reframe**: Stress → **power-floor case study**, not main result.
-- Main signal: **F-C** cross-dataset taxonomy (ADFTD + TDBRAIN + EEGMAT + Stress HP sweep)
-- **F-A**: subject-identity dominance across all FMs
-- exp14: neuroscience interpretability (spatial + spectral, correlational + causal)
-- Stress cautionary tale (**F-D**): G-F08 cuDNN swing + N-F19 null-indistinguishable +
-  F-D.2 architecture-independent → warns small-sample EEG benchmarks can't support FM
-  superiority claims
-- Connects to N-F11 (Brain4FMs / EEG-FM-Bench / AdaBrain-Bench concerns)
+- **C1** — FM frozen features are subject-dominated across all 6 datasets × 3 FMs
+- **C2** — subject-ID decodability predicts ΔBA in between-subject arm
+  (ρ=0.70, p=0.036, n=9) but is null in clean within-arm (n=6)
+
+**Dropped (falsified by exp_30 data):**
+- C3 (within-arm task-variance predicts ΔBA)
+- C4 (HHSA contrast tracks FM performance)
+
+**Stress is no longer the paper protagonist.** Stress is one of six
+datasets in §3.1 variance atlas, excluded from §3.2 clean within-arm
+(3/17 DASS-crossing subjects), supporting analyses in appendix.
+
+The older "Stress power-floor case study" framing from 2026-04-14 is
+superseded — but several of the downstream guardrails (G-F08 cuDNN
+swing, F-D.2 architecture-agnostic ceiling, N-F11 Brain4FMs
+concerns) remain relevant as supporting evidence for the new critique.
 
 ---
 
 ## Needs decision (advisor / you)
 
-### D1. Paper narrative framing
-**Tentative**: Option B + C hybrid (task-property framing + cross-dataset taxonomy).
-Confirm with advisor; then update `docs/paper_strategy.md`.
+### D1. Paper narrative framing ✅ RESOLVED 2026-04-18
+Type C benchmark critique. See `docs/paper_strategy_sdl_critique.md` §1–4.
 
 ### D2. How to present REVE injection (F18)
 REVE paper uses 10s windows natively → use **10s-matched (+12.8pp)** as primary.
 5s-matched (+4.8pp) goes to supplementary as robustness check.
 
+### D3. Whether to re-run FT with HP search on between-arm datasets
+Open. Our FT uses default hyperparameters across three seeds; published
+FM papers often do HP search. See "Lower priority — extend exp_30" below.
+
 ---
 
-## High priority
+## High priority — finish exp_30 + paper
 
-1. **Align advisor on updated findings + reframe**
-   - Walk through `docs/findings.md` (F-C multi-dataset taxonomy and F-D power-floor are the key claims)
-   - Confirm D1 + D2 above
+**Decision gate**: v4 results show F2 is SUPPORTED only on CI-crosses-0
+interpretation, not on point-estimate-magnitude. Within_strict ρ = +0.60
+is similar to between ρ = +0.70; the "differential claim" is currently
+underpowered. See `docs/paper_strategy_sdl_critique.md` §8 for three
+possible paper versions (A/B/C).
 
-2. **Paper drafting** (narrative locked; outlines in progress 2026-04-14)
-   - `paper/main.tex` + `paper/sections/*.tex` — outlines replacing obsolete
-     "Subject Identity Dominance Bounds FM" draft
-   - Table 1: `paper/sections/table1_master.tex` (LaTeX Master Table)
-   - Figures: `paper/figures/main/` and `paper/figures/supplementary/`
-     (provenance ledger in `paper/figures/README.md`)
+1. **✅ v4 pipeline complete** — within_strict + MLP probe done.
+   - REPORT.md §0 has honest v4 interpretation.
+   - Moves the differential claim from "confirmed" to "partially supported, underpowered".
 
-3. ~~Fill 2 missing Master Table cells — CBraMod + REVE EEGMAT FT~~ **DONE 2026-04-14**
-   - `results/studies/exp17_eegmat_cbramod_reve_ft/{cbramod,reve}_s{42,123,2024}/`
-   - CBraMod EEGMAT FT **0.620 ± 0.058** (Δ from frozen = **−11.1 pp**, largest
-     erosion in the table — pre-trained CBraMod is already optimal for EEGMAT
-     rest/task contrast and FT breaks it)
-   - REVE EEGMAT FT 0.727 ± 0.035 (Δ = +5.6 pp, modest injection)
-   - Table regenerated in `paper/figures/source_tables/master_frozen_ft_table.md`
+2. **✅ Seed-noise bootstrap done** (2026-04-18)
+   - `tables/seed_noise_bootstrap.json` — 10k-iter bootstrap on ΔBA
+   - Between-arm ρ ≈ +0.50 / −0.50 seed-robust (96–98% prob expected direction)
+   - Original point estimates ρ = 0.70 / −0.63 were optimistic (lucky seed)
+   - Within_strict ρ ≈ +0.43 (77.9% prob positive) — still underpowered
+   - Differential arm claim **not** supported under seed noise either
 
-4. ~~Rerun trial-level CV under per-rec DASS for Fig 2~~ **DONE 2026-04-14**
-   - `results/studies/exp18_trial_dass_multiseed/{labram,cbramod,reve}_s{42,123,2024}/`
-   - Per-rec DASS trial/subject gap: LaBraM **+15.2 pp**, REVE **+6.5 pp**, CBraMod **+1.2 pp** (mean +7.6 pp)
-   - Much smaller than subject-dass version (−21 pp uniform); CBraMod gap
-     almost vanishes under honest labels
-   - Fig 2 regenerated (`paper/figures/main/fig2_cv_gap.pdf`) with 3-seed error bars
-   - F01 updated with the new table
+3. **Add F4 leave-one-dataset-out robustness** (pipeline Stage K, next version)
+   - For each between-arm dataset, drop it and recompute ρ
+   - Paper claim is robust only if dropping any single dataset keeps |ρ| > 0.3 with CI not collapsing
+   - Priority: BEFORE any tex rewrite.
 
-## Lower priority
+4. **DECISION — paper version A / B / C**
+   - If user picks (A) full differential: proceed to items 5–7 below.
+   - If user picks (C) hybrid narrow: skip 5–7, go to paper drafting with current data.
+   - (B) is a Type A unified claim, not recommended.
 
-- **HNC Dementia + MDD private dataset** — branch `feat/hnc-dementia-mmd`, 308+400 subjects
-  (if Stress power floor becomes central narrative, HNC could provide the
-  high-powered counter-example)
+5. **Add TUAB to pipeline** — UPGRADED FROM LOWER PRIORITY
+   (needed to lift between-arm N for path A)
+   - ~600 subjects, binary abnormal/normal; subject-level split standard
+   - Adds 4th between-arm dataset → n = 9 → 12
+   - Cost: ~5–8 h FT per FM (15–24 h total); need to download TUAB
+   - Justification: directly shores up F2 between-arm CI, fixes "too hard/small" critique
 
-## HHSA / WSCI pipeline
+6. **Add HMC (sleep staging) to within_strict arm** — UPGRADED FROM LOWER PRIORITY
+   (needed to lift within_strict N for path A)
+   - 151 subjects, 5-class, subject-level split standard
+   - Adds 3rd within-strict dataset → n = 6 → 9
+   - Cost: ~4–6 h FT per FM (12–18 h total); need to download HMC
+   - **Most important single addition** — currently within_strict CI is
+     [−0.50, +1.00]; adding HMC should collapse this substantially.
 
-- **Rebuild HHSA L1 cache with N_ENSEMBLES=100** — current cache uses N=24
-  (monkey-patched in `hhsa_build_cache.py:39-40`), design doc specifies 100.
-  Residual noise is 2× higher. Sufficient for relative WSCI comparison across
-  datasets, but rebuild if absolute holospectrum values look unclear or noisy.
-  Affects all 5 datasets (stress, eegmat, sleep_dep, sam40, meditation).
-  Cost: ~4× slower cache build (~6 hr for all datasets).
-- **WSCI analysis** — run `scripts/run_wsci_from_holospectra.py` after
-  holospectrum computation completes. Compare EEGMAT vs Stress as validation.
-- **Extend WSCI to sleep_dep + sam40 + meditation** — L1 cache building;
-  holospectrum + WSCI scripts need dataset-specific condition splits.
+7. **ADFTD 3-class (AD/FTD/CN) to match literature** — UPGRADED
+   - Our current ADFTD is binary; literature uses 3-class
+   - Adds comparability with EEG-FM-Bench ADFTD numbers
+   - Cost: 3 seeds × 3 FMs × 2 modes = 18 runs ≈ 8 h
+   - Lower priority than TUAB + HMC; include if time permits.
 
-## On hold (not pursuing unless narrative shifts)
+8. **Literature gap table** ✅ DRAFTED 2026-04-18
+   - `paper/figures/source_tables/table1_benchmark_gap.md` — main table
+   - `paper/figures/source_tables/table1_excluded.md` — exclusion reasoning
+   - Source: EEG-FM-Bench (arXiv 2508.17742) + our exp_30
 
-- **Extend perm null to 20 perms** (would bring CBraMod/REVE p=0.100 → potentially p≤0.05
-  if injection is real, or confirm noise if not). Paused because current borderline is
-  consistent with Stress being below power floor; tighter p-value doesn't change that story.
-- **EEGNet re-sweep / multi-seed expansion** (s2024=0.411 is cuDNN-induced outlier,
-  current 0.518 ± 0.079 is weak vs ShallowConvNet 0.557 ± 0.026). ShallowConvNet alone
-  is sufficient to demonstrate F-D.2 architecture-agnostic ceiling.
+9. **Paper drafting (gated on F2 path A confirmation OR explicit (C) acceptance)**
+   - Do NOT start tex rewrite until path decision is made and data collected
+   - Target sections: swap Abstract + §1 Intro + §3 overview + Discussion
+   - Keep §3.1 variance atlas structure; replace §3.2/§3.3 with exp_30 C2 figure
+
+## Lower priority — defer until paper direction locked
+
+10. **HP search on between-arm FT** (D3 resolution)
+   - Under current Type C framing, ΔBA magnitude is not claim-load-bearing
+   - Only run if reviewers push back on "your FT is undertuned"
+   - HP grid: lr ∈ {1e-5, 5e-5, 1e-4}, wd ∈ {0, 0.01, 0.1}, drop ∈ {0, 0.1}
+   - Cost: 9 × 3 FMs × 3 datasets = 81 runs. Heavy.
+
+## HHSA / WSCI pipeline (demoted — C4 falsified)
+
+- HHSA contrast does not correlate with ΔBA at n=9 (ρ=−0.26, CI
+  wide). **Will NOT be the Type C paper's main evidence.** Lives in
+  appendix as signal-side documentation.
+- **HHSA L1 cache rebuild (N_ENSEMBLES=100)** still useful for the
+  signal-documentation role but no longer gates paper submission.
+- WSCI analysis similarly demoted.
+
+## On hold — not pursuing unless narrative shifts
+
+- **Extend perm null to 20 perms** — pre-critique claim; Type C paper
+  doesn't need this.
+- **EEGNet re-sweep** — not relevant under Type C framing.
 
 ---
 
@@ -105,19 +140,24 @@ REVE paper uses 10s windows natively → use **10s-matched (+12.8pp)** as primar
 - Subject-adversarial GRL/DANN / LEAD-style subject CE loss — N-F12
 - Canonical 0.656 as "LaBraM ceiling" — cuDNN noise (G-F08)
 - `--label subject-dass` — deprecated (G-F07)
-- Within-subject longitudinal DSS reframing — F-D.3 negative
+- Within-subject longitudinal DSS reframing — F-D.3 negative + reporting-bias concern
 - Sparse-label-subspace hypothesis — refuted
 - Obs 1702 "5s/10s frozen LP identical" — wrong, F-C.4 shows ~5pp gap
+- **C3 — within-arm task-variance predicts ΔBA** — falsified by exp_30
+- **C4 — HHSA contrast tracks FM performance** — falsified by exp_30
 
 ---
 
 ## Paper discussion section — points to weave in
 
-- GRL/DANN and LEAD negative results (N-F12) as mitigation attempts
-- Direction consistency (EEGMAT vs Stress) addresses self-report concern
+- C1 mechanism ties to pretraining without subject-invariant objectives
+- Connection to N-F12 (GRL/DANN/LEAD negative results) — motivates C2's
+  prescription for subject-invariant pretraining
+- Split protocol inconsistency in EEG-FM-Bench (stratified ADFTD vs
+  subject-level TUAB) — direct evidence for the critique
 - Brain4FMs / EEG-FM-Bench / AdaBrain-Bench convergence (N-F11)
-- ADFTD 10s vs 5s window effect (exp12 vs exp07)
-- Neuroscience triad (exp14): spatial + correlational spectral + causal spectral
-- Stress power floor: G-F08 cuDNN swing + N-F19 null-indistinguishable + F-D.2 architecture
-  doesn't matter — benchmark-design caveat for the field
-- F-C.4: REVE injection is window-dependent — window choice is a first-class concern
+- Stress power floor (G-F08 cuDNN swing + N-F19 null-indistinguishable
+  + F-D.2) — benchmark-design caveat for the field; now in service of
+  Type C critique not Type A positive claim
+- Within-arm null result (C3 falsification) — honest limitation + open
+  question for future benchmark design

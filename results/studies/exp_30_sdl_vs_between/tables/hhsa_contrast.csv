@@ -1,0 +1,7 @@
+dataset,hhsa_median_g,hhsa_max_t,hhsa_wsci,hhsa_ci_low,hhsa_ci_high,source
+stress,1.0788376331329346,4.80768346786499,,,,cross_dataset_comparison/summary_stats.npz:mean_t
+eegmat,1.40240478515625,4.846007347106934,,,,cross_dataset_comparison/summary_stats.npz:mean_t
+sleepdep,1.3163365125656128,3.8633081912994385,,,,cross_dataset_comparison/summary_stats.npz:mean_t
+adftd,,,,,,missing
+tdbrain,,,,,,missing
+meditation,0.5520232319831848,2.936647653579712,,,,cross_dataset_comparison/summary_stats.npz:mean_t

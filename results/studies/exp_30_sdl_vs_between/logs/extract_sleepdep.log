@@ -1,0 +1,72 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Extracting frozen labram features for sleepdep
+  norm=zscore, device=cuda:4, window_sec=5.0
+[INFO] Skipped 0 subjects (incomplete sessions), 0 subjects (no SessionOrder), 2 subjects (failed cache markers)
+SleepDep: 72 recordings from 36 subjects (SD=36, NS=36)
+  sleepdep: 72 recordings, 36 subjects, 19ch
+[LaBraM] Loaded 219/221 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  labram loaded: embed_dim=200
+  [1/72] epochs=60, pooled=(200,)
+  [7/72] epochs=60, pooled=(200,)
+  [14/72] epochs=60, pooled=(200,)
+  [21/72] epochs=60, pooled=(200,)
+  [28/72] epochs=60, pooled=(200,)
+  [35/72] epochs=60, pooled=(200,)
+  [42/72] epochs=60, pooled=(200,)
+  [49/72] epochs=60, pooled=(200,)
+  [56/72] epochs=60, pooled=(200,)
+  [63/72] epochs=60, pooled=(200,)
+  [70/72] epochs=60, pooled=(200,)
+
+Saved: results/features_cache/frozen_labram_sleepdep_19ch.npz
+  features: (72, 200), pids: 36, labels: {0: 36, 1: 36}
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Extracting frozen cbramod features for sleepdep
+  norm=none, device=cuda:4, window_sec=5.0
+[INFO] Skipped 0 subjects (incomplete sessions), 0 subjects (no SessionOrder), 2 subjects (failed cache markers)
+SleepDep: 72 recordings from 36 subjects (SD=36, NS=36)
+  sleepdep: 72 recordings, 36 subjects, 19ch
+[CBraMod] Loaded 209/209 params from weights/cbramod-base/pretrained_weights.pth
+  cbramod loaded: embed_dim=200
+  [1/72] epochs=60, pooled=(200,)
+  [7/72] epochs=60, pooled=(200,)
+  [14/72] epochs=60, pooled=(200,)
+  [21/72] epochs=60, pooled=(200,)
+  [28/72] epochs=60, pooled=(200,)
+  [35/72] epochs=60, pooled=(200,)
+  [42/72] epochs=60, pooled=(200,)
+  [49/72] epochs=60, pooled=(200,)
+  [56/72] epochs=60, pooled=(200,)
+  [63/72] epochs=60, pooled=(200,)
+  [70/72] epochs=60, pooled=(200,)
+
+Saved: results/features_cache/frozen_cbramod_sleepdep_19ch.npz
+  features: (72, 200), pids: 36, labels: {0: 36, 1: 36}
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Extracting frozen reve features for sleepdep
+  norm=none, device=cuda:4, window_sec=5.0
+[INFO] Skipped 0 subjects (incomplete sessions), 0 subjects (no SessionOrder), 2 subjects (failed cache markers)
+SleepDep: 72 recordings from 36 subjects (SD=36, NS=36)
+  sleepdep: 72 recordings, 36 subjects, 19ch
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  reve loaded: embed_dim=512
+  [1/72] epochs=60, pooled=(512,)
+  [7/72] epochs=60, pooled=(512,)
+  [14/72] epochs=60, pooled=(512,)
+  [21/72] epochs=60, pooled=(512,)
+  [28/72] epochs=60, pooled=(512,)
+  [35/72] epochs=60, pooled=(512,)
+  [42/72] epochs=60, pooled=(512,)
+  [49/72] epochs=60, pooled=(512,)
+  [56/72] epochs=60, pooled=(512,)
+  [63/72] epochs=60, pooled=(512,)
+  [70/72] epochs=60, pooled=(512,)
+
+Saved: results/features_cache/frozen_reve_sleepdep_19ch.npz
+  features: (72, 512), pids: 36, labels: {0: 36, 1: 36}
+=== SLEEPDEP ALL DONE ===

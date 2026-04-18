@@ -1,0 +1,12 @@
+[exp30 main] study dir: /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp_30_sdl_vs_between
+[exp30 A] collecting FM performance
+[exp30 IO] saved fm_performance.csv (rows=60)
+[exp30 B] loading / computing variance decomposition
+[exp30 IO] saved variance_decomposition.csv (rows=18)
+[exp30 C] computing RSA (frozen feature RDM vs subject/label RDMs)
+[exp30 IO] saved rsa.csv (rows=18)
+[exp30 D] computing subject-ID decodability (LR multinomial)
+[exp30 D]   labram/stress LR err: Classification metrics can't handle a mix of multiclass and unknown targets
+[exp30 D]   labram/stress: subj_id_ba=nan (n_subj=17, n=70, cv=err)
+[exp30 D]   cbramod/stress LR err: Classification metrics can't handle a mix of multiclass and unknown targets
+[exp30 D]   cbramod/stress: subj_id_ba=nan (n_subj=17, n=70, cv=err)

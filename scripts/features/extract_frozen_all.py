@@ -17,7 +17,7 @@ import sys
 import numpy as np
 import torch
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 import baseline.labram   # noqa: F401
 import baseline.cbramod  # noqa: F401
@@ -63,6 +63,22 @@ def load_dataset(name: str, norm: str, window_sec: float = 5.0):
         ds = EEGMATDataset(
             "data/eegmat", target_sfreq=200.0, window_sec=window_sec,
             norm=norm, cache_dir=f"data/cache_eegmat{cache_suffix}",
+        )
+        return ds, ds.get_patient_ids(), ds.get_labels(), 19
+    elif name == "meditation":
+        from pipeline.meditation_dataset import MeditationDataset
+        cache_suffix = "" if norm == "zscore" else f"_n{norm}"
+        ds = MeditationDataset(
+            "data/meditation", target_sfreq=200.0, window_sec=window_sec,
+            norm=norm, cache_dir=f"data/cache_meditation{cache_suffix}",
+        )
+        return ds, ds.get_patient_ids(), ds.get_labels(), 19
+    elif name == "sleepdep":
+        from pipeline.sleepdep_dataset import SleepDepDataset
+        cache_suffix = "" if norm == "zscore" else f"_n{norm}"
+        ds = SleepDepDataset(
+            "data/sleep_deprivation", target_sfreq=200.0, window_sec=window_sec,
+            norm=norm, cache_dir=f"data/cache_sleepdep{cache_suffix}",
         )
         return ds, ds.get_patient_ids(), ds.get_labels(), 19
     else:
@@ -122,7 +138,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--extractor", required=True, choices=list(MODEL_NORM.keys()))
     p.add_argument("--dataset", required=True,
-                   choices=["stress", "adftd", "tdbrain", "eegmat"])
+                   choices=["stress", "adftd", "tdbrain", "eegmat",
+                            "meditation", "sleepdep"])
     p.add_argument("--device", default="cuda:6")
     p.add_argument("--batch-size", type=int, default=16)
     p.add_argument("--window-sec", type=float, default=5.0,
@@ -143,7 +160,8 @@ def main():
     extractor = setup_extractor(model_name, n_ch, args.device)
     print(f"  {model_name} loaded: embed_dim={extractor.embed_dim}")
 
-    ds_type = "stress" if args.dataset == "stress" else "other"
+    # stress/meditation/sleepdep return 5-tuple (extra stress_score); others return 4-tuple
+    ds_type = "stress" if args.dataset in ("stress", "meditation", "sleepdep") else "other"
     features, pids_arr, labels_arr = extract_features(
         extractor, ds, args.device, args.batch_size, ds_type)
 

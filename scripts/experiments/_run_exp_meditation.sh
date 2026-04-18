@@ -7,12 +7,12 @@ export PYTHONUNBUFFERED=1
 GPU="${1:-cuda:5}"
 PY=/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python
 DATASET=meditation
-EXP_ROOT=results/studies/exp_newdata
+EXP_ROOT=studies/exp_newdata  # train_ft.py prepends "results/"
 
 run_one() {
     local MODEL=$1 NORM=$2 MODE=$3 SEED=$4
     local RUN_ID="${EXP_ROOT}/${DATASET}_${MODE}_${MODEL}_s${SEED}"
-    local SUMMARY="${RUN_ID}/summary.json"
+    local SUMMARY="results/${RUN_ID}/summary.json"
 
     if [ -f "$SUMMARY" ]; then
         echo "[SKIP] ${DATASET}_${MODE}_${MODEL}_s${SEED} (done)"

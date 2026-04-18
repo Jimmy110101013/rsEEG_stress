@@ -1,0 +1,69 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Extracting frozen labram features for meditation
+  norm=zscore, device=cuda:3, window_sec=5.0
+Meditation: 40 recordings from 24 subjects (expert=22, novice=18)
+  meditation: 40 recordings, 24 subjects, 19ch
+[LaBraM] Loaded 219/221 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  labram loaded: embed_dim=200
+  [1/40] epochs=60, pooled=(200,)
+  [4/40] epochs=60, pooled=(200,)
+  [8/40] epochs=60, pooled=(200,)
+  [12/40] epochs=60, pooled=(200,)
+  [16/40] epochs=60, pooled=(200,)
+  [20/40] epochs=60, pooled=(200,)
+  [24/40] epochs=60, pooled=(200,)
+  [28/40] epochs=60, pooled=(200,)
+  [32/40] epochs=60, pooled=(200,)
+  [36/40] epochs=60, pooled=(200,)
+  [40/40] epochs=60, pooled=(200,)
+
+Saved: results/features_cache/frozen_labram_meditation_19ch.npz
+  features: (40, 200), pids: 24, labels: {0: 18, 1: 22}
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Extracting frozen cbramod features for meditation
+  norm=none, device=cuda:3, window_sec=5.0
+Meditation: 40 recordings from 24 subjects (expert=22, novice=18)
+  meditation: 40 recordings, 24 subjects, 19ch
+[CBraMod] Loaded 209/209 params from weights/cbramod-base/pretrained_weights.pth
+  cbramod loaded: embed_dim=200
+  [1/40] epochs=60, pooled=(200,)
+  [4/40] epochs=60, pooled=(200,)
+  [8/40] epochs=60, pooled=(200,)
+  [12/40] epochs=60, pooled=(200,)
+  [16/40] epochs=60, pooled=(200,)
+  [20/40] epochs=60, pooled=(200,)
+  [24/40] epochs=60, pooled=(200,)
+  [28/40] epochs=60, pooled=(200,)
+  [32/40] epochs=60, pooled=(200,)
+  [36/40] epochs=60, pooled=(200,)
+  [40/40] epochs=60, pooled=(200,)
+
+Saved: results/features_cache/frozen_cbramod_meditation_19ch.npz
+  features: (40, 200), pids: 24, labels: {0: 18, 1: 22}
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Extracting frozen reve features for meditation
+  norm=none, device=cuda:3, window_sec=5.0
+Meditation: 40 recordings from 24 subjects (expert=22, novice=18)
+  meditation: 40 recordings, 24 subjects, 19ch
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  reve loaded: embed_dim=512
+  [1/40] epochs=60, pooled=(512,)
+  [4/40] epochs=60, pooled=(512,)
+  [8/40] epochs=60, pooled=(512,)
+  [12/40] epochs=60, pooled=(512,)
+  [16/40] epochs=60, pooled=(512,)
+  [20/40] epochs=60, pooled=(512,)
+  [24/40] epochs=60, pooled=(512,)
+  [28/40] epochs=60, pooled=(512,)
+  [32/40] epochs=60, pooled=(512,)
+  [36/40] epochs=60, pooled=(512,)
+  [40/40] epochs=60, pooled=(512,)
+
+Saved: results/features_cache/frozen_reve_meditation_19ch.npz
+  features: (40, 512), pids: 24, labels: {0: 18, 1: 22}
+=== MEDITATION ALL DONE ===
