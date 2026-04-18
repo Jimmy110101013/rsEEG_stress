@@ -145,6 +145,66 @@ headline figure. Everything else is supplementary.
 
 ---
 
+## 4b. Figure and table plan (TNSRE target, refined 2026-04-18)
+
+**Target**: IEEE Transactions on Neural Systems and Rehabilitation
+Engineering. Convention is 6–10 main figures + 3–5 tables; supplementary
+is used sparingly for raw/derivative data, not headline evidence.
+
+### Main figures (5)
+
+| # | Title | Section | Content |
+|---|---|---|---|
+| Fig 1 | Experimental design overview | §2 | Pipeline schematic: 6 datasets (3 within + 3 between, with subject counts and label design shown) → 3 FMs → LP/FT protocol → analysis metrics tree |
+| Fig 2 | Benchmark literature gap | §1.1 | Visualisation of Table II. X = benchmarks grouped by design; y = BA; Frozen→FT arrow per FM. Motivation figure. |
+| Fig 3 | Variance atlas + subject-ID decodability (2-panel composite) | §3.1 | Panel A: 3 FM × 6 dataset matrix of stacked Label%/Subject%/Residual% bars. Panel B: subject_id_ba_lr bars for the same 18 cells, arm-coloured. C1 evidence. |
+| Fig 4 | C2 main — 2 predictors × 2 arms scatter | §3.2 | 2×2 grid: rows = {subject_id_ba_lr, subject_to_label_ratio}, columns = {within_strict (n=6), between (n=9)}. Each panel shows ΔBA vs predictor with seed-robust ρ + 95% CI annotation. Between panels visually highlighted. Main claim figure. |
+| Fig 5 | Mechanism schematic + take-home (optional, deletable if space-tight) | §4 | Conceptual diagram: subject-ID-decodable features + label signal not buried → FT uses subject as shortcut. Frames the interpretation for clinical/biomedical readers. |
+
+**Figures dropped vs earlier 8-figure plan:**
+- Subject-ID decodability standalone (merged into Fig 3 Panel B)
+- subject_to_label_ratio scatter standalone (merged into Fig 4 bottom row)
+- Seed-noise bootstrap histogram (moved to supplementary S2)
+- HHSA main figure (moved to supplementary S4; C4 is falsified so no main-text real estate)
+
+### Main tables (4)
+
+| # | Title | Section | Content |
+|---|---|---|---|
+| Table I | Dataset summary | §2.1 | N subjects, N recordings, label design, task type, source per dataset |
+| Table II | Benchmark gap (literature + ours) | §1.1 + §2 | Frozen → FT BA across three FMs under explicit subject-level CV. Current draft at `paper/figures/source_tables/table1_benchmark_gap.md`. |
+| Table III | FM performance matrix | §3 | 18 cells × (LP mean ± std, FT mean ± std, ΔBA ± seed std, n_seed). Full reproduction of raw BA. |
+| Table IV | Master correlation results | §3.2 + §3.3 | Predictor × arm × (ρ point, 95% CI, seed-resampled median ρ + CI, p). 8 predictors × 4 arms. |
+
+**Table dropped vs earlier 5-table plan:**
+- Per-dataset variance/RSA/PERMANOVA details table (redundant with Fig 3; moved to supplementary S5 if needed)
+
+### Supplementary (4)
+
+| # | Title | Content |
+|---|---|---|
+| S1 | Excluded benchmarks list | `paper/figures/source_tables/table1_excluded.md` — benchmarks excluded from Table II due to trial-level or ambiguous CV split |
+| S2 | Seed-noise bootstrap histograms | 10 000-iter distribution of ρ for each (predictor, arm); complements Fig 4 annotations |
+| S3 | Stress DASS design degeneracy | Per-subject label-crossing count; justifies §2.1 Stress exclusion from clean within-arm |
+| S4 | HHSA per-dataset contrast + per-seed ΔBA raw numbers | C4 negative result documentation + reproducibility data |
+
+### Production time estimate
+
+~18–20 hours for all figures + tables at TNSRE quality, excluding tex
+writing. Feasible in 3–5 intensive days.
+
+### Execution order (first-draft)
+
+1. Fig 4 (C2 main 2×2 scatter) — anchors the paper; starts here
+2. Fig 3 (variance atlas composite) — C1 evidence
+3. Fig 2 (benchmark gap visualisation)
+4. Fig 1 (pipeline schematic)
+5. Tables I–IV (LaTeX formatting from existing CSVs / markdown drafts)
+6. Supplementary S1–S4
+7. Fig 5 (optional; write only if Discussion text needs it)
+
+---
+
 ## 5. Stress's role in v2
 
 Stress is NOT the protagonist in v2. It is one of six test datasets,

@@ -105,10 +105,18 @@ possible paper versions (A/B/C).
    - `paper/figures/source_tables/table1_excluded.md` — exclusion reasoning
    - Source: EEG-FM-Bench (arXiv 2508.17742) + our exp_30
 
-9. **Paper drafting (gated on F2 path A confirmation OR explicit (C) acceptance)**
-   - Do NOT start tex rewrite until path decision is made and data collected
-   - Target sections: swap Abstract + §1 Intro + §3 overview + Discussion
-   - Keep §3.1 variance atlas structure; replace §3.2/§3.3 with exp_30 C2 figure
+9. **Figure + table plan for TNSRE** ✅ FINALISED 2026-04-18
+   - Target venue: IEEE TNSRE (journal, not conference)
+   - Main: **5 figures + 4 tables** (was 8+5 in earlier draft — refined for TNSRE scope)
+   - Supp: 4 items (excluded benchmarks, seed-noise histograms, Stress degeneracy, HHSA + raw seeds)
+   - Full detail in `docs/paper_strategy_sdl_critique.md` §4b
+   - Execution order: Fig 4 (C2 main) → Fig 3 (variance atlas) → Fig 2 (gap) → Fig 1 (schematic) → Tables → Supp
+   - Production estimate: ~18–20 h figure/table work + tex writing
+
+10. **Paper drafting (gated on F2 path A confirmation OR explicit (C) acceptance)**
+    - Do NOT start tex rewrite until path decision is made and data collected
+    - Target sections: swap Abstract + §1 Intro + §3 overview + Discussion
+    - Keep §3.1 variance atlas structure; replace §3.2/§3.3 with exp_30 C2 figure
 
 ## Lower priority — defer until paper direction locked
 
