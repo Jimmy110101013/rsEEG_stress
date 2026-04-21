@@ -33,10 +33,12 @@ import matplotlib as mpl
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch, FancyArrowPatch
 
+import re as _re
 REPO = Path('/raid/jupyter-linjimmy1003.md10/UCSD_stress')
-OUT_MAIN = REPO / 'paper/figures/main'
+# paper/figures/main/ is RESERVED for user's hand-composited final figures (PPT output).
+# Auto-generated subfigures land in paper/figures/figN/ where N = figure number.
+OUT_ROOT = REPO / 'paper/figures'
 OUT_APP  = REPO / 'paper/figures/appendix'
-OUT_MAIN.mkdir(parents=True, exist_ok=True)
 OUT_APP.mkdir(parents=True, exist_ok=True)
 
 mpl.rcParams.update({
@@ -58,7 +60,16 @@ W_SINGLE = 8.9 * CM
 W_DOUBLE = 18.3 * CM
 FMS = ['labram','cbramod','reve']
 
-def save(fig, name, out_dir=OUT_MAIN):
+def save(fig, name, out_dir=None):
+    # Route by fig number in the filename: fig5b_* → paper/figures/fig5/
+    # Appendix figures (fig_a1, fig_b2 etc.) go to paper/figures/appendix/
+    if out_dir is None:
+        m = _re.match(r'fig(\d+)', name)
+        if m:
+            out_dir = OUT_ROOT / f'fig{m.group(1)}'
+        else:
+            out_dir = OUT_APP
+    out_dir.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_dir/f'{name}.pdf'); fig.savefig(out_dir/f'{name}.png')
     print(f'saved → {(out_dir/f"{name}.pdf").relative_to(REPO)} + .png')
 """
@@ -66,146 +77,77 @@ def save(fig, name, out_dir=OUT_MAIN):
 # ============================================================
 # FIG 2 — Subject-dominated representation geometry
 # ============================================================
-FIG2 = r"""# Fig 2 — Representation geometry: 2 rows × 3 datasets
-# Row 1: variance stacked bars per dataset (3 FM × frozen/FT)
-# Row 2: RSA scatter per dataset (3 FM points, label-r vs subject-r)
-va = json.load(open(REPO/'paper/figures/_historical/source_tables/variance_analysis_all.json'))
-fit = json.load(open(REPO/'results/studies/exp06_fm_task_fitness/fitness_metrics.json'))['per_model_dataset']
-sd = json.load(open(REPO/'paper/figures/_historical/source_tables/sleepdep_variance_rsa.json'))
-# merge sleepdep into both dicts (va uses label_frac keys, fit uses rsa_*_r keys)
-for k, v in sd.items():
-    va[k] = v
-    fit[k] = v  # sd cells already carry rsa_label_r / rsa_subject_r
+FIG2 = r"""# Fig 2 — Representation structure across the 4-dataset 2×2 factorial
+# 2×2 grid: (within|between) × (coherent|absent/incoherent)
+# Each panel: variance stacked bars (frz/FT, 3 FMs) + callout (dir_cons or Δlabel_frac)
+va      = json.load(open(REPO/'paper/figures/_historical/source_tables/variance_analysis_all.json'))
+va_sd   = json.load(open(REPO/'paper/figures/_historical/source_tables/sleepdep_variance_rsa.json'))
+dc_main = json.load(open(REPO/'paper/figures/_historical/source_tables/f14_within_subject.json'))
+dc_sd   = json.load(open(REPO/'paper/figures/_historical/source_tables/sleepdep_within_subject.json'))
 
-DATASETS = ['stress', 'eegmat', 'sleepdep']
-DS_TITLE = {'stress': 'STRESS  (subject-label regime)',
-            'eegmat': 'EEGMAT  (within-subject regime)',
-            'sleepdep': 'SLEEPDEP  (within-subject regime)'}
-FM_MARKER = {'labram': 'o', 'cbramod': 's', 'reve': 'D'}
+def variance_entry(fm, ds):
+    return va_sd.get(f'{fm}_{ds}') if ds == 'sleepdep' else va.get(f'{fm}_{ds}')
 
-fig = plt.figure(figsize=(W_DOUBLE, W_DOUBLE*0.65))
-gs_top = fig.add_gridspec(1, 3, left=0.07, right=0.98, top=0.95, bottom=0.60, wspace=0.22)
-gs_bot = fig.add_gridspec(1, 3, left=0.07, right=0.98, top=0.44, bottom=0.08, wspace=0.32)
+def dir_cons(fm, ds):
+    if ds == 'eegmat':   return dc_main['frozen']['eegmat'][fm]['dir_consistency']
+    if ds == 'sleepdep': return dc_sd['frozen']['sleepdep'][fm]['dir_consistency']
+    return None
 
-legend_handles = [
-    Patch(color='#B8442C', label='Label'),
-    Patch(color='#1f3a5f', label='Subject'),
-    Patch(color='#BBBBBB', label='Residual'),
-]
+PANELS = [('eegmat',   'EEGMAT',        'Within × coherent',   'dir_cons'),
+          ('sleepdep', 'SleepDep',      'Within × incoherent', 'dir_cons'),
+          ('adftd',    'ADFTD',         'Between × coherent',  'delta_label'),
+          ('stress',   'Stress (DASS)', 'Between × absent',    'delta_label')]
+FM_PRETTY = {'labram': 'LaBraM', 'cbramod': 'CBraMod', 'reve': 'REVE'}
 
-# ---- Row 1: variance stacked bars per dataset ----
-for col, ds in enumerate(DATASETS):
-    ax = fig.add_subplot(gs_top[0, col])
-    fm_tick_pos = []
+fig, axes = plt.subplots(2, 2, figsize=(W_DOUBLE, W_DOUBLE*0.75), sharey=True)
+for ax, (ds, pretty, quadrant, metric) in zip(axes.flat, PANELS):
     for i, fm in enumerate(FMS):
-        c = va[f'{fm}_{ds}']
-        fr_l, fr_s = c['frozen_label_frac'], c['frozen_subject_frac']
-        ft_l, ft_s = c['ft_label_frac'], c['ft_subject_frac']
-        if ft_l is None: ft_l = 0
-        if ft_s is None: ft_s = 0
-        fr_r = max(0, 100-fr_l-fr_s); ft_r = max(0, 100-ft_l-ft_s)
-        x0 = i*2.3; x1 = i*2.3 + 0.95
-        for xp, (l, sb, r), hatch in zip(
-                [x0, x1],
-                [(fr_l, fr_s, fr_r), (ft_l, ft_s, ft_r)],
-                [None, '///']):
-            ax.bar(xp, l,  color='#B8442C', width=0.9, hatch=hatch, edgecolor='white', lw=0.3)
-            ax.bar(xp, sb, bottom=l,    color='#1f3a5f', width=0.9, hatch=hatch, edgecolor='white', lw=0.3)
-            ax.bar(xp, r,  bottom=l+sb, color='#BBBBBB', width=0.9, hatch=hatch, edgecolor='white', lw=0.3)
-        # Mini 'fr'/'FT' label just above the axis (inside plot area, small)
-        ax.text(x0, 2, 'fr', ha='center', va='bottom', fontsize=6.2, color='white', fontweight='bold')
-        ax.text(x1, 2, 'FT', ha='center', va='bottom', fontsize=6.2, color='white', fontweight='bold')
-        fm_tick_pos.append(((x0+x1)/2, fm.upper(), FM_COLOR[fm]))
-    ax.set_xticks([p[0] for p in fm_tick_pos])
-    ax.set_xticklabels([p[1] for p in fm_tick_pos], fontsize=7.3, fontweight='bold')
-    for lbl, (_, _, c) in zip(ax.get_xticklabels(), fm_tick_pos):
-        lbl.set_color(c)
-    ax.set_ylim(0, 100); ax.set_xlim(-0.8, 2*2.3 + 1.5)
-    ax.set_title(DS_TITLE[ds], fontsize=8.5, pad=4)
-    if col == 0:
-        ax.set_ylabel('Variance fraction (%)', fontsize=8.5)
+        entry = variance_entry(fm, ds)
+        if entry is None: continue
+        fs, fl = entry.get('frozen_subject_frac') or 0, entry.get('frozen_label_frac') or 0
+        ts, tl = entry.get('ft_subject_frac')     or 0, entry.get('ft_label_frac')     or 0
+        ax.bar(3*i,   fs, width=0.8, color=FM_COLOR[fm], alpha=0.35, edgecolor='k', lw=0.5)
+        ax.bar(3*i,   fl, width=0.8, bottom=fs, color=FM_COLOR[fm], alpha=0.95, edgecolor='k', lw=0.5)
+        ax.bar(3*i+1, ts, width=0.8, color=FM_COLOR[fm], alpha=0.35, edgecolor='k', lw=0.5, hatch='///')
+        ax.bar(3*i+1, tl, width=0.8, bottom=ts, color=FM_COLOR[fm], alpha=0.95, edgecolor='k', lw=0.5, hatch='///')
+        ax.text(3*i,   fs+fl+2, f'{fl:.1f}', ha='center', fontsize=6.5, fontweight='bold')
+        ax.text(3*i+1, ts+tl+2, f'{tl:.1f}', ha='center', fontsize=6.5, fontweight='bold')
+        ax.text(3*i,   4, 'frz', ha='center', fontsize=6, color='white', fontweight='bold')
+        ax.text(3*i+1, 4, 'FT',  ha='center', fontsize=6, color='white', fontweight='bold')
+    ax.set_xticks([3*i+0.5 for i in range(len(FMS))])
+    ax.set_xticklabels([FM_PRETTY[fm] for fm in FMS], fontsize=8, fontweight='bold')
+    for i, fm in enumerate(FMS): ax.get_xticklabels()[i].set_color(FM_COLOR[fm])
+    ax.set_ylim(0, 105); ax.set_xlim(-1, 8)
+    if ax in (axes[0,0], axes[1,0]): ax.set_ylabel('variance explained (%)')
+    ax.set_title(f'{pretty}\n({quadrant})', fontsize=9, pad=4)
+    ax.grid(axis='y', alpha=0.25, lw=0.4)
+
+    if metric == 'dir_cons':
+        vals = [(fm, dir_cons(fm, ds)) for fm in FMS]
+        s = '  '.join(f'{FM_PRETTY[fm][:3]}={v:+.3f}' for fm, v in vals if v is not None)
+        ax.text(0.02, 0.97, f'dir_consistency (frozen):\n{s}', transform=ax.transAxes,
+                fontsize=6.5, va='top', bbox=dict(boxstyle='round,pad=0.3', facecolor='#FFF8E1', edgecolor='#888', lw=0.4))
     else:
-        ax.set_yticklabels([])
-# Figure-level legend in the strip between rows 1 and 2
-legend_handles_full = legend_handles + [
-    Patch(facecolor='white', edgecolor='#555', hatch='///', label='hatched = FT'),
-]
-fig.legend(handles=legend_handles_full, loc='center', bbox_to_anchor=(0.5, 0.515),
-           ncol=4, frameon=False, fontsize=7.2, handlelength=1.2,
-           handletextpad=0.4, columnspacing=1.8)
+        vals = [(fm, (variance_entry(fm, ds) or {}).get('delta_label_frac')) for fm in FMS]
+        s = '  '.join(f'{FM_PRETTY[fm][:3]}={v:+.1f}' for fm, v in vals if v is not None)
+        ax.text(0.02, 0.97, f'Δlabel_frac (FT − frz, %):\n{s}', transform=ax.transAxes,
+                fontsize=6.5, va='top', bbox=dict(boxstyle='round,pad=0.3', facecolor='#E8F5E9', edgecolor='#888', lw=0.4))
 
-# ---- Row 2: RSA scatter per dataset (frozen → FT arrows) ----
-# Pull FT-side RSA for stress + eegmat (and sleepdep carries its own FT values)
-ft_se = json.load(open(REPO/'paper/figures/_historical/source_tables/ft_rsa_stress_eegmat.json'))
-
-def rsa_pair(fm, ds):
-    # returns (frozen_label_r, frozen_subj_r, ft_label_r, ft_subj_r)
-    k = f'{fm}_{ds}'
-    fr = fit[k]
-    if ds == 'sleepdep':
-        ft_l = sd[k]['ft_rsa_label_r']; ft_s = sd[k]['ft_rsa_subject_r']
-    else:
-        ft_l = ft_se[k]['ft_rsa_label_r']; ft_s = ft_se[k]['ft_rsa_subject_r']
-    return fr['rsa_label_r'], fr['rsa_subject_r'], ft_l, ft_s
-
-for col, ds in enumerate(DATASETS):
-    ax = fig.add_subplot(gs_bot[0, col])
-    lo, hi = -0.06, 0.36
-    ax.plot([lo, hi], [lo, hi], ls=':', color='#AAA', lw=0.6, zorder=1)
-    ax.axhline(0, color='k', lw=0.35); ax.axvline(0, color='k', lw=0.35)
-    for fm in FMS:
-        fl, fs, tl, ts = rsa_pair(fm, ds)
-        c = FM_COLOR[fm]
-        # Frozen: hollow marker
-        ax.scatter(fl, fs, s=32, facecolor='white', edgecolor=c, lw=1.0,
-                   marker=FM_MARKER[fm], zorder=3)
-        # Arrow frozen → FT
-        ax.annotate('', xy=(tl, ts), xytext=(fl, fs),
-                    arrowprops=dict(arrowstyle='-|>,head_length=0.35,head_width=0.22',
-                                    color=c, lw=1.0, alpha=0.85))
-        # FT: filled marker
-        ax.scatter(tl, ts, s=34, facecolor=c, edgecolor='k', lw=0.4,
-                   marker=FM_MARKER[fm], zorder=4)
-    ax.set_xlim(lo, hi); ax.set_ylim(lo, hi)
-    ax.set_aspect('equal', adjustable='box')
-    ax.tick_params(labelsize=6.8)
-    ax.set_xlabel('r(FM RDM, label RDM)', fontsize=7.8)
-    if col == 0:
-        ax.set_ylabel('r(FM RDM, subject RDM)', fontsize=7.8)
-    if col == len(DATASETS) - 1:
-        fm_leg = [Line2D([],[], marker=FM_MARKER[fm], ls='', color=FM_COLOR[fm],
-                         markeredgecolor=FM_COLOR[fm], markersize=5, label=fm.upper())
-                  for fm in FMS]
-        state_leg = [
-            Line2D([],[], marker='o', ls='', markerfacecolor='white',
-                   markeredgecolor='#555', markersize=5, label='frozen'),
-            Line2D([],[], marker='o', ls='', markerfacecolor='#555',
-                   markeredgecolor='k', markersize=5, label='FT'),
-        ]
-        l1 = ax.legend(handles=fm_leg, loc='lower right', fontsize=6.2,
-                       frameon=False, handletextpad=0.2, borderaxespad=0.3)
-        ax.add_artist(l1)
-        ax.legend(handles=state_leg, loc='upper left', fontsize=6.2,
-                  frameon=False, handletextpad=0.2, borderaxespad=0.3)
-
-save(fig, 'fig2_representation_geometry')"""
+legend = [Patch(facecolor='#888', alpha=0.35, edgecolor='k', lw=0.5, label='subject_frac'),
+          Patch(facecolor='#888', alpha=0.95, edgecolor='k', lw=0.5, label='label_frac'),
+          Patch(facecolor='white', edgecolor='k', lw=0.5, label='frozen'),
+          Patch(facecolor='white', edgecolor='k', lw=0.5, hatch='///', label='fine-tuned')]
+fig.legend(handles=legend, loc='lower center', ncol=4, fontsize=7, frameon=False, bbox_to_anchor=(0.5, -0.01))
+fig.suptitle('Representation structure across the 4-dataset 2×2 factorial', fontsize=10, y=0.995)
+plt.tight_layout(rect=[0, 0.04, 1, 0.97])
+save(fig, 'fig2_representation_2x2')"""
 
 
 # ============================================================
 # FIG 3 — Honest evaluation
 # ============================================================
-FIG3 = r"""# Fig 3 — Honest evaluation closes the Wang gap
-# Left: funnel; Right: perm-null KDE × 2 (LaBraM × {Stress, EEGMAT})
-
-def load_ms(ds, fm):
-    p = REPO/f'results/studies/perwindow_lp_all/{ds}/{fm}_multi_seed.json'
-    return json.load(open(p)) if p.exists() else None
-
-sub_ba = {fm: load_ms('stress', fm)['mean_3seed_42_123_2024'] for fm in FMS}
-ba_lo, ba_hi = min(sub_ba.values()), max(sub_ba.values())
-
-cl = json.load(open(REPO/'paper/figures/_historical/source_tables/f03_f16_classical_70rec.json'))
-cl_xgb = float(np.mean([f['bal_acc'] for f in cl['models']['XGBoost']['folds']]))
+FIG3 = r"""# Fig 3 — Honest evaluation: permutation null shows chance on Stress, signal on EEGMAT
+# Funnel dropped — Wang gap & absolute BAs now in Table 1. Fig 3 owns the statistical claim only.
 
 null_dir = REPO/'results/studies/exp27_paired_null/stress'
 nulls_stress = np.array([json.load(open(d/'summary.json'))['subject_bal_acc']
@@ -220,53 +162,29 @@ def real_ft(ds, fm='labram'):
     return float(np.mean([r['bal_acc'] for r in rows]))
 real_s, real_e = real_ft('stress'), real_ft('eegmat')
 
-fig = plt.figure(figsize=(W_DOUBLE, W_DOUBLE*0.40))
-gs = fig.add_gridspec(nrows=2, ncols=2, left=0.07, right=0.98, top=0.92, bottom=0.13,
-                       width_ratios=[1.1,1], wspace=0.35, hspace=0.55)
-ax_f = fig.add_subplot(gs[:,0])
-ax_s = fig.add_subplot(gs[0,1])
-ax_e = fig.add_subplot(gs[1,1])
-
-steps = [
-    ('Wang 2025 (trial-CV)',            0.9047,              '#B8442C'),
-    (f'Subject-disjoint 5-fold\n(3 FM range)', (ba_lo+ba_hi)/2, '#1f3a5f'),
-    ('Permutation null\nbaseline',       float(nulls_stress.mean()), '#888'),
-    ('Classical XGBoost\n(70 rec)',       cl_xgb,              '#2E8B57'),
-]
-for i,(lab,v,col) in enumerate(steps):
-    ax_f.barh(-i, v, color=col, height=0.6, edgecolor='k', lw=0.3)
-    ax_f.text(v+0.01, -i, f'{v:.3f}', va='center', fontsize=7)
-ax_f.errorbar((ba_lo+ba_hi)/2, -1, xerr=[[(ba_lo+ba_hi)/2-ba_lo],[ba_hi-(ba_lo+ba_hi)/2]],
-              fmt='none', color='k', capsize=3)
-ax_f.axvline(0.5, color='k', ls=':', lw=0.6)
-ax_f.set_yticks(range(0,-len(steps),-1)); ax_f.set_yticklabels([s[0] for s in steps], fontsize=7.5)
-ax_f.set_xlim(0.4,1.0); ax_f.set_xlabel('Balanced accuracy (Stress)', fontsize=8.5)
-
-# perm-null densities
-for ax, nulls, real, ds in [(ax_s, nulls_stress, real_s, 'Stress'),
-                             (ax_e, nulls_eeg, real_e, 'EEGMAT')]:
-    ax.hist(nulls, bins=10, color='#BBBBBB', edgecolor='k', lw=0.3, alpha=0.85)
-    ax.axvline(real, color='#B8442C', lw=1.8)
+fig, axes = plt.subplots(1, 2, figsize=(W_DOUBLE, W_DOUBLE*0.34),
+                         gridspec_kw={'wspace': 0.22, 'left': 0.07, 'right': 0.98,
+                                      'top': 0.90, 'bottom': 0.20})
+for ax, nulls, real, ds in [(axes[0], nulls_stress, real_s, 'Stress'),
+                             (axes[1], nulls_eeg, real_e, 'EEGMAT')]:
+    ax.hist(nulls, bins=12, color='#BBBBBB', edgecolor='k', lw=0.4, alpha=0.9)
+    ax.axvline(real, color='#B8442C', lw=2.2)
+    ax.axvline(0.5, color='k', ls=':', lw=0.6)
     k = int(np.sum(nulls >= real)); p = (k+1)/(len(nulls)+1)
-    ax.set_title(f'LaBraM × {ds}    p = {p:.2f}', fontsize=8.5)
-    ax.set_xlabel('Subject-level BA (null)', fontsize=7.5)
-    ax.set_ylabel('n seeds', fontsize=7.5)
-    ax.text(real+0.01, ax.get_ylim()[1]*0.85, f'real={real:.2f}', color='#B8442C', fontsize=7)
-
-plt.show()
+    ax.set_title(f'LaBraM × {ds}    real BA = {real:.3f},  p = {p:.2f}', fontsize=9)
+    ax.set_xlabel('Subject-level BA under label permutation', fontsize=8.5)
+    ax.set_ylabel('# permutation seeds', fontsize=8.5)
+    ax.set_xlim(0.38, 0.78)
 save(fig, 'fig3_honest_evaluation')
 """
 
 # ============================================================
 # FIG 4 — Contrast-anchoring
 # ============================================================
-FIG4 = r"""# Fig 4 — Contrast-anchoring: between-subject + within-subject
-# Top: Cleveland dot plot (6 rows); bottom: UMAP feature-space trajectory × 6 cells
-import umap, pandas as pd
-
-def load_ms(ds, fm):
-    p = REPO/f'results/studies/perwindow_lp_all/{ds}/{fm}_multi_seed.json'
-    return json.load(open(p)) if p.exists() else None
+FIG4 = r"""# Fig 4 — Within-subject contrast-anchoring (EEGMAT + SleepDep only)
+# Each sub-panel saved as separate PDF for PPT composition; no gridspec overlap.
+# Stress / ADFTD excluded — dir_consistency undefined for between-subject labels.
+import umap
 
 def load_feat(fm, ds):
     ch = 30 if ds=='stress' else 19
@@ -277,102 +195,83 @@ def umap2(X, seed=42):
     return umap.UMAP(n_components=2, n_neighbors=10, min_dist=0.25,
                      random_state=seed, metric='cosine').fit_transform(X)
 
+def paired_endpoints(pids, y2):
+    pairs = []
+    for s in np.unique(pids):
+        m = (pids==s)
+        if m.sum() < 2 or len(np.unique(y2[m])) != 2: continue
+        lo_c = np.where(m & (y2==0))[0]
+        hi_c = np.where(m & (y2==1))[0]
+        if len(lo_c)==0 or len(hi_c)==0: continue
+        pairs.append((lo_c[0], hi_c[0]))
+    return pairs
+
 sup = json.load(open(REPO/'results/studies/exp11_longitudinal_dss/within_subject_supplementary.json'))
-stress_df = pd.read_csv(REPO/'data/comprehensive_labels.csv')[['Patient_ID','Stress_Score']]
+sd_sup = json.load(open(REPO/'paper/figures/_historical/source_tables/sleepdep_within_subject.json'))
+for mode in ['frozen', 'ft']:
+    sup[mode]['sleepdep'] = sd_sup[mode]['sleepdep']
 
-fig = plt.figure(figsize=(W_DOUBLE, W_DOUBLE*0.92))
-gs_top = fig.add_gridspec(nrows=1, ncols=1, left=0.22, right=0.95, top=0.97, bottom=0.72)
-gs_bot = fig.add_gridspec(nrows=2, ncols=3, left=0.08, right=0.98, top=0.57, bottom=0.09,
-                           hspace=0.22, wspace=0.06)
+ARROW_COLOR = {'eegmat': '#1F6B6B', 'sleepdep': '#7A4B9C'}
 
-# ---- Top: Cleveland dot plot (between-subject LP) ----
-ax_d = fig.add_subplot(gs_top[0])
-rows = []  # (label, mean, std, color)
-for ds in ['eegmat','stress']:
-    for fm in FMS:
-        j = load_ms(ds, fm)
-        rows.append((f'{fm.upper()}·{ds.upper()}', j['mean_3seed_42_123_2024'],
-                     j['std_3seed_42_123_2024_ddof1'], DS_COLOR[ds]))
-y = np.arange(len(rows))
-for i,(lab, m, s, c) in enumerate(rows):
-    ax_d.errorbar(m, y[i], xerr=s, fmt='o', color=c, capsize=3, ms=8,
-                  markeredgecolor='k', markeredgewidth=0.4)
-ax_d.set_yticks(y); ax_d.set_yticklabels([r[0] for r in rows], fontsize=7.5)
-ax_d.axvline(0.5, color='k', ls=':', lw=0.6)
-ax_d.set_xlim(0.35, 0.85)
-ax_d.set_xlabel('Subject-disjoint 5-fold BA (3-seed mean ± SD)', fontsize=8.5)
-ax_d.invert_yaxis()
-ax_d.set_title('Between-subject LP', fontsize=9, pad=6)
-
-# ---- Bottom: UMAP trajectory (same as Fig 4.4C v2) ----
-for row, ds in enumerate(['eegmat','stress']):
-    for col, fm in enumerate(FMS):
-        ax = fig.add_subplot(gs_bot[row, col])
+# ---- Fig 4a / 4b: per-dataset trajectory strip (1 row × 3 FMs, one PDF each) ----
+def trajectory_strip(ds, pretty, out_name):
+    fig, axes = plt.subplots(1, 3, figsize=(W_DOUBLE*0.78, W_SINGLE*0.95))
+    for ax, fm in zip(axes, FMS):
         X, y2, pids = load_feat(fm, ds)
         emb = umap2(X)
-        ax.scatter(emb[:,0], emb[:,1], s=8, c='#CCC', alpha=0.55, edgecolors='none')
-        if ds == 'eegmat':
-            for s in np.unique(pids):
-                m = (pids==s)
-                if m.sum()!=2 or len(np.unique(y2[m]))!=2: continue
-                ri = np.where(m & (y2==0))[0][0]; ti = np.where(m & (y2==1))[0][0]
-                ax.annotate('', xy=emb[ti], xytext=emb[ri],
-                            arrowprops=dict(arrowstyle='->', color='#1f3a5f', lw=0.7, alpha=0.7))
-                ax.scatter(*emb[ri], s=22, c='#A9CCE3', edgecolors='#1f3a5f', linewidths=0.4, zorder=3)
-                ax.scatter(*emb[ti], s=22, c='#B8442C', edgecolors='#7A2F00', linewidths=0.4, zorder=3)
-            dc = sup['frozen']['eegmat'][fm]['dir_consistency']
-        else:
-            for s in np.unique(pids):
-                m_idx = np.where(pids==s)[0]
-                if len(m_idx) < 2: continue
-                subj = stress_df[stress_df['Patient_ID']==int(s)].sort_values('Stress_Score')
-                if len(subj) < 2: continue
-                ord_idx = np.argsort(subj['Stress_Score'].values)
-                lo = m_idx[ord_idx[0]] if ord_idx[0] < len(m_idx) else m_idx[0]
-                hi = m_idx[ord_idx[-1]] if ord_idx[-1] < len(m_idx) else m_idx[-1]
-                if lo == hi: continue
-                ax.annotate('', xy=emb[hi], xytext=emb[lo],
-                            arrowprops=dict(arrowstyle='->', color='#7A4B00', lw=0.7, alpha=0.6))
-                ax.scatter(*emb[lo], s=22, c='#A9CCE3', edgecolors='#1f3a5f', linewidths=0.4, zorder=3)
-                ax.scatter(*emb[hi], s=22, c='#B8442C', edgecolors='#7A2F00', linewidths=0.4, zorder=3)
-            dc = sup['frozen']['stress'][fm]['dir_consistency']
+        ax.scatter(emb[:,0], emb[:,1], s=9, c='#CCC', alpha=0.55, edgecolors='none')
+        for lo, hi in paired_endpoints(pids, y2):
+            ax.annotate('', xy=emb[hi], xytext=emb[lo],
+                        arrowprops=dict(arrowstyle='->', color=ARROW_COLOR[ds],
+                                        lw=0.8, alpha=0.72))
+            ax.scatter(*emb[lo], s=24, c='#A9CCE3', edgecolors='#1f3a5f', linewidths=0.4, zorder=3)
+            ax.scatter(*emb[hi], s=24, c='#B8442C', edgecolors='#7A2F00', linewidths=0.4, zorder=3)
+        dc = sup['frozen'][ds][fm]['dir_consistency']
         ax.set_xticks([]); ax.set_yticks([])
-        ax.set_title(f'{fm.upper()}  dir={dc:+.3f}', fontsize=8)
-        if row == 1:
-            ax.set_xlabel('UMAP-1', fontsize=7.5)
-        if col == 0:
-            ax.set_ylabel('UMAP-2', fontsize=7.5)
+        ax.set_title(f'{fm.upper()}   dir={dc:+.3f}', fontsize=9, color=FM_COLOR[fm], fontweight='bold')
+    axes[0].set_ylabel('UMAP-2', fontsize=8)
+    for ax in axes: ax.set_xlabel('UMAP-1', fontsize=8)
+    fig.suptitle(f'{pretty}  (within-subject trajectory, frozen features)', fontsize=10, y=1.02)
+    plt.tight_layout()
+    save(fig, out_name)
 
-# Row labels (EEGMAT / STRESS) as figure-level text on the left gutter
-fig.text(0.025, (0.57+0.33)/2, 'EEGMAT', rotation=90, fontsize=9, fontweight='bold',
-         va='center', ha='center', color='#1F6B6B')
-fig.text(0.025, (0.33+0.09)/2, 'STRESS', rotation=90, fontsize=9, fontweight='bold',
-         va='center', ha='center', color='#7A4B00')
+trajectory_strip('eegmat',   'EEGMAT',   'fig4a_eegmat_trajectory')
+trajectory_strip('sleepdep', 'SleepDep', 'fig4b_sleepdep_trajectory')
 
-# Shared legend strip between dot plot and trajectory grid (y ≈ 0.60–0.70)
-traj_leg = [
-    Line2D([],[], marker='o', ls='', color='#CCC', markeredgecolor='none',
-           markersize=5, label='windows (context)'),
-    Line2D([],[], marker='o', ls='', color='#A9CCE3', markeredgecolor='#1f3a5f',
-           markersize=8, label='start: rest (EEGMAT) / low-DSS (Stress)'),
-    Line2D([],[], marker='o', ls='', color='#B8442C', markeredgecolor='#7A2F00',
-           markersize=8, label='end: task (EEGMAT) / high-DSS (Stress)'),
-    Line2D([],[], marker=r'$\rightarrow$', ls='', color='#1f3a5f',
-           markersize=10, label='EEGMAT rest→task'),
-    Line2D([],[], marker=r'$\rightarrow$', ls='', color='#7A4B00',
-           markersize=10, label='Stress low→high DSS'),
-]
-fig.legend(handles=traj_leg, loc='center', bbox_to_anchor=(0.52, 0.645),
-           ncol=3, fontsize=6.8, frameon=False, handletextpad=0.3, columnspacing=1.2)
-
-plt.show()
-save(fig, 'fig4_contrast_anchoring')
+# ---- Fig 4c: dir_consistency comparison horizontal bar (standalone) ----
+fig, ax = plt.subplots(figsize=(W_SINGLE*1.1, W_SINGLE*0.8))
+labels, colors, values = [], [], []
+# Order so EEGMAT (coherent) sits on top
+for ds, pretty in [('sleepdep', 'SleepDep'), ('eegmat', 'EEGMAT')]:
+    for fm in FMS:
+        labels.append(f'{pretty[:3]}·{fm[:3].capitalize()}')
+        colors.append(FM_COLOR[fm])
+        values.append(sup['frozen'][ds][fm]['dir_consistency'])
+ypos = np.arange(len(labels))
+ax.barh(ypos, values, color=colors, edgecolor='k', lw=0.5, height=0.72)
+# horizontal divider between the 2 datasets (between index 2 and 3)
+ax.axhline(2.5, color='#888', lw=0.6, ls='--')
+ax.axvline(0, color='k', lw=0.5)
+ax.set_yticks(ypos)
+ax.set_yticklabels(labels, fontsize=7.5)
+ax.set_xlabel('dir_consistency (frozen)', fontsize=8.5)
+ax.set_title('Within-subject directional coherence (frozen features)', fontsize=9, pad=4)
+ax.grid(axis='x', alpha=0.3, lw=0.4)
+# dataset group labels (outside y-axis, on right side)
+xlim = ax.get_xlim()
+ax.text(xlim[1]*0.96, 1.0, 'SleepDep', va='center', ha='right', fontsize=8,
+        fontweight='bold', color=ARROW_COLOR['sleepdep'])
+ax.text(xlim[1]*0.96, 4.0, 'EEGMAT',   va='center', ha='right', fontsize=8,
+        fontweight='bold', color=ARROW_COLOR['eegmat'])
+plt.tight_layout()
+save(fig, 'fig4c_dir_consistency')
 """
 
 # ============================================================
 # FIG 5 — Causal anchor dissection (reuse v6 verbatim)
 # ============================================================
-FIG5 = r"""# Fig 5 — Causal anchor dissection (PSD + FOOOF scatter + band-stop)
+# Shared preamble (PSD helper + data loaders) used by FIG5A/B/C
+FIG5_PREAMBLE = r"""# Fig 5 preamble — shared loaders for PSD, FOOOF probe scatter, band-stop
 from scipy.signal import welch
 
 SFREQ = 200; FMIN, FMAX = 1, 50
@@ -391,189 +290,219 @@ def rep_psd(ds):
     b = float(d['aperiodic_b'][ri].mean()); chi = float(d['aperiodic_chi'][ri].mean())
     return dict(f=f, ap=P_ap, pe=P_pe, fit=10**b/(f**chi), chi=chi)
 
-psd = {ds: rep_psd(ds) for ds in ['eegmat','sleepdep','stress']}
+# All 4 datasets now have FOOOF ablation + band-stop caches (ADFTD retrofit 2026-04-21)
+DS_PSD   = ['eegmat','sleepdep','stress','adftd']
+DS_PROBE = ['eegmat','sleepdep','stress','adftd']
+DS_BAND  = ['eegmat','sleepdep','stress','adftd']
+
+DS_SHORT = {'eegmat':'EEGMAT','sleepdep':'SleepDep','stress':'Stress','adftd':'ADFTD'}
+DS_CMAP  = {'eegmat':'#2E8B8B','sleepdep':'#7A4B9C','stress':'#D55E00','adftd':'#1F77B4'}
+
+psd = {ds: rep_psd(ds) for ds in DS_PSD}
 F = {ds: json.load(open(REPO/f'results/studies/fooof_ablation/{ds}_probes.json'))['results']
-     for ds in ['eegmat','sleepdep','stress']}
+     for ds in DS_PROBE}
 bs = json.load(open(REPO/'results/studies/exp14_channel_importance/band_stop_ablation.json'))
+"""
 
-DS_ORDER = ['eegmat','sleepdep','stress']
-DS_SHORT = {'eegmat':'EEGMAT','sleepdep':'SleepDep','stress':'Stress'}
-DS_CMAP  = {'eegmat':'#2E8B8B','sleepdep':'#7A4B9C','stress':'#D55E00'}
-
-fig = plt.figure(figsize=(W_DOUBLE, W_DOUBLE*0.70))
-gs_top = fig.add_gridspec(1, 3, left=0.07, right=0.98, top=0.95, bottom=0.57, wspace=0.40)
-gs_bot = fig.add_gridspec(1, 2, left=0.07, right=0.98, top=0.44, bottom=0.08, wspace=0.32)
-
-for i, ds in enumerate(DS_ORDER):
-    ax = fig.add_subplot(gs_top[0,i])
+# ---- Fig 5a — PSD + FOOOF fit (4 datasets) ----
+FIG5A = r"""# Fig 5a — PSD + FOOOF fit per dataset (separate subfigure)
+fig, axes = plt.subplots(1, len(DS_PSD),
+                         figsize=(W_DOUBLE, W_DOUBLE*0.28), sharey=False)
+for ax, ds in zip(axes, DS_PSD):
     d = psd[ds]
     ax.loglog(d['f'], d['ap']+d['pe'], color='#222', lw=1.4, label='PSD')
     ax.loglog(d['f'], d['fit'], color='#D55E00', ls='--', lw=1.1, label='aperiodic fit')
-    ax.fill_between(d['f'], d['fit'], d['fit']+d['pe'], color='#0072B2', alpha=0.28, label='periodic peaks')
+    ax.fill_between(d['f'], d['fit'], d['fit']+d['pe'], color='#0072B2',
+                    alpha=0.28, label='periodic peaks')
     ax.set_xlabel('Freq (Hz)', fontsize=8)
-    if i==0: ax.set_ylabel('PSD (log)', fontsize=8)
     ax.set_title(DS_SHORT[ds], fontsize=10)
+    ax.tick_params(labelsize=7.5)
     ax.legend(fontsize=6.5, loc='lower left', frameon=False)
     ax.grid(True, which='both', ls=':', lw=0.3, alpha=0.5)
+axes[0].set_ylabel('PSD (log)', fontsize=8.5)
+plt.tight_layout()
+plt.show()
+save(fig, 'fig5a_psd_fooof_fit')
+"""
 
-ax_sc = fig.add_subplot(gs_bot[0,0])
-points = []
-for ds in DS_ORDER:
-    for cond, short in [('aperiodic_removed','−aperiodic'),('periodic_removed','−periodic')]:
-        dsub = np.mean([F[ds][fm][cond]['subject_probe_mean']-F[ds][fm]['original']['subject_probe_mean'] for fm in FMS])*100
-        dsta = np.mean([F[ds][fm][cond]['state_probe_mean']-F[ds][fm]['original']['state_probe_mean'] for fm in FMS])*100
-        points.append((ds, short, dsub, dsta))
-ax_sc.axhline(0, color='k', lw=0.5); ax_sc.axvline(0, color='k', lw=0.5)
-for ds in DS_ORDER:
-    pts = [(p[2],p[3]) for p in points if p[0]==ds]
-    ax_sc.plot(*zip(*pts), color=DS_CMAP[ds], lw=1.0, alpha=0.35)
+# ---- Fig 5b — FOOOF ablation signature (per-FM, 3-panel strip; absolute pp) ----
+# Absolute Δ BA in percentage points. Cross-FM magnitude is norm-confounded
+# (LaBraM zscore vs CBraMod/REVE raw); read within-FM direction and ranking.
+FIG5B = r"""# Fig 5b — FOOOF ablation signature per FM (Δ BA, pp)
+fig, axes = plt.subplots(1, 3, figsize=(W_DOUBLE*0.82, W_SINGLE*0.65), sharex=True, sharey=True)
 markers = {'−aperiodic':'o','−periodic':'s'}
-for ds, cond, dsub, dsta in points:
-    ax_sc.scatter(dsub, dsta, s=95, color=DS_CMAP[ds], marker=markers[cond],
-                  edgecolor='k', lw=0.5, zorder=3)
-ax_sc.set_xlabel('Δ Subject-ID probe BA (pp)', fontsize=8.5)
-ax_sc.set_ylabel('Δ State probe BA (pp)', fontsize=8.5)
-ax_sc.set_xlim(-16, 4); ax_sc.set_ylim(-6, 2)
-ax_sc.set_title('FOOOF ablation signature', fontsize=10)
-ds_leg = [Line2D([],[], marker='o', ls='', color=DS_CMAP[d], markeredgecolor='k',
-                 markersize=8, label=DS_SHORT[d]) for d in DS_ORDER]
+COND_MAP = [('aperiodic_removed','−aperiodic'),('periodic_removed','−periodic')]
+
+for ax, fm in zip(axes, FMS):
+    ax.axhline(0, color='k', lw=0.5)
+    ax.axvline(0, color='k', lw=0.5)
+    for ds in DS_PROBE:
+        pts = []
+        for cond, short in COND_MAP:
+            dsub = (F[ds][fm][cond]['subject_probe_mean'] - F[ds][fm]['original']['subject_probe_mean'])*100
+            dsta = (F[ds][fm][cond]['state_probe_mean'] - F[ds][fm]['original']['state_probe_mean'])*100
+            pts.append((short, dsub, dsta))
+
+        ax.plot([p[1] for p in pts], [p[2] for p in pts], color=DS_CMAP[ds], lw=1.0, alpha=0.35)
+        for short, dsub, dsta in pts:
+            ax.scatter(dsub, dsta, s=80, color=DS_CMAP[ds], marker=markers[short], edgecolor='k', lw=0.5, zorder=3)
+
+    ax.set_title(f"{fm.upper()}  ({'zscore' if fm=='labram' else 'raw'})", fontsize=9.5, color=FM_COLOR[fm], fontweight='bold')
+    ax.set_xlabel('Δ Subject-ID probe BA (pp)', fontsize=8)
+    ax.tick_params(labelsize=7.5)
+
+axes[0].set_ylabel('Δ State probe BA (pp)', fontsize=8.5)
+axes[0].set_xlim(-30, 30)
+axes[0].set_ylim(-15, 15)
+
+ds_leg = [Line2D([],[], marker='o', ls='', color=DS_CMAP[d], markeredgecolor='k', markersize=7, label=DS_SHORT[d]) for d in DS_PROBE]
 cond_leg = [Line2D([],[], marker='o', ls='', color='gray', markeredgecolor='k', markersize=7, label='−aperiodic'),
             Line2D([],[], marker='s', ls='', color='gray', markeredgecolor='k', markersize=7, label='−periodic')]
-leg = ax_sc.legend(handles=ds_leg, loc='lower left', fontsize=7, frameon=False)
-ax_sc.add_artist(leg)
-ax_sc.legend(handles=cond_leg, loc='upper left', fontsize=7, frameon=False)
 
-ax_ln = fig.add_subplot(gs_bot[0,1])
+fig.legend(handles=ds_leg, loc='center left', bbox_to_anchor=(0.83, 0.6), fontsize=6.5, frameon=False)
+fig.legend(handles=cond_leg, loc='center left', bbox_to_anchor=(0.83, 0.4), fontsize=6.5, frameon=False)
+
+fig.subplots_adjust(left=0.1, right=0.82, bottom=0.22, top=0.85, wspace=0.28)
+plt.show()
+save(fig, 'fig5b_fooof_scatter')
+"""
+
+# ---- Fig 5c — Band-stop sensitivity per band (3 ds) ----
+FIG5C = r"""# Fig 5c — Band-stop cosine distance per FM (3-panel strip, raw scale)
 BANDS = ['delta','theta','alpha','beta']
 xi = np.arange(len(BANDS))
-for ds in DS_ORDER:
-    v = [np.mean([bs[ds][fm][b]['mean_distance'] for fm in FMS]) for b in BANDS]
-    ax_ln.plot(xi, v, '-o', color=DS_CMAP[ds], lw=1.6, ms=7,
-               markeredgecolor='white', markeredgewidth=0.6, label=DS_SHORT[ds])
-ax_ln.set_xticks(xi); ax_ln.set_xticklabels([b.title() for b in BANDS], fontsize=8)
-ax_ln.set_xlabel('Frequency band', fontsize=8.5)
-ax_ln.set_ylabel('Cosine distance', fontsize=8.5)
-ax_ln.set_title('Band-stop sensitivity', fontsize=10)
-ax_ln.legend(fontsize=7, frameon=False, loc='upper right')
-ax_ln.grid(True, ls=':', lw=0.3, alpha=0.5)
-ax_ln.set_ylim(-0.003, 0.115)
+fig, axes = plt.subplots(1, 3, figsize=(W_DOUBLE*0.82, W_SINGLE*0.65), sharex=True)
+
+for ax, fm in zip(axes, FMS):
+    for ds in DS_BAND:
+        v = [bs[ds][fm][b]['mean_distance'] for b in BANDS]
+        ax.plot(xi, v, '-o', color=DS_CMAP[ds], lw=1.4, ms=6,
+                markeredgecolor='white', markeredgewidth=0.5, label=DS_SHORT[ds])
+    ax.set_xticks(xi)
+    ax.set_xticklabels([b.title() for b in BANDS], fontsize=7.5)
+    ax.set_xlabel('Frequency band', fontsize=8)
+    ax.set_title(f"{fm.upper()}  ({'zscore' if fm=='labram' else 'raw'})",
+                 fontsize=9.5, color=FM_COLOR[fm], fontweight='bold')
+    ax.grid(True, ls=':', lw=0.3, alpha=0.5)
+    ax.tick_params(labelsize=7.5)
+
+axes[0].set_ylabel('Cosine distance', fontsize=8.5)
+
+h, l = axes[0].get_legend_handles_labels()
+fig.legend(h, l, fontsize=6.5, frameon=False, loc='center left', bbox_to_anchor=(0.83, 0.5))
+
+fig.subplots_adjust(left=0.1, right=0.82, bottom=0.22, top=0.85, wspace=0.28)
 plt.show()
-save(fig, 'fig5_causal_anchor_dissection')
+save(fig, 'fig5c_band_stop')
 """
 
 # ============================================================
 # FIG 6 — Stress collapse: architecture ceiling + drift vector
 # ============================================================
-FIG6 = r"""# Fig 6 — Stress collapse: architecture ceiling (with classical) + drift vectors
-fp = json.load(open(REPO/'results/studies/exp_30_sdl_vs_between/tables/fm_performance.json'))
-cl = json.load(open(REPO/'paper/figures/_historical/source_tables/f03_f16_classical_70rec.json'))
+FIG6 = r"""# Fig 6 — Architecture ceiling × 3 regimes
+# Each panel: classical ML (squares) + non-FM deep (diamonds) + FM FT (colored circles)
+# x = params (log), y = subject-CV BA, one panel per dataset (by regime order).
 
-# FM bal_acc on stress FT
-fm_ba = {}
-for fm in FMS:
-    row = next((r for r in fp if r['dataset']=='stress' and r['fm']==fm and r['mode']=='ft'), None)
-    if row: fm_ba[fm] = (row['bal_acc'], row.get('bal_acc_std') or 0)
+# --- Data sources -----------------------------------------------------------
+t1 = json.load(open(REPO/'paper/tables/_source/table1_master_performance.json'))  # FM LP/FT per dataset
 
-# Non-FM archs (eegnet, shallowconvnet)
-sweep_dir = REPO/'results/studies/exp15_nonfm_baselines/sweep'
-arch_ba = {}
-for arch in ['eegnet','shallowconvnet']:
-    vals = []
-    for sub in sweep_dir.iterdir():
-        if sub.name.startswith(arch+'_'):
+def fm_ft(ds, fm):
+    k = f'{ds}_{fm}'
+    r = t1.get(k, {}).get('ft')
+    if r is None: return None
+    return (float(r['mean']), float(r.get('std') or 0))
+
+# Classical multi-seed (new format, 3 datasets; ADFTD not run yet)
+def classical(ds):
+    p = REPO/f'results/studies/exp02_classical_dass/{ds}/summary.json'
+    if not p.exists(): return []
+    d = json.load(open(p))
+    agg = d.get('aggregated', {})
+    out = []
+    for name in ['LogReg_L2','SVM_RBF','RF','XGBoost']:
+        if name in agg:
+            out.append((name, agg[name]['mean_bal_acc'], agg[name]['std_bal_acc']))
+    return out
+
+# Non-FM deep (eegnet, shallowconvnet) — dataset-specific subdirs; Stress uses sweep (legacy)
+def nonfm(ds):
+    if ds == 'stress':
+        base = REPO/'results/studies/exp15_nonfm_baselines/sweep'
+        candidates = {'eegnet': 'eegnet_lr5e-4', 'shallowconvnet': 'shallowconvnet_lr1e-4'}
+    else:  # eegmat / sleepdep / adftd
+        base = REPO/f'results/studies/exp15_nonfm_baselines/{ds}'
+        candidates = {'eegnet': 'eegnet_lr1e-3', 'shallowconvnet': 'shallowconvnet_lr5e-4'}
+    out = {}
+    for arch, stem in candidates.items():
+        vals = []
+        for sub in base.glob(f'{stem}_s*'):
             s = sub/'summary.json'
             if s.exists():
                 try: vals.append(json.load(open(s))['subject_bal_acc'])
                 except: pass
-    if vals:
-        arch_ba[arch] = (float(np.mean(vals)), float(np.std(vals, ddof=1)) if len(vals)>1 else 0)
-
-# Classical baselines (70-rec, per-fold)
-cl_pts = []
-for name in ['LogReg_L2','SVM_RBF','RF','XGBoost']:
-    folds = [f['bal_acc'] for f in cl['models'][name]['folds']]
-    cl_pts.append((name, float(np.mean(folds)), float(np.std(folds, ddof=1))))
+        if vals:
+            out[arch] = (float(np.mean(vals)),
+                         float(np.std(vals, ddof=1)) if len(vals)>1 else 0)
+    return out
 
 ARCH_PARAMS = {'LogReg_L2': 150, 'SVM_RBF': 200, 'RF': 800, 'XGBoost': 5000,
                'eegnet': 2e3, 'shallowconvnet': 4e4,
                'labram': 5.8e6, 'cbramod': 1e8, 'reve': 1.4e9}
+NAME_SHORT = {'LogReg_L2':'LR', 'SVM_RBF':'SVM', 'RF':'RF', 'XGBoost':'XGB'}
 
-# Drift data
-dr = json.load(open(REPO/'results/studies/representation_drift/lp_vs_ft_stress.json'))['results']
+# 2×2 layout (top=within, bottom=between; left=coherent, right=absent/incoherent)
+PANELS = [('eegmat',   'EEGMAT',        'Within × coherent'),
+          ('sleepdep', 'SleepDep',      'Within × incoherent'),
+          ('adftd',    'ADFTD',         'Between × coherent'),
+          ('stress',   'Stress (DASS)', 'Between × absent')]
 
-# FIGURE
-fig = plt.figure(figsize=(W_DOUBLE, W_DOUBLE*0.42))
-gs = fig.add_gridspec(1, 2, left=0.07, right=0.98, top=0.93, bottom=0.18, wspace=0.30)
+# --- FIGURE -----------------------------------------------------------------
+fig = plt.figure(figsize=(W_DOUBLE, W_DOUBLE*0.52))
+gs  = fig.add_gridspec(2, 2, left=0.07, right=0.88, top=0.93, bottom=0.10,
+                       wspace=0.12, hspace=0.42)
 
-# ---- Left: architecture ceiling ----
-ax_a = fig.add_subplot(gs[0,0])
-ax_a.axhspan(0.43, 0.58, color='#FFF2CC', alpha=0.6, zorder=0, label='0.43–0.58 ceiling')
-ax_a.axhline(0.5, color='k', ls=':', lw=0.6)
+for idx, (ds, pretty, regime) in enumerate(PANELS):
+    row, col = divmod(idx, 2)
+    ax = fig.add_subplot(gs[row, col])
+    ax.axhline(0.5, color='k', ls=':', lw=0.6, zorder=0)
 
-# classical points (grey)
-for name, m, s in cl_pts:
-    ax_a.errorbar(ARCH_PARAMS[name], m, yerr=s, fmt='s', color='#888', ms=5,
-                  capsize=2, markeredgecolor='k', markeredgewidth=0.3)
-    ax_a.text(ARCH_PARAMS[name]*1.3, m, name.replace('LogReg_L2','LR').replace('XGBoost','XGB').replace('SVM_RBF','SVM'),
-              fontsize=6, va='center', color='#555')
+    for name, m, s in classical(ds):
+        ax.errorbar(ARCH_PARAMS[name], m, yerr=s, fmt='s', color='#888', ms=5,
+                    capsize=2, markeredgecolor='k', markeredgewidth=0.3, zorder=3)
 
-# non-FM archs (dark grey)
-for name in ['eegnet','shallowconvnet']:
-    if name in arch_ba:
-        m, s = arch_ba[name]
-        ax_a.errorbar(ARCH_PARAMS[name], m, yerr=s, fmt='D', color='#444', ms=6,
-                      capsize=2, markeredgecolor='k', markeredgewidth=0.3)
-        ax_a.text(ARCH_PARAMS[name]*1.3, m, name, fontsize=6, va='center', color='#333')
+    for arch, (m, s) in nonfm(ds).items():
+        ax.errorbar(ARCH_PARAMS[arch], m, yerr=s, fmt='D', color='#444', ms=6,
+                    capsize=2, markeredgecolor='k', markeredgewidth=0.3, zorder=3)
 
-# FMs (colored)
-for fm in FMS:
-    if fm in fm_ba:
-        m, s = fm_ba[fm]
-        ax_a.errorbar(ARCH_PARAMS[fm], m, yerr=s, fmt='o', color=FM_COLOR[fm], ms=8,
-                      capsize=3, markeredgecolor='k', markeredgewidth=0.4)
-        ax_a.text(ARCH_PARAMS[fm]*1.3, m, fm.upper(), fontsize=7, va='center', color=FM_COLOR[fm], fontweight='bold')
+    for fm in FMS:
+        res = fm_ft(ds, fm)
+        if res is None: continue
+        m, s = res
+        ax.errorbar(ARCH_PARAMS[fm], m, yerr=s, fmt='o', color=FM_COLOR[fm], ms=8,
+                    capsize=3, markeredgecolor='k', markeredgewidth=0.4, zorder=4)
 
-ax_a.set_xscale('log')
-ax_a.set_xlabel('Trainable params (log)', fontsize=8.5)
-ax_a.set_ylabel('Subject-CV BA (Stress)', fontsize=8.5)
-ax_a.set_ylim(0.30, 0.72)
-ax_a.set_title('Architecture ceiling (classical + non-FM + FM)', fontsize=9)
+    ax.set_xscale('log')
+    ax.set_xlim(80, 6e9)
+    ax.set_ylim(0.30, 0.95)
+    ax.set_xlabel('Trainable params (log)', fontsize=8.5)
+
+    if col == 0:
+        ax.set_ylabel('Subject-CV BA', fontsize=8.5)
+    else:
+        ax.set_yticklabels([])
+
+    ax.set_title(f'{pretty}  —  {regime}', fontsize=9, pad=3)
+    ax.tick_params(labelsize=7.5)
+    ax.grid(axis='y', alpha=0.25, lw=0.4)
+
 legend_marks = [Line2D([],[],marker='s',ls='',color='#888',markeredgecolor='k',ms=5,label='Classical ML'),
                 Line2D([],[],marker='D',ls='',color='#444',markeredgecolor='k',ms=6,label='Non-FM deep'),
-                Line2D([],[],marker='o',ls='',color='#1f3a5f',markeredgecolor='k',ms=7,label='FM (3 × FT)')]
-ax_a.legend(handles=legend_marks, fontsize=7, loc='lower right', frameon=False)
+                Line2D([],[],marker='o',ls='',color='#1f3a5f',markeredgecolor='k',ms=7,label='FM (FT)')]
 
-# ---- Right: drift vector plot ----
-ax_v = fig.add_subplot(gs[0,1])
-for ds in ['stress','eegmat']:
-    for fm in FMS:
-        lp = dr[ds][fm]['lp']; ft = dr[ds][fm]['ft']
-        x0, y0 = lp['label_frac_pct'], lp['subject_frac_pct']
-        x1, y1 = ft['label_frac_pct'], ft['subject_frac_pct']
-        verdict = dr[ds][fm]['delta']['interpretation']
-        c = {'rescue_consistent_with_subject_shortcut':'#B8442C',
-             'rescue_consistent_with_label_signal':'#2E8B57',
-             'no_meaningful_drift':'#888'}.get(verdict, '#888')
-        ax_v.annotate('', xy=(x1,y1), xytext=(x0,y0),
-                      arrowprops=dict(arrowstyle='->,head_length=0.35,head_width=0.2',
-                                      color=c, lw=1.3, alpha=0.9))
-        ax_v.scatter(x0, y0, s=22, color='white', edgecolors=c, linewidths=1.0, zorder=3)
-        ax_v.scatter(x1, y1, s=45, color=c, edgecolors='k', linewidths=0.4, zorder=4,
-                     marker={'stress':'o','eegmat':'s'}[ds])
-        ax_v.text(x1+0.5, y1+0.5, f'{fm}·{ds[:3]}', fontsize=6, color=c)
+fig.legend(handles=legend_marks, fontsize=7, loc='center left', bbox_to_anchor=(0.89, 0.5), frameon=False)
 
-ax_v.set_xlabel('Label variance frac (%)', fontsize=8.5)
-ax_v.set_ylabel('Subject variance frac (%)', fontsize=8.5)
-ax_v.set_title('LP → FT representation drift (arrow = FT direction)', fontsize=9)
-leg = [Line2D([],[],marker='>',ls='-',color='#B8442C',markersize=8,label='Subject shortcut'),
-       Line2D([],[],marker='>',ls='-',color='#2E8B57',markersize=8,label='Label learning'),
-       Line2D([],[],marker='>',ls='-',color='#888',markersize=8,label='No drift'),
-       Line2D([],[],marker='o',ls='',color='gray',markeredgecolor='k',markersize=7,label='Stress'),
-       Line2D([],[],marker='s',ls='',color='gray',markeredgecolor='k',markersize=7,label='EEGMAT')]
-ax_v.legend(handles=leg, fontsize=6.5, loc='upper left', frameon=False)
-ax_v.set_xlim(0, 12); ax_v.set_ylim(40, 95)
 plt.show()
-save(fig, 'fig6_stress_collapse')
+save(fig, 'fig6_architecture_ceiling')
 """
 
 # ============================================================
@@ -671,14 +600,29 @@ Placeholder; will be imported as `fig1_framework_schematic.pdf`."""),
 **Bottom**: within-subject feature-space trajectory × 6 cells — EEGMAT (rest→task) arrows align; Stress (low→high DSS) arrows scramble. `dir_consistency` printed per panel."""),
     code(FIG4),
 
-    md("""## Fig 5 — Causal anchor dissection
+    md("""## Fig 5 — Causal anchor dissection (split into 3 separate subfigures)
 
-**Top row**: PSD + FOOOF fit (aperiodic dashed + periodic shaded).
-**Bottom-left**: FOOOF ablation signature scatter (Δ subject-ID × Δ state probe BA).
-**Bottom-right**: Band-stop cosine distance profile across frequency bands.
+Each subfigure is saved as its own PDF/PNG so they can be laid out in PowerPoint without overlap. Preamble below loads the shared data (PSD + probe + band-stop)."""),
+    code(FIG5_PREAMBLE),
 
-Cosine distance = FM feature drift; not a task-probe accuracy. Must be read with scatter."""),
-    code(FIG5),
+    md("""### Fig 5a — PSD + FOOOF fit (4 datasets)
+
+ADFTD added alongside EEGMAT / SleepDep / Stress. Aperiodic fit dashed, periodic peaks shaded."""),
+    code(FIG5A),
+
+    md("""### Fig 5b — FOOOF ablation signature per FM (Δ BA in pp)
+
+Each panel = one FM with its native input norm (LaBraM zscore, CBraMod/REVE raw). Point = (Δ subject-ID probe BA, Δ state probe BA) in percentage points for 4 datasets × 2 ablation conditions (circle: −aperiodic, square: −periodic).
+
+**Read within-FM only**: directional patterns and dataset ordering within one panel are reliable. Cross-FM magnitude comparison is **not fair** because the three FMs use different input-norm conventions by pretraining design; zscore flattens aperiodic amplitude while raw/internal-scale paths retain it. A zscore-control ablation is deferred (see Section 6 Limitations)."""),
+    code(FIG5B),
+
+    md("""### Fig 5c — Band-stop cosine distance per FM
+
+Cosine distance between original and band-stopped FM features across delta/theta/alpha/beta. Each FM has its own y-axis (REVE ~40× LaBraM in raw µV scale).
+
+**Read within-FM only**: which band peaks within a given panel is the interpretable signal. Cross-FM magnitudes reflect input-norm differences, not relative spectral attention."""),
+    code(FIG5C),
 
     md("""## Fig 6 — Stress collapse mechanism
 

@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.rcParams.update({"font.size": 10, "font.family": "sans-serif"})
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 import baseline.labram   # noqa: F401
 import baseline.cbramod  # noqa: F401
@@ -110,6 +110,22 @@ def run_bandstop(model_name, device, batch_size=16, dataset="stress"):
         )
         channel_names = COMMON_19
         ds_type = "eegmat"
+    elif dataset == "sleepdep":
+        from pipeline.sleepdep_dataset import SleepDepDataset
+        cache_dir = "data/cache_sleepdep" if norm == "zscore" else f"data/cache_sleepdep_n{norm}"
+        ds = SleepDepDataset(
+            "data/sleep_deprivation", target_sfreq=SFREQ, window_sec=5.0,
+            norm=norm, cache_dir=cache_dir,
+        )
+        channel_names = COMMON_19
+        ds_type = "stress"  # 5-tuple unpack (epochs, label, score, n_ep, pid)
+    elif dataset == "adftd":
+        from pipeline.adftd_dataset import ADFTDDataset
+        ds = ADFTDDataset("data/adftd", binary=True,
+                          window_sec=5.0, norm=norm,
+                          cache_dir=f"data/cache_adftd_n{norm}_w5")
+        channel_names = COMMON_19
+        ds_type = "eegmat"  # 4-tuple unpack (epochs, label, n_ep, pid)
     else:
         raise ValueError(f"Unknown dataset: {dataset}")
 
@@ -223,18 +239,29 @@ def main():
 
     os.makedirs(OUT_DIR, exist_ok=True)
 
-    all_ds_results = {}
+    # Merge into existing JSON if present (so partial re-runs don't overwrite)
+    out_json = f"{OUT_DIR}/band_stop_ablation.json"
+    if os.path.exists(out_json):
+        with open(out_json) as f:
+            all_ds_results = json.load(f)
+    else:
+        all_ds_results = {}
+
     for ds_name in args.datasets:
-        all_ds_results[ds_name] = {}
+        all_ds_results.setdefault(ds_name, {})
         for model in args.models:
             all_ds_results[ds_name][model] = run_bandstop(
                 model, args.device, args.batch_size, dataset=ds_name)
 
-    with open(f"{OUT_DIR}/band_stop_ablation.json", "w") as f:
+    with open(out_json, "w") as f:
         json.dump(all_ds_results, f, indent=2)
-    print(f"\nSaved → {OUT_DIR}/band_stop_ablation.json")
+    print(f"\nSaved → {out_json}")
 
-    plot_results(all_ds_results, OUT_DIR)
+    # Plot only datasets with label mapping (skip unknown datasets gracefully)
+    try:
+        plot_results(all_ds_results, OUT_DIR)
+    except KeyError as e:
+        print(f"plot skipped: missing label for {e}")
 
 
 if __name__ == "__main__":

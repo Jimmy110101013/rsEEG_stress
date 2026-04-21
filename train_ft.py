@@ -356,7 +356,12 @@ def train_one_fold(
     use_amp = not args.no_bf16 and device.type == "cuda"
 
     # Fresh model per fold (embed_dim auto-detected from extractor)
-    extractor = create_extractor(args.extractor)
+    _extractor_kwargs = {}
+    if args.dataset in ("adftd", "tdbrain", "dementia", "mdd", "eegmat",
+                        "sam40", "meditation", "sleepdep") \
+            and args.extractor in ("eegnet", "shallowconvnet"):
+        _extractor_kwargs["n_channels"] = 19
+    extractor = create_extractor(args.extractor, **_extractor_kwargs)
     # Override channel mapping for 19ch datasets
     if args.dataset in ("adftd", "tdbrain", "dementia", "mdd", "eegmat",
                         "sam40", "meditation", "sleepdep"):
@@ -843,7 +848,12 @@ def train_one_fold_ft(
                              collate_fn=window_collate_fn, num_workers=0)
 
     # Fresh model — all params trainable
-    extractor = create_extractor(args.extractor)
+    _extractor_kwargs = {}
+    if args.dataset in ("adftd", "tdbrain", "dementia", "mdd", "eegmat",
+                        "sam40", "meditation", "sleepdep") \
+            and args.extractor in ("eegnet", "shallowconvnet"):
+        _extractor_kwargs["n_channels"] = 19
+    extractor = create_extractor(args.extractor, **_extractor_kwargs)
     # Override channel mapping for 19ch datasets (ADFTD, TDBRAIN, HNC dementia/MDD, EEGMAT)
     if args.dataset in ("adftd", "tdbrain", "dementia", "mdd", "eegmat",
                         "sam40", "meditation", "sleepdep"):
