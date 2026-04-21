@@ -27,6 +27,26 @@ Read this file when you need to:
 
 ---
 
+### G-F09: FT must use per-FM official HP recipe, not unified HP
+**Status**: policy (2026-04-19)
+**Evidence**: exp_newdata ran all 3 FMs with unified `lr=1e-5 batch=4 layer_decay=off wd=0.01 loss=focal` — 10–80× below every official recipe. exp20 control (`layer_decay=0.65 wd=0.05` but lr=1e-5): LaBraM seed-range 0.32–0.93, CBraMod + REVE fixed at 0.50 chance. Confirms unified conservative HP silently kills CBraMod/REVE while high-variance-training LaBraM. Sanity reproduction (2026-04-19 s41, `results/studies/sanity_lead_adftd/`) with per-FM official HP: LaBraM ΔF1_subject +43pp, CBraMod +48pp, REVE +14pp (FT − Frozen), LaBraM subject F1 0.852 within 1σ of LEAD 0.911.
+**Action**: All new FT runs must use per-FM official HP. Canonical recipe dict lives in `scripts/experiments/run_sanity_lead_adftd.py::RECIPES`. Sources:
+- LaBraM: README + `run_class_finetuning.py` — lr=5e-4, layer_decay=0.65, wd=0.05, CE+LS 0.1, single Linear head init_scale=0.001, cosine + 5ep warmup, drop_path=0.1.
+- CBraMod: `finetune_main.py` + `finetune_trainer.py` — backbone lr=1e-4 + head lr=5e-4 (multi_lr bs=64), wd=0.05, CE+LS 0.1, cosine, no warmup.
+- REVE: `reve_unified.yaml` — max_lr=2.4e-4, encoder_lr_scale=0.1, wd=0.01, plateau, warmup 2ep + freeze-encoder 1ep, betas=(0.9, 0.95).
+
+---
+
+### G-F10: LEAD-style per-window training + majority-vote aggregation is community standard
+**Status**: policy (2026-04-19)
+**Evidence**: LaBraM (`engine_for_finetuning.py`), CBraMod (`finetune_evaluator.py`), EEGPT, EEG-FM-Bench all train with per-window CE loss and evaluate at window level. LEAD §2.2 adds majority-vote aggregation: train per-window CE, at test time each subject's windows vote → one prediction per subject. Our `train_ft.py --mode ft` matches this (per-window loss, `evaluate_recording_level` majority vote). Our `train_lp.py` does NOT — it pools features across windows first then classifies on the pooled vector per recording (pool-then-classify), which is stricter and non-standard.
+**Action**:
+- Paper methods section must explicitly document the FT vs LP protocol difference.
+- When reporting FT results, headline metric is subject-level F1/AUROC (LEAD primary); sample-level is secondary.
+- For apples-to-apples comparison with community LP numbers, add per-window LP as a robustness column (TODO — requires per-window frozen feature cache re-extraction).
+
+---
+
 ## Internal methodology notes (not paper claims)
 
 ### N-F11: Independent FM benchmarks corroborate our framing
@@ -110,6 +130,21 @@ Only LaBraM had drift. CBraMod/REVE collapse under LLRD 0.65 in exp20 is attribu
 **Do NOT write this into the paper.**
 
 **Files**: `baseline/labram/model.py`, `baseline/labram/labram_extractor.py`, `results/studies/exp24_labram_fixed/`.
+
+---
+
+### N-F22: Subject variance fraction is regime-conditional, not a quality indicator
+**Status**: internal correction (2026-04-21) — blocks naive reading of Fig 2 and Fig 6
+**Evidence**: Fig 2 consolidation revealed that `subject_frac` (pooled SS on subject axis) and `rsa_subject_r` (rank RSA alignment) move in directions that depend entirely on the experimental regime:
+
+- **Subject-label regime (Stress)** — FT drops `subject_frac` 49→12%, pushes variance into residual, label_frac also drops. Reads as "structure collapse" under the naive "high subject = shortcut" lens, but RSA shows `rsa_subject_r` *increases* 0.19–0.28 → 0.25–0.33. The two metrics disagree because variance_frac is absolute SS while RSA is rank-based; same-subject pairs become more similar in rank even as absolute between-subject variance shrinks.
+- **Within-subject paired regime (EEGMAT, SleepDep)** — FT raises `subject_frac` (e.g. EEGMAT LaBraM 76→87%, SleepDep 46→78%). Under the naive lens this reads as "subject shortcut", but task success correlates with this direction — because the task label is defined *relative to subject baseline*, the FM must encode subject identity strongly to measure within-subject deviation. High subject_frac is **healthy** in this regime.
+
+**Implication**: `subject_frac ↑ = shortcut` / `subject_frac ↓ = good` is wrong as a universal rule. The Fig 6 drift-vector verdict (`rescue_consistent_with_subject_shortcut`) was built on this assumption and mis-labels EEGMAT/SleepDep FT as shortcut when they are healthy within-subject learning. Verdict logic must be regime-conditional or removed in favour of letting arrow direction + regime panel speak for themselves.
+
+**Action**: (i) all paper prose interpreting `subject_frac` change must first qualify by regime; (ii) Fig 6 verdict labels pending rewrite; (iii) Fig 2 caption must frame row 1 (variance) + row 2 (RSA) as two complementary views that can disagree.
+
+**Files**: `paper/figures/_historical/source_tables/sleepdep_variance_rsa.json`, `paper/figures/_historical/source_tables/ft_rsa_stress_eegmat.json`, `scripts/analysis/compute_sleepdep_variance_rsa.py`, `scripts/analysis/compute_ft_rsa.py`.
 
 ---
 

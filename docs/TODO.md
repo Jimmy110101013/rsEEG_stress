@@ -1,12 +1,27 @@
 # TODO — Current Priorities
 
-**Last updated**: 2026-04-18 (narrative pivot to Type C critique)
+**Last updated**: 2026-04-21 (regime framing refinement on top of 2026-04-18 Type C pivot)
 
 Update this file as priorities shift. Delete completed items; don't accumulate history.
 
 > **ID scheme (2026-04-15)**: paper claims now use `F-A`…`F-E` (see `docs/findings.md`).
 > Guardrails + notes use `G-F##` / `N-F##` / `A-F##` (see `docs/methodology_notes.md`).
 > Inline `F##` references below remain valid via each claim's `Absorbs:` mapping.
+
+---
+
+## Narrative direction (2026-04-21 regime refinement)
+
+Cross-session framing sharpened on top of Type C critique. Primary axis is **regime**, not dataset:
+
+- **Subject-label regime** (label is a per-subject scalar, no within-subject contrast): Stress is the canonical instance. DEAP/SEED/DREAMER/DASPS share the archetype.
+- **Within-subject regime** (label is a paired within-subject contrast): EEGMAT (rest vs arithmetic) and SleepDep (normal vs sleep-deprived) are the two datapoints.
+
+Stress stays as a case study inside the subject-label regime — it is NOT the protagonist. The paper's diagnostic framework generalizes across regime, tested on two.
+
+Full decision log: `docs/regime_framing_decision.md`.
+
+**New open items (2026-04-21)** — flagged below in High priority (#11–#14).
 
 ---
 
@@ -118,6 +133,26 @@ possible paper versions (A/B/C).
     - Target sections: swap Abstract + §1 Intro + §3 overview + Discussion
     - Keep §3.1 variance atlas structure; replace §3.2/§3.3 with exp_30 C2 figure
 
+11. **Rewrite Fig 6 drift verdict logic** (blocked by N-F22)
+    - Current labels `rescue_consistent_with_subject_shortcut` / `rescue_consistent_with_label_signal` assume `subject_frac ↑ = shortcut`, which mis-classifies EEGMAT/SleepDep healthy FT as shortcut.
+    - Option A: make verdict regime-conditional (within-subject regime → `subject_frac ↑` = healthy reference encoding).
+    - Option B: remove verdict labels entirely, let arrow direction + regime panel speak.
+    - Source file: `results/studies/representation_drift/lp_vs_ft_stress.json` build script.
+
+12. **Add EEGMAT architecture ceiling to Fig 6 left** (regime-conditional architecture claim)
+    - Current Fig 6 left shows classical + non-FM + FM all collapsing on Stress (0.43–0.58 ceiling). Under regime framing, needs EEGMAT counterpart showing ceiling rises to 0.70+ for the same architectures — supports "architecture irrelevance is regime-dependent".
+    - Check if `results/studies/exp15_nonfm_baselines/sweep/*` has EEGMAT runs; if not, needs 2 archs (eegnet, shallowconvnet) × 3 seeds on EEGMAT (~2 h).
+
+13. **Expand Fig 4 with SleepDep trajectory row** (gated on paired protocol check)
+    - Needs SleepDep paired windows (same subject, rested vs sleep-deprived) to compute direction-consistency.
+    - Check `pipeline/sleepdep_dataset.py` (or equivalent) for paired structure.
+    - If protocol supports it, compute within-subject FT trajectory analogue to EEGMAT rest→task.
+
+14. **Write regime bifurcation text in Methods §3.1 + Intro**
+    - Intro: state the regime taxonomy upfront; cite DEAP/SEED/DREAMER/DASPS as instances of subject-label regime to establish prevalence (no new experiments needed).
+    - Methods §3.1: map the three datasets onto the axis; explicitly note Stress is the representative, EEGMAT/SleepDep are within-subject.
+    - Zero experimental cost; ~500 words.
+
 ## Lower priority — defer until paper direction locked
 
 10. **HP search on between-arm FT** (D3 resolution)
@@ -167,5 +202,14 @@ possible paper versions (A/B/C).
 - Stress power floor (G-F08 cuDNN swing + N-F19 null-indistinguishable
   + F-D.2) — benchmark-design caveat for the field; now in service of
   Type C critique not Type A positive claim
+- **FT<LP prior art** (added 2026-04-18 after literature audit):
+  BENDR (Frontiers 2021) reports frozen+linear > full FT on 4/5 datasets
+  under LOSO. AdaBrain-Bench (2025) documents EEGPT LP 47.9 vs FT 25.8
+  on BCI-IV-2a. EEGPT chooses LP as headline metric. Our negative
+  ΔBA in 7/9 between cells rediscovers this pattern with correlation-
+  level mechanism (subject_id_ba ~ FT degradation magnitude).
+- Our 5-fold subject CV × 3 seeds is MORE rigorous than community
+  standard (fixed split × 3-5 seeds). Our ±3 pp uncertainty includes
+  data-sampling variance most papers structurally cannot report.
 - Within-arm null result (C3 falsification) — honest limitation + open
   question for future benchmark design

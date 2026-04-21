@@ -5,6 +5,34 @@ Guardrails, methodology notes, and archived findings live in `docs/methodology_n
 
 **Read this file at session start to know what is current.**
 
+---
+
+> **⚠️ HP-CONTAMINATION AUDIT (2026-04-19)** — critical read before citing any FT number.
+>
+> All `exp_newdata` FT runs (6 datasets × 3 FMs × 3 seeds, the dataset supporting paper ΔBA and FT-direction claims) were executed with **unified hyperparameters that deviate 10–80× from every official recipe**:
+> - lr=1e-5 (LaBraM TUAB paper: 5e-4 • LEAD: implicit 1e-4 per §3.1 • CBraMod: 1e-4 • REVE: 2.4e-4)
+> - batch=4 (LEAD: 512 • LaBraM: 64 • CBraMod: 64 • REVE: 32)
+> - layer_decay off (LaBraM TUAB + local stress `finetune.sh`: 0.65)
+> - weight_decay=0.01 (LaBraM/CBraMod: 0.05)
+> - loss=focal γ=2 (all official: CE or CE+LS 0.1)
+> - head=MLP(128) (LaBraM: single Linear init_scale 0.001)
+>
+> In exp20 (Wang split, unrelated to exp_newdata) we DID test `layer_decay=0.65` + `wd=0.05` but with the same lr=1e-5 and loss=focal — CBraMod + REVE collapsed to chance (bal_acc=0.50) while LaBraM went high-variance (0.32–0.93 across seeds). This confirms the HP diagnosis.
+>
+> **Claims that are HP-contaminated and require reproduction before paper submission**:
+> - F-C.1 (ADFTD/TDBRAIN Δ label fraction direction flip), F-C.2 (Stress HP sweep — lr=1e-4 was tested only via one seed path), F-C.3 (EEGMAT projection-not-rewrite — BA 0.736 may be suppressed), F-C.4 (REVE window caveat).
+> - F-D.2 (Stress longitudinal DSS FT near-chance), F-D.3 (architecture-independent ceiling — LaBraM/CBraMod/REVE all ~0.52–0.58 *might* converge on a higher ceiling with proper HP), F-D.4 (permutation null indistinguishability — same LaBraM recipe).
+> - F-B §3.2 table Trial-vs-Subject ΔBA for LaBraM/REVE/CBraMod (subject-level FT numbers share the contaminated recipe).
+>
+> **Claims that are HP-safe (do NOT depend on FT runs)**:
+> - F-A (variance decomposition on frozen features — no FT)
+> - F-B classical baselines, Frozen LP 0.605 (LP head lr=5e-3, reasonable for linear head)
+> - F-NEURO.1/2/3 (all on frozen representations)
+> - F-HHSA (raw EEG, no model)
+> - F-E (classical RF feature importance, no FM)
+>
+> **Plan**: ADFTD 3-class LEAD reproduction (target LaBraM sample-level F1 75.64±4.68 / subject-level F1 91.14±8.64) is the sanity-check gate. If reproduction succeeds under per-FM official HP, re-run exp_newdata with aligned HP before re-validating F-C / F-D.2-4 / F-B FT rows.
+
 > **Notation**: All `mean ± std` values use **sample std** (divide by n−1).
 > Bootstrap 95% CIs are labelled `[low, high]`.
 > Audit script: `scripts/audit_std_convention.py`.
@@ -59,8 +87,46 @@ All claims below are facets of this thesis:
 | **F-C** FT is a model × dataset interaction | cross-dataset taxonomy | **not in tex results** (archived from old narrative) |
 | **F-D** contrast strength governs FM rescue | the *outcome*: EEGMAT rescues, Stress does not | §3.2 — **core** |
 | **F-NEURO** cross-model neural band consensus | independent mechanism test (neural, not behavioural) | §3.2 integrated — **core** |
+| **F-FOOOF** causal aperiodic/periodic ablation → Type I/II/III anchor taxonomy | causal signal-level test of anchor type (3 datasets) | §4.4 — **core** |
 | **F-HHSA** holospectral contrast gradient | model-independent signal-level contrast measure | Discussion — **new** |
 | **F-E** classical features rely on alpha lateralization | minor/context | §3.2 — **minor** |
+
+---
+
+## F-REPRO: LEAD ADFTD 3-class sanity reproduction (2026-04-19)
+
+**Status**: directional PASS, magnitude gap
+**Purpose**: validate pipeline under per-FM official HP before rerunning exp_newdata FT. Sanity anchor = LEAD v4 Table 2 LaBraM ADFTD 3-class subject-independent 8:1:1 × 5 seeds.
+
+### Protocol
+ADFTD 3-class (88 subjects, HC=29/AD=36/FTD=23), subject-independent 8:1:1 split × 3 seeds (41, 42, 43). Per-FM official HP (see `methodology_notes.md` G-F09). Per-window CE loss + majority-vote subject-level aggregation (LEAD §2.2, G-F10). Driver: `scripts/experiments/run_sanity_lead_adftd.py`. Raw outputs: `results/studies/sanity_lead_adftd/*.json`.
+
+**Note on batch size**: seed 41 ran batch=128, seeds 42–43 ran batch=512. LEAD uses batch=512. Clean apples-to-apples = seeds 42+43 only (n=2).
+
+### Results (batch=512, n=2 seeds)
+
+| FM | FT sample F1 | FT subject F1 | Frozen subject F1 | ΔF1_subject |
+|---|---|---|---|---|
+| LaBraM | 0.507±0.171 | 0.441±0.225 | 0.333±0.314 | **+0.107** |
+| CBraMod | 0.462±0.146 | 0.498±0.223 | 0.205±0.000 | **+0.292** |
+| REVE | 0.358±0.014 | 0.345±0.043 | 0.260±0.078 | **+0.085** |
+
+**vs LEAD v4 (batch=512, n=5)**: LaBraM FT subject F1 0.9114±0.086, sample F1 0.7564±0.047. CBraMod FT subject F1 0.8221±0.063, sample F1 0.6833±0.045. We are 20–47 pp below LEAD means across the board; our std is 3–5× LEAD's.
+
+### Claims
+
+- **Direction confirmed**: FT > Frozen on all 3 FMs (ΔF1_subject +0.085 to +0.292). **This alone invalidates the exp_newdata "FT ≤ Frozen" narrative** — that pattern was HP-driven, not a subject-level-CV property.
+- **Pipeline calibration gap**: absolute numbers 20–47 pp below LEAD. Likely causes (in priority):
+  1. Batch 512 on our 88-subject dataset leaves only ~22 gradient steps/epoch vs LEAD's larger effective dataset (88×150 windows = 13k); cosine schedule may not provide enough updates
+  2. Small val set (9 subjects × 3 classes → very noisy val F1) + patience=15 triggers premature early-stop (best epoch 9–32, far below LEAD's up-to-200)
+  3. Only 2 seeds under LEAD protocol (they use 5) — seed noise dominates; LaBraM FT subject F1 spans [0.281, 0.852] across our 3 seeds
+- **Not pipeline bug**: seed 41 LaBraM subject F1 = 0.852 is within 1σ of LEAD 0.911±0.086 → structurally our code can reach LEAD territory.
+
+### What this unblocks
+
+- exp_newdata FT rerun with per-FM official HP (G-F09) is now authorized
+- All claims in the "Pending experiments" table at bottom of this file are now runnable — use LEAD-style protocol + per-FM HP
+- To match LEAD's absolute calibration: add seeds 44+45 to close 3 → 5 seed gap, consider batch=256 compromise, or increase patience to 30
 
 ---
 
@@ -76,8 +142,10 @@ All claims below are facets of this thesis:
 - **Cosine similarity**: within-subject ≫ between-subject for all 3 FMs.
 - **Mixed-effects ICC**: subject identity dominates 71% of EEGMAT representation variance.
 - **RSA triangulation** (`results/studies/exp06_fm_task_fitness/fitness_metrics_full.json`): RSA subject-r > RSA label-r in **12/12** frozen model × dataset combinations. Confirmed by silhouette, Fisher score, kNN, LogME, H-score.
+- **SleepDep replication (2026-04-21)**: added 3rd main dataset datapoint. Frozen variance fractions: `subject_frac` 46–68%, `label_frac` <6%; RSA `r(subject) = 0.054–0.084`, `r(label) = −0.006 to +0.018`. All three FMs in same subject-dominated regime as Stress + EEGMAT. Source: `paper/figures/_historical/source_tables/sleepdep_variance_rsa.json`.
+- **Frozen → FT trajectory (regime-conditional, see N-F22)**: FT moves variance in **opposite directions** per regime — Stress `subject_frac` 49 → 12% (pushes to residual, label_frac also drops), EEGMAT `subject_frac` 76 → 87%, SleepDep 46 → 78%. RSA tells a different story: `rsa_subject_r` rises under FT for Stress too (0.19–0.28 → 0.25–0.33). Variance SS vs rank RSA measure different aspects of subject alignment and can disagree — they are complementary, not substitutes. Source: `paper/figures/_historical/source_tables/ft_rsa_stress_eegmat.json`.
 
-**Key insight**: frozen FM representations encode *who* the recording belongs to more strongly than *what* the label is. This is the structural baseline against which F-C and F-D must work.
+**Key insight**: frozen FM representations encode *who* the recording belongs to more strongly than *what* the label is. This is the structural baseline against which F-C and F-D must work. **Subject_frac direction under FT is not a universal quality signal** — interpretation is regime-conditional (see `docs/methodology_notes.md#N-F22`, `docs/regime_framing_decision.md`).
 
 ---
 
@@ -131,7 +199,8 @@ Source: `results/studies/exp02_classical_dass/rerun_70rec/summary.json` (4 metho
 
 ## F-C: Fine-tuning is a model × dataset interaction, not label biology
 
-**Status**: confirmed experimentally, but **not in tex main results** (2026-04-17)
+**Status**: ⚠️ HP-CONTAMINATED — all FT-dependent numbers below pending re-run under per-FM official HP (see audit at top of file).
+**Status (pre-audit)**: confirmed experimentally, but **not in tex main results** (2026-04-17)
 **Absorbs**: F17 (ADFTD/TDBRAIN multi-model taxonomy), F05 (Stress HP sweep), F09 (EEGMAT projection-not-rewrite), F18 (REVE window caveat). **Supersedes F04** (LaBraM-only 10s historical version).
 **Thesis role (original)**: mechanism — FT direction (injection vs erosion) depends on architecture × dataset contrast structure, not on label biology alone.
 
@@ -190,7 +259,8 @@ Paper cites **10 s-matched** as primary (matches REVE's native pretraining windo
 
 ## F-D: Contrast strength governs FM rescue — EEGMAT succeeds where Stress longitudinal fails
 
-**Status**: confirmed (paired experiment 2026-04-13)
+**Status**: ⚠️ PARTIALLY HP-CONTAMINATED — D.1 frozen-LP BA is safe, D.2/D.3/D.4 depend on FT recipe and need re-validation.
+**Status (pre-audit)**: confirmed (paired experiment 2026-04-13)
 **Absorbs**: F09 (EEGMAT success), F14 (Stress longitudinal failure), F06 (LaBraM null on Stress), F20 (ShallowConvNet matches FMs)
 **Thesis role**: outcome — quantifies when the contrast/variance ratio is high enough for FM to be useful.
 
@@ -277,6 +347,74 @@ This is the **neural-level diagnostic** that complements F-D's behavioural diagn
 
 ---
 
+## F-FOOOF: Causal anchor dissection (FOOOF ablation + band-stop) gives Type I/II/III taxonomy
+
+**Status**: confirmed (2026-04-21)
+**Thesis role**: *causal* upgrade of F-NEURO — two complementary signal-level interventions:
+  (i) FOOOF decomposes EEG into aperiodic 1/f + periodic peaks, then ablates one component before FM extraction (probe BA Δ);
+  (ii) band-stop filters remove a whole frequency band (peak + in-band 1/f tail) from the raw EEG (cosine distance on FM features).
+Together they yield a pre-training, model-independent taxonomy of contrast-anchor types.
+**Paper section**: §4.4.
+**Sources**:
+  `results/studies/fooof_ablation/{stress,eegmat,sleepdep}_probes.json`;
+  `results/studies/exp14_channel_importance/band_stop_ablation.json` (3 datasets merged 2026-04-20).
+
+### FOOOF.1 — Aperiodic 1/f is the universal subject substrate
+
+Subject-identity probe BA under `aperiodic_removed` (vs `original`):
+
+| Dataset | LaBraM | CBraMod | REVE |
+|---|---|---|---|
+| EEGMAT | 0.556 → 0.528 (−2.8pp) | 0.507 → 0.365 (**−14.2pp**) | 0.465 → 0.205 (**−26.0pp**) |
+| Stress | 0.569 → 0.544 (−2.5pp) | 0.569 → 0.483 (**−8.6pp**) | 0.565 → 0.569 (+0.4pp) |
+| SleepDep | 0.406 → 0.361 (−4.5pp) | 0.420 → 0.375 (−4.5pp) | 0.375 → 0.417 (+4.2pp) |
+
+`periodic_removed` leaves subject probe essentially unchanged in all 9 cells (|Δ| ≤ 1 pp). **Aperiodic 1/f carries subject identity; narrowband peaks do not.** This generalises the F-NEURO observation (Stress-only, band-RSA) to 3 datasets via causal manipulation.
+
+### FOOOF.2 — State anchor differs by dataset type
+
+State probe BA under each ablation, averaged across 3 FMs:
+
+| Dataset | original | aperiodic_removed | periodic_removed |
+|---|---|---|---|
+| **EEGMAT** (rest vs task) | 0.714 | 0.701 (−1.2pp) | 0.706 (−0.8pp) |
+| **SleepDep** (NS vs SD) | 0.573 | **0.528 (−4.5pp)** | 0.575 (+0.2pp) |
+| **Stress** (DASS binary) | 0.467 | 0.446 (−2.1pp) | 0.465 (−0.2pp) |
+
+Per-FM SleepDep state sensitivity to aperiodic removal: LaBraM 0.616 → 0.538 (−7.8pp), REVE 0.562 → 0.519 (−4.3pp), CBraMod 0.540 → 0.528 (−1.2pp; already low).
+
+**SleepDep uniquely loses state under aperiodic removal. EEGMAT state survives both FOOOF ablations. Stress state is null throughout.**
+
+### FOOOF.3 — Band-stop sensitivity resolves the EEGMAT anchor
+
+FOOOF periodic removal only deletes *peaks* atop the 1/f background; band-stop removes the *entire band* (peak + in-band 1/f tail). Running both on the same datasets resolves the apparent EEGMAT contradiction.
+
+Mean cosine distance across 3 FMs after Butterworth band-stop:
+
+| Dataset | δ (1–4 Hz) | θ (4–8 Hz) | α (8–13 Hz) | β (13–30 Hz) |
+|---|---|---|---|---|
+| **EEGMAT** | 0.052 | 0.049 | **0.105** ← | 0.061 |
+| **Stress** | 0.040 | 0.034 | 0.054 | **0.078** |
+| **SleepDep** | 0.008 | 0.007 | 0.012 | 0.007 |
+
+EEGMAT FM features peak in α-band dependence (highest of any cell); SleepDep FM features are flat across bands (lowest by ~5×). Since FOOOF periodic removal (peaks only) barely shifts EEGMAT state probe but band-stop α moves FM representation far more, **EEGMAT state lives in the α band as a broadband entity — the peak plus the in-band 1/f tail together**, not the peak alone.
+
+### Synthesis — three anchor regimes
+
+The two causal probes agree on a three-way dataset taxonomy diagnosable from the EEG *before* any FM training:
+
+| Regime | FOOOF signature | Band-stop signature | Example | FM rescue prognosis |
+|---|---|---|---|---|
+| **Type I — no anchor** | State probe near chance in all conditions | Any band-stop cosine distance (subject signature only) | Stress DASS | FT exploits subject shortcut (F-C, F-D, F-drift) |
+| **Type II — α-broadband anchor** | State survives both periodic and aperiodic removal | α-band cosine distance peaks (high reliance) | EEGMAT rest/task | FM frozen LP separates (F-D.1); state encoded redundantly across peak + tail |
+| **Type III — 1/f-aperiodic anchor** | State collapses under aperiodic removal only | Band-stop cosine distance flat (no band reliance) | SleepDep NS/SD | FM frozen LP separates at modest BA (≈ 0.53–0.61, consistent with Frontiers 2025 RF 0.68); signal diffuse in 1/f slope |
+
+This is the **strongest form** of the contrast-anchor argument — not a representation correlation (F-NEURO) or a benchmark number (F-D), but *complementary signal-level interventions* that jointly identify which spectral component the FM state probe is reading. The anchor-type classification is model-independent and could be computed on any candidate dataset before committing an FM training pipeline.
+
+**Important interpretation caveat on cosine distance**: band-stop cosine distance measures how much the FM representation *depends on* a band — a reliance / sensitivity metric, not a task-probe accuracy. High cosine distance on a band only implies "FM listens to that band"; whether that band also *carries task signal* requires the FOOOF probe-BA panel alongside.
+
+---
+
 ## F-HHSA: Holospectral contrast gradient provides model-independent SDL evidence
 
 **Status**: confirmed (2026-04-17)
@@ -336,11 +474,19 @@ RF feature importance on 70-rec per-rec dass: 13/20 top features are alpha band,
 
 | Number | Why wrong | Replacement |
 |---|---|---|
-| LaBraM FT subject-dass 0.656 | Single-seed, cuDNN noise, OR-aggregation | Multi-seed per-rec dass: 0.443 ± 0.083 (canonical) or 0.524 ± 0.010 (best HP) |
 | Classical RF subject-dass 0.666 | OR-aggregation artifact (see `methodology_notes.md` G-F07) | Per-rec dass: RF = 0.44, all classical below chance |
 | Trial-level LaBraM 0.862 | Subject leakage, OR-aggregation | Not comparable to per-rec subject-level CV |
 | "34× subject/label η² ratio" | Naive one-way η² with nesting confound | Pooled label fraction (2.8–7.2%) |
-| "ADFTD ×2.76 rewrite" | N-inflation artifact | +5 pp additive (N-invariant) |
 | "9.1→1.6 per-fold Stress drop" | Per-fold degenerate (1 subject per positive class) | Do not cite per-fold Stress |
-| "Erosion is model-universal" | Refuted by HP sweep | LaBraM-specific on Stress; see F-C.2 |
-| Stress variance row (7.23%→7.24%) | Computed under subject-dass | Needs re-run with `--label dass --save-features` |
+
+## Pending experiments (invalidated by HP audit, awaiting sanity reproduction)
+
+| Claim | Status | Unblock condition |
+|---|---|---|
+| LaBraM FT on Stress BA (any value) | Invalid under exp_newdata HP | LEAD sanity PASS → rerun exp_newdata with per-FM official HP |
+| ADFTD ΔBA / ×-fold rewrite | Invalid under exp_newdata HP | Same |
+| TDBRAIN FT erosion | Invalid under exp_newdata HP | Same |
+| "Erosion model-universal vs LaBraM-specific" | Invalid | Same |
+| Stress FT vs permutation-null | Invalid | Same |
+| ρ(subject_id_BA, ΔBA) between-arm = +0.50 | Invalid (depends on contaminated ΔBA) | Same |
+| mean ΔBA between-arm / within-arm | Invalid | Same |

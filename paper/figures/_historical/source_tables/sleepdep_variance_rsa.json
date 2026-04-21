@@ -1,0 +1,44 @@
+{
+  "labram_sleepdep": {
+    "model": "labram",
+    "dataset": "sleepdep",
+    "frozen_label_frac": 0.7524,
+    "frozen_subject_frac": 63.6272,
+    "ft_label_frac": 0.4153,
+    "ft_subject_frac": 78.4776,
+    "rsa_label_r": -0.0051,
+    "rsa_subject_r": 0.0535,
+    "ft_rsa_label_r": -0.0218,
+    "ft_rsa_subject_r": 0.1414,
+    "n_rec": 72,
+    "n_subj": 36
+  },
+  "cbramod_sleepdep": {
+    "model": "cbramod",
+    "dataset": "sleepdep",
+    "frozen_label_frac": 1.685,
+    "frozen_subject_frac": 67.6061,
+    "ft_label_frac": 0.2356,
+    "ft_subject_frac": 74.8095,
+    "rsa_label_r": -0.0058,
+    "rsa_subject_r": 0.0625,
+    "ft_rsa_label_r": -0.0203,
+    "ft_rsa_subject_r": 0.1282,
+    "n_rec": 72,
+    "n_subj": 36
+  },
+  "reve_sleepdep": {
+    "model": "reve",
+    "dataset": "sleepdep",
+    "frozen_label_frac": 5.7403,
+    "frozen_subject_frac": 45.8928,
+    "ft_label_frac": 2.8966,
+    "ft_subject_frac": 54.4847,
+    "rsa_label_r": 0.0177,
+    "rsa_subject_r": 0.0838,
+    "ft_rsa_label_r": -0.0069,
+    "ft_rsa_subject_r": 0.0941,
+    "n_rec": 72,
+    "n_subj": 36
+  }
+}
