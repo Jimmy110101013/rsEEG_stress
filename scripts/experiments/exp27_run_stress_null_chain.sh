@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # exp27 paired null — Stress side, LaBraM best-HP, GPU 3, 30 perms.
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 PY="/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python"
 GPU=3

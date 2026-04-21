@@ -167,11 +167,18 @@ def parse_args():
     # Feature extraction
     p.add_argument("--save-features", action="store_true",
                    help="Save test-fold features from best model for eta-squared analysis")
-    # Permutation null — shuffle recording-level labels before CV to build
-    # a null distribution of BA under a label-free representation.
+    # Permutation null — shuffle labels before CV to build a null distribution
+    # of BA under a label-free representation.
     p.add_argument("--permute-labels", type=int, default=-1,
                    help="If >=0, permute labels with this RNG seed before CV "
                         "(permutation-null mode). -1 disables (default).")
+    p.add_argument("--permute-level", choices=["recording", "subject"], default="recording",
+                   help="Level at which to permute labels. 'recording' (default) shuffles "
+                        "per-recording labels — correct for paired/within-subject labels "
+                        "(e.g. EEGMAT, SleepDep) and per-recording scores (e.g. Stress DASS). "
+                        "'subject' shuffles per-subject labels with all of a subject's "
+                        "recordings sharing the shuffled label — correct for subject-trait "
+                        "labels (e.g. ADFTD AD/HC). Ignored if --permute-labels < 0.")
     args = p.parse_args()
 
     # Mode-dependent defaults (aligned with REVE stress task config)
@@ -1317,10 +1324,36 @@ def main():
 
     if args.permute_labels >= 0:
         rng = np.random.default_rng(args.permute_labels)
-        perm = rng.permutation(len(labels))
-        labels = labels[perm]
-        print(f"[permute-labels] Shuffled labels with rng seed {args.permute_labels}. "
-              f"Class balance preserved: {int(labels.sum())} pos / {int(len(labels)-labels.sum())} neg")
+        pid_arr = np.asarray(patient_ids)
+        if args.permute_level == "subject":
+            # Subject-trait null (e.g. ADFTD AD/HC): each subject carries one
+            # trait label shared by all their recordings; shuffling must happen
+            # at subject level so a subject's splits stay label-consistent.
+            unique_pids = np.unique(pid_arr)
+            subj_labels = np.empty(len(unique_pids), dtype=labels.dtype)
+            for i, pid in enumerate(unique_pids):
+                mask = pid_arr == pid
+                rec_labels = labels[mask]
+                if len(np.unique(rec_labels)) != 1:
+                    raise ValueError(
+                        f"--permute-level=subject requires each subject to have a "
+                        f"single trait label, but subject {pid} has "
+                        f"{np.unique(rec_labels).tolist()}."
+                    )
+                subj_labels[i] = rec_labels[0]
+            shuffled = subj_labels[rng.permutation(len(unique_pids))]
+            pid_to_label = dict(zip(unique_pids.tolist(), shuffled.tolist()))
+            labels = np.array([pid_to_label[pid] for pid in pid_arr.tolist()],
+                              dtype=labels.dtype)
+            print(f"[permute-labels] Subject-level shuffle with rng seed "
+                  f"{args.permute_labels} over {len(unique_pids)} subjects. "
+                  f"Class balance preserved: {int(labels.sum())} pos / "
+                  f"{int(len(labels)-labels.sum())} neg")
+        else:
+            labels = labels[rng.permutation(len(labels))]
+            print(f"[permute-labels] Recording-level shuffle with rng seed "
+                  f"{args.permute_labels}. Class balance preserved: "
+                  f"{int(labels.sum())} pos / {int(len(labels)-labels.sum())} neg")
 
     outer_cv = StratifiedGroupKFold(
         n_splits=args.folds, shuffle=True, random_state=args.seed

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # exp27 paired null — EEGMAT side, LaBraM canonical, GPU 4, 30 perms.
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 PY="/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python"
 GPU=4
