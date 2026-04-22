@@ -1,6 +1,6 @@
 # TODO — Current Priorities
 
-**Last updated**: 2026-04-21 (regime framing refinement on top of 2026-04-18 Type C pivot)
+**Last updated**: 2026-04-22 (aug_overlap audit + 4-dataset perm null infra; label-substrate axis candidate replacing regime framing)
 
 Update this file as priorities shift. Delete completed items; don't accumulate history.
 
@@ -152,6 +152,33 @@ possible paper versions (A/B/C).
     - Intro: state the regime taxonomy upfront; cite DEAP/SEED/DREAMER/DASPS as instances of subject-label regime to establish prevalence (no new experiments needed).
     - Methods §3.1: map the three datasets onto the axis; explicitly note Stress is the representative, EEGMAT/SleepDep are within-subject.
     - Zero experimental cost; ~500 words.
+
+15. **exp31 aug_overlap audit — decision gate** (in-flight 2026-04-22)
+    - `pipeline/dataset.py:196` hard-codes aug_overlap oversample on `label==1`, only correct when label==1 is the window-level minority. ADFTD (label==1=AD=majority) LaBraM s42 no-aug = 0.744 vs aug-on 0.709 (+3.5pp) suggests aug is a harmful artifact there.
+    - Current audit: EEGMAT LaBraM (aug=0.5 done: 0.671±0.021; no-aug s42=0.708, s123+s2024 in-flight on GPU 3); ADFTD LaBraM no-aug s123+s2024 in-flight on GPU 4; CBraMod + REVE ADFTD no-aug × 3 seeds queued.
+    - **Decision** (after ~3h): if all 3 FMs show ADFTD no-aug > aug-on, switch ADFTD real FT to no-aug → triggers #16. If only LaBraM flips, document per-FM sensitivity in methods.
+    - Also in methods: document `aug_overlap` implementation asymmetry (Stress minority ✓, EEGMAT window-minority ✓ direction with 0.75 overshoot, ADFTD majority ✗, SleepDep balanced/off ✓).
+
+16. **ADFTD recipe switch cascade** (gated on #15)
+    - If #15 confirms no-aug better: kill current GPU 7 ADFTD perm null (aug-on configured), rerun 30 seeds no-aug + subject-level permutation.
+    - Rerun ADFTD real FT × 3 FMs × 3 seeds with new recipe.
+    - Re-extract `results/features_cache/ft_{fm}_adftd/` features.
+    - Re-run `scripts/analysis/run_variance_analysis.py` for ADFTD rows in `variance_decomposition.json`.
+    - Update `master_frozen_ft_table_v2.json` ADFTD column.
+    - Regenerate Fig 5 (FOOOF ablation), Fig 6 (ceiling), Fig 2 (variance 2×2) ADFTD panels.
+
+17. **Fig 3 → 4-panel (2×2) null** (gated on perm null completion, ~14h from 2026-04-22)
+    - SleepDep perm null (30 seeds, recording-level) running on GPU 6, ~10h remaining.
+    - ADFTD perm null (30 seeds, subject-level via new `--permute-level subject`) running on GPU 7, ~14h remaining (may be killed and restarted under #16).
+    - Final layout candidate: top row (neural-signal labels: EEGMAT, ADFTD); bottom row (behavioral/state labels: Stress, SleepDep). Source builder: `notebooks/_build_figures_consolidated.py:138-167`.
+    - Methods note: ADFTD uses subject-level permutation; others use recording-level (correct for their label types).
+    - Supersedes current 2-panel Fig 3 (`paper/figures/main/fig3_honest_evaluation.pdf`).
+
+18. **Label-substrate axis pivot** (gated on #15, #17)
+    - Proposed replacement for regime framing (item #11–#14 axis): FM adaptability is predicted by whether the label ties to an identifiable neural substrate (EEGMAT theta/alpha; ADFTD 1/f slope) vs a behavioral/state score (Stress DASS, SleepDep).
+    - Stress + SleepDep fail on FT BA regardless of within/between-subject → regime axis alone does not carve the data.
+    - Actions: update `project_regime_framing.md` memory → new `project_label_substrate_axis.md`; update `docs/findings.md` F-A/F-C; update `docs/paper_outline.md` Intro + §3.
+    - Only after all perm null + audit data lands — avoid writing narrative on moving target.
 
 ## Lower priority — defer until paper direction locked
 
