@@ -36,13 +36,13 @@ All BA = subject-level 5-fold CV, 3 seeds.
 - Label: subject-level AD vs HC (binary)
 - Regime: *subject-label trait × strong-aligned* (legacy: between-subject × coherent signal)
 
-| FM | LP (frozen, 3-seed) | FT (3-seed) | FT HP |
+| FM | LP (frozen, 3-seed) | FT (3-seed) | FT HP (per-FM canonical, G-F09) |
 |---|---|---|---|
-| labram | 0.643 ± 0.054 | 0.709 ± 0.014 ⚠ split3 | lr=1e-05, wd=0.05, enc_scale=0.1, norm=zscore |
-| cbramod | 0.581 ± 0.042 | 0.537 ± 0.027 ⚠ split3 | lr=1e-05, wd=0.05, enc_scale=0.1, norm=none |
-| reve | 0.668 ± 0.027 | 0.658 ± 0.030 ⚠ split3 | lr=3e-05, wd=0.05, enc_scale=0.1, norm=none |
+| labram | 0.643 ± 0.054 | **0.737 ± 0.055** | lr=5e-4, layer_decay=0.65, wd=0.05, CE+LS 0.1, norm=zscore |
+| cbramod | 0.581 ± 0.042 | 0.698 ± 0.020 | backbone lr=1e-4 / head lr=5e-4, wd=0.05, CE+LS 0.1, norm=none |
+| reve | 0.668 ± 0.027 | 0.683 ± 0.019 | max_lr=2.4e-4, encoder_lr_scale=0.1, wd=0.01, warmup 2ep, norm=none |
 
-> LP updated 2026-04-23 (n_splits=1, 65 rec). 3-seed subset (42/123/2024, ddof=1) of the 8-seed `perwindow_lp_all/adftd/{model}_multi_seed.json`. FT values remain from pre-split1 runs; pending refresh under per-FM unified HP + split1 cache.
+> Both LP and FT refreshed 2026-04-23 under split1 (65/65). LP = 3-seed subset of 8-seed `perwindow_lp_all/adftd/{model}_multi_seed.json`. FT = 3-seed (42/123/2024) from `results/final/adftd/{model}/ft/seed{N}/summary.json` (subject_bal_acc). CBraMod FT jumped +16 pp vs the old unified-HP run (0.537 → 0.698) — per-FM HP recipe recovered the signal (G-F09).
 
 **Classical ML** (per-rec features, 3 seeds):
 
@@ -123,8 +123,8 @@ All BA = subject-level 5-fold CV, 3 seeds.
 | Dataset | Regime | n_samples / n_subj | LaBraM LP | LaBraM FT | CBraMod LP | CBraMod FT | REVE LP | REVE FT | Classical best | Non-FM best |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Stress (DASS) | between-subject, absent signal | 70/17 | 0.506 ± 0.014 | 0.443 ± 0.083 | 0.440 ± 0.019 | 0.548 ± 0.026 | 0.458 ± 0.019 | 0.577 ± 0.041 | LogReg_L2 0.506 ± 0.019 | shallowconvnet 0.563 ± 0.024 |
-| ADFTD | subject-label, strong-aligned | 65/65 | 0.643 ± 0.054 | 0.709 ± 0.014 ⚠ | 0.581 ± 0.042 | 0.537 ± 0.027 ⚠ | 0.668 ± 0.027 | 0.658 ± 0.030 ⚠ | SVM_RBF 0.647 ± 0.009 | eegnet 0.773 ± 0.027 |
+| ADFTD | subject-label, strong-aligned | 65/65 | 0.643 ± 0.054 | **0.737 ± 0.055** | 0.581 ± 0.042 | 0.698 ± 0.020 | 0.668 ± 0.027 | 0.683 ± 0.019 | SVM_RBF 0.647 ± 0.009 | eegnet 0.773 ± 0.027 |
 | SleepDep | within-subject, incoherent signal | 72/36 | 0.611 ± 0.014 | 0.532 ± 0.069 | 0.546 ± 0.021 | 0.556 ± 0.050 | 0.537 ± 0.049 | 0.542 ± 0.014 | SVM_RBF 0.574 ± 0.056 | shallowconvnet 0.602 ± 0.021 |
 | EEGMAT | within-subject, coherent signal | 72/36 | 0.736 ± 0.037 | 0.731 ± 0.021 | 0.718 ± 0.021 | 0.620 ± 0.047 | 0.736 ± 0.014 | 0.727 ± 0.029 | RF 0.889 ± 0.014 | eegnet 0.694 ± 0.024 |
 
-> ⚠ = pre-split1 / pre-unified-HP value, pending refresh. See `docs/adftd_refresh_plan.md` Step 2.
+> ADFTD LP+FT refreshed 2026-04-23 (split1 + per-FM canonical HP). Stress/EEGMAT/SleepDep FT values may still reflect pre-unified-HP runs — audit against `results/final/{cell}/ft/` when available and mark stale rows explicitly.
