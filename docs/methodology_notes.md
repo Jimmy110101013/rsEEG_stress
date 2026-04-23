@@ -37,6 +37,13 @@ Read this file when you need to:
 
 ---
 
+### G-F12: `train_lp.py` is deprecated — canonical LP is per-window sklearn LogReg
+**Status**: policy (2026-04-23)
+**Evidence**: `train_lp.py` implements a PyTorch pool-then-classify probe (optionally MLP head + mixup) — not community-standard and not the paper's LP source. On 2026-04-20 all paper LP numbers were migrated to `scripts/experiments/frozen_lp_perwindow_all.py` (sklearn LogReg, per-window train, test prob mean-pool per recording, threshold 0.5). The migration exposed an 8 pp drop on Stress LaBraM LP (0.605 → 0.525) and a narrative flip on EEGMAT (LP 0.736 ≈ FT 0.731 — FT not a rescue). Full 4-dataset × 3-FM × 8-seed results + narrative deltas in `results/studies/perwindow_lp_all/SUMMARY.md`.
+**Action**: `train_lp.py` marked deprecated in its docstring and emits `DeprecationWarning` on import (2026-04-23). Do not cite its numbers in the paper. All LP work uses `frozen_lp_perwindow_all.py`; master Tab 1 (`scripts/figures/build_frozen_vs_ft_table.py`) should source from `results/studies/perwindow_lp_all/{dataset}/{model}_multi_seed.json` — pending TODO to redirect that script off pooled `_19ch.npz` files. Variance decomposition (§4.2 Fig 2) and band RSA (Appendix B.3 Fig B.3) still require pooled `_19ch.npz` features (recording-level analyses); these are distinct from LP and unaffected.
+
+---
+
 ### G-F11: Dataset loaders must fail loud on unloadable files, never return dummy tensors
 **Status**: policy (2026-04-23)
 **Evidence**: `pipeline/sleepdep_dataset.py` originally returned a `(1, 19, T)` zero tensor when `mne.io.read_raw_eeglab` failed both load attempts, and `__init__` only filtered records whose `.failed` marker existed from a *prior* run. On a fresh cache, failing records stayed in `self.records` / `StratifiedGroupKFold` and `WindowDataset._preload` silently fed zero-tensor "recordings" into training — contaminating labels and fold balancing. For exp27 SleepDep null chain this would make seed 0 (n_subj=36 with zeros) and seeds 1–29 (n_subj=35 after marker filter) structurally different, invisible in the pooled Fig 3 histogram. Caught by ultrareview 2026-04-23. Cached `data/cache_sleepdep` markers post-dated published numbers, so no known result was contaminated; bug was latent for any fresh reproduction.

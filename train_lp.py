@@ -1,4 +1,22 @@
-"""Linear Probing with Subject-Level Stratified Group K-Fold CV.
+"""Linear Probing with Subject-Level Stratified Group K-Fold CV (DEPRECATED).
+
+.. deprecated:: 2026-04-23
+    This script implements a PyTorch pool-then-classify linear probe
+    (optionally with MLP head + mixup). It is NOT the canonical LP protocol
+    for the paper.
+
+    Canonical LP → use :mod:`scripts.experiments.frozen_lp_perwindow_all`:
+    sklearn LogisticRegression trained on per-window frozen features,
+    test-fold window probabilities mean-pooled per recording, threshold
+    0.5 → recording-level BA. 8-seed results live under
+    ``results/studies/perwindow_lp_all/{dataset}/{model}_multi_seed.json``
+    (see ``results/studies/perwindow_lp_all/SUMMARY.md`` for the 2026-04-20
+    protocol migration notes and narrative deltas). Guardrail G-F10 in
+    ``docs/methodology_notes.md`` codifies the per-window + aggregate
+    protocol; G-F12 documents this deprecation.
+
+    Kept in the tree for historical pool-then-classify runs only — do not
+    cite its numbers in the paper.
 
 Global prediction pooling: predictions from each fold's held-out test set are
 concatenated and metrics are computed once at the end (no per-fold averaging).
@@ -8,6 +26,16 @@ Usage:
     conda run -n timm_eeg python train_lp.py --extractor mock_fm --folds 5 --epochs 5
     conda run -n timm_eeg python train_lp.py --extractor reve --stride 5.0 --noise 0.1 --mixup 0.2
 """
+import warnings as _warnings
+
+_warnings.warn(
+    "train_lp.py is DEPRECATED. The paper's canonical LP protocol is "
+    "scripts/experiments/frozen_lp_perwindow_all.py (per-window sklearn "
+    "LogReg + test-time prob mean-pool). See docs/methodology_notes.md "
+    "G-F10 / G-F12 and results/studies/perwindow_lp_all/SUMMARY.md.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 import argparse
 import copy
