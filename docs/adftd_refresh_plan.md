@@ -18,7 +18,7 @@
 | FOOOF probes | `results/studies/fooof_ablation/adftd_probes.json` | ⏳ pending per-FM window patch |
 | FOOOF reconstructed features | `results/features_cache/fooof_ablation/feat_{model}_adftd_{cond}.npz` | ⏳ |
 | Band-stop | `results/studies/exp14_channel_importance/band_stop_ablation.json` (combined) | ⏳ pending per-FM window patch |
-| Band-RSA | `results/studies/exp14_channel_importance/band_rsa.json` | ⏳ ready to run |
+| Band-RSA | `results/studies/exp14_channel_importance/band_rsa.json` | ✅ 2026-04-23 — ADFTD row added (split1, per-FM window) |
 | New ADFTD dataset caches | `data/cache_adftd_split1/` (zscore), `data/cache_adftd_split1_nnone/` (norm=none) | auto-created |
 | Execution logs | `logs/adftd_refresh_20260423/*.log` | live |
 | Methodology guardrails | `docs/methodology_notes.md` §G-F11, G-F12 | ✅ 2026-04-23 |

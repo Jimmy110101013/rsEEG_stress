@@ -155,9 +155,16 @@ Same raw JSON as §4.5 but different metric. See §4.5 table above + split into 
 ### B.3 Band-RSA (3 FM × 4 cells × 4 bands)
 | Item | Path | Status |
 |---|---|---|
-| Combined JSON | `results/studies/exp14_channel_importance/band_rsa.json` | ⏳ running 2026-04-23 with ADFTD added (split1, per-FM window) — `band_rsa.json.bak_pre_adftd_20260423` holds pre-add snapshot |
-| Script | `scripts/analysis/band_rsa_analysis.py` | patched 2026-04-23 for split1 |
+| Combined JSON | `results/studies/exp14_channel_importance/band_rsa.json` | ✅ 2026-04-23 — Stress / EEGMAT / ADFTD (split1, per-FM window). SleepDep still missing. Backup `band_rsa.json.bak_pre_adftd_20260423` |
+| Script | `scripts/analysis/band_rsa_analysis.py` | patched 2026-04-23 for split1 + ADFTD row |
 | Source tables copy | `paper/figures/_historical/source_tables/exp14_band_rsa.json` | stale |
+
+**Band-RSA observations (ADFTD split1, 2026-04-23)**:
+- LaBraM: alpha r = −0.002 (p=0.94 ns) — flat; delta r=0.145, beta r=0.134, all_bands r=0.272
+- CBraMod: all four bands significant (r 0.088–0.141), all_bands r=0.190
+- REVE: all four bands marginal (r 0.051–0.101), all_bands r=0.179
+
+LaBraM × ADFTD shows a **flat alpha RSA** — consistent with 1/f-aperiodic anchoring (Fig 4.5 taxonomy). Worth checking against FOOOF output when refreshed.
 
 ---
 
