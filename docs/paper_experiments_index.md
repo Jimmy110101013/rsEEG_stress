@@ -180,6 +180,27 @@ LaBraM × ADFTD shows a **flat alpha RSA** — consistent with 1/f-aperiodic anc
 
 ---
 
+## `results/final/` snapshot layer (paper-surface)
+
+Curated snapshots; every paper-cited number traces here. Raw runs stay in `results/studies/exp##_*/`. Rebuild any slice with `scripts/analysis/rebuild_final_snapshots.py` (see `docs/results_final_plan.md`).
+
+| Path | Content | Rebuilt by |
+|---|---|---|
+| `results/final/README.md` | Layer entry point + provenance convention | — |
+| `results/final/{cell}/ft/{model}/seed{42,123,2024}/summary.json` | Per-seed FT results (subject_bal_acc etc.) | Written by `train_ft.py`; copied here on run |
+| `results/final/{cell}/ft/{model}/seed{N}/provenance.json` | HP recipe + raw dir pointer | `rebuild_final_snapshots.py --section ft` |
+| `results/final/{cell}/lp/{model}.json` | 8-seed per-window LP + provenance | `rebuild_final_snapshots.py --section lp` |
+| `results/final/{cell}/classical/summary.json` | Classical ML 3-seed aggregate | ⏳ Phase 2 |
+| `results/final/{cell}/nonfm_deep/{eegnet,shallowconvnet}.json` | From-scratch deep baselines | ⏳ Phase 2 |
+| `results/final/{cell}/perm_null/{model}_null.json` | 30-seed null aggregate + p-value | ⏳ Phase 5 |
+| `results/final/{cell}/fooof_ablation/probes.json` | FOOOF ablation probe BAs | ⏳ Phase 4 |
+| `results/final/{cell}/band_stop/probes.json` | Per-band probe BA + cosine | ⏳ Phase 4 |
+| `results/final/cross_cell/band_rsa.json` | 3 FM × 4 cells × 4 bands RSA | ⏳ Phase 6 |
+| `results/final/cross_cell/variance_decomp.json` | 4-cell variance partition | ⏳ Phase 6 |
+| `results/final/cross_cell/tab1_benchmark.json` | Assembled Tab 1 source | ⏳ Phase 6 |
+
+Completed phases (2026-04-23): 0 (skeleton), 1 (LP snapshots — 12 files), 3 (FT provenance stamps — 36 files), 8 (SUPERSEDED.md stubs for exp07/exp12 ADFTD split3).
+
 ## Features and checkpoint catalog
 
 ### Frozen features (per-recording pooled + per-window)

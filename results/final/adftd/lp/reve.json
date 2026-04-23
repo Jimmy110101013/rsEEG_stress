@@ -1,0 +1,48 @@
+{
+  "provenance": {
+    "raw_dir": "results/studies/perwindow_lp_all/adftd",
+    "snapshot_date": "2026-04-23",
+    "commit": "d1517f4",
+    "script": "scripts/analysis/rebuild_final_snapshots.py",
+    "notes": "Per-window frozen LP, 8-seed sklearn LogReg + test-prob mean-pool."
+  },
+  "extractor": "reve",
+  "dataset": "adftd",
+  "source_features": "results/features_cache/frozen_reve_adftd_perwindow.npz",
+  "protocol": "Per-window LogisticRegression (C=1.0, class_weight=balanced) on StandardScaler-normed per-window features. Recording-level StratifiedGroupKFold(5) with groups=patient_id; window-level training within each fold; test-set window probs mean-pooled per recording; threshold 0.5; recording-level BA.",
+  "n_recordings": 65,
+  "n_subjects": 65,
+  "n_positive": 36,
+  "n_negative": 29,
+  "n_splits": 5,
+  "embed_dim": 512,
+  "total_windows": 5349,
+  "avg_windows_per_rec": 82.29230769230769,
+  "seeds": [
+    42,
+    123,
+    2024,
+    7,
+    0,
+    1,
+    99,
+    31337
+  ],
+  "per_seed_ba": {
+    "42": 0.6992337164750958,
+    "123": 0.6542145593869731,
+    "2024": 0.6508620689655172,
+    "7": 0.6681034482758621,
+    "0": 0.6853448275862069,
+    "1": 0.6403256704980842,
+    "99": 0.6647509578544062,
+    "31337": 0.6403256704980842
+  },
+  "mean_8seed": 0.6628951149425287,
+  "std_8seed_ddof1": 0.021023661273672372,
+  "std_8seed_ddof0": 0.01966583437541737,
+  "mean_3seed_42_123_2024": 0.6681034482758621,
+  "std_3seed_42_123_2024_ddof1": 0.027011664084681194,
+  "min": 0.6403256704980842,
+  "max": 0.6992337164750958
+}

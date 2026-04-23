@@ -1,0 +1,117 @@
+{
+  "subject_acc": 0.6571,
+  "subject_bal_acc": 0.4911,
+  "subject_f1": 0.6655,
+  "subject_kappa": -0.0169,
+  "n_samples": 70,
+  "per_subject": [
+    {
+      "patient_id": "1",
+      "n_samples": 26.0,
+      "n_correct": 9.0,
+      "acc": 0.3462
+    },
+    {
+      "patient_id": "10",
+      "n_samples": 15.0,
+      "n_correct": 6.0,
+      "acc": 0.4
+    },
+    {
+      "patient_id": "11",
+      "n_samples": 30.0,
+      "n_correct": 10.0,
+      "acc": 0.3333
+    },
+    {
+      "patient_id": "12",
+      "n_samples": 30.0,
+      "n_correct": 30.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": "13",
+      "n_samples": 26.0,
+      "n_correct": 25.0,
+      "acc": 0.9615
+    },
+    {
+      "patient_id": "14",
+      "n_samples": 11.0,
+      "n_correct": 11.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": "16",
+      "n_samples": 6.0,
+      "n_correct": 2.0,
+      "acc": 0.3333
+    },
+    {
+      "patient_id": "17",
+      "n_samples": 17.0,
+      "n_correct": 7.0,
+      "acc": 0.4118
+    },
+    {
+      "patient_id": "18",
+      "n_samples": 21.0,
+      "n_correct": 16.0,
+      "acc": 0.7619
+    },
+    {
+      "patient_id": "2",
+      "n_samples": 10.0,
+      "n_correct": 5.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": "3",
+      "n_samples": 32.0,
+      "n_correct": 16.0,
+      "acc": 0.5
+    },
+    {
+      "patient_id": "4",
+      "n_samples": 31.0,
+      "n_correct": 24.0,
+      "acc": 0.7742
+    },
+    {
+      "patient_id": "5",
+      "n_samples": 31.0,
+      "n_correct": 9.0,
+      "acc": 0.2903
+    },
+    {
+      "patient_id": "6",
+      "n_samples": 26.0,
+      "n_correct": 24.0,
+      "acc": 0.9231
+    },
+    {
+      "patient_id": "7",
+      "n_samples": 25.0,
+      "n_correct": 25.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": "8",
+      "n_samples": 21.0,
+      "n_correct": 21.0,
+      "acc": 1.0
+    },
+    {
+      "patient_id": "9",
+      "n_samples": 14.0,
+      "n_correct": 6.0,
+      "acc": 0.4286
+    },
+    {
+      "patient_id": "patient_id",
+      "n_samples": 4.0,
+      "n_correct": 0.0,
+      "acc": 0.0
+    }
+  ]
+}
