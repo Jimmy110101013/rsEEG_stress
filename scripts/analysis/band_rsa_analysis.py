@@ -267,6 +267,9 @@ def main():
     # EEGMAT (19ch) — contrast with Stress
     all_results["eegmat"] = run_other_dataset("eegmat")
 
+    # ADFTD (19ch, binary, split1) — subject-label × strong-aligned cell (2026-04-23)
+    all_results["adftd"] = run_other_dataset("adftd")
+
     # Save JSON
     with open(f"{OUT_DIR}/band_rsa.json", "w") as f:
         json.dump(all_results, f, indent=2)

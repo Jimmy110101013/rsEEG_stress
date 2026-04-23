@@ -1,5 +1,43 @@
 # ADFTD Refresh Plan — n_splits=3 → 1 (2026-04-23)
 
+> **Single entry point for this refresh.** All artifacts live at their
+> canonical paths (so downstream scripts keep working) but are indexed
+> from this doc. Do not create parallel `results/adftd_refresh_*/`
+> directories — keep everything at canonical locations + update the
+> index below.
+
+## Artifact index
+
+| What | Canonical path | Updated? |
+|---|---|---|
+| New ADFTD frozen features (pooled) | `results/features_cache/frozen_{labram,cbramod,reve}_adftd_19ch.npz` | ✅ 2026-04-23 |
+| New ADFTD frozen features (perwindow) | `results/features_cache/frozen_{labram,cbramod,reve}_adftd_perwindow.npz` | ✅ 2026-04-23 |
+| Old split3 backup | `results/features_cache/archive_split3_20260423/` | archived |
+| Per-window LP | `results/studies/perwindow_lp_all/adftd/{model}_multi_seed.json` | ✅ 2026-04-23 |
+| Variance decomposition source | `paper/figures/_historical/source_tables/variance_analysis_all.json` (and `sleepdep_variance_rsa.json`) | ⏳ pending FT v2 features |
+| FOOOF probes | `results/studies/fooof_ablation/adftd_probes.json` | ⏳ pending per-FM window patch |
+| FOOOF reconstructed features | `results/features_cache/fooof_ablation/feat_{model}_adftd_{cond}.npz` | ⏳ |
+| Band-stop | `results/studies/exp14_channel_importance/band_stop_ablation.json` (combined) | ⏳ pending per-FM window patch |
+| Band-RSA | `results/studies/exp14_channel_importance/band_rsa.json` | ⏳ ready to run |
+| New ADFTD dataset caches | `data/cache_adftd_split1/` (zscore), `data/cache_adftd_split1_nnone/` (norm=none) | auto-created |
+| Execution logs | `logs/adftd_refresh_20260423/*.log` | live |
+| Methodology guardrails | `docs/methodology_notes.md` §G-F11, G-F12 | ✅ 2026-04-23 |
+
+**Rule of thumb**: if you need to find something related to this refresh, start here and follow the path. If you add a new artifact, append a row.
+
+## Quick numeric results (2026-04-23)
+
+### LP (per-window sklearn LogReg, 8 seeds, subject-level StratifiedGroupKFold(5))
+
+| FM | BA 8-seed | Range | vs old split3 |
+|---|---|---|---|
+| LaBraM | 0.6334 ± 0.0327 | 0.5987–0.7026 | 0.653 → 0.633 (−2 pp, n_rec 195 → 65) |
+| CBraMod | 0.5943 ± 0.0255 | 0.5398–0.6231 | 0.570 → 0.594 (+2.4 pp) |
+| REVE | 0.6629 ± 0.0210 | 0.6403–0.6992 | 0.652 → 0.663 (+1 pp) |
+
+Direction (REVE > LaBraM > CBraMod) unchanged; magnitudes shifted <3 pp; std wider as expected with 3× fewer records.
+
+
 ## Why
 
 ADFTD was cached under `n_splits=3` (each subject → 3 pseudo-recordings, n_rec=195) while the canonical binary protocol for the 4-dataset 2×2 factorial uses `n_splits=1` (one record per subject, n_rec ≈ 65–82). All ADFTD frozen-feature analyses need regeneration on the split1 cache.
