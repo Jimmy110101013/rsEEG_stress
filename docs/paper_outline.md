@@ -73,10 +73,10 @@ TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary
     > 中文：每格為何選這個資料集（paradigm、cohort、label 類型）。
 - 3.2 Per-dataset specs (source: `docs/master_results_table.md`)
   > 中文：四個資料集各自的 N / channels / epoch length / label rule，與對應的 LP/FT benchmark 數字。
-  - 3.2.1 Stress-DASS (70 rec, 17 subj, 30ch, DASS per-recording) — between × null-indistinguishable (LP 0.44–0.51)
-  - 3.2.2 ADFTD (65 subj × 3 segments = 195 samples, 19ch, AD/FTD vs HC) — between × separable (LP 0.56–0.67)
-  - 3.2.3 EEGMAT (72 rec, 36 subj, 19ch, rest vs arithmetic) — within × separable (LP 0.72–0.74)
-  - 3.2.4 SleepDep (72 rec, 36 subj, 19ch, NS vs SD) — within × null-indistinguishable (LP 0.54–0.61, multi-FM inconsistent)
+  - 3.2.1 Stress-DASS (70 rec, 17 subj, 30ch, DASS per-recording) — subject-label × weak-aligned (LP 0.44–0.51)
+  - 3.2.2 ADFTD (65 rec / 65 subj, 19ch, AD vs HC binary, split1) — subject-label × strong-aligned (LP 0.58–0.67)
+  - 3.2.3 EEGMAT (72 rec, 36 subj, 19ch, rest vs arithmetic) — within-subject × strong-aligned (LP 0.72–0.74)
+  - 3.2.4 SleepDep (72 rec, 36 subj, 19ch, NS vs SD) — within-subject × weak-aligned (LP 0.54–0.61, multi-FM inconsistent)
 - 3.3 Foundation model feature extraction + per-FM input normalisation
   > 中文：FM 抽取流程與各模型必須使用的 input norm（LaBraM zscore / CBraMod/REVE none）。
 - 3.4 Evaluation protocol
@@ -107,11 +107,11 @@ TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary
 ### 4.1 Benchmark landscape across the four cells (setup, not a finding)
 > 中文：Results 入口 — 先給 4 cell × 3 FM 的 BA summary 定位每格 "起點"；BA 本身不是論文發現，而是後續 diagnostic 解讀的 context。數字來自 `docs/master_results_table.md`，由 **Tab 1** (`table1_master_performance.tex`) 承載，**不另做 figure**。
 
-- Entry statement for each cell (LaBraM / CBraMod / REVE, LP→FT, all 3-seed):
-  - *Between × null-indistinguishable (Stress)*: LP 0.51 / 0.44 / 0.46, FT 0.44 / 0.55 / 0.58 — FM stays in 0.44–0.58 band, classical LogReg 0.506 matches
-  - *Between × separable (ADFTD)*: LP 0.66 / 0.56 / 0.67, FT 0.71 / 0.54 / 0.66 — LaBraM the clear winner; classical SVM 0.647 and EEGNet 0.773 indicate a sizeable non-FM baseline for this cell
-  - *Within × separable (EEGMAT)*: LP 0.74 / 0.72 / 0.74, FT 0.73 / 0.62 / 0.73 — strong LP signal, FT LP-saturated; classical RF 0.889 beats all FMs
-  - *Within × null-indistinguishable (SleepDep)*: LP 0.61 / 0.55 / 0.54, FT 0.53 / 0.56 / 0.54 — inconsistent across FMs, classical SVM 0.574 ≈ FM
+- Entry statement for each cell (LaBraM / CBraMod / REVE, LP→FT, all 3-seed; FT under per-FM canonical HP G-F09, source `results/final/{cell}/{model}/ft/`):
+  - *Subject-label × weak-aligned (Stress-DASS)*: LP 0.51 / 0.44 / 0.46, FT 0.46 / 0.41 / 0.48 — FM stays in 0.41–0.48 band, **all three FMs ≤ chance**, classical LogReg 0.506 matches
+  - *Subject-label × strong-aligned (ADFTD, split1 65/65)*: LP 0.64 / 0.58 / 0.67, FT 0.74 / 0.70 / 0.68 — LaBraM leads, all three FMs 0.68–0.74 tight band; classical SVM 0.647 and EEGNet 0.773 give a sizeable non-FM baseline for this cell (EEGNet matches the top FM)
+  - *Within-subject × strong-aligned (EEGMAT)*: LP 0.74 / 0.72 / 0.74, FT 0.69 / 0.73 / 0.73 — strong LP signal, FT ≈ LP (saturated); all three FMs tight at ≈0.70; classical RF 0.889 beats all FMs
+  - *Within-subject × weak-aligned (SleepDep)*: LP 0.61 / 0.55 / 0.54, FT 0.58 / 0.49 / 0.51 — FMs FT ≈ chance across all three; classical SVM 0.574 ≈ FM
 - **Bridging statement**: BA alone does not explain why each cell arrives where it does — §4.2–§4.5 diagnostics characterise the mechanism behind each cell's benchmark landscape
 
 ### 4.2 Representation geometry across the 2×2 (Diagnostic 1: variance decomposition)

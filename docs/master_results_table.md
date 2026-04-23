@@ -8,11 +8,13 @@ All BA = subject-level 5-fold CV, 3 seeds.
 - Label: per-recording DASS binary (14/17 subjects consistent)
 - Regime: *between-subject, absent signal*
 
-| FM | LP (frozen, 3-seed) | FT (3-seed) | FT HP |
+| FM | LP (frozen, 3-seed) | FT (3-seed) | FT HP (per-FM canonical, G-F09) |
 |---|---|---|---|
-| labram | 0.506 ± 0.014 | 0.443 ± 0.083 | lr=1e-05, wd=0.05, enc_scale=0.1, norm=zscore |
-| cbramod | 0.440 ± 0.019 | 0.548 ± 0.026 | lr=1e-05, wd=0.05, enc_scale=0.1, norm=none |
-| reve | 0.458 ± 0.019 | 0.577 ± 0.041 | lr=3e-05, wd=0.05, enc_scale=0.1, norm=none |
+| labram | 0.506 ± 0.014 | 0.455 ± 0.076 | lr=5e-4, layer_decay=0.65, wd=0.05, CE+LS 0.1, norm=zscore |
+| cbramod | 0.440 ± 0.019 | 0.414 ± 0.029 | backbone lr=1e-4 / head lr=5e-4, wd=0.05, CE+LS 0.1, norm=none |
+| reve | 0.458 ± 0.019 | 0.476 ± 0.051 | max_lr=2.4e-4, encoder_lr_scale=0.1, wd=0.01, warmup 2ep, norm=none |
+
+> FT synced 2026-04-23 from `results/final/stress/{model}/ft/seed{42,123,2024}/summary.json` (subject_bal_acc, 3-seed mean ± ddof=1). Previous `0.443/0.548/0.577` came from pre-unified-HP runs; new range `0.41–0.48` tightens the null-indistinguishable reading of the Stress cell.
 
 **Classical ML** (per-rec features, 3 seeds):
 
@@ -66,11 +68,13 @@ All BA = subject-level 5-fold CV, 3 seeds.
 - Label: within-subject rested vs SD
 - Regime: *within-subject, incoherent signal*
 
-| FM | LP (frozen, 3-seed) | FT (3-seed) | FT HP |
+| FM | LP (frozen, 3-seed) | FT (3-seed) | FT HP (per-FM canonical, G-F09) |
 |---|---|---|---|
-| labram | 0.611 ± 0.014 | 0.532 ± 0.069 | lr=1e-05, wd=0.01, enc_scale=0.1, norm=zscore |
-| cbramod | 0.546 ± 0.021 | 0.556 ± 0.050 | lr=1e-05, wd=0.01, enc_scale=0.1, norm=none |
-| reve | 0.537 ± 0.049 | 0.542 ± 0.014 | lr=1e-05, wd=0.01, enc_scale=0.1, norm=none |
+| labram | 0.611 ± 0.014 | 0.579 ± 0.016 | lr=5e-4, layer_decay=0.65, wd=0.05, CE+LS 0.1, norm=zscore |
+| cbramod | 0.546 ± 0.021 | 0.486 ± 0.048 | backbone lr=1e-4 / head lr=5e-4, wd=0.05, CE+LS 0.1, norm=none |
+| reve | 0.537 ± 0.049 | 0.509 ± 0.076 | max_lr=2.4e-4, encoder_lr_scale=0.1, wd=0.01, warmup 2ep, norm=none |
+
+> FT synced 2026-04-23 from `results/final/sleepdep/{model}/ft/seed{N}/summary.json`. Three-FM FT range tightened from `0.53–0.56` → `0.49–0.58`; CBraMod dropped ~7 pp under per-FM HP (unlike EEGMAT/ADFTD where per-FM HP rescued it), consistent with SleepDep being weak-aligned — no signal for the HP change to expose.
 
 **Classical ML** (per-rec features, 3 seeds):
 
@@ -94,11 +98,13 @@ All BA = subject-level 5-fold CV, 3 seeds.
 - Label: within-subject rest vs arithmetic
 - Regime: *within-subject, coherent signal*
 
-| FM | LP (frozen, 3-seed) | FT (3-seed) | FT HP |
+| FM | LP (frozen, 3-seed) | FT (3-seed) | FT HP (per-FM canonical, G-F09) |
 |---|---|---|---|
-| labram | 0.736 ± 0.037 | 0.731 ± 0.021 | lr=1e-05, wd=0.05, enc_scale=0.1, norm=zscore |
-| cbramod | 0.718 ± 0.021 | 0.620 ± 0.047 | lr=1e-05, wd=0.05, enc_scale=0.1, norm=none |
-| reve | 0.736 ± 0.014 | 0.727 ± 0.029 | lr=3e-05, wd=0.05, enc_scale=0.1, norm=none |
+| labram | 0.736 ± 0.037 | 0.685 ± 0.016 | lr=5e-4, layer_decay=0.65, wd=0.05, CE+LS 0.1, norm=zscore |
+| cbramod | 0.718 ± 0.021 | 0.727 ± 0.040 | backbone lr=1e-4 / head lr=5e-4, wd=0.05, CE+LS 0.1, norm=none |
+| reve | 0.736 ± 0.014 | 0.727 ± 0.053 | max_lr=2.4e-4, encoder_lr_scale=0.1, wd=0.01, warmup 2ep, norm=none |
+
+> FT synced 2026-04-23 from `results/final/eegmat/{model}/ft/seed{N}/summary.json`. **Narrative flip**: CBraMod previously looked like an EEGMAT outlier at 0.620; per-FM HP rescues it to 0.727 — now ties LaBraM/REVE. All three FMs FT ≈ LP (~0.72), consistent with EEGMAT being strong-aligned at the frozen level so FT adds little (already saturated).
 
 **Classical ML** (per-rec features, 3 seeds):
 
@@ -122,9 +128,9 @@ All BA = subject-level 5-fold CV, 3 seeds.
 
 | Dataset | Regime | n_samples / n_subj | LaBraM LP | LaBraM FT | CBraMod LP | CBraMod FT | REVE LP | REVE FT | Classical best | Non-FM best |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Stress (DASS) | between-subject, absent signal | 70/17 | 0.506 ± 0.014 | 0.443 ± 0.083 | 0.440 ± 0.019 | 0.548 ± 0.026 | 0.458 ± 0.019 | 0.577 ± 0.041 | LogReg_L2 0.506 ± 0.019 | shallowconvnet 0.563 ± 0.024 |
+| Stress (DASS) | subject-label, weak-aligned | 70/17 | 0.506 ± 0.014 | 0.455 ± 0.076 | 0.440 ± 0.019 | 0.414 ± 0.029 | 0.458 ± 0.019 | 0.476 ± 0.051 | LogReg_L2 0.506 ± 0.019 | shallowconvnet 0.563 ± 0.024 |
 | ADFTD | subject-label, strong-aligned | 65/65 | 0.643 ± 0.054 | **0.737 ± 0.055** | 0.581 ± 0.042 | 0.698 ± 0.020 | 0.668 ± 0.027 | 0.683 ± 0.019 | SVM_RBF 0.647 ± 0.009 | eegnet 0.773 ± 0.027 |
-| SleepDep | within-subject, incoherent signal | 72/36 | 0.611 ± 0.014 | 0.532 ± 0.069 | 0.546 ± 0.021 | 0.556 ± 0.050 | 0.537 ± 0.049 | 0.542 ± 0.014 | SVM_RBF 0.574 ± 0.056 | shallowconvnet 0.602 ± 0.021 |
-| EEGMAT | within-subject, coherent signal | 72/36 | 0.736 ± 0.037 | 0.731 ± 0.021 | 0.718 ± 0.021 | 0.620 ± 0.047 | 0.736 ± 0.014 | 0.727 ± 0.029 | RF 0.889 ± 0.014 | eegnet 0.694 ± 0.024 |
+| SleepDep | within-subject, weak-aligned | 72/36 | 0.611 ± 0.014 | 0.579 ± 0.016 | 0.546 ± 0.021 | 0.486 ± 0.048 | 0.537 ± 0.049 | 0.509 ± 0.076 | SVM_RBF 0.574 ± 0.056 | shallowconvnet 0.602 ± 0.021 |
+| EEGMAT | within-subject, strong-aligned | 72/36 | 0.736 ± 0.037 | 0.685 ± 0.016 | 0.718 ± 0.021 | 0.727 ± 0.040 | 0.736 ± 0.014 | 0.727 ± 0.053 | RF 0.889 ± 0.014 | eegnet 0.694 ± 0.024 |
 
-> ADFTD LP+FT refreshed 2026-04-23 (split1 + per-FM canonical HP). Stress/EEGMAT/SleepDep FT values may still reflect pre-unified-HP runs — audit against `results/final/{cell}/ft/` when available and mark stale rows explicitly.
+> All 4 cells × 3 FMs FT synced 2026-04-23 from `results/final/{cell}/{model}/ft/seed{42,123,2024}/summary.json` (per-FM canonical HP, G-F09). Regime labels updated to task-substrate alignment terminology.

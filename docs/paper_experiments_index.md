@@ -38,7 +38,7 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 
 **Status 2026-04-23**:
 - LP: ✅ all 4 cells fresh (ADFTD refreshed today on split1; Stress/EEGMAT/SleepDep unchanged since 2026-04-20)
-- FT: ✅ all 4 cells × 3 FMs × 3 seeds complete at `results/final/{cell}/{model}/ft/seed{42,123,2024}/summary.json` under per-FM canonical HP (G-F09). Ceiling table.tex is synced; master_results_table.md is synced for ADFTD (2026-04-23) but **Stress / EEGMAT / SleepDep per-cell FT rows are still pre-unified-HP** — pending sync.
+- FT: ✅ all 4 cells × 3 FMs × 3 seeds complete at `results/final/{cell}/{model}/ft/seed{42,123,2024}/summary.json` under per-FM canonical HP (G-F09). Ceiling table.tex + master_results_table.md + paper_outline.md §4.1 entry statements all synced 2026-04-23.
 - Classical & Non-FM deep: ✅ fresh
 
 ---
