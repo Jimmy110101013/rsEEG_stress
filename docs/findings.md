@@ -52,31 +52,76 @@ Guardrails, methodology notes, and archived findings live in `docs/methodology_n
 
 ---
 
-## Central thesis
+## Central thesis (2026-04-23 pivot — task-substrate alignment axis)
 
-> **EEG FM downstream performance is governed by the ratio of task contrast to
-> subject variance.** When a dataset's labels correspond to a neural contrast
-> that dominates the within-subject spectrum (e.g. alpha suppression under
-> EEGMAT rest/task), FMs recover the signal and fine-tuning helps. When the
-> label contrast is weak relative to subject variance (e.g. UCSD DASS-based
-> stress state), FMs revert to subject-fingerprint representations and no
-> architecture — pretrained FM or from-scratch CNN — exceeds the ceiling.
+> **On small-N clinical EEG (N ≤ 82 subjects) under subject-level cross-validation,
+> pretrained EEG foundation model behaviour is carved by **task-substrate
+> alignment strength** — the degree to which a task's label maps to an
+> identifiable neural activity pattern the FM learned during pretraining.
+> Across a 2×2 factorial of CV regime (within-subject paired vs subject-label
+> trait) × alignment strength (strong vs weak), the alignment column
+> determines FM downstream success regardless of the regime row. We document
+> per-cell outcomes and provide a diagnostic toolkit — permutation null,
+> variance decomposition, within-subject direction consistency, and
+> architecture ceiling — that characterises each cell's dominant mechanism.
+> We do not claim predictive generalisation to new datasets within each cell
+> (n=1 per cell).**
 
-### Mapping to paper sections (tex is authoritative; updated 2026-04-17)
+### 2×2 factorial (updated 2026-04-23, anchored on Fig 3 permutation null)
 
-| tex Section | Content | Claims used |
+|   | **Strong-aligned task** (canonical neural signature) | **Weak-aligned task** (behavioral / state summary) |
 |---|---|---|
-| **§3.1** Variance Atlas | Subject dominance in 12/12 FM×dataset cells | **F-A** |
-| **§3.2** Anchor-Contrast Diagnostic | CV gap (intro) → paired EEGMAT vs Stress → band-stop corroboration → architecture ceiling | **F-D** (core), **F-B** (intro only), **F-NEURO** (integrated), **F-E** (minor) |
-| **§3.3** FM Value Within Ceiling | Frozen LP +5pp over classical, two regimes | Partial **F-C** (cross-dataset table, but **no FT direction reversal**) |
-| **Discussion** | SDL protocol + TDBRAIN intermediate case + HHSA contrast gradient | **F-HHSA** (new) |
+| **Within-subject paired** | **EEGMAT** — rest vs arithmetic → theta/alpha; real FT 0.731, perm-null p = 0.03, dir_cons LaBraM 0.149 | **SleepDep** — normal vs sleep-deprived (state label); real FT 0.532, perm-null p = 0.19, dir_cons LaBraM −0.003 |
+| **Subject-label trait** | **ADFTD** — AD vs HC → 1/f aperiodic slope; real FT 0.709, perm-null p = 0.03 (subject-level perm), FT Δlabel_frac +10.7% | **Stress-DASS** — DASS-21 score threshold; real FT 0.524, perm-null p = 0.32, FT Δlabel_frac −1.0% |
 
-> **Sync note (2026-04-17)**: F-C (FT direction reversal / model × dataset interaction)
-> is **not in the tex main results**. ADFTD/TDBRAIN appear only in §3.1 (variance
-> decomposition) and Discussion (TDBRAIN intermediate case). The master table
-> cross-dataset taxonomy was the old narrative; the tex has moved to SDL
-> (Subject-Dominance Limit) with the paired EEGMAT-vs-Stress comparison as
-> the core experiment. F-C data remains valid but is supporting/archived.
+Source: `paper/figures/main/fig3_honest_evaluation_4panel.{pdf,png}`, built from `scripts/figures/build_fig3_perm_null_4panel.py`.
+
+### Axis operational definitions
+
+- **Task-substrate alignment strength** (column): degree to which the label
+  is grounded in an EEG-identifiable neural pattern. **Primary diagnostic**
+  = permutation null (`results/studies/exp27_paired_null/*`): real LaBraM FT
+  BA compared against 30-seed label-shuffle distribution. Strong-aligned →
+  real clears null (`p ≤ 0.05`); weak-aligned → real inside null
+  (`p > 0.1`). For ADFTD (subject trait), permutation is `--permute-level
+  subject` so a subject's recordings stay label-consistent in the null.
+  Supporting diagnostics: variance-decomposition `Δlabel_frac` and
+  within-subject `dir_consistency` (direction agree with alignment, do not
+  flip the verdict).
+- **CV regime** (row): structural dataset property. **Within-subject
+  paired** (EEGMAT, SleepDep) — both label classes present in every
+  subject; supports `dir_consistency`. **Subject-label trait** (ADFTD,
+  Stress-DASS) — one label per subject (Stress-DASS caveat: 14/17 subjects
+  consistent, 3/17 straddle under per-recording DASS binarisation). The
+  regime does **not** predict FM success on its own — SleepDep is
+  within-subject paired yet fails the null; ADFTD is subject-label yet
+  clears it.
+
+### Why the axis pivoted from "CV regime" to "alignment strength" (2026-04-23)
+
+Earlier (2026-04-21) framing treated CV regime as the primary carving
+variable with alignment as a secondary "coherent vs absent signal"
+qualifier. The 2026-04-23 permutation-null completion (30 seeds × 4
+datasets) showed the column (alignment) carves the data in both rows,
+while the row (regime) does not discriminate within either column. This
+reverses the priority: alignment is the primary mechanism, regime is a
+structural variable that affects *which diagnostics apply* (only
+within-subject regimes support `dir_consistency`) but not the outcome.
+
+### Dropped from 2×2 framing
+
+- **TDBRAIN** — duplicates the "between-subject + coherent signal" cell occupied
+  by ADFTD. Retained as supplementary-only.
+- Within-quadrant replication remains an open question (each cell is n=1 dataset).
+
+### Scope boundaries
+
+- **Datasets covered**: Stress-DASS (70 rec / 17 subj), SleepDep (72 / 36),
+  EEGMAT (72 / 36), ADFTD (82 / 82).
+- **Pretrained FMs tested**: LaBraM-base, CBraMod, REVE.
+- **Protocol**: subject-level 5-fold stratified CV; per-FM canonical norm
+  (LaBraM zscore, CBraMod/REVE none); FT with unified HP (lr=1e-5, wd=0.05,
+  encoder_lr_scale=0.1) — the HP-contamination caveat (block above) applies.
 
 All claims below are facets of this thesis:
 
@@ -356,8 +401,10 @@ This is the **neural-level diagnostic** that complements F-D's behavioural diagn
 Together they yield a pre-training, model-independent taxonomy of contrast-anchor types.
 **Paper section**: §4.4.
 **Sources**:
-  `results/studies/fooof_ablation/{stress,eegmat,sleepdep}_probes.json`;
+  `results/studies/fooof_ablation/{stress,eegmat,sleepdep,adftd}_probes.json`;
   `results/studies/exp14_channel_importance/band_stop_ablation.json` (3 datasets merged 2026-04-20).
+
+> **8-seed確認 (2026-04-23)**：全部4個 dataset 的所有 condition 均已跑 8 seeds（JSON內 `subject_probe_bas` / `state_probe_bas` 均為 list of 8）。SUMMARY.md 部分 cell 僅列單一數字係格式省略，非真的 n=1。
 
 ### FOOOF.1 — Aperiodic 1/f is the universal subject substrate
 
@@ -368,8 +415,14 @@ Subject-identity probe BA under `aperiodic_removed` (vs `original`):
 | EEGMAT | 0.556 → 0.528 (−2.8pp) | 0.507 → 0.365 (**−14.2pp**) | 0.465 → 0.205 (**−26.0pp**) |
 | Stress | 0.569 → 0.544 (−2.5pp) | 0.569 → 0.483 (**−8.6pp**) | 0.565 → 0.569 (+0.4pp) |
 | SleepDep | 0.406 → 0.361 (−4.5pp) | 0.420 → 0.375 (−4.5pp) | 0.375 → 0.417 (+4.2pp) |
+| ADFTD | 0.856 → 0.830 (−2.6pp) | 0.748 → **0.940 (+19.2pp)** ⚠️ | 0.647 → **0.885 (+23.8pp)** |
 
-`periodic_removed` leaves subject probe essentially unchanged in all 9 cells (|Δ| ≤ 1 pp). **Aperiodic 1/f carries subject identity; narrowband peaks do not.** This generalises the F-NEURO observation (Stress-only, band-RSA) to 3 datasets via causal manipulation.
+`periodic_removed` leaves subject probe essentially unchanged in all 12 cells (|Δ| ≤ 1 pp). **Aperiodic 1/f carries subject identity; narrowband peaks do not.** This generalises the F-NEURO observation (Stress-only, band-RSA) to 4 datasets via causal manipulation.
+
+**ADFTD subject-ID 反向解讀（8-seed 穩定，非 noise）**：REVE +23.8pp、CBraMod +19.2pp 代表移除 aperiodic 後受試者反而*更*容易區分。兩種機制：
+
+1. **真實 neural 效應（REVE 確認）**：ADFTD 中 aperiodic exponent (chi) 隨疾病種類（AD/FTD/HC）系統性改變 → aperiodic 成為**疾病分組標記**而非個人指紋。移除後，剩餘 periodic oscillations 反而更個人特異 → subject-ID 上升。
+2. **CBraMod × ADFTD preprocessing artifact**：FOOOF spectral whitening 將訊號振幅從 ~50 µV 壓縮至 ~1–5 µV。CBraMod 內部硬編碼 `x/100`（`cbramod_extractor.py:102`），導致輸入從 ±0.5（正常範圍）縮小至 ±0.01–0.05（遠超 pretraining 分布外）。CBraMod state probe 同時上升 +12.1pp（方向與 LaBraM −11.2pp、REVE −3.8pp 相反）— 此反向為 artifact 確診證據，非神經生理現象。**解釋 ADFTD 時以 LaBraM / REVE 為主，CBraMod 數字加 caveat。**
 
 ### FOOOF.2 — State anchor differs by dataset type
 
@@ -380,10 +433,13 @@ State probe BA under each ablation, averaged across 3 FMs:
 | **EEGMAT** (rest vs task) | 0.714 | 0.701 (−1.2pp) | 0.706 (−0.8pp) |
 | **SleepDep** (NS vs SD) | 0.573 | **0.528 (−4.5pp)** | 0.575 (+0.2pp) |
 | **Stress** (DASS binary) | 0.467 | 0.446 (−2.1pp) | 0.465 (−0.2pp) |
+| **ADFTD** (AD/FTD vs HC) | — | per-FM below ⚠️ | — |
 
 Per-FM SleepDep state sensitivity to aperiodic removal: LaBraM 0.616 → 0.538 (−7.8pp), REVE 0.562 → 0.519 (−4.3pp), CBraMod 0.540 → 0.528 (−1.2pp; already low).
 
-**SleepDep uniquely loses state under aperiodic removal. EEGMAT state survives both FOOOF ablations. Stress state is null throughout.**
+Per-FM ADFTD state sensitivity to aperiodic removal: LaBraM 0.654 → 0.542 (**−11.2pp**), REVE 0.652 → 0.614 (−3.8pp), CBraMod 0.571 → 0.692 (**+12.1pp** ⚠️ artifact — 見 FOOOF.1 說明)。Periodic removal: 三者均 ≤ ±0.1pp，不動。**LaBraM/REVE 一致顯示 aperiodic 移除後 disease state signal 流失 → ADFTD 為 `1/f-aperiodic` anchor（aperiodic-anchored trait signal）。CBraMod 反向屬 preprocessing artifact。**
+
+**SleepDep 和 ADFTD（LaBraM/REVE）均在移除 aperiodic 後流失 state signal → 兩者同屬 `1/f-aperiodic` anchor。EEGMAT state 兩種 ablation 均存活 → `α-broadband` anchor。Stress state 始終在 chance → `absent` anchor。**
 
 ### FOOOF.3 — Band-stop sensitivity resolves the EEGMAT anchor
 
@@ -403,11 +459,11 @@ EEGMAT FM features peak in α-band dependence (highest of any cell); SleepDep FM
 
 The two causal probes agree on a three-way dataset taxonomy diagnosable from the EEG *before* any FM training:
 
-| Regime | FOOOF signature | Band-stop signature | Example | FM rescue prognosis |
+| Anchor type | FOOOF signature | Band-stop signature | 2×2 cell / Example | FM rescue prognosis |
 |---|---|---|---|---|
-| **Type I — no anchor** | State probe near chance in all conditions | Any band-stop cosine distance (subject signature only) | Stress DASS | FT exploits subject shortcut (F-C, F-D, F-drift) |
-| **Type II — α-broadband anchor** | State survives both periodic and aperiodic removal | α-band cosine distance peaks (high reliance) | EEGMAT rest/task | FM frozen LP separates (F-D.1); state encoded redundantly across peak + tail |
-| **Type III — 1/f-aperiodic anchor** | State collapses under aperiodic removal only | Band-stop cosine distance flat (no band reliance) | SleepDep NS/SD | FM frozen LP separates at modest BA (≈ 0.53–0.61, consistent with Frontiers 2025 RF 0.68); signal diffuse in 1/f slope |
+| **absent** | State probe near chance in all conditions | Any band-stop cosine distance (subject signature only) | between × incoherent / Stress DASS | FT exploits subject shortcut (F-C, F-D, F-drift) |
+| **α-broadband** | State survives both periodic and aperiodic removal | α-band cosine distance peaks (high reliance) | within × coherent / EEGMAT rest/task | FM frozen LP separates (F-D.1); state encoded redundantly across peak + tail |
+| **1/f-aperiodic** | State collapses under aperiodic removal only | Band-stop cosine distance flat (no band reliance) | within × incoherent / SleepDep; between × coherent / ADFTD (LaBraM/REVE) | FM frozen LP separates at modest BA (≈ 0.53–0.61); signal diffuse in 1/f slope. ADFTD: aperiodic carries disease-trait signal (LaBraM −11.2pp, REVE −3.8pp); CBraMod reversed = preprocessing artifact |
 
 This is the **strongest form** of the contrast-anchor argument — not a representation correlation (F-NEURO) or a benchmark number (F-D), but *complementary signal-level interventions* that jointly identify which spectral component the FM state probe is reading. The anchor-type classification is model-independent and could be computed on any candidate dataset before committing an FM training pipeline.
 

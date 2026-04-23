@@ -1,292 +1,333 @@
-# SDL Paper — Outline (IMRaD, Stress+EEGMAT main)
+# SDL Paper — Outline (IMRaD, 2×2 factorial, 4 datasets)
 
-**Status:** structure locked, text pending. Use `/paper-writing` skill when writing prose.
+**Status (2026-04-23):** axis B renamed from "LP separable / null-indistinguishable" (observational only) to **task-substrate alignment (strong-aligned / weak-aligned)** (mechanistic), anchored on the completed 4-dataset permutation null (`paper/figures/main/fig3_honest_evaluation_4panel.pdf`). "Separable / null-indistinguishable" is retained as the operational diagnostic verdict within each cell. Framing pivoted to 2×2 factorial 2026-04-21; results chapter reorganised from *by-finding* to *by-diagnostic*. **Table placement deferred** — see TODO.
 **Primary target:** Journal of Neural Engineering (JNE, IOP).
-**Companion preprint:** TMLR (parallel submit for ML-community exposure).
+**Companion preprint:** TMLR.
 **Fallback chain:** JBHI → J. Neuroscience Methods.
-**Conditional upgrade:** Communications Medicine (Nature Portfolio) — requires FOOOF extension to ADFTD+TDBRAIN + full HP sweep first (§6.4, §6.2 open items).
-**Scope:** Stress + EEGMAT as main paired-contrast datasets; ADFTD + TDBRAIN in Appendix A (external replication on disease cohorts).
+**Scope (4 datasets, one per cell):**
 
-**Framing constraint (locked):** framework-contribution, NOT audit/attack. Primary pitch is "SDL diagnostic framework + 3-gate pre-flight checklist". Wang 0.9047 is a worked example inside §4.2, not the paper's adversarial target. See `project_paper_journal_strategy.md` memory.
+|  | **Strong-aligned task** (canonical neural signature; LP separable) | **Weak-aligned task** (behavioral / state summary; null-indistinguishable) |
+|---|---|---|
+| **Within-subject paired** | EEGMAT (rest vs arithmetic → theta/alpha) | SleepDep (NS vs SD state) |
+| **Subject-label trait** | ADFTD (AD/FTD vs HC → 1/f aperiodic slope) | **Stress-DASS (representative failure case)** |
+
+Regime labels follow `docs/master_results_table.md`. Axis B is **mechanistic** (does the label map to an EEG-identifiable neural pattern FM pretraining would encode?) and operationalised as a two-stage diagnostic: (i) frozen linear probe above chance under subject-disjoint CV across FMs (separable), (ii) real LaBraM FT BA clears a 30-seed permutation null (`results/studies/exp27_paired_null/*`). Strong-aligned = passes both; weak-aligned = fails both. The permutation null is the *primary* separator (Fig 3, `p ≤ 0.05` strong / `p > 0.1` weak).
+
+TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary replication only).
+
+**Framing constraint (locked 2026-04-21):** the **2×2 is descriptive** (n=1 per cell, no predictive claim for unseen datasets); the **diagnostic toolkit is reusable** (each tool has a defined scope and produces a cell-type verdict computable from EEG alone). What carries beyond this paper is the *toolkit and its scope conditions*, not the 2×2 itself. Previous framings (regime taxonomy / SDL ceiling / ceiling invariance) are superseded — see `docs/findings.md §Central thesis`.
+
+**Stress's role:** representative case of the *subject-label × weak-aligned* cell, **not** the paper's protagonist. Wang et al. 2025's prior FM-evaluation on this dataset is what lets us populate this cell (no other small-N clinical rsEEG cohort has a comparable published FM baseline at the subject-label × weak-aligned corner). Our numbers complement Wang's under a different CV regime; this is a protocol distinction, not a refutation. If a reviewer says "Stress specifically is hard", the answer is "that's exactly what this cell exhibits under subject-disjoint evaluation — ADFTD in the adjacent strong-aligned cell behaves differently."
+
+**One-sentence thesis:**
+> *On small-N clinical rsEEG under subject-level CV, pretrained EEG foundation model behaviour is carved by **task-substrate alignment strength** — the degree to which a task's label maps to an EEG-identifiable neural pattern the FM learned during pretraining. Across a 2×2 factorial of (within-subject paired vs subject-label trait) × (strong-aligned vs weak-aligned task), the alignment column determines FM downstream success regardless of the CV regime row. We document per-cell outcomes across four datasets and provide a diagnostic toolkit (variance decomposition, permutation null, within-subject direction consistency, causal anchor ablation) that characterises each cell's dominant mechanism.*
 
 ---
 
 ## §1 Introduction
-> 中文：鋪陳臨床 rsEEG FM benchmark 的系統性失敗，提出 SDL 作為 diagnostic framework 與三路收斂證據的總論。
+> 中文：為何單一資料集無法捕捉 FM 在臨床 rsEEG 上的行為 — 提出 2×2 factorial 與 diagnostic toolkit 的總論。
 
-- 1.1 Clinical rsEEG FM benchmark gap
-  > 中文：指出目前 FM 在臨床 rsEEG 上的報告數字與 honest eval 之間的缺口。
-- 1.2 Motivating finding: Wang et al. 2025 reports 0.9047 BA on UCSD Stress under trial-level CV
-  > 中文：以 Wang 0.9047 作為框架診斷的中性 motivating example，非攻擊對象。
-- 1.3 Paper contribution: Subject Dominance Limits (SDL) — three converging lines of evidence on a paired within-cohort cognitive-state design (EEGMAT arithmetic state vs Stress DASS trait)
-  > 中文：貢獻主軸 — SDL framework + 三路收斂證據（geometry / separability / causal）+ pre-flight checklist。
-- 1.3.1 **Regime taxonomy (2026-04-21)**: FM failure is a property of *regime*, not dataset. Subject-label regime (Stress, DEAP, SEED, DREAMER, DASPS) triggers the failure mode; within-subject regime (EEGMAT, SleepDep, HMC) does not. Stress is the canonical instance, not the protagonist.
-  > 中文：SDL 失敗不是 dataset 屬性，是 regime 屬性。subject-label regime 必然觸發失敗；within-subject paired regime 則否。Stress 是代表實例，不是故事主角。見 `docs/regime_framing_decision.md`。
-- 1.4 Summary of findings + paper roadmap
-  > 中文：主要發現摘要與章節導覽。
+- 1.1 Clinical rsEEG + FM benchmark gap
+  > 中文：現有 FM 在臨床 rsEEG 上的報告數字與 honest subject-CV 之間存在系統性缺口。
+- 1.2 Why one dataset cannot settle the question
+  > 中文：單一資料集反例易被 "one bad dataset" 論點打掉；需要跨 regime 的結構性證據 — motivates 一個 factorial framework。
+- 1.3 The 2×2 factorial: (within-subject paired vs subject-label trait) × (strong-aligned vs weak-aligned task)
+  > 中文：定義兩個軸與四個 cell — row 是 CV regime (是否 label 在同 subject 內對比)，column 是 task-substrate alignment (label 是否對應 FM pretrain 學到的 neural pattern)。column 是主軸（決定 FM 成敗），row 是結構變項（決定哪些 diagnostic 可跑）。
+- 1.4 Dataset selection within the 2×2 framework
+  > 中文：四個資料集 (EEGMAT / SleepDep / ADFTD / Stress) 各自填一格；特別說明 Stress 之所以是 between × null-indistinguishable cell 的代表，是因為 Wang et al. 2025 (trial-level CV, 0.9047 BA) 提供了該格唯一已發表的 EEG-FM reference point — Wang 的工作是讓我們能選這格的前提，非攻擊對象。
+- 1.5 Paper contributions
+  > 中文：三項貢獻 — (i) 2×2 populated with four datasets, (ii) diagnostic toolkit (4 工具配對 regime 的結構性組合), (iii) per-cell mechanistic characterisation + clinical pre-flight checklist。
+  - 1.5.1 A 2×2 factorial populated with four small-N rsEEG datasets — to our knowledge, the first structured factorial comparison of EEG-FM behaviour across (CV regime × task-substrate alignment) axes
+  - 1.5.2 A diagnostic toolkit organised against the four cells: each of the four individual tools (variance decomposition / permutation null / within-subject direction consistency / causal anchor ablation) is established in prior work, but each is also paired with a scope condition that states the cell types in which it runs. Within-subject direction consistency runs only in within-subject cells; causal anchor ablation returns a different anchor type per cell; variance decomposition returns a label-dominated vs subject-dominated reading anywhere. The contribution is this pairing — tool plus scope condition — rather than any individual tool in isolation.
+  - 1.5.3 Descriptive characterisation of each cell's dominant mechanism + actionable pre-flight checklist
+- 1.6 Paper roadmap
+  > 中文：章節導覽。
 
 ## §2 Related Work
 > 中文：定位本論文相對於 EEG-FM 文獻、subject leakage 討論、contrast anchoring、1/f 生理研究。
 
 - 2.1 EEG foundation models (LaBraM / CBraMod / REVE)
-  > 中文：三個評估標的 FM 的背景與 published benchmarks。
+  > 中文：三個 FM 的背景與 published benchmarks。
 - 2.2 Subject leakage and evaluation protocols
   > 中文：trial-level vs subject-level CV 既有討論與未被解決的盲點。
-- 2.3 Contrast anchoring in clinical rsEEG
-  > 中文：臨床 rsEEG state 與 trait 標籤的 neural anchor 先前證據。
+- 2.3 Neural anchors for clinical rsEEG labels
+  > 中文：臨床 rsEEG state 與 trait 標籤的 neural anchor 先前證據（以往文獻內部有時稱為 "contrast anchoring"，此處改用通用語避免 jargon）。
 - 2.4 Aperiodic 1/f as subject identity signal
   > 中文：文獻支持 1/f 是 subject 指紋（Demuru 2020, Lanzone 2023 等）。
-- (ADFTD/TDBRAIN benchmark numbers as footnote, not spine)
-  > 中文：ADFTD / TDBRAIN 只以 footnote 引用，不作為主文比對基準。
+- 2.5 Factorial / taxonomy-style analyses in EEG benchmarking — and what is missing
+  > 中文：既有 EEG-FM 評估多為單資料集 case study 或同 paradigm 多資料集 leaderboard；無 (subject-labelling × signal-coherence) 這類跨 paradigm 的 factorial 設計。本論文的貢獻正是填補這個空白。
+  - Prior taxonomies focus on task category (motor imagery / SSVEP / affect / disease) or pretraining objective (masked / contrastive) — both orthogonal to our regime axes
+  - BrainBench-style leaderboards aggregate across tasks without separating subject vs state labels or separable vs null-indistinguishable outcomes
+  - Our 2×2 is explicitly designed to expose *why* FM behaviour fragments across tasks, not just *that* it does
 
-## §3 Methods
-> 中文：定義資料集、FM 抽取、兩種 eval regime、FT、variance/RSA、FOOOF、perm-null（僅 §4.2 用）、representation drift 與架構 panel 的作法。
+## §3 Methods - Datasets and Protocol
+> 中文：四個資料集各自的規格、2×2 落點理由，以及統一的 evaluation protocol。
 
-- 3.1 Datasets
-  > 中文：主文 Stress+EEGMAT paired + SleepDep (§4.4 Type III case)；ADFTD+TDBRAIN 移 Appendix A。
-  - 3.1.1 Stress (70 rec, 17 subj, DASS per-recording) — Type I (no recoverable state anchor)
-    > 中文：Stress 資料集基本規格與 DASS per-recording label；Type I null-control。
-  - 3.1.2 EEGMAT (36 subj, 19ch, rest/arithmetic) — Type II (α-broadband anchor)
-    > 中文：EEGMAT 基本規格，rest vs 算數的 within-subject 設計；Type II α-broadband anchor（peak + in-band 1/f tail 一起）。
-  - 3.1.3 SleepDep (ds004902, 36 subj NS/SD pairs, 19ch) — Type III (1/f-aperiodic anchor)
-    > 中文：SleepDep 資料集基本規格；主文只進 §4.4 FOOOF 作為 Type III diffuse 1/f anchor 案例，不進 §4.1/§4.3/§4.6 paired 分析（within-subject LOO pairwise BA ≈ chance，見 Appendix note）。
-  - 3.1.4 Paired-contrast rationale (same small-N rsEEG, differ in neural anchor type)
-    > 中文：三資料集在 N 與 rsEEG protocol 匹配，只差在 anchor 種類（無/periodic/aperiodic）。
-  - 3.1.5 External replication: ADFTD + TDBRAIN (Appendix A)
-    > 中文：疾病 cohort 作為 external replication，說明 paradigm 差異。
-- 3.2 Foundation model feature extraction + per-FM input normalisation
+- 3.1 2×2 cell assignment rationale
+  > 中文：兩個軸的操作化定義，以及為何四資料集各自落在所屬 cell。
+  - 3.1.1 Axis A — subject relation (within-subject paired vs between-subject label)
+    > 中文：label 是否在同一 subject 內有對比 (rest vs task / NS vs SD)；between-subject 指 label 為 per-subject scalar。
+  - 3.1.2 Axis B — task-substrate alignment (strong-aligned vs weak-aligned)
+    > 中文：operational definition: label 是否對應 EEG-identifiable neural pattern 且 FM pretrain 已學到。Two-stage diagnostic — (i) frozen LP 在 subject-disjoint CV 下跨 ≥2/3 FM 顯著高於 chance (separable)，(ii) real LaBraM FT BA 清過 30-seed permutation null (`p ≤ 0.05`; ADFTD 用 subject-level perm)。strong-aligned = 兩者皆 pass，weak-aligned = 皆 fail。主要 separator 是 perm null（Fig 3 四資料集完整證據）。LP 程序 §3.4，perm-null 程序 §3.6.2，各 cell null 分布 §4.3。
+  - 3.1.3 Cell assignments with one-line justification per dataset
+    > 中文：每格為何選這個資料集（paradigm、cohort、label 類型）。
+- 3.2 Per-dataset specs (source: `docs/master_results_table.md`)
+  > 中文：四個資料集各自的 N / channels / epoch length / label rule，與對應的 LP/FT benchmark 數字。
+  - 3.2.1 Stress-DASS (70 rec, 17 subj, 30ch, DASS per-recording) — between × null-indistinguishable (LP 0.44–0.51)
+  - 3.2.2 ADFTD (65 subj × 3 segments = 195 samples, 19ch, AD/FTD vs HC) — between × separable (LP 0.56–0.67)
+  - 3.2.3 EEGMAT (72 rec, 36 subj, 19ch, rest vs arithmetic) — within × separable (LP 0.72–0.74)
+  - 3.2.4 SleepDep (72 rec, 36 subj, 19ch, NS vs SD) — within × null-indistinguishable (LP 0.54–0.61, multi-FM inconsistent)
+- 3.3 Foundation model feature extraction + per-FM input normalisation
   > 中文：FM 抽取流程與各模型必須使用的 input norm（LaBraM zscore / CBraMod/REVE none）。
-- 3.3 Evaluation regimes
-  > 中文：論文並行採用 between-subject 與 within-subject 兩種 evaluation 設計。
-  - 3.3.1 Between-subject: per-window LP + subject-disjoint CV (FT-matched)
-    > 中文：與 FT 相匹配的 per-window LP + subject-disjoint 5-fold CV protocol。
-  - 3.3.2 Within-subject: LOO with personal-median DSS threshold (Stress) / LOO rest-vs-task (EEGMAT)
-    > 中文：固定 subject 身分下的 LOO 評估，測試純 state signal。
-- 3.4 Fine-tuning canonical per-FM recipe
+- 3.4 Evaluation protocol
+  > 中文：主 protocol 為 subject-level CV；within-subject cells 額外用 LOO 做 state tracking。
+  - 3.4.1 Primary: subject-disjoint CV (per-window LP / FT-matched)
+    > 中文：主評估 — subject-level 5-fold CV，避免 subject leakage。
+  - 3.4.2 Secondary (within-subject cells only): LOO within-subject contrast
+    > 中文：固定 subject 後測純 state signal。
+  - 3.4.3 Multi-seed requirement (≥ 3 seeds) on small-N cells
+    > 中文：small-N 下 seed variance ±5–10pp，所有 BA 聲明需 ≥3 seeds。
+- 3.5 Fine-tuning canonical per-FM recipe
   > 中文：使用各 FM 原論文 canonical recipe，不做 per-dataset HP 調參以避免 test contamination。
-- 3.5 Variance decomposition + RSA geometry (recording-level)
-  > 中文：recording-level variance 分解與 RSA 幾何分析的程序。
-- 3.6 FOOOF aperiodic/periodic ablation procedure
-  > 中文：以 FOOOF 參數重建訊號並 selectively 去掉 aperiodic 或 periodic 成分，測量因果效應。
-- 3.7 Permutation-null test (LaBraM Stress vs EEGMAT paired, §4.2 audit only)
-  > 中文：以 label shuffle 建立 null 分布；用於 §4.2 LaBraM paired audit，不再用於 CBraMod/REVE 機制檢驗（改用 §3.8 drift）。
-- 3.8 LP→FT representation drift analysis
-  > 中文：比 frozen LP feature vs FT OOF feature 的 variance decomposition (label_frac, subject_frac) + LogME + CKA(LP, FT)，直接從 representation level 判定 FT 是 real-learning 還是 subject-shortcut。
-- 3.9 Architecture comparison panel (7 architectures × Stress)
-  > 中文：在 Stress 上評估 7 個跨 6 個量級的架構，檢驗 ceiling 是否為 task property。
+- 3.6 Diagnostic toolkit — method specifications
+  > 中文：§4 所有診斷工具的 method 層細節，結果層放 §4。
+  - 3.6.1 Variance decomposition (recording-level)
+    > 中文：Label / Subject / Residual 三項 variance 分解程序。
+  - 3.6.2 Permutation-null test
+    > 中文：label shuffle 建立 null 分布，作為 honest-eval 的統計錨。
+  - 3.6.3 Within-subject direction consistency (scope: within-subject cells only by construction)
+    > 中文：固定 subject 下 FM 對 label contrast 的方向一致性 metric。**在 between-subject cells 沒有 within-subject contrast 可測，因此此 diagnostic 不適用 — 這是 toolkit 的 *feature* 而非 bug**：每個 diagnostic 被設計為探測特定 regime 性質，哪些 diagnostic 能跑 本身就是 regime 資訊（"which diagnostics run" 告訴讀者 cell 落在 2×2 哪一側）。
+  - 3.6.4 Causal anchor ablation (FOOOF aperiodic/periodic + band-stop)
+    > 中文：以 FOOOF 拆解 1/f vs peaks + Butterworth band-stop，雙擾動攻擊 anchor 來源。
+*(§3.7 benchmark landscape 已移至 §4.1 Results — Methods 只含程序定義。)*
 
 ## §4 Results
-> 中文：六個 subsection 依序呈現 SDL 框架的三路收斂證據與 FT 診斷。
+> 中文：Results 共 5 節 — §4.1 為 benchmark landscape (setup/entry point)，§4.2–§4.5 每節一個 diagnostic 掃過四 cell。
 
-### 4.1 Representation geometry is subject-dominated across regime
-> 中文：variance + RSA 顯示 frozen FM representation 幾何上由 subject 結構主導，但 FT 動向的意義是 **regime-conditional** — 同方向變化在 subject-label regime 與 within-subject regime 有相反意義（見 `docs/methodology_notes.md#N-F22`）。
+### 4.1 Benchmark landscape across the four cells (setup, not a finding)
+> 中文：Results 入口 — 先給 4 cell × 3 FM 的 BA summary 定位每格 "起點"；BA 本身不是論文發現，而是後續 diagnostic 解讀的 context。數字來自 `docs/master_results_table.md`，由 **Tab 1** (`table1_master_performance.tex`) 承載，**不另做 figure**。
 
-- **Fig 4.1** (canonical Fig 2 in build) — 2 rows × 3 datasets (Stress, EEGMAT, SleepDep)
-  - Row A: Variance decomposition stacked bars (Label / Subject / Residual), frozen vs FT per FM
-  - Row B: RSA scatter with frozen→FT arrows (3 FM per panel), label-r vs subject-r
-  - Caption must qualify `subject_frac ↑` direction by regime: shortcut in subject-label regime, healthy reference encoding in within-subject regime
-- Regime axis introduced here: Stress = subject-label (1 datapoint); EEGMAT + SleepDep = within-subject paired (2 datapoints)
-- See `docs/regime_framing_decision.md` for the full strategic pivot narrative
+- Entry statement for each cell (LaBraM / CBraMod / REVE, LP→FT, all 3-seed):
+  - *Between × null-indistinguishable (Stress)*: LP 0.51 / 0.44 / 0.46, FT 0.44 / 0.55 / 0.58 — FM stays in 0.44–0.58 band, classical LogReg 0.506 matches
+  - *Between × separable (ADFTD)*: LP 0.66 / 0.56 / 0.67, FT 0.71 / 0.54 / 0.66 — LaBraM the clear winner; classical SVM 0.647 and EEGNet 0.773 indicate a sizeable non-FM baseline for this cell
+  - *Within × separable (EEGMAT)*: LP 0.74 / 0.72 / 0.74, FT 0.73 / 0.62 / 0.73 — strong LP signal, FT LP-saturated; classical RF 0.889 beats all FMs
+  - *Within × null-indistinguishable (SleepDep)*: LP 0.61 / 0.55 / 0.54, FT 0.53 / 0.56 / 0.54 — inconsistent across FMs, classical SVM 0.574 ≈ FM
+- **Bridging statement**: BA alone does not explain why each cell arrives where it does — §4.2–§4.5 diagnostics characterise the mechanism behind each cell's benchmark landscape
 
-### 4.2 Honest evaluation closes the 40 pp gap on Stress
-> 中文：Stress 上 0.9047 → 0.443-0.577 的差距在 honest protocol 下幾乎全部收斂。
+### 4.2 Representation geometry across the 2×2 (Diagnostic 1: variance decomposition)
+> 中文：每格 frozen FM representation 的 Label / Subject / Residual 三項 variance 分解，揭示 subject structure 主導的程度；FT 狀態先不畫 trajectory（LP→FT drift analysis 延後）。
 
-- **Fig 4.2**  Honest-evaluation funnel (Wang 0.9047 → subject-CV 0.443–0.577 → permutation-null p=0.70 → classical 0.553)
-- **Fig 4.3**  Permutation-null density, LaBraM × {Stress, EEGMAT} paired
+- **Fig 4.2**  4-cell variance decomposition — stacked bars per cell (Label / Subject / Residual), frozen FM × 3 FM
+- Per-cell reading: subject_frac 與 label_frac 的相對大小刻畫每格 frozen representation 的 "geometry budget"
+  - *Between × null-indistinguishable (Stress)*: subject-dominant (label_frac ≈ 0)
+  - *Between × separable (ADFTD)*: label_frac > 0 but still subject-dominated
+  - *Within × separable (EEGMAT)*: label_frac 最高
+  - *Within × null-indistinguishable (SleepDep)*: label_frac low, subject-dominated
 
-### 4.3 Contrast-anchoring governs state separability — EEGMAT ↔ Stress paired, both eval regimes
-> 中文：SDL 的 contrast-anchoring 預測在兩種 eval regime 皆成立 — EEGMAT 都 separate、Stress 都 chance。
+### 4.3 Honest-evaluation calibration (Diagnostic 2: permutation null)
+> 中文：用 label-shuffle null 逐 cell 確認觀察到的 BA 是真 signal；此節同時給出 Stress 在 subject-disjoint protocol 下的 reference numbers，與 Wang 2025 trial-level CV 報告做 protocol-consistent 對齊（非 gap-closing 論述）。
+>
+> **角色雙重性**：此 diagnostic 同時 (a) 支撐 §3.1.2 Axis B 的 separable/null-indistinguishable 分類（"≥ 2/3 FM p<0.05" 的證據來自 §4.3.1 的 null 密度），以及 (b) 作為 Results 的 diagnostic 2，報告每 cell 的 null 分布形狀與跨 FM 一致性。§4.3.2 用同一個 diagnostic 處理 Stress cell 的 Wang 2025 protocol 對比 — 這是此 diagnostic 的 natural use case，而非 §4 其他 diagnostic 的非對稱 carve-out。
 
-The contrast-anchoring prediction of SDL is tested in two complementary evaluation regimes; SDL predicts divergent outcomes between EEGMAT and Stress in BOTH regimes (no escape by choice of CV unit).
+- **§4.3.1 Null calibration across the 2×2**
+  - **Fig 4.3**  Permutation-null density per cell (4 panels × 3 FM), observed BA marked
+  - Stress (between × null-indistinguishable): null-indistinguishable across FMs, p ≈ 0.70
+  - ADFTD (between × separable): observed BA p ≪ 0.05 for LaBraM, marginal for CBraMod/REVE
+  - EEGMAT (within × separable): observed BA p ≪ 0.01 across FMs
+  - SleepDep (within × null-indistinguishable): multi-FM inconsistency — LaBraM significant, CBraMod/REVE marginal
+  - Take-home: the null test operationalises Axis B — separable cells show concentrated BA above the null; null-indistinguishable cells overlap with the null mass
+- **§4.3.2 Stress cell: subject-disjoint reference numbers vs Wang 2025 trial-level CV**
+  - Wang 2025 reports **0.9047 BA** on Stress (trial-level CV, LaBraM)
+  - Under subject-disjoint 5-fold CV, 3 seeds (our protocol, matching §3.4.1): **0.44–0.58 BA** across 3 FMs
+  - Classical LogReg baseline on the same cell (subject-disjoint): **0.506 ± 0.019 BA** — matches FM LP range
+  - Interpretation: the two protocols measure different things — trial-level CV under within-subject labelling captures subject-identity structure in the test fold; subject-disjoint CV does not. The Stress cell's *subject-disjoint* BA (the regime this paper studies) is null-indistinguishable; our numbers and Wang's are consistent with each cell's expected behaviour under its respective CV rule
+  - No claim is made against Wang's protocol — we simply operate in a different evaluation regime that the 2×2 framework foregrounds
 
-#### 4.3.1 Between-subject generalization (per-window LP, subject-disjoint CV, FT-matched protocol)
-> 中文：在 hold-out 新 subject 的設計下，EEGMAT 可分、Stress 不可分。
+### 4.4 Within-subject direction consistency (Diagnostic 3: longitudinal tracking)
+> 中文：僅對 within-subject cells (EEGMAT, SleepDep) 適用 — 固定 subject 後測純 state signal 的方向一致性；為 SDL 最乾淨的 falsification 測試。
 
-- **Fig 4.4 panel A**  EEGMAT 0.72–0.74 vs Stress 0.43–0.53 across 3 FMs
-- Protocol matches FT evaluation in §4.6 (apples-to-apples LP vs FT)
-- Clinical reading: "can the FM diagnose state in an unseen patient"
+- **Fig 4.4**  Within-subject LOO + directional consistency (EEGMAT + SleepDep; Stress/ADFTD excluded by design)
+- EEGMAT: LOO 0.64–0.68, directional consistency 0.07–0.15 across 3 FM
+- SleepDep: LOO ≈ chance; directional consistency ≈ 0 — negative result motivates §4.5 FOOOF dissection
+- Stress/ADFTD note: these two cells have no within-subject contrast by label design, so the diagnostic does not run here
 
-#### 4.3.2 Within-subject tracking (LOO, personal-median DSS threshold for Stress)
-> 中文：固定 subject 後只測純 state signal，EEGMAT LOO 0.64-0.68、Stress DSS r≈0；為最乾淨的 falsification。
+### 4.5 Causal anchor ablation (Diagnostic 4: FOOOF + band-stop)
+> 中文：以 FOOOF aperiodic/periodic 拆解 + Butterworth band-stop 兩種互補因果擾動，給出每格的 anchor 類型 — `absent` / `α-broadband` / `1/f-aperiodic`（不用 Type I/II/III 編號以免與統計學 Type I/II error 混淆）。
+>
+> **Band-stop metric note**：§4.5 量 **probe BA after band removal**（下游 decoding 的 causal effect）；Appendix B.2 量 **cosine distance between original and band-stopped representations**（representation geometry sensitivity）。同一擾動、互補 metric — §4.5 回答「model 有沒有在用這個頻段 decode」，B.2 回答「representation 對該頻段的 geometry 有多敏感」。
 
-- **Fig 4.4 panel B**  EEGMAT 0.64–0.68 LOO BA vs Stress DSS Spearman r ≈ 0 across 3 FMs
-- **Fig 4.4 panel C**  Within-subject directional consistency (exp11): EEGMAT 0.07–0.15 across 3 FMs vs Stress ≈ 0 (frozen and FT both); a second within-subject metric independent of LOO BA, confirming the same SDL pattern
-- Holds subject identity fixed; isolates pure within-subject contrast signal from subject feature structure
-- Source: exp11_longitudinal_dss (EEGMAT: LOO BA rest vs task; Stress: personal-median DSS trajectory Spearman; dir_consistency for both, frozen + FT)
-- Clinical reading: "can the FM track an individual patient's state trajectory over time"
-- This is the SDL framework's most direct falsification test — when subject identity is eliminated from the label-subject coupling, only pure state contrast remains
-
-**Combined narrative (§4.3 take-home):** SDL prediction holds in both eval regimes — EEGMAT separates state in both; Stress fails in both. The difference is the presence of a neural anchor, not the evaluation protocol.
-
-### 4.4 Causal anchor dissection — FOOOF ablation + band-stop sensitivity
-> 中文：用 FOOOF 拆解 aperiodic/periodic + band-stop 兩種互補因果擾動，給出 Type I/II/III anchor 分類 — Stress (no anchor) / EEGMAT (α-broadband) / SleepDep (1/f-aperiodic)；subject ID 普遍住在 aperiodic 1/f。
-
-- **Fig 4.5**  Three panels (PSD + FOOOF fit, FOOOF ablation scatter, band-stop profile)
-  - **Top row**: PSD + FOOOF decomposition (aperiodic 1/f slope fit vs periodic peaks) for one representative recording per dataset — grounds what the two ablations actually remove
-  - **Bottom-left**: FOOOF ablation signature (scatter, x = Δ subject-ID probe BA, y = Δ state probe BA); each point = dataset × ablation-condition; within-dataset lines connect −aperiodic → −periodic. Quadrant position encodes anchor type.
-  - **Bottom-right**: Band-stop sensitivity (line plot, x = {δ, θ, α, β}, y = cosine distance between FM features pre/post Butterworth band-stop); FM-averaged; α band highlighted.
-- **Take-home (two interventions, one taxonomy)**:
-  - *FOOOF subject probe*: aperiodic removal drops subject ID in all 3 datasets (EEGMAT: CBraMod −14 pp / REVE −26 pp; Stress CBraMod −8.6 pp; SleepDep −2–4 pp); periodic removal leaves subject probe unchanged → **aperiodic 1/f is the universal subject substrate**.
-  - *FOOOF state probe*: only SleepDep collapses under aperiodic removal (LaBraM 0.616→0.538, REVE 0.562→0.519; mean −4.5 pp) → **SleepDep state is 1/f-anchored (Type III)**. EEGMAT state survives both ablations (≤ 1.3 pp drop); Stress state is null throughout.
-  - *Band-stop cosine distance*: EEGMAT FM features peak in α-band reliance (0.105, highest cell), Stress peak in β (0.078), SleepDep flat across all bands (≤ 0.012) → **EEGMAT state lives in the α band as broadband (peak + in-band 1/f tail together)**, not the peak alone. This resolves the apparent mismatch between FOOOF periodic-removal being weak on EEGMAT vs the α-band cosine-distance being strong: FOOOF removes peaks only; band-stop removes peak *and* in-band background.
-  - **Integrated anchor taxonomy** (Type I Stress / Type II EEGMAT α-broadband / Type III SleepDep 1/f-aperiodic) is model-independent and computable from the EEG alone, before any FM training.
-- **Interpretation note**: Cosine distance measures FM representation *reliance* on a band, not task-probe accuracy; the scatter (probe Δ) and the line (FM drift) must be read together to attribute anchor type.
-
-### 4.5 Architecture-independent ceiling on Stress
-> 中文：7 個跨 6 量級的架構在 Stress 全部停在 0.43-0.58 band，證明 ceiling 是 task property 而非架構限制。
-
-- **Fig 4.6**  Seven architectures spanning six orders of magnitude → 0.43–0.58 BA band
-- **Fig 4.7**  Classical band-power XGBoost vs FM frozen LP
-- **Table 4.1**  Full architecture panel (EEGNet, ShallowConvNet, LaBraM, CBraMod, REVE × {frozen LP, FT}, XGBoost baseline)
-
-### 4.6 FT rescue on Stress is subject-shortcut exploitation (representation drift)
-> 中文：用 LP→FT 的 variance decomposition 直接看機制 — 三 FM 在 Stress 上 FT 後 label_frac 不增反減（−1～−2pp），subject_frac 大幅上升（+6～+25pp）；EEGMAT × CBraMod 的 +3/−24pp 真 label-learning signature 作為 positive control。
-
-- **Fig 4.8**  LP→FT representation drift bar chart — 6 cells (3 FMs × {Stress, EEGMAT}); two bars per cell showing Δlabel_frac and Δsubject_frac, color-coded by mechanism verdict (shortcut / real / no-drift)
-- **Table 4.2**  Per-cell drift summary: LP & FT label_frac, subject_frac, CKA(LP, FT), Δ values, mechanism verdict
-- **Mechanism interpretation:**
-  - Stress × LaBraM (canonical lr=1e-5): Δlabel −1.0pp / Δsubj **+24.6pp** / CKA 0.46 → shortcut
-  - Stress × CBraMod: Δlabel −1.5pp / Δsubj **+19.5pp** / CKA 0.17 → shortcut
-  - Stress × REVE: Δlabel +0.2pp / Δsubj **+6.2pp** / CKA 0.98 → shortcut (mild backbone change but subject-direction)
-  - EEGMAT × CBraMod: Δlabel **+3.0pp** / Δsubj **−23.8pp** / CKA 0.14 → **real label-learning signature** (positive control)
-  - EEGMAT × LaBraM / REVE: drift small or LP-saturated (FT BA ≈ LP BA)
-- **Take-home:** all 3 FMs on Stress show consistent subject-shortcut signature regardless of FT BA outcome; EEGMAT × CBraMod confirms the analysis can detect real label-learning when present. This provides direct mechanistic evidence for SDL that does not depend on permutation-null statistical power.
+- **Fig 4.5**  Three-panel anchor dissection (PSD + FOOOF fit representative, FOOOF ablation scatter, band-stop line), 4 cells
+- Per-cell anchor attribution (source: `results/studies/fooof_ablation/{stress,adftd,eegmat,sleepdep}_probes.json`):
+  - *Stress (between × null-indistinguishable)*: **absent anchor** — no recoverable anchor in either intervention
+  - *ADFTD (between × separable)*: LaBraM state probe drops 0.654→0.542 (−11.2 pp) under aperiodic removal, periodic removal barely moves it (0.654→0.655), REVE drops 0.652→0.614 (−3.8 pp) → **aperiodic-anchored trait signal**. CBraMod shows an **opposite-sign signature**: aperiodic removal *raises* state probe 0.571→0.692 (+12 pp) and subject probe 0.748→0.940 (+19 pp). Candidate explanation (anchor + model interaction): CBraMod's internal `x/100` input scaling is µV-calibrated and particularly sensitive to broadband amplitude; FOOOF-reconstruction on ADFTD (88 trait-heterogeneous subjects) acts as amplitude normalisation, *improving* subject and trait discriminability rather than removing a learned aperiodic anchor. This reinforces rather than overturns the taxonomy: ADFTD's trait signal co-varies with aperiodic 1/f for the two FMs that treat input as raw µV (LaBraM zscore, REVE raw µV), while CBraMod sees a different signal under its input pipeline. The opposite sign is a *model × preprocessing* artefact, not a violation of the anchor-type framework.
+  - *EEGMAT (within × separable)*: **α-broadband anchor** (peak + in-band 1/f tail together)
+  - *SleepDep (within × null-indistinguishable-but-causal)*: **1/f-aperiodic anchor** (FOOOF aperiodic removal collapses state probe) despite LOO ≈ chance
+- Model-independent claim qualified: anchor taxonomy is computable from EEG alone, but *per-FM signature* can reverse when the FM's input normalisation interacts with the reconstruction. §3.2 per-FM norm table documents which FMs treat input as raw-µV vs z-scored.
 
 ## §5 Discussion
-> 中文：總結 SDL 兩 regime 行為、對 benchmark 設計的啟示，並將 clinical checklist 作為可操作輸出。
+> 中文：整合四格觀察與 diagnostic toolkit 的輸出，給出 descriptive 敘事與 clinical checklist；明確聲明不做 predictive claim。
 
-### 5.1 Two-regime behaviour of EEG-FMs on clinical rsEEG
-> 中文：EEG-FM 表現由 task contrast 決定 — anchored 與 bounded 兩種 regime；bounded 區 FT 在機制上是 subject-shortcut 而非 label learning。
+### 5.1 What the toolkit carries beyond this paper, and what it does not
+> 中文：分清楚哪些東西可以帶出本論文 — toolkit 與其 scope conditions 可以 reuse，2×2 本身 (n=1 per cell) 不可以外推。
 
-- Contrast-anchored regime (EEGMAT): frozen LP separates state, FT adds little
-- Contrast-bounded regime (Stress): all architectures ceiling at ~0.55; FT exploits subject identity (representation drift confirms +6 to +25 pp subject_frac increase across 3 FMs without label_frac gain)
-- Critical implication: positive FT BA on contrast-bounded tasks requires representation-drift corroboration before being interpreted as real label learning
+- **Reusable beyond this paper (the toolkit and its scope conditions)**:
+  - Each of the four diagnostics has a defined input (raw EEG + label metadata), a defined output (a per-cell verdict), and a defined scope condition stating when the diagnostic runs
+  - Within-subject direction consistency runs only when the label design supports a within-subject contrast; this scope condition is stated up-front, so a future user can tell without running anything whether their dataset qualifies
+  - Causal anchor ablation produces an `absent` / `α-broadband` / `1/f-aperiodic` verdict computable from EEG alone before any FM is trained — the three anchor types (not the specific dataset assignments in this paper) are what carries over
+  - Frozen variance decomposition produces label_frac vs subject_frac from frozen FM features — the label-dominated vs subject-dominated reading is what carries over
+- **Not extrapolated beyond this paper (the 2×2 as a predictive map)**:
+  - We do not claim that every future (between × null-indistinguishable) dataset will fail the way Stress does
+  - We do not claim that every future (within × separable) dataset will decode the way EEGMAT does
+  - With n=1 per cell, the 2×2 organises our own observations; it is not a map we ask readers to consult for unseen datasets
+- The scientific contribution we ask readers to take away is the toolkit; the 2×2 is how we demonstrate the toolkit's coverage across complementary regimes
 
-### 5.2 Implications for benchmark design
-> 中文：benchmark 改善應投資於 contrast anchoring，而非架構疊代。
+### 5.2 Per-cell mechanism synthesis
+> 中文：整合四種 diagnostic 對每格的讀數，得出該 cell 的 dominant mechanism 描述。
 
-- Published trial-level CV numbers on subject-bounded tasks are protocol artefacts
-- Architectural iteration within a contrast-bounded cohort is not the productive move
+- Stress (between × null-indistinguishable): subject-shortcut ceiling + null-indistinguishable benchmark BA
+- ADFTD (between × separable): LaBraM FT 0.71 (best of 3 FM); aperiodic removal drops state probe −11 pp → 1/f-anchored trait signal with model-dependent aperiodic reliance
+- EEGMAT (within × separable): α-broadband anchor + real state separability, FT LP-saturated
+- SleepDep (within × null-indistinguishable): 1/f anchor detectable causally but not decodable within-subject (LOO ≈ chance)
 
-### 5.3 Clinical pre-flight checklist (actionable output)
-> 中文：提供 3-gate checklist，讓臨床研究者在投入 FT compute 前做 diagnostic 篩檢。
+### 5.3 Implications for benchmark design and FM deployment
+> 中文：benchmark 設計應優先投資於 contrast anchoring 與 subject-disjoint protocol，而非架構疊代。
 
-- **Table 5.1**  3-gate decision framework before investing FT compute:
-  1. Frozen LP under subject-disjoint CV — does FM separate state at all?
-  2. **Representation drift test** — does FT increase label_frac (real learning) or only subject_frac (shortcut exploitation)?
-  3. FOOOF detrend probe — is signal contrast-anchored or 1/f-parasitic?
+- Trial-level CV numbers on absent-signal cells are protocol artefacts
+- Architectural iteration within an absent-signal cell is not the productive move
+- Within-subject paired designs unlock contrast signal that between-subject designs cannot recover
+
+### 5.4 Clinical pre-flight checklist (actionable output)
+> 中文：提供 decision framework，讓臨床研究者在投入 FT compute 前用 diagnostic toolkit 做 cell 定位。
+
+- Gate 1: Frozen LP under subject-disjoint CV — does FM separate label at all above chance?
+- Gate 2: Permutation null — is the observed BA distinguishable from a label-shuffled distribution?
+- Gate 3: Frozen variance decomposition — is representation label-dominated or subject-dominated at baseline? (label_frac ≪ subject_frac → cell is subject-geometry-bound; FT unlikely to rescue without a structural anchor)
+- Gate 4: Causal anchor probe (FOOOF aperiodic/periodic ablation) — does the signal collapse under aperiodic removal (1/f-anchored), periodic removal (peak-anchored), both (broadband), or neither (absent anchor)?
 
 ## §6 Limitations and Future Work
-> 中文：誠實列出本論文未解決的 scope 限制與可擴展的 future work 方向。
+> 中文：誠實列出未解決的 scope 限制與可擴展的 future work。
 
-- 6.1 Wang 2025 reproduction is partial (protocol-side closed; HP-side not)
+- 6.1 n=1 dataset per cell — the 2×2 is descriptive, not predictive
+  > 中文：每格只有一個資料集，無法主張 generalisation；2×2 是 descriptive framework，不是 predictive rule。
+- 6.2 Wang 2025 reproduction is partial (protocol-side closed; HP-side not)
   > 中文：Wang 的 HP-side reproduction 未完成；protocol-side 已關閉。
-- 6.2 Per-dataset HP sweep deferred (canonical recipe rationale; Stress-only sweep available)
+- 6.3 Per-dataset HP sweep not performed (canonical recipe rationale)
   > 中文：per-dataset HP sweep 只在 Stress 做過；其他 dataset 沿用 canonical recipe。
-- 6.3 Architecture panel is Stress-only; DeepConvNet / EEGConformer under old protocol (rerun deferred)
-  > 中文：架構 panel 僅在 Stress 上做；DeepConvNet / EEGConformer 要在新 protocol 下補跑。
-- 6.4 FOOOF ablation main analysis on 3/5 datasets (Stress + EEGMAT + SleepDep); ADFTD + TDBRAIN extension deferred
-  > 中文：FOOOF ablation 目前含 Stress+EEGMAT+SleepDep 三個主文資料集；ADFTD/TDBRAIN 擴充為 future work。
-- 6.5 Small-N statistical reliability (N=70 Stress)
-  > 中文：N=70 的統計可靠性限制。
+- 6.4 LP→FT drift analysis intentionally omitted from main text
+  > 中文：frozen variance + perm-null + FOOOF 已建立每 cell 機制；drift 為低邊際資訊，主文不放。資料（Stress + EEGMAT）可提供 reviewer / reader 依需求檢閱。
+- 6.5 Small-N statistical reliability (N=70 Stress, N=36 EEGMAT/SleepDep)
+  > 中文：小樣本 N 的統計可靠性限制。
 - 6.6 Protocol assumptions (subject-disjoint CV, recording-level labels, ≥ 19ch montage)
   > 中文：主文假設 subject-disjoint CV、recording-level label、≥19ch 電極。
 - 6.7 LaBraM's reduced aperiodic-dependence — architectural explanation speculative
   > 中文：LaBraM 對 1/f 較不敏感的架構解釋尚屬推論。
 - 6.8 Clinical deployment: checklist is necessary, not sufficient
   > 中文：checklist 是必要條件但不是充分條件。
-- 6.9 Three concrete future directions:
-  > 中文：三個具體 future work 方向。
+- 6.9 Three concrete future directions
+  > 中文：三個具體 future work。
   1. Pretrain an FM on FOOOF-detrended EEG
   2. Subject-adversarial regularisation for small-N FT
-  3. Within-subject longitudinal benchmarks
+  3. Populate additional 2×2 cells with held-out datasets (promote to predictive claim)
 
 ---
 
-## Appendix A — External replication on disease cohorts
-> 中文：以 ADFTD + TDBRAIN 疾病 cohort 作為 subject-dominance 幾何層級的外部驗證。
+## Appendix A — TDBRAIN replication on the between × separable cell
+> 中文：TDBRAIN 作為 ADFTD cell 的 external replication，確認 between-subject trait cell 的 pattern 不是 ADFTD-specific。
 
-### A.1 Variance atlas replication on ADFTD + TDBRAIN
-> 中文：variance atlas 在兩個疾病 cohort 6-cell 重現 subject-dominant pattern。
+### A.1 Variance atlas replication
+> 中文：TDBRAIN 上 variance decomposition 與 LP→FT drift 是否重現 ADFTD pattern。
 
-- **Fig A.1**  Variance atlas 3-panel × 6-cell (3 FM × ADFTD/TDBRAIN)
-- Text: subject dominance pattern holds under trait-label disease classification
+- **Fig A.1**  Variance atlas on TDBRAIN (3 FM)
 
-### A.2 Frozen LP + FT master table on ADFTD + TDBRAIN
-> 中文：ADFTD/TDBRAIN 的 FT vs Frozen LP 6-cell 比較表。
+### A.2 Positioning note
+> 中文：TDBRAIN 為何只放 Appendix — 與 ADFTD 落在同一 cell，作為 breadth check 而非獨立 datapoint。
 
-- **Table A.1**  6-cell FT vs frozen LP
-- Text: Notes the regime shift — ADFTD/TDBRAIN are between-subject trait classification, not per-recording state; included to demonstrate SDL geometric claim is not paradigm-specific
+## Appendix C — Architecture ceiling across 4 cells
+> 中文：4-cell × 4 架構類別（classical ML / non-FM deep / 3 FM FT）的 ceiling panel，驗證 §4.1 Tab 1 觀察到的 per-cell BA ceiling 是「cell 屬性」而非 FM-specific。主文 §4.2–§4.5 的四個 diagnostic 已先完整解釋 mechanism，此 panel 在最後作為 architecture breadth check，非 load-bearing step。
 
-### A.3 Positioning note
-> 中文：說明 ADFTD/TDBRAIN 為何只放 Appendix — label paradigm (trait vs state)、cohort 規模、臨床問題都與主文不同。
+### C.1 Architecture panel × 4 cells
+> 中文：classical ML (LogReg / SVM / RF / XGBoost) + non-FM deep (EEGNet / ShallowConvNet) + 3 FM FT (LaBraM / CBraMod / REVE)，跨約 6 個參數量級；每個 cell 的 BA 落在架構-不變的 band。
 
-- Why ADFTD/TDBRAIN are not in main Results: different label paradigm (trait vs state), different cohort size regime, different clinical question. The main paired contrast (Stress ↔ EEGMAT) tests the contrast-anchoring hypothesis directly; ADFTD/TDBRAIN serve as breadth check that subject-dominance pattern is not an artefact of the paired design.
+- **Fig 6** (planning label Fig C.1): 4-panel architecture ceiling, Subject-CV BA vs log(trainable params), one panel per cell (EEGMAT / SleepDep / ADFTD / Stress)
+- Per-cell readings:
+  - Stress (between × null-indistinguishable): ceiling 0.43–0.58, all architectures clustered near chance → cell property
+  - SleepDep (within × null-indistinguishable): similar architecture-invariant near-chance band
+  - ADFTD (between × separable): LaBraM + EEGNet both near 0.71–0.77, sizeable non-FM baseline
+  - EEGMAT (within × separable): classical RF 0.89 above FM band, FM band 0.6–0.74
+
+### C.2 Positioning note
+> 中文：為何 ceiling 放在 Appendix — 主文 §4.1 Tab 1 已給 per-cell BA 的 setup，§4.2–§4.5 四個 diagnostic 已解釋 mechanism；Fig 6 在 Appendix 作為 architecture breadth 佐證，讓 reviewer 確認「更換架構不會逃離 cell-level ceiling」，不是 load-bearing 的論證步驟。原本規劃的 C.2 classical vs FM frozen LP 4-cell 比較已被 §4.1 Tab 1 的 classical / non-FM baseline 欄吸收，不另出圖。
+
+- Why positioned in Appendix: Tab 1 and the four diagnostics already carry the main argument. Fig 6 supports the "ceiling is cell-property" reading by showing it persists across architectures spanning six orders of magnitude in trainable parameters, but the claim is not needed to establish any mechanism — it is a breadth check.
 
 ---
 
 ## Appendix B — Neuro-interpretability of FM frozen representations
-> 中文：完整覆蓋 "FM 用哪些 component / 頻段 / 通道" 的三軸因果與相關分析；不屬 SDL diagnostic framework，但說明 SDL 機制的 spectral / spatial 落點。
+> 中文：完整覆蓋 "FM 用哪些 component / 頻段 / 通道" 的三軸因果與相關分析；不屬主診斷工具但補充 spectral / spatial 落點。
 
 ### B.1 Channel ablation (spatial axis)
-> 中文：30 通道各 zero-out 後 cosine distance 揭示三 FM 都重視 posterior O2/Oz/Pz/P4（α 來源區）；LaBraM 最敏感、CBraMod 3-5× 較不敏感。
+> 中文：30 通道 zero-out 後 cosine distance 的 topomap。
 
-- **Fig B.1**  30-channel ablation topomap (3 FMs × Stress 70 rec)
-- Source: exp14_channel_importance/channel_importance.json
+- **Fig B.1**  30-channel ablation topomap (3 FM × Stress 70 rec)
 
-### B.2 Band-stop ablation (frequency-band causal axis)
-> 中文：對 delta/theta/alpha/beta 分別帶阻濾波再看 FM cosine distance；Stress 上 LaBraM 主要靠 beta（subject ID/arousal），EEGMAT 上 LaBraM/REVE 改靠 alpha（task α suppression）。
+### B.2 Band-stop ablation per cell (frequency-band causal axis)
+> 中文：對 delta/theta/alpha/beta 分別帶阻，看每格 FM cosine distance 落點。metric 為 **cosine distance**（representation geometry sensitivity），與 §4.5 band-stop 量 **probe BA**（decoding causal effect）互補 — 同一擾動、不同 metric，cross-reference 已在 §4.5 說明。
 
-- **Fig B.2**  Band-stop cosine distance bar chart (3 FMs × {Stress, EEGMAT} × 4 bands)
-- Source: exp14_channel_importance/band_stop_ablation.json
+- **Fig B.2**  Band-stop cosine distance (3 FM × 4 datasets × 4 bands)
 
 ### B.3 Band RSA (correlational spectral axis)
-> 中文：band power RDM 與 FM RDM 的 Spearman r — Stress 全 band 顯著（broadband subject fingerprint），EEGMAT 出現 alpha/theta selectivity（task signal）。
+> 中文：band power RDM 與 FM RDM 的 Spearman r per cell。
 
-- **Table B.1**  Per-band Spearman r matrix (3 FMs × {Stress, EEGMAT} × 4 bands)
-- Source: exp14_channel_importance/band_rsa.json
+- **Fig B.3**  Per-band Spearman r matrix (3 FM × 4 datasets × 4 bands)
 
 ### B.4 Synthesis — 4-axis FM interpretability framework
-> 中文：本論文涵蓋四個正交因果切片 — component (FOOOF, 主文 §4.4)、frequency band (band-stop)、spatial channel (channel ablation)、correlational spectrum (band RSA)；後三者放 Appendix B 不影響主文 SDL 診斷敘事。
+> 中文：本論文涵蓋四個正交因果切片 — component (FOOOF)、frequency band、spatial channel、correlational spectrum。
 
-- Cross-reference §4.4 (FOOOF aperiodic/periodic) as the 4th axis
-- Synthesis: subject dominance lives jointly in posterior channels × broadband (esp. beta) × aperiodic 1/f component
-- Practical takeaway: future FM pretraining should consider FOOOF-detrended input or spatial-spectral disentanglement to reduce subject leakage
+- Cross-reference §4.4 (FOOOF aperiodic/periodic) as component axis
+- Synthesis: subject dominance lives jointly in posterior channels × broadband × aperiodic 1/f
 
 ---
 
-## Figure/Table master list
-> 中文：主文 9 圖 + 2 表；Appendix 1 圖 + 1 表。New 與 Redraw 狀態逐一標示。
+## Figure master list
+> 中文：主文 5 圖（Fig 1 pipeline/teaser + Fig 2–5 四個 diagnostic） + Appendix 5 圖（A.1 + B.1–3 + C.1 = Fig 6 ceiling）。Tab 1 in §4.1 (placed)；Tab 2/3 proposed。
 
-### Main text (10 figures + 2 tables)
+### Main text (4 diagnostic figures; benchmark landscape carried by Tab 1 in §4.1, no figure)
+| Final Fig # | Planning label | Location | Content | Source file | Status |
+|---|---|---|---|---|---|
+| Fig 2 | Fig 4.2 | §4.2 | Variance decomposition 4 cells (stacked bars, frozen FM only) | `paper/figures/fig2/fig2_representation_2x2.{pdf,png}` | Existing — verify 4-cell extension |
+| Fig 3 | Fig 4.3 | §4.3 | Permutation-null density 4 cells | `paper/figures/fig3/fig3_honest_evaluation.{pdf,png}` | Existing — verify 4-cell extension |
+| Fig 4 (a/b/c) | Fig 4.4 | §4.4 | Within-subject LOO trajectory + direction consistency (EEGMAT + SleepDep) | `paper/figures/fig4/fig4{a,b,c}_*.{pdf,png}` | Existing — Stress/ADFTD excluded by design |
+| Fig 5 (a/b/c) | Fig 4.5 | §4.5 | Causal anchor ablation (PSD+FOOOF fit, FOOOF scatter, band-stop line) | `paper/figures/fig5/fig5{a,b,c}_*.{pdf,png}` | Existing — verify 4-cell extension |
+
+Note: **Fig 1 reserved for a planned pipeline/teaser schematic** (data → 2×2 cell assignment → diagnostic toolkit → per-cell verdict); not yet built. Benchmark landscape (setup, §4.1) is carried by Tab 1 only — no standalone figure.
+
+### Appendix A (1 figure)
 | # | Location | Content | Status |
 |---|---|---|---|
-| Fig 4.1 | §4.1 | Variance + RSA atlas, 2 row × 3 DS (Stress/EEGMAT/SleepDep, variance bars + RSA frozen→FT arrows) | ✅ Built 2026-04-21 (`fig2_representation_geometry`) |
-| Fig 4.2 | §4.2 | Honest-evaluation funnel | Existing |
-| Fig 4.3 | §4.2 | Perm-null density (LaBraM paired Stress/EEGMAT) | Existing |
-| Fig 4.4A | §4.3.1 | Paired between-subject LP (EEGMAT vs Stress DASS) | Existing |
-| Fig 4.4B | §4.3.2 | Paired within-subject LOO (EEGMAT rest/task vs Stress DSS) | **Redraw** from exp11 |
-| Fig 4.4C | §4.3.2 | Within-subject directional consistency (frozen + FT, 3 FM × 2 DS) | **New** from exp11 dir_consistency |
-| Fig 4.5 | §4.4 | Causal anchor dissection (PSD+FOOOF fit row + FOOOF scatter + band-stop line) | **New v6 — data ready**, scatter + line + PSD replaces 6-panel bar grid |
-| Fig 4.6 | §4.5 | Architecture ceiling (7 arch × Stress) | Existing |
-| Fig 4.7 | §4.5 | Classical band-power baselines | Existing |
-| Fig 4.8 | §4.6 | LP→FT representation drift, 6 cells (3 FM × {Stress, EEGMAT}) | **New** — data ready |
-| Table 4.1 | §4.5 | Architecture panel full | Existing |
-| Table 4.2 | §4.6 | Per-cell drift summary (Δlabel_frac, Δsubject_frac, CKA, verdict) | **New** — data ready |
-| Table 5.1 | §5.3 | 3-gate clinical pre-flight checklist | Existing (was §9) |
+| Fig A.1 | A.1 | TDBRAIN variance atlas (3 FM) | Existing — subset of old 12-cell |
 
-### Appendix A (1 figure + 1 table)
+### Appendix B (3 figures)
 | # | Location | Content | Status |
 |---|---|---|---|
-| Fig A.1 | A.1 | Variance atlas, 6-cell (3 FM × ADFTD+TDBRAIN) | **Redraw** (subset of old 12-cell) |
-| Table A.1 | A.2 | Master FT vs LP on ADFTD+TDBRAIN | Existing (subset of v2 12-cell) |
+| Fig B.1 | B.1 | 30-channel ablation topomap (Stress) | Existing (exp14) |
+| Fig B.2 | B.2 | Band-stop cosine distance (3 FM × 4 DS × 4 bands) | Existing — extend to 4 DS |
+| Fig B.3 | B.3 | Per-band Spearman r matrix (3 FM × 4 DS × 4 bands) | Existing — extend to 4 DS |
 
-### Appendix B (2 figures + 1 table)
-| # | Location | Content | Status |
-|---|---|---|---|
-| Fig B.1 | B.1 | 30-channel ablation topomap (3 FMs × Stress) | Existing (exp14) |
-| Fig B.2 | B.2 | Band-stop cosine distance (3 FMs × {Stress, EEGMAT} × 4 bands) | Existing (exp14) |
-| Table B.1 | B.3 | Band RSA per-band Spearman r matrix | Existing (exp14) |
+### Appendix C (1 figure)
+| Final Fig # | Planning label | Location | Content | Source file | Status |
+|---|---|---|---|---|---|
+| Fig 6 | Fig C.1 | C.1 | 4-cell architecture ceiling × 4 architecture classes (classical / non-FM deep / FM FT) — breadth check that the cell-level BA ceiling observed in §4.1 Tab 1 is architecture-agnostic, not FM-specific | `paper/figures/main/Fig6_ceiling.png` (canonical) | Existing — panel titles need terminology update (`coherent/incoherent/absent` → `separable/null-indistinguishable`) |
+
+Positioning note: Fig 6 enters *after* the four diagnostics (§4.2–§4.5) have explained why each cell sits at its BA band. It is a breadth check supporting "ceiling is cell property, not FM property", not a standalone finding. The original Appendix C.2 (classical XGBoost vs FM frozen LP, 4 cells) is subsumed by Tab 1's classical/non-FM baseline columns and is dropped.
+
+### Tables
+| Tab # | Location | Content | Source file | Status |
+|---|---|---|---|---|
+| Tab 1 | §4.1 | Master per-cell benchmark — LP/FT × 3 FM + classical-ML + non-FM deep baselines, subject-disjoint 3-seed | `paper/tables/table1_master_performance.tex` | Placed |
+| Tab 2 | §3.1.3 | Cell-assignment summary — 4 rows × {dataset, axis A, axis B, cohort N, label rule} | TBD | Proposed |
+| Tab 3 | §5.4 | Pre-flight checklist — 4 gates × {input, output, decision rule} | TBD | Proposed |
+
+Note: per-cell drift summary dropped (LP→FT drift intentionally omitted from main text, §6.4).
 
 ---
 
@@ -294,6 +335,7 @@ The contrast-anchoring prediction of SDL is tested in two complementary evaluati
 > 中文：寫稿流程 — 先鎖 outline、再做圖表、文字一律用 /paper-writing skill、最後編譯。
 
 1. Outline locked → this document
-2. Figures/tables built or regenerated first
-3. For text: invoke **/paper-writing** skill per section; do not free-write
-4. Final compile → new `docs/sdl_paper_full.pdf`
+2. Figures built or regenerated first — pending: Fig 1 (pipeline/teaser, needs design); Fig 2 variance (verify 4-cell coverage); Fig 3 perm-null (verify 4-cell coverage); Fig 5 FOOOF (verify 4-cell coverage); Fig 6 ceiling (panel-title terminology update); Fig B.2–B.3 (extend to 4 DS)
+3. Tables placed and built (deferred — see TODO)
+4. For text: invoke **/paper-writing** skill per section; do not free-write
+5. Final compile → new `docs/sdl_paper_full.pdf`

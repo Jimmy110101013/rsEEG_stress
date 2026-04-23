@@ -1,6 +1,6 @@
 # TODO — Current Priorities
 
-**Last updated**: 2026-04-22 (aug_overlap audit + 4-dataset perm null infra; label-substrate axis candidate replacing regime framing)
+**Last updated**: 2026-04-23 (axis officially renamed to task-substrate alignment: strong / weak-aligned; Fig 3 2×2 anchors the column; regime becomes the row)
 
 Update this file as priorities shift. Delete completed items; don't accumulate history.
 
@@ -135,50 +135,42 @@ possible paper versions (A/B/C).
 
 11. **Rewrite Fig 6 drift verdict logic** (blocked by N-F22)
     - Current labels `rescue_consistent_with_subject_shortcut` / `rescue_consistent_with_label_signal` assume `subject_frac ↑ = shortcut`, which mis-classifies EEGMAT/SleepDep healthy FT as shortcut.
-    - Option A: make verdict regime-conditional (within-subject regime → `subject_frac ↑` = healthy reference encoding).
-    - Option B: remove verdict labels entirely, let arrow direction + regime panel speak.
+    - Option A: make verdict CV-regime-conditional (within-subject paired → `subject_frac ↑` = healthy reference encoding).
+    - Option B: remove verdict labels entirely, let arrow direction + cell position in the 2×2 speak.
     - Source file: `results/studies/representation_drift/lp_vs_ft_stress.json` build script.
 
-12. **Add EEGMAT architecture ceiling to Fig 6 left** (regime-conditional architecture claim)
-    - Current Fig 6 left shows classical + non-FM + FM all collapsing on Stress (0.43–0.58 ceiling). Under regime framing, needs EEGMAT counterpart showing ceiling rises to 0.70+ for the same architectures — supports "architecture irrelevance is regime-dependent".
+12. **Add EEGMAT architecture ceiling to Fig 6 left** (cell-conditional architecture claim)
+    - Current Fig 6 left shows classical + non-FM + FM all collapsing on Stress (0.43–0.58 ceiling). Under the task-substrate alignment framing, needs EEGMAT counterpart showing ceiling rises to 0.70+ for the same architectures — supports "architecture irrelevance is alignment-conditional".
     - Check if `results/studies/exp15_nonfm_baselines/sweep/*` has EEGMAT runs; if not, needs 2 archs (eegnet, shallowconvnet) × 3 seeds on EEGMAT (~2 h).
 
 13. **Expand Fig 4 with SleepDep trajectory row** (gated on paired protocol check)
     - Needs SleepDep paired windows (same subject, rested vs sleep-deprived) to compute direction-consistency.
     - Check `pipeline/sleepdep_dataset.py` (or equivalent) for paired structure.
-    - If protocol supports it, compute within-subject FT trajectory analogue to EEGMAT rest→task.
+    - If protocol supports it, compute within-subject FT trajectory analogue to EEGMAT rest→task. Expected: weak-aligned (SleepDep) → low / negative dir_consistency across all FMs.
 
-14. **Write regime bifurcation text in Methods §3.1 + Intro**
-    - Intro: state the regime taxonomy upfront; cite DEAP/SEED/DREAMER/DASPS as instances of subject-label regime to establish prevalence (no new experiments needed).
-    - Methods §3.1: map the three datasets onto the axis; explicitly note Stress is the representative, EEGMAT/SleepDep are within-subject.
+14. **Write 2×2 axis text in Methods §3.1 + Intro** (axis renamed 2026-04-23)
+    - Intro: state the axis taxonomy upfront — row = CV regime (within-subject paired vs subject-label trait); column = task-substrate alignment (strong vs weak). Cite DEAP/SEED/DREAMER/DASPS as additional instances of (subject-label × weak-aligned) cell to establish prevalence (no new experiments needed).
+    - Methods §3.1: map the four datasets onto the 2×2 with operational definitions — alignment classified by permutation null (`p ≤ 0.05` strong / `p > 0.1` weak); regime classified structurally by label design.
     - Zero experimental cost; ~500 words.
 
-15. **exp31 aug_overlap audit — decision gate** (in-flight 2026-04-22)
-    - `pipeline/dataset.py:196` hard-codes aug_overlap oversample on `label==1`, only correct when label==1 is the window-level minority. ADFTD (label==1=AD=majority) LaBraM s42 no-aug = 0.744 vs aug-on 0.709 (+3.5pp) suggests aug is a harmful artifact there.
-    - Current audit: EEGMAT LaBraM (aug=0.5 done: 0.671±0.021; no-aug s42=0.708, s123+s2024 in-flight on GPU 3); ADFTD LaBraM no-aug s123+s2024 in-flight on GPU 4; CBraMod + REVE ADFTD no-aug × 3 seeds queued.
-    - **Decision** (after ~3h): if all 3 FMs show ADFTD no-aug > aug-on, switch ADFTD real FT to no-aug → triggers #16. If only LaBraM flips, document per-FM sensitivity in methods.
-    - Also in methods: document `aug_overlap` implementation asymmetry (Stress minority ✓, EEGMAT window-minority ✓ direction with 0.75 overshoot, ADFTD majority ✗, SleepDep balanced/off ✓).
+15. **exp31 aug_overlap audit — decision gate** ✅ DONE 2026-04-22
+    - `pipeline/dataset.py:196` hard-codes aug_overlap to `label==1` — only correct when label==1 is the window-level minority.
+    - 15-seed sweep (LaBraM/CBraMod/REVE × EEGMAT/ADFTD × aug=0.5/no-aug/baseline) found no BA change warranting a recipe switch. See `results/studies/exp31_aug_audit/REPORT.md`.
+    - Paper methods caveat: aug hardcoded to label==1 is benign across our datasets (within seed noise); no action.
 
-16. **ADFTD recipe switch cascade** (gated on #15)
-    - If #15 confirms no-aug better: kill current GPU 7 ADFTD perm null (aug-on configured), rerun 30 seeds no-aug + subject-level permutation.
-    - Rerun ADFTD real FT × 3 FMs × 3 seeds with new recipe.
-    - Re-extract `results/features_cache/ft_{fm}_adftd/` features.
-    - Re-run `scripts/analysis/run_variance_analysis.py` for ADFTD rows in `variance_decomposition.json`.
-    - Update `master_frozen_ft_table_v2.json` ADFTD column.
-    - Regenerate Fig 5 (FOOOF ablation), Fig 6 (ceiling), Fig 2 (variance 2×2) ADFTD panels.
+16. **ADFTD recipe switch cascade** ❌ CANCELLED (not triggered by #15)
 
-17. **Fig 3 → 4-panel (2×2) null** (gated on perm null completion, ~14h from 2026-04-22)
-    - SleepDep perm null (30 seeds, recording-level) running on GPU 6, ~10h remaining.
-    - ADFTD perm null (30 seeds, subject-level via new `--permute-level subject`) running on GPU 7, ~14h remaining (may be killed and restarted under #16).
-    - Final layout candidate: top row (neural-signal labels: EEGMAT, ADFTD); bottom row (behavioral/state labels: Stress, SleepDep). Source builder: `notebooks/_build_figures_consolidated.py:138-167`.
-    - Methods note: ADFTD uses subject-level permutation; others use recording-level (correct for their label types).
-    - Supersedes current 2-panel Fig 3 (`paper/figures/main/fig3_honest_evaluation.pdf`).
+17. **Fig 3 → 4-panel (2×2) null** ✅ DONE 2026-04-23
+    - 30-seed null × 4 datasets complete; real FT clears null on EEGMAT (p=0.03) and ADFTD (p=0.03, subject-level perm), stays inside null on Stress (p=0.32) and SleepDep (p=0.19).
+    - Output: `paper/figures/main/fig3_honest_evaluation_4panel.{pdf,png}` via `scripts/figures/build_fig3_perm_null_4panel.py`.
+    - Axis labels: rows = within-subject paired / subject-label trait; columns = strong-aligned task / weak-aligned task.
 
-18. **Label-substrate axis pivot** (gated on #15, #17)
-    - Proposed replacement for regime framing (item #11–#14 axis): FM adaptability is predicted by whether the label ties to an identifiable neural substrate (EEGMAT theta/alpha; ADFTD 1/f slope) vs a behavioral/state score (Stress DASS, SleepDep).
-    - Stress + SleepDep fail on FT BA regardless of within/between-subject → regime axis alone does not carve the data.
-    - Actions: update `project_regime_framing.md` memory → new `project_label_substrate_axis.md`; update `docs/findings.md` F-A/F-C; update `docs/paper_outline.md` Intro + §3.
-    - Only after all perm null + audit data lands — avoid writing narrative on moving target.
+18. **Task-substrate alignment axis pivot** — partial ✅ 2026-04-23
+    - ✅ Memory: `project_regime_framing.md` → `project_task_substrate_alignment.md`; MEMORY.md index updated.
+    - ✅ `docs/findings.md` §Central thesis + 2×2 table + axis definitions rewritten (strong/weak aligned).
+    - ✅ `docs/paper_outline.md` header + 2×2 + §1.3 + §1.5.1 + §3.1.2 rewritten.
+    - ✅ Fig 3 builder + regenerated figure use "strong-aligned task / weak-aligned task" column labels.
+    - 🟡 Remaining: sweep rest of `docs/paper_outline.md` for stale "regime" / "signal coherence" language (sections 4.x, Discussion, Supplementary); propagate to eventual tex writeup when §1 Intro is drafted.
 
 ## Lower priority — defer until paper direction locked
 

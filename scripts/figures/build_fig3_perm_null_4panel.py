@@ -2,17 +2,19 @@
 
 Replaces the 2-panel ``fig3_honest_evaluation`` (Stress + EEGMAT) with a
 2×2 factorial layout. Rows = CV regime (within-subject paired vs
-subject-label), columns = label substrate (neural signature vs
-behavioral/state):
+subject-label trait), columns = task-substrate alignment (strong vs
+weak):
 
-                    neural-signal label     behavioral / state label
+                    strong-aligned task     weak-aligned task
     within-subject  EEGMAT                  SleepDep
     subject-label   ADFTD                   Stress
 
-The left column (neural-signal) clears the null in both rows; the
-right column (behavioral/state) stays inside the null in both rows.
-That the column carves the data regardless of row is the visual
-argument for the label-substrate axis over the CV-regime axis.
+The strong-aligned column (labels with a canonical neural signature the
+FM learned during pretraining) clears the null in both rows; the
+weak-aligned column (behavioral / state summary labels without a stable
+EEG substrate) stays inside the null in both rows. That the column
+carves the data regardless of row is the visual argument for task-
+substrate alignment as the primary axis over CV regime.
 
 Each panel shows the 30-seed LaBraM FT null distribution (histogram)
 with the 3-seed real BA as a red vertical line and the empirical
@@ -67,7 +69,7 @@ PANELS = [
     ("Stress",   "DASS-21 score threshold"),
 ]
 ROW_LABELS = ["within-subject\npaired", "subject-label\ntrait/score"]
-COL_LABELS = ["neural-signal label", "behavioral / state label"]
+COL_LABELS = ["strong-aligned task", "weak-aligned task"]
 
 # Permutation level per dataset, for the methods annotation
 PERM_LEVEL = {
@@ -162,8 +164,8 @@ def main() -> None:
                  fontsize=9.5, fontweight="bold", rotation=90, color="#333")
 
     fig.suptitle(
-        "Fig 3 — Permutation null (2×2 factorial): label-substrate column "
-        "carves the data regardless of CV-regime row.",
+        "Fig 3 — Permutation null (2×2 factorial): task-substrate alignment "
+        "column carves the data regardless of CV-regime row.",
         fontsize=10, y=0.995,
     )
 
