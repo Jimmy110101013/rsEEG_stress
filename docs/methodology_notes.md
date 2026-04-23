@@ -37,6 +37,13 @@ Read this file when you need to:
 
 ---
 
+### G-F11: Dataset loaders must fail loud on unloadable files, never return dummy tensors
+**Status**: policy (2026-04-23)
+**Evidence**: `pipeline/sleepdep_dataset.py` originally returned a `(1, 19, T)` zero tensor when `mne.io.read_raw_eeglab` failed both load attempts, and `__init__` only filtered records whose `.failed` marker existed from a *prior* run. On a fresh cache, failing records stayed in `self.records` / `StratifiedGroupKFold` and `WindowDataset._preload` silently fed zero-tensor "recordings" into training — contaminating labels and fold balancing. For exp27 SleepDep null chain this would make seed 0 (n_subj=36 with zeros) and seeds 1–29 (n_subj=35 after marker filter) structurally different, invisible in the pooled Fig 3 histogram. Caught by ultrareview 2026-04-23. Cached `data/cache_sleepdep` markers post-dated published numbers, so no known result was contaminated; bug was latent for any fresh reproduction.
+**Action**: All dataset loaders that fetch raw EEG on demand must raise on load failure (after writing any failure marker), never return a dummy tensor. `__init__` remains responsible for filtering records with existing `.failed` markers so a re-run drops them cleanly. Fixed in `pipeline/sleepdep_dataset.py` 2026-04-23. Audit remaining loaders (`adftd_dataset.py`, `eegmat_dataset.py`, `tdbrain_dataset.py`, `stress` loader) for equivalent dummy-return patterns before the next paper reproduction.
+
+---
+
 ### G-F10: LEAD-style per-window training + majority-vote aggregation is community standard
 **Status**: policy (2026-04-19)
 **Evidence**: LaBraM (`engine_for_finetuning.py`), CBraMod (`finetune_evaluator.py`), EEGPT, EEG-FM-Bench all train with per-window CE loss and evaluate at window level. LEAD §2.2 adds majority-vote aggregation: train per-window CE, at test time each subject's windows vote → one prediction per subject. Our `train_ft.py --mode ft` matches this (per-window loss, `evaluate_recording_level` majority vote). Our `train_lp.py` does NOT — it pools features across windows first then classifies on the pooled vector per recording (pool-then-classify), which is stricter and non-standard.

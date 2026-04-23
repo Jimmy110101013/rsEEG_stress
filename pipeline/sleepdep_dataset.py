@@ -259,7 +259,11 @@ class SleepDepDataset(Dataset):
         # Check for failure marker (so we don't retry known-bad files)
         fail_path = cache_path + ".failed"
         if os.path.exists(fail_path):
-            return self._dummy_tensor()
+            raise RuntimeError(
+                f"SleepDep record {record['eeg_path']} has a .failed marker; "
+                f"__init__ should have filtered it out. Re-run the job so the "
+                f"record is dropped at construction time."
+            )
 
         import mne
 
@@ -272,10 +276,13 @@ class SleepDepDataset(Dataset):
                 raw.load_data()
             except (RuntimeError, ValueError) as e:
                 print(f"[WARN] Cannot load {record['eeg_path']}: {e}")
-                # Save failure marker so we don't retry
+                # Save failure marker so a re-run drops this record at __init__
                 with open(fail_path, "w") as f:
                     f.write(str(e))
-                return self._dummy_tensor()
+                raise RuntimeError(
+                    f"SleepDep preprocess failed for {record['eeg_path']}: {e}. "
+                    f"Marker written; please re-run so the record is dropped."
+                ) from e
 
         sfreq = raw.info["sfreq"]
         all_data = raw.get_data() * 1e6  # V → µV
@@ -316,11 +323,6 @@ class SleepDepDataset(Dataset):
 
     def __len__(self):
         return len(self.records)
-
-    def _dummy_tensor(self) -> torch.Tensor:
-        """Return a minimal 1-epoch zero tensor for unloadable files."""
-        T = int(self.target_sfreq * self.window_sec)
-        return torch.zeros(1, 19, T)
 
     def __getitem__(self, idx):
         rec = self.records[idx]
