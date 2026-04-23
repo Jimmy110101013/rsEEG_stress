@@ -281,7 +281,12 @@ def mean_psd(sig):
     m = (f>=FMIN) & (f<=FMAX); return f[m], P.mean(axis=0)[m]
 
 def rep_psd(ds):
-    p = REPO/f'results/features_cache/fooof_ablation/{ds}_norm_none.npz'
+    # ADFTD refresh 2026-04-24 split the fit into per-FM windows; w=5 is shared
+    # by labram+cbramod so it's the natural default for the panel-A PSD demo.
+    if ds == 'adftd':
+        p = REPO/'results/features_cache/fooof_ablation/adftd_norm_none_w5.npz'
+    else:
+        p = REPO/f'results/features_cache/fooof_ablation/{ds}_norm_none.npz'
     d = np.load(p, allow_pickle=True)
     ri = int(d['quality_r2'].mean(axis=1).argmax())
     mask = d['window_rec_idx']==ri
@@ -290,9 +295,14 @@ def rep_psd(ds):
     b = float(d['aperiodic_b'][ri].mean()); chi = float(d['aperiodic_chi'][ri].mean())
     return dict(f=f, ap=P_ap, pe=P_pe, fit=10**b/(f**chi), chi=chi)
 
-# All 4 datasets now have FOOOF ablation + band-stop caches (ADFTD retrofit 2026-04-21)
+# All 4 datasets now have FOOOF ablation + band-stop caches.
+# DS_PROBE omits adftd because at n_splits=1 (the canonical split for the 4-cell
+# factorial) ADFTD has 1 recording per subject, so the session-level subject-ID
+# probe is undefined (cross-session holdout requires ≥2 recs/subject). Keeping a
+# unified session-level probe is preferred over dropping to window-level just
+# for ADFTD — see docs/adftd_refresh_plan.md Step 3 note.
 DS_PSD   = ['eegmat','sleepdep','stress','adftd']
-DS_PROBE = ['eegmat','sleepdep','stress','adftd']
+DS_PROBE = ['eegmat','sleepdep','stress']
 DS_BAND  = ['eegmat','sleepdep','stress','adftd']
 
 DS_SHORT = {'eegmat':'EEGMAT','sleepdep':'SleepDep','stress':'Stress','adftd':'ADFTD'}

@@ -30,6 +30,7 @@ from baseline.abstract.factory import create_extractor
 from pipeline.common_channels import COMMON_19
 
 MODEL_NORM = {"labram": "zscore", "cbramod": "none", "reve": "none"}
+MODEL_WINDOW = {"labram": 5.0, "cbramod": 5.0, "reve": 10.0}
 
 
 def apply_norm(x: np.ndarray, norm: str) -> np.ndarray:
@@ -89,8 +90,14 @@ def main():
 
     model = args.extractor
     norm = MODEL_NORM[model]
-    ablation_npz = args.ablation_npz or \
-        f"results/features_cache/fooof_ablation/{args.dataset}_norm_none.npz"
+    # ADFTD keeps per-FM window (refresh 2026-04-23); other datasets at legacy w=5.
+    if args.ablation_npz:
+        ablation_npz = args.ablation_npz
+    elif args.dataset == "adftd":
+        win = int(MODEL_WINDOW[model])
+        ablation_npz = f"results/features_cache/fooof_ablation/adftd_norm_none_w{win}.npz"
+    else:
+        ablation_npz = f"results/features_cache/fooof_ablation/{args.dataset}_norm_none.npz"
 
     print(f"Extracting {model} × {args.dataset} FOOOF-ablated features")
     print(f"  norm={norm}, device={args.device}")

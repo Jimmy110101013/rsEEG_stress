@@ -33,6 +33,8 @@ from pipeline.common_channels import COMMON_19
 
 OUT_DIR = "results/studies/exp14_channel_importance"
 MODEL_NORM = {"labram": "zscore", "cbramod": "none", "reve": "none"}
+# Per-FM canonical window (ADFTD refresh 2026-04-23: reve=10s, others=5s)
+MODEL_WINDOW = {"labram": 5.0, "cbramod": 5.0, "reve": 10.0}
 
 STRESS_30CH = [
     "FP1", "FP2", "F7", "F3", "FZ", "F4", "F8",
@@ -120,10 +122,13 @@ def run_bandstop(model_name, device, batch_size=16, dataset="stress"):
         channel_names = COMMON_19
         ds_type = "stress"  # 5-tuple unpack (epochs, label, score, n_ep, pid)
     elif dataset == "adftd":
+        # ADFTD split1 binary + per-FM window (2026-04-23 refresh, G-F11/F12)
         from pipeline.adftd_dataset import ADFTDDataset
+        window_sec = MODEL_WINDOW[model_name]
+        cache_dir = "data/cache_adftd_split1" if norm == "zscore" else "data/cache_adftd_split1_nnone"
         ds = ADFTDDataset("data/adftd", binary=True,
-                          window_sec=5.0, norm=norm,
-                          cache_dir=f"data/cache_adftd_n{norm}_w5")
+                          window_sec=window_sec, norm=norm,
+                          cache_dir=cache_dir, n_splits=1)
         channel_names = COMMON_19
         ds_type = "eegmat"  # 4-tuple unpack (epochs, label, n_ep, pid)
     else:
@@ -235,12 +240,14 @@ def main():
     p.add_argument("--batch-size", type=int, default=16)
     p.add_argument("--models", nargs="+", default=["labram", "cbramod", "reve"])
     p.add_argument("--datasets", nargs="+", default=["stress", "eegmat"])
+    p.add_argument("--out-suffix", default="",
+                   help="Write to band_stop_ablation{suffix}.json (parallel-safe per-model).")
     args = p.parse_args()
 
     os.makedirs(OUT_DIR, exist_ok=True)
 
     # Merge into existing JSON if present (so partial re-runs don't overwrite)
-    out_json = f"{OUT_DIR}/band_stop_ablation.json"
+    out_json = f"{OUT_DIR}/band_stop_ablation{args.out_suffix}.json"
     if os.path.exists(out_json):
         with open(out_json) as f:
             all_ds_results = json.load(f)

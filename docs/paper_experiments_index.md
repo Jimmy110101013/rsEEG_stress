@@ -4,7 +4,7 @@
 
 **Scope**: main text + appendix only. Exploratory / historical / deprecated work lives in §Archive at the bottom.
 
-**Last master refresh**: 2026-04-23 (ADFTD split1, per-FM FT HP unification)
+**Last master refresh**: 2026-04-24 (ADFTD split1 — FOOOF + band-stop per-FM window complete)
 
 ---
 
@@ -38,7 +38,7 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 
 **Status 2026-04-23**:
 - LP: ✅ all 4 cells fresh (ADFTD refreshed today on split1; Stress/EEGMAT/SleepDep unchanged since 2026-04-20)
-- FT: ✅ all 4 cells × 3 FMs × 3 seeds complete at `results/final/{cell}/{model}/ft/seed{42,123,2024}/summary.json` under per-FM canonical HP (G-F09). Ceiling table.tex + master_results_table.md + paper_outline.md §4.1 entry statements all synced 2026-04-23.
+- FT: ✅ all 4 cells × 3 FMs × 3 seeds complete at `results/final/{cell}/ft/{model}/seed{42,123,2024}/summary.json` under per-FM canonical HP (G-F09). Ceiling table.tex + master_results_table.md + paper_outline.md §4.1 entry statements all synced 2026-04-23.
 - Classical & Non-FM deep: ✅ fresh
 
 ---
@@ -100,8 +100,8 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 
 ## §4.5 Causal anchor ablation — Fig 5
 
-**Figure**: `paper/figures/main/fig5{a,b,c}_*.{pdf,png}` (FOOOF scatter + band-stop line + PSD anchor)
-**Build script**: `scripts/figures/build_fooof_ablation_figure.py`
+**Figure**: `paper/figures/fig5/fig5{a,b,c}_*.{pdf,png}` — canonical per-panel outputs; hand-composited master at `paper/figures/main/Fig5_FOOOF_band_stop.png`
+**Build script**: `notebooks/_build_figures_consolidated.py` (compiles `notebooks/figures_consolidated.ipynb` → execute FIG5A/B/C cells). Legacy `scripts/figures/build_fooof_ablation_figure.py` + `build_band_stop_all_bands_figure.py` removed 2026-04-24.
 **Protocol**: FOOOF fit → {aperiodic_removed, periodic_removed, both_removed} → re-extract FM features → probe BA; **and** band-stop Butterworth → re-extract → probe BA
 
 ### FOOOF ablation
@@ -110,12 +110,12 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 |---|---|---|---|---|
 | EEGMAT | `results/studies/fooof_ablation/eegmat_probes.json` | `results/features_cache/fooof_ablation/feat_{fm}_eegmat_{cond}.npz` | `scripts/experiments/fooof_ablation_probes.py` | ✅ |
 | SleepDep | `results/studies/fooof_ablation/sleepdep_probes.json` | same pattern | | ✅ |
-| ADFTD | `results/studies/fooof_ablation/adftd_probes.json` | same pattern | | ⏳ split3 era; needs split1 refresh + per-FM window |
+| ADFTD | `results/studies/fooof_ablation/adftd_probes.json` | same pattern | | ✅ 2026-04-24 split1 + per-FM window (labram/cbramod=5s, reve=10s); `.bak_split3_20260423` retained. **Subject-ID probe = NaN** (1 rec/subject → session-level holdout undefined); fig5b drops ADFTD by design, caption must note. State probe values valid and used in the delta table in `adftd_refresh_plan.md`. |
 | Stress | `results/studies/fooof_ablation/stress_probes.json` | same pattern | | ✅ |
 
 **Orchestrators** (per-cell shell drivers): `scripts/experiments/_fooof_{adftd,sleepdep}_chain.sh`
 
-**Known issue**: `fooof_ablation.py` hardcodes `window_sec=5.0` for ADFTD. REVE canonical window is 10s. Needs per-FM dispatch (see `docs/adftd_refresh_plan.md` Step 2 open item).
+**Resolved 2026-04-24**: `fooof_ablation.py` + `extract_fooof_ablated.py` now carry `MODEL_WINDOW = {labram:5, cbramod:5, reve:10}`. ADFTD chain runs FOOOF fit once per window → outputs `adftd_norm_none_w{5,10}.npz`, then extracts dispatch per-FM. Other cells unchanged (single-file naming `{cell}_norm_none.npz`).
 
 ### Band-stop ablation (§4.5 panel c + Appendix B.2)
 
@@ -123,12 +123,12 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 |---|---|---|
 | EEGMAT | `results/studies/exp14_channel_importance/band_stop_ablation.json` (combined) | ✅ |
 | SleepDep | `results/studies/exp14_channel_importance/band_stop_ablation.sleepdep_only.json` | ✅ |
-| ADFTD | same combined file, adftd key | ⏳ split3 era; needs refresh |
+| ADFTD | same combined file, adftd key | ✅ 2026-04-24 split1 + per-FM window (labram/cbramod=5s, reve=10s); `.bak_pre_adftd_split1_20260423` retained. labram/cbramod unchanged (already at split1); REVE magnitudes shifted under w=10 |
 | Stress | same combined file, stress key | ✅ |
 
 **Script**: `scripts/analysis/band_stop_ablation.py`
 
-**Known issue**: same hardcoded `window_sec=5.0`; needs per-FM dispatch.
+**Resolved 2026-04-24**: `MODEL_WINDOW` dict dispatches per-FM window; ADFTD uses `data/cache_adftd_split1{,_nnone}` with `n_splits=1`. `--out-suffix` arg added for parallel-safe writes (merge via per-dataset key).
 
 ---
 
@@ -244,7 +244,7 @@ Extraction scripts:
 
 | Task | Plan doc | Status |
 |---|---|---|
-| ADFTD split1 refresh | `docs/adftd_refresh_plan.md` | 🏃 Step 2 in progress (Band-RSA running; FOOOF + band-stop per-FM window patches pending) |
+| ADFTD split1 refresh | `docs/adftd_refresh_plan.md` | 🏃 Step 2 mostly done (FOOOF + band-stop + band-RSA + LP ✅; Variance decomposition still blocked on FT-v2 features + script rewrite) |
 | Per-FM FT HP unification (4 cells) | (see memory obs 3348 / 3361 / 3385) | 🏃 runs completed 2026-04-23; feature extraction + table update pending |
 | New variance script (4-cell × 3 FM + SleepDep not TDBRAIN) | — | ⏳ not yet written |
 

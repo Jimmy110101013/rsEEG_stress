@@ -35,6 +35,8 @@ from fooof import FOOOF  # noqa: E402
 
 # Per-FM norm convention (keep consistent with extract_frozen_stress.py)
 MODEL_NORM = {"labram": "zscore", "cbramod": "none", "reve": "none"}
+# Per-FM canonical window (ADFTD refresh 2026-04-23: reve=10s, others=5s)
+MODEL_WINDOW = {"labram": 5.0, "cbramod": 5.0, "reve": 10.0}
 
 FS = 200.0  # Hz, target sample rate of cached epochs
 FIT_RANGE = (1.0, 45.0)
@@ -262,14 +264,14 @@ def process_epochs(epochs: np.ndarray) -> tuple[dict, dict]:
 # ------------------------------------------------------------------
 # Dataset interface
 # ------------------------------------------------------------------
-def load_dataset_by_name(name: str, norm: str):
+def load_dataset_by_name(name: str, norm: str, window_sec: float = 5.0):
     """Load dataset for per-epoch processing. Returns (list of (epochs, meta), n_ch)."""
     from pipeline.dataset import StressEEGDataset
     if name == "stress":
         cache_dir = "data/cache" if norm == "zscore" else f"data/cache_n{norm}"
         ds = StressEEGDataset(
             "data/comprehensive_labels.csv", "data",
-            target_sfreq=200.0, window_sec=5.0, norm=norm,
+            target_sfreq=200.0, window_sec=window_sec, norm=norm,
             cache_dir=cache_dir,
         )
         return ds, 30, "stress"
@@ -277,7 +279,7 @@ def load_dataset_by_name(name: str, norm: str):
         from pipeline.eegmat_dataset import EEGMATDataset
         cache_suffix = "" if norm == "zscore" else f"_n{norm}"
         ds = EEGMATDataset(
-            "data/eegmat", target_sfreq=200.0, window_sec=5.0,
+            "data/eegmat", target_sfreq=200.0, window_sec=window_sec,
             norm=norm, cache_dir=f"data/cache_eegmat{cache_suffix}",
         )
         return ds, 19, "other"
@@ -285,18 +287,19 @@ def load_dataset_by_name(name: str, norm: str):
         from pipeline.sleepdep_dataset import SleepDepDataset
         cache_suffix = "" if norm == "zscore" else f"_n{norm}"
         ds = SleepDepDataset(
-            "data/sleep_deprivation", target_sfreq=200.0, window_sec=5.0,
+            "data/sleep_deprivation", target_sfreq=200.0, window_sec=window_sec,
             norm=norm, cache_dir=f"data/cache_sleepdep{cache_suffix}",
         )
         # SleepDep returns 5-tuple (epochs, label, score, n_ep, pid) like Stress
         return ds, 19, "stress"
     elif name == "adftd":
+        # ADFTD split1 binary (2026-04-23 refresh, G-F11/F12)
         from pipeline.adftd_dataset import ADFTDDataset
-        cache_suffix = "" if norm == "zscore" else f"_n{norm}"
+        cache_dir = "data/cache_adftd_split1" if norm == "zscore" else "data/cache_adftd_split1_nnone"
         ds = ADFTDDataset(
-            "data/adftd", target_sfreq=200.0, window_sec=5.0,
+            "data/adftd", target_sfreq=200.0, window_sec=window_sec,
             norm=norm, binary=True,
-            cache_dir=f"data/cache_adftd{cache_suffix}_w5",
+            cache_dir=cache_dir, n_splits=1,
         )
         return ds, 19, "other"
     else:
@@ -309,13 +312,15 @@ def main():
     p.add_argument("--norm", default="zscore",
                    choices=["zscore", "none"],
                    help="Cached epochs norm; must match the FM norm used downstream")
+    p.add_argument("--window-sec", type=float, default=5.0,
+                   help="Epoch window seconds (ADFTD REVE uses 10; others 5)")
     p.add_argument("--pilot", type=int, default=0,
                    help="If >0, only process first N recordings (pilot mode)")
     p.add_argument("--out-dir", default="results/features_cache/fooof_ablation")
     args = p.parse_args()
 
-    print(f"FOOOF ablation: dataset={args.dataset}, norm={args.norm}, pilot={args.pilot}")
-    ds, n_ch, ds_type = load_dataset_by_name(args.dataset, args.norm)
+    print(f"FOOOF ablation: dataset={args.dataset}, norm={args.norm}, window={args.window_sec}s, pilot={args.pilot}")
+    ds, n_ch, ds_type = load_dataset_by_name(args.dataset, args.norm, args.window_sec)
     n_rec_total = len(ds)
     n_rec = args.pilot if args.pilot else n_rec_total
     print(f"  Processing {n_rec}/{n_rec_total} recordings × {n_ch} channels")
@@ -365,7 +370,13 @@ def main():
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     tag = f"_pilot{args.pilot}" if args.pilot else ""
-    out_path = out_dir / f"{args.dataset}_norm_{args.norm}{tag}.npz"
+    # ADFTD uses per-FM window in the filename to disambiguate w5 vs w10 outputs;
+    # other datasets retain the legacy single-file naming at w=5.
+    if args.dataset == "adftd":
+        win_tag = f"_w{int(args.window_sec)}"
+    else:
+        win_tag = ""
+    out_path = out_dir / f"{args.dataset}_norm_{args.norm}{win_tag}{tag}.npz"
     np.savez_compressed(
         out_path,
         aperiodic_removed=X_ap,

@@ -1,29 +1,31 @@
 #!/bin/bash
-# FOOOF ablation full chain for ADFTD (GPU 5, avoids GPU 7 non-FM queue).
-#
-# Per-window frozen features already cached (frozen_{fm}_adftd_perwindow.npz);
-# Step 1 is therefore skipped here.
+# FOOOF ablation full chain for ADFTD — split1 binary, per-FM window
+# (2026-04-23 refresh, G-F11/F12). labram/cbramod at w=5s, reve at w=10s.
+# FOOOF fit is run once per window; extract dispatches per-FM.
 set -e
 cd /raid/jupyter-linjimmy1003.md10/UCSD_stress
 PY=/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python
-export CUDA_VISIBLE_DEVICES=5
+: "${GPU:=5}"
+export CUDA_VISIBLE_DEVICES=$GPU
 export PYTHONUNBUFFERED=1
 LOGDIR=results/studies/fooof_ablation/logs
 mkdir -p $LOGDIR
 
-echo "=== $(date +%F_%T)  START FOOOF ADFTD chain ==="
+echo "=== $(date +%F_%T)  START FOOOF ADFTD chain (split1, per-FM window, GPU=$GPU) ==="
 
-# STEP 2 — FOOOF fit + signal reconstruction (norm=none: raw µV)
-OUT_SIG=results/features_cache/fooof_ablation/adftd_norm_none.npz
-if [ -f "$OUT_SIG" ]; then
-  echo "  [$(date +%T)] skip FOOOF fit: $OUT_SIG exists"
-else
-  echo "  [$(date +%T)] FOOOF fit + ablation on adftd (norm=none)"
-  $PY scripts/analysis/fooof_ablation.py --dataset adftd --norm none \
-      > $LOGDIR/fooof_fit_adftd.log 2>&1
-fi
+# Step 1 — FOOOF fit + signal reconstruction, once per window
+for W in 5 10; do
+  OUT_SIG=results/features_cache/fooof_ablation/adftd_norm_none_w${W}.npz
+  if [ -f "$OUT_SIG" ]; then
+    echo "  [$(date +%T)] skip FOOOF fit w=${W}: $OUT_SIG exists"
+  else
+    echo "  [$(date +%T)] FOOOF fit + ablation on adftd split1 (norm=none, w=${W})"
+    $PY scripts/analysis/fooof_ablation.py --dataset adftd --norm none --window-sec ${W} \
+        > $LOGDIR/fooof_fit_adftd_w${W}.log 2>&1
+  fi
+done
 
-# STEP 3 — FM feature extraction on ablated signals
+# Step 2 — FM feature extraction on ablated signals (per-FM window via MODEL_WINDOW)
 for MODEL in labram cbramod reve; do
   SKIP=1
   for COND in aperiodic_removed periodic_removed both_removed; do
@@ -40,7 +42,7 @@ for MODEL in labram cbramod reve; do
   fi
 done
 
-# STEP 4 — probes (subject + state since ADFTD has AD/HC group label)
+# Step 3 — probes (subject + state, ADFTD has AD/HC group label)
 echo "  [$(date +%T)] probes: subject + state on adftd"
 $PY scripts/experiments/fooof_ablation_probes.py --dataset adftd \
     > $LOGDIR/probes_adftd.log 2>&1
