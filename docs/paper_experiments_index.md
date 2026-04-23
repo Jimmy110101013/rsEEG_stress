@@ -25,7 +25,9 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 
 **Table**: `table1_master_performance.tex` (pending build); source = `docs/master_results_table.md` + `paper/figures/_historical/source_tables/master_frozen_ft_table_v2.md`
 
-**Source of truth for numbers**: `docs/master_results_table.md` (human-curated, last updated 2026-04-22)
+**Ceiling table (Appendix C / Fig 6)**: `paper/tables/table_fig6_architecture_ceiling.tex` — ADFTD LP row refreshed 2026-04-23 (split1, 65/65).
+
+**Source of truth for numbers**: `docs/master_results_table.md` (human-curated, ADFTD LP refreshed 2026-04-23 split1; FT values still pre-split1 — marked ⚠)
 
 | Row | Content | Source |
 |---|---|---|

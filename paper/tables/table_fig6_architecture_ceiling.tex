@@ -1,0 +1,89 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=1.5cm,landscape]{geometry}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage[skip=10pt]{caption} %
+\pagestyle{empty}
+
+\definecolor{classrow}{gray}{0.92}
+\definecolor{fmrow}{gray}{0.97}
+
+\newcommand{\ba}[2]{$#1 \pm #2$}
+% 新增粗體指令，用於標示最佳結果
+\newcommand{\bba}[2]{$\mathbf{#1} \pm \mathbf{#2}$}
+
+\begin{document}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{\textbf{Architecture ceiling across the four-cell $2\times2$ factorial ---
+subject-level 5-fold CV balanced accuracy by architecture class and dataset.}
+The ceiling in each column converges within a $\approx$\!0.15 BA band regardless of architecture class (classical ML through 1.4\,B-parameter FMs), supporting the claim that the per-cell BA ceiling is a \emph{task property} rather than a model-capacity artefact (Appendix\,C).
+All values are 3-seed mean $\pm$ sample standard deviation (seeds 42/123/2024, ddof\,=\,1) under subject-disjoint 5-fold CV.
+\textbf{EEGMAT}: within-subject $\times$ separable (72 rec / 36 subj);
+\textbf{SleepDep}: within-subject $\times$ null-indistinguishable (72 / 36);
+\textbf{ADFTD}: between-subject $\times$ separable (65 / 65, split1 binary);
+\textbf{Stress}: between-subject $\times$ null-indistinguishable (70 / 17).
+\emph{Classical ML}: PSD + power spectral features (101-dim), \texttt{class\_weight=balanced}; source: \texttt{exp02\_classical\_dass/\{dataset\}/}.
+\emph{Deep CNN}: trained from scratch; EEGNet lr\,=\,1e-3 (ADFTD/EEGMAT/SleepDep), 5e-4 (Stress); ShallowConvNet lr\,=\,5e-4 (ADFTD/EEGMAT/SleepDep), 1e-4 (Stress); source: \texttt{exp15\_nonfm\_baselines/}.
+\emph{FM LP}: per-window frozen features, L2-regularised logistic regression, recording-level majority vote (\texttt{class\_weight=balanced}); source: \texttt{perwindow\_lp\_all/}.
+\emph{FM FT}: full fine-tuning with per-cell recipe (lr\,=\,1e-5, enc\_scale\,=\,0.1, wd\,=\,0.05 for EEGMAT/ADFTD/Stress; wd\,=\,0.01 for SleepDep); source: \texttt{exp04/exp07/exp\_newdata/hp\_sweep}.
+Chance level = 0.50.}
+\label{tab:architecture_ceiling}
+
+\begin{tabular}{ll cccc}
+\toprule
+ & & \multicolumn{4}{c}{\textbf{Balanced Accuracy (mean $\pm$ sd)}} \\
+\cmidrule(l){3-6}
+\textbf{Class} & \textbf{Architecture}
+  & \textbf{EEGMAT}
+  & \textbf{SleepDep}
+  & \textbf{ADFTD}
+  & \textbf{Stress (DASS)} \\
+ & & \begin{tabular}{@{}c@{}}\footnotesize within $\times$ \\ \footnotesize sep.\end{tabular}
+   & \begin{tabular}{@{}c@{}}\footnotesize within $\times$ \\ \footnotesize null-indist.\end{tabular}
+   & \begin{tabular}{@{}c@{}}\footnotesize between $\times$ \\ \footnotesize sep.\end{tabular}
+   & \begin{tabular}{@{}c@{}}\footnotesize between $\times$ \\ \footnotesize null-indist.\end{tabular} \\
+\midrule
+%% ── Classical ML ──────────────────────────────────────────────────────────
+\rowcolor{classrow}
+  & Random Forest    & \bba{0.889}{0.014} & \ba{0.569}{0.028} & \ba{0.645}{0.035} & \ba{0.423}{0.019} \\
+\rowcolor{classrow}
+  & LogReg (L2)      & \ba{0.847}{0.050} & \ba{0.542}{0.037} & \ba{0.587}{0.004} & \ba{0.506}{0.019} \\
+\rowcolor{classrow}
+  & SVM (RBF)        & \ba{0.852}{0.016} & \ba{0.574}{0.056} & \ba{0.647}{0.009} & \ba{0.446}{0.016} \\
+\rowcolor{classrow}
+\multirow{-4}{2.1cm}{Classical ML\\(spectral feat.)}
+  & XGBoost          & \ba{0.857}{0.008} & \ba{0.477}{0.008} & \ba{0.578}{0.051} & \ba{0.503}{0.057} \\
+\midrule
+%% ── Deep CNN from scratch ──────────────────────────────────────────────────
+\multirow{2}{2.1cm}{Deep CNN\\(from scratch)}
+  & EEGNet           & \ba{0.695}{0.024} & \ba{0.556}{0.050} & \bba{0.773}{0.033} & \ba{0.518}{0.097} \\
+  & ShallowConvNet   & \ba{0.685}{0.008} & \ba{0.602}{0.021} & \ba{0.686}{0.046} & \ba{0.557}{0.031} \\
+\midrule
+%% ── FM Frozen LP ──────────────────────────────────────────────────────────
+\rowcolor{fmrow}
+  & LaBraM           & \ba{0.736}{0.037} & \bba{0.611}{0.014} & \ba{0.643}{0.054} & \ba{0.506}{0.014} \\
+\rowcolor{fmrow}
+  & CBraMod          & \ba{0.718}{0.021} & \ba{0.546}{0.021} & \ba{0.581}{0.042} & \ba{0.440}{0.019} \\
+\rowcolor{fmrow}
+\multirow{-3}{2.1cm}{FM Frozen LP\\(frozen enc.)}
+  & REVE             & \ba{0.736}{0.014} & \ba{0.537}{0.049} & \ba{0.668}{0.027} & \ba{0.458}{0.019} \\
+\midrule
+%% ── FM Full FT ────────────────────────────────────────────────────────────
+\rowcolor{fmrow}
+  & LaBraM           & \ba{0.685}{0.016} & \ba{0.579}{0.016} & \ba{0.737}{0.055} & \ba{0.455}{0.076} \\
+\rowcolor{fmrow}
+  & CBraMod          & \ba{0.727}{0.040} & \ba{0.486}{0.048} & \ba{0.698}{0.020} & \ba{0.414}{0.029} \\
+\rowcolor{fmrow}
+\multirow{-3}{2.1cm}{FM Full FT}
+  & REVE             & \ba{0.727}{0.053} & \ba{0.509}{0.076} & \ba{0.683}{0.019} & \ba{0.476}{0.051} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
