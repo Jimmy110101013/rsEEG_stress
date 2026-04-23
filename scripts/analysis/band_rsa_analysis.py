@@ -158,9 +158,11 @@ def run_other_dataset(dataset_name):
         if dataset_name == "adftd":
             from pipeline.adftd_dataset import ADFTDDataset
             cache_suffix = "" if norm == "zscore" else f"_n{norm}"
+            window_sec = 10.0 if model == "reve" else 5.0
             ds = ADFTDDataset(
-                "data/adftd", binary=True, window_sec=5.0,
-                cache_dir=f"data/cache_adftd_split3{cache_suffix}", n_splits=3, norm=norm,
+                "data/adftd", binary=True, window_sec=window_sec,
+                cache_dir=f"data/cache_adftd_split1{cache_suffix}",
+                n_splits=1, norm=norm,
             )
         elif dataset_name == "eegmat":
             from pipeline.eegmat_dataset import EEGMATDataset

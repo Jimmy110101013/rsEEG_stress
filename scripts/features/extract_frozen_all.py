@@ -29,7 +29,8 @@ from pipeline.common_channels import COMMON_19
 MODEL_NORM = {"labram": "zscore", "cbramod": "none", "reve": "none"}
 
 
-def load_dataset(name: str, norm: str, window_sec: float = 5.0):
+def load_dataset(name: str, norm: str, window_sec: float = 5.0,
+                 adftd_n_splits: int = 1):
     """Load dataset by name, return (dataset, patient_ids, labels)."""
     if name == "stress":
         from pipeline.dataset import StressEEGDataset
@@ -45,7 +46,8 @@ def load_dataset(name: str, norm: str, window_sec: float = 5.0):
         cache_suffix = "" if norm == "zscore" else f"_n{norm}"
         ds = ADFTDDataset(
             "data/adftd", binary=True, window_sec=window_sec,
-            cache_dir=f"data/cache_adftd_split3{cache_suffix}", n_splits=3, norm=norm,
+            cache_dir=f"data/cache_adftd_split{adftd_n_splits}{cache_suffix}",
+            n_splits=adftd_n_splits, norm=norm,
         )
         return ds, ds.get_patient_ids(), ds.get_labels(), 19
     elif name == "tdbrain":
@@ -144,6 +146,10 @@ def main():
     p.add_argument("--batch-size", type=int, default=16)
     p.add_argument("--window-sec", type=float, default=5.0,
                    help="Window size in seconds (default: 5.0)")
+    p.add_argument("--adftd-n-splits", type=int, default=1,
+                   help="ADFTD: pseudo-recordings per subject (default: 1). "
+                        "n_splits=3 was the legacy default and inflated n_rec "
+                        "to 195; n_splits=1 is the canonical binary protocol.")
     p.add_argument("--out-suffix", default="",
                    help="Suffix for output filename (e.g. '_w10' → frozen_labram_adftd_19ch_w10.npz)")
     args = p.parse_args()
@@ -154,7 +160,10 @@ def main():
     print(f"Extracting frozen {model_name} features for {args.dataset}")
     print(f"  norm={norm}, device={args.device}, window_sec={args.window_sec}")
 
-    ds, pids, labels, n_ch = load_dataset(args.dataset, norm, window_sec=args.window_sec)
+    ds, pids, labels, n_ch = load_dataset(
+        args.dataset, norm, window_sec=args.window_sec,
+        adftd_n_splits=args.adftd_n_splits,
+    )
     print(f"  {args.dataset}: {len(ds)} recordings, {len(np.unique(pids))} subjects, {n_ch}ch")
 
     extractor = setup_extractor(model_name, n_ch, args.device)
