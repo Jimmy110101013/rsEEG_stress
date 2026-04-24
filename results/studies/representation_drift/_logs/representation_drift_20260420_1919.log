@@ -1,0 +1,14 @@
+
+=== labram ===
+ LP shape=(70, 200)  FT shape=(70, 200)
+ FAIL labram: Subject 3 has multiple labels — nested decomposition requires pure-label subjects.
+
+=== cbramod ===
+ LP shape=(70, 200)  FT shape=(70, 200)
+ FAIL cbramod: Subject 3 has multiple labels — nested decomposition requires pure-label subjects.
+
+=== reve ===
+ LP shape=(70, 512)  FT shape=(70, 512)
+ FAIL reve: Subject 3 has multiple labels — nested decomposition requires pure-label subjects.
+
+Saved: results/studies/representation_drift/lp_vs_ft_stress.json

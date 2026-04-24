@@ -1,0 +1,47 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[INFO] Skipped 0 subjects (incomplete sessions), 0 subjects (no SessionOrder), 2 subjects (failed cache markers)
+SleepDep: 72 recordings from 36 subjects (SD=36, NS=36)
+
+============================================================
+LABRAM × sleepdep: 72 recordings, band-stop ablation
+============================================================
+[LaBraM] Loaded 219/221 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+Extracting original features...
+  Original features: (72, 200)
+  delta (1-4 Hz): cosine_dist=0.001148 ± 0.000817
+  theta (4-8 Hz): cosine_dist=0.001963 ± 0.001505
+  alpha (8-13 Hz): cosine_dist=0.003260 ± 0.003591
+  beta (13-30 Hz): cosine_dist=0.001099 ± 0.000645
+[INFO] Skipped 0 subjects (incomplete sessions), 0 subjects (no SessionOrder), 2 subjects (failed cache markers)
+SleepDep: 72 recordings from 36 subjects (SD=36, NS=36)
+
+============================================================
+CBRAMOD × sleepdep: 72 recordings, band-stop ablation
+============================================================
+[CBraMod] Loaded 209/209 params from weights/cbramod-base/pretrained_weights.pth
+Extracting original features...
+  Original features: (72, 200)
+  delta (1-4 Hz): cosine_dist=0.003072 ± 0.002131
+  theta (4-8 Hz): cosine_dist=0.001631 ± 0.001198
+  alpha (8-13 Hz): cosine_dist=0.006146 ± 0.006574
+  beta (13-30 Hz): cosine_dist=0.008408 ± 0.007053
+[INFO] Skipped 0 subjects (incomplete sessions), 0 subjects (no SessionOrder), 2 subjects (failed cache markers)
+SleepDep: 72 recordings from 36 subjects (SD=36, NS=36)
+
+============================================================
+REVE × sleepdep: 72 recordings, band-stop ablation
+============================================================
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+Extracting original features...
+  Original features: (72, 512)
+  delta (1-4 Hz): cosine_dist=0.018384 ± 0.012290
+  theta (4-8 Hz): cosine_dist=0.018779 ± 0.013962
+  alpha (8-13 Hz): cosine_dist=0.027640 ± 0.027876
+  beta (13-30 Hz): cosine_dist=0.012881 ± 0.008709
+
+Saved → results/studies/exp14_channel_importance/band_stop_ablation.json
+
+Saved → results/studies/exp14_channel_importance/band_stop_ablation.{pdf,png}

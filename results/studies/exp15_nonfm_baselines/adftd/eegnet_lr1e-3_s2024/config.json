@@ -10,7 +10,7 @@
   "run_id": "studies/exp15_nonfm_baselines/adftd/eegnet_lr1e-3_s2024",
   "label": "dass",
   "threshold": 50,
-  "device": "cuda:7",
+  "device": "cuda:3",
   "no_bf16": false,
   "loss": "focal",
   "mtl": false,
@@ -48,7 +48,8 @@
   "dataset": "adftd",
   "hnc_data_root": "data/hnc",
   "hnc_channels": null,
-  "n_splits": 3,
+  "n_splits": 1,
   "save_features": true,
-  "permute_labels": -1
+  "permute_labels": -1,
+  "permute_level": "recording"
 }

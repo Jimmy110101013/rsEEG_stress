@@ -1,0 +1,5 @@
+[18:47:39] START labram eegmat noaug s123 on cuda:3
+[18:51:03] DONE  labram eegmat noaug s123
+[18:51:03] START labram eegmat noaug s2024 on cuda:3
+[18:55:16] DONE  labram eegmat noaug s2024
+[18:55:16] CHAIN COMPLETE: labram eegmat noaug

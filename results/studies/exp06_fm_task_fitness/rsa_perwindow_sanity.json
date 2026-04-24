@@ -1,0 +1,194 @@
+{
+  "labram_stress": {
+    "per_window": {
+      "n_used": 3000,
+      "rsa_label_r": 0.21197707388893933,
+      "rsa_label_p": 0.0,
+      "rsa_subject_r": 0.17109864004094205,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 55,
+      "rsa_label_r": 0.1285353907105561,
+      "rsa_label_p": 6.70713396712466e-07,
+      "rsa_subject_r": 0.297494909303221,
+      "rsa_subject_p": 9.96070821143793e-32
+    }
+  },
+  "labram_eegmat": {
+    "per_window": {
+      "n_used": 1707,
+      "rsa_label_r": 0.06657571564965926,
+      "rsa_label_p": 0.0,
+      "rsa_subject_r": 0.1159011195621839,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 72,
+      "rsa_label_r": 0.07049970713123385,
+      "rsa_label_p": 0.0003611716894080766,
+      "rsa_subject_r": 0.12003703922444882,
+      "rsa_subject_p": 1.1450496077317864e-09
+    }
+  },
+  "labram_adftd": {
+    "per_window": {
+      "n_used": 3000,
+      "rsa_label_r": 0.014714292656878836,
+      "rsa_label_p": 7.745852925499537e-214,
+      "rsa_subject_r": 0.044779895371815724,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 195,
+      "rsa_label_r": 0.033493480212185504,
+      "rsa_label_p": 4.077209247431316e-06,
+      "rsa_subject_r": 0.12368284302039757,
+      "rsa_subject_p": 2.286237871761164e-65
+    }
+  },
+  "labram_tdbrain": {
+    "per_window": {
+      "n_used": 3000,
+      "rsa_label_r": 0.07385002656003754,
+      "rsa_label_p": 0.0,
+      "rsa_subject_r": 0.035704042994004835,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 734,
+      "rsa_label_r": 0.06904102058776937,
+      "rsa_label_p": 1.7352869287485738e-281,
+      "rsa_subject_r": 0.04032140820431319,
+      "rsa_subject_p": 3.403460024175618e-97
+    }
+  },
+  "cbramod_stress": {
+    "per_window": {
+      "n_used": 3000,
+      "rsa_label_r": 0.016020158101039555,
+      "rsa_label_p": 4.340581993416033e-253,
+      "rsa_subject_r": 0.12914351495978893,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 55,
+      "rsa_label_r": 0.0037497466501098128,
+      "rsa_label_p": 0.8852020421998034,
+      "rsa_subject_r": 0.22772189084537456,
+      "rsa_subject_p": 6.390958163197128e-19
+    }
+  },
+  "cbramod_eegmat": {
+    "per_window": {
+      "n_used": 1707,
+      "rsa_label_r": 0.017012178496331784,
+      "rsa_label_p": 1.1693324042363637e-93,
+      "rsa_subject_r": 0.1305500797372095,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 72,
+      "rsa_label_r": 0.03537235016083089,
+      "rsa_label_p": 0.0737758355713726,
+      "rsa_subject_r": 0.14539704046405574,
+      "rsa_subject_p": 1.5073196112834636e-13
+    }
+  },
+  "cbramod_adftd": {
+    "per_window": {
+      "n_used": 3000,
+      "rsa_label_r": 0.007234430175773844,
+      "rsa_label_p": 3.874093300638054e-53,
+      "rsa_subject_r": 0.06869507099433071,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 195,
+      "rsa_label_r": 0.015294850537519502,
+      "rsa_label_p": 0.035420988561005846,
+      "rsa_subject_r": 0.10432399937737773,
+      "rsa_subject_p": 6.318294072913701e-47
+    }
+  },
+  "cbramod_tdbrain": {
+    "per_window": {
+      "n_used": 3000,
+      "rsa_label_r": 0.034983061773618804,
+      "rsa_label_p": 0.0,
+      "rsa_subject_r": 0.087090892580347,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 734,
+      "rsa_label_r": 0.02376721512688608,
+      "rsa_label_p": 6.33426031645048e-35,
+      "rsa_subject_r": 0.06157869723748071,
+      "rsa_subject_p": 2.964111680957822e-224
+    }
+  },
+  "reve_stress": {
+    "per_window": {
+      "n_used": 3000,
+      "rsa_label_r": 0.09501555542504736,
+      "rsa_label_p": 0.0,
+      "rsa_subject_r": 0.12209021002940867,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 55,
+      "rsa_label_r": 0.04204195714256069,
+      "rsa_label_p": 0.105346625014337,
+      "rsa_subject_r": 0.20905819844143755,
+      "rsa_subject_p": 3.968454665469396e-16
+    }
+  },
+  "reve_eegmat": {
+    "per_window": {
+      "n_used": 1707,
+      "rsa_label_r": -0.021848800008951327,
+      "rsa_label_p": 3.226587083238972e-153,
+      "rsa_subject_r": 0.09092903383965387,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 72,
+      "rsa_label_r": 0.013738709042438332,
+      "rsa_label_p": 0.4875069292594632,
+      "rsa_subject_r": 0.11713026832296089,
+      "rsa_subject_p": 2.8624112754877994e-09
+    }
+  },
+  "reve_adftd": {
+    "per_window": {
+      "n_used": 3000,
+      "rsa_label_r": 0.0027973556212814357,
+      "rsa_label_p": 2.972527245597078e-09,
+      "rsa_subject_r": 0.01879843586036299,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 195,
+      "rsa_label_r": 0.001874607773206601,
+      "rsa_label_p": 0.7965601866203618,
+      "rsa_subject_r": 0.04533636818674711,
+      "rsa_subject_p": 4.4323402435035677e-10
+    }
+  },
+  "reve_tdbrain": {
+    "per_window": {
+      "n_used": 3000,
+      "rsa_label_r": 0.04604692441827713,
+      "rsa_label_p": 0.0,
+      "rsa_subject_r": 0.05516413371745396,
+      "rsa_subject_p": 0.0
+    },
+    "recording_avg_from_pw": {
+      "n_used": 734,
+      "rsa_label_r": 0.01825644176519194,
+      "rsa_label_p": 2.8070074225027357e-21,
+      "rsa_subject_r": 0.042235681066571155,
+      "rsa_subject_p": 1.8384351869383203e-106
+    }
+  }
+}

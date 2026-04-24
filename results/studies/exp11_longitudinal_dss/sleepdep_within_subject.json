@@ -1,0 +1,35 @@
+{
+  "protocol": "Within-subject pairwise discrimination, LOO over subjects, SD prob > NS prob test on the held-out subject's pair.",
+  "results": {
+    "labram": {
+      "pairwise_ba_per_seed": [
+        0.5278,
+        0.5278,
+        0.5278
+      ],
+      "pairwise_ba_mean": 0.5278,
+      "pairwise_ba_std": 0.0,
+      "n_subjects_used": 36
+    },
+    "cbramod": {
+      "pairwise_ba_per_seed": [
+        0.5278,
+        0.5278,
+        0.5278
+      ],
+      "pairwise_ba_mean": 0.5278,
+      "pairwise_ba_std": 0.0,
+      "n_subjects_used": 36
+    },
+    "reve": {
+      "pairwise_ba_per_seed": [
+        0.6111,
+        0.6111,
+        0.6111
+      ],
+      "pairwise_ba_mean": 0.6111,
+      "pairwise_ba_std": 0.0,
+      "n_subjects_used": 36
+    }
+  }
+}

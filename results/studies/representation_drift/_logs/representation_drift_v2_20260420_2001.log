@@ -1,0 +1,35 @@
+
+=== labram × stress ===
+ LP shape=(55, 200)  FT shape=(55, 200)
+ LP : label= 5.68%  subj=62.88%  res=31.44%  knn={'knn_ba': 0.383}  logme=5.946  hscore=0.982
+ FT : label= 3.71%  subj=74.77%  res=21.52%  knn={'knn_ba': 0.4787}  logme=6.097  hscore=0.981
+ CKA(LP, FT) = 0.363
+ Δ: label=-1.97pp  subj=+11.89pp  → rescue_consistent_with_subject_shortcut
+
+=== cbramod × stress ===
+ LP shape=(55, 200)  FT shape=(55, 200)
+ LP : label= 2.77%  subj=62.20%  res=35.04%  knn={'knn_ba': 0.4043}  logme=6.119  hscore=0.982
+ FT : label= 1.26%  subj=81.66%  res=17.08%  knn={'knn_ba': 0.4681}  logme=6.170  hscore=0.971
+ CKA(LP, FT) = 0.1725
+ Δ: label=-1.51pp  subj=+19.47pp  → rescue_consistent_with_subject_shortcut
+
+=== reve × stress ===
+ LP shape=(55, 512)  FT shape=(55, 512)
+ LP : label= 3.10%  subj=57.82%  res=39.09%  knn={'knn_ba': 0.4362}  logme=6.332  hscore=0.982
+ FT : label= 3.28%  subj=63.98%  res=32.74%  knn={'knn_ba': 0.4574}  logme=6.314  hscore=0.981
+ CKA(LP, FT) = 0.9781
+ Δ: label=+0.19pp  subj=+6.16pp  → rescue_consistent_with_subject_shortcut
+
+=== labram × eegmat ===
+ LP shape=(72, 200)  FT shape=(72, 200)
+ FAIL labram × eegmat: Subject 0 has multiple labels — nested decomposition requires pure-label subjects.
+
+=== cbramod × eegmat ===
+ LP shape=(72, 200)  FT shape=(72, 200)
+ FAIL cbramod × eegmat: Subject 0 has multiple labels — nested decomposition requires pure-label subjects.
+
+=== reve × eegmat ===
+ LP shape=(72, 512)  FT shape=(72, 512)
+ FAIL reve × eegmat: Subject 0 has multiple labels — nested decomposition requires pure-label subjects.
+
+Saved: results/studies/representation_drift/lp_vs_ft_stress.json

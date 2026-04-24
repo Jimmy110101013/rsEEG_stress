@@ -1,0 +1,19 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Extracting labram × adftd FOOOF-ablated features
+  norm=zscore, device=cuda:0
+[LaBraM] Loaded 219/221 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  labram loaded: embed_dim=200
+  (Original features: use existing labram_adftd_perwindow.npz)
+  === Condition: aperiodic_removed ===
+    features shape: (10735, 200)
+    → results/features_cache/fooof_ablation/feat_labram_adftd_aperiodic_removed.npz
+  === Condition: periodic_removed ===
+    features shape: (10735, 200)
+    → results/features_cache/fooof_ablation/feat_labram_adftd_periodic_removed.npz
+  === Condition: both_removed ===
+    features shape: (10735, 200)
+    → results/features_cache/fooof_ablation/feat_labram_adftd_both_removed.npz
+
+Done.

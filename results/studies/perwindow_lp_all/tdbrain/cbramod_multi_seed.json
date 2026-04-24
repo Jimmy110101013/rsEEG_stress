@@ -1,0 +1,41 @@
+{
+  "extractor": "cbramod",
+  "dataset": "tdbrain",
+  "source_features": "results/features_cache/frozen_cbramod_tdbrain_perwindow.npz",
+  "protocol": "Per-window LogisticRegression (C=1.0, class_weight=balanced) on StandardScaler-normed per-window features. Recording-level StratifiedGroupKFold(5) with groups=patient_id; window-level training within each fold; test-set window probs mean-pooled per recording; threshold 0.5; recording-level BA.",
+  "n_recordings": 734,
+  "n_subjects": 359,
+  "n_positive": 640,
+  "n_negative": 94,
+  "n_splits": 5,
+  "embed_dim": 200,
+  "total_windows": 17457,
+  "avg_windows_per_rec": 23.783378746594007,
+  "seeds": [
+    42,
+    123,
+    2024,
+    7,
+    0,
+    1,
+    99,
+    31337
+  ],
+  "per_seed_ba": {
+    "42": 0.5087599734042554,
+    "123": 0.5135970744680851,
+    "2024": 0.5584940159574469,
+    "7": 0.5541057180851063,
+    "0": 0.49704122340425533,
+    "1": 0.508909574468085,
+    "99": 0.5225232712765957,
+    "31337": 0.5331615691489362
+  },
+  "mean_8seed": 0.5245740525265957,
+  "std_8seed_ddof1": 0.022279542292665027,
+  "std_8seed_ddof0": 0.020840603498323132,
+  "mean_3seed_42_123_2024": 0.5269503546099291,
+  "std_3seed_42_123_2024_ddof1": 0.027424465629809252,
+  "min": 0.49704122340425533,
+  "max": 0.5584940159574469
+}

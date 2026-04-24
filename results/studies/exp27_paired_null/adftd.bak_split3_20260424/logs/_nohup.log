@@ -1,0 +1,61 @@
+[22:43:48] START adftd perm_s0 on cuda:7
+[23:26:05] DONE  adftd perm_s0
+[23:26:05] START adftd perm_s1 on cuda:7
+[00:19:25] DONE  adftd perm_s1
+[00:19:25] START adftd perm_s2 on cuda:7
+[01:09:09] DONE  adftd perm_s2
+[01:09:09] START adftd perm_s3 on cuda:7
+[01:53:36] DONE  adftd perm_s3
+[01:53:36] START adftd perm_s4 on cuda:7
+[02:53:14] DONE  adftd perm_s4
+[02:53:14] START adftd perm_s5 on cuda:7
+[03:24:59] DONE  adftd perm_s5
+[03:24:59] START adftd perm_s6 on cuda:7
+[04:11:55] DONE  adftd perm_s6
+[04:11:55] START adftd perm_s7 on cuda:7
+[04:49:45] DONE  adftd perm_s7
+[04:49:45] START adftd perm_s8 on cuda:7
+[05:35:31] DONE  adftd perm_s8
+[05:35:31] START adftd perm_s9 on cuda:7
+[06:28:31] DONE  adftd perm_s9
+[06:28:31] START adftd perm_s10 on cuda:7
+[07:19:31] DONE  adftd perm_s10
+[07:19:31] START adftd perm_s11 on cuda:7
+[07:57:22] DONE  adftd perm_s11
+[07:57:22] START adftd perm_s12 on cuda:7
+[08:40:38] DONE  adftd perm_s12
+[08:40:38] START adftd perm_s13 on cuda:7
+[09:30:20] DONE  adftd perm_s13
+[09:30:20] START adftd perm_s14 on cuda:7
+[10:07:45] DONE  adftd perm_s14
+[10:07:45] START adftd perm_s15 on cuda:7
+[10:54:44] DONE  adftd perm_s15
+[10:54:44] START adftd perm_s16 on cuda:7
+[11:51:10] DONE  adftd perm_s16
+[11:51:10] START adftd perm_s17 on cuda:7
+[12:32:16] DONE  adftd perm_s17
+[12:32:16] START adftd perm_s18 on cuda:7
+[13:24:49] DONE  adftd perm_s18
+[13:24:49] START adftd perm_s19 on cuda:7
+[14:12:26] DONE  adftd perm_s19
+[14:12:26] START adftd perm_s20 on cuda:7
+[14:48:54] DONE  adftd perm_s20
+[14:48:54] START adftd perm_s21 on cuda:7
+[15:44:29] DONE  adftd perm_s21
+[15:44:29] START adftd perm_s22 on cuda:7
+[16:31:23] DONE  adftd perm_s22
+[16:31:23] START adftd perm_s23 on cuda:7
+[17:05:04] DONE  adftd perm_s23
+[17:05:04] START adftd perm_s24 on cuda:7
+[17:56:56] DONE  adftd perm_s24
+[17:56:56] START adftd perm_s25 on cuda:7
+[18:46:33] DONE  adftd perm_s25
+[18:46:33] START adftd perm_s26 on cuda:7
+[19:21:27] DONE  adftd perm_s26
+[19:21:27] START adftd perm_s27 on cuda:7
+[20:04:30] DONE  adftd perm_s27
+[20:04:30] START adftd perm_s28 on cuda:7
+[20:58:12] DONE  adftd perm_s28
+[20:58:12] START adftd perm_s29 on cuda:7
+[21:41:01] DONE  adftd perm_s29
+[21:41:01] CHAIN COMPLETE: 30 adftd perms

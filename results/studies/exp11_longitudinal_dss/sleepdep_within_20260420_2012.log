@@ -1,0 +1,5 @@
+  labram: pairwise BA = 0.5278 ± 0.0000 (3 seeds, n_used=36)
+  cbramod: pairwise BA = 0.5278 ± 0.0000 (3 seeds, n_used=36)
+  reve: pairwise BA = 0.6111 ± 0.0000 (3 seeds, n_used=36)
+
+Saved: results/studies/exp11_longitudinal_dss/sleepdep_within_subject.json

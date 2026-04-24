@@ -1,0 +1,9 @@
+[18:47:39] Waiting for any train_ft.py on cuda:4 to finish...
+[19:22:42] cuda:4 clear; launching REVE ADFTD no-aug queue.
+[19:22:42] START reve adftd noaug s42 on cuda:4
+[19:57:01] DONE  reve adftd noaug s42
+[19:57:01] START reve adftd noaug s123 on cuda:4
+[20:29:41] DONE  reve adftd noaug s123
+[20:29:41] START reve adftd noaug s2024 on cuda:4
+[21:02:21] DONE  reve adftd noaug s2024
+[21:02:21] CHAIN COMPLETE: reve adftd noaug

@@ -1,0 +1,38 @@
+[labram | original]
+  subject_probe: 0.8558 ± 0.0209
+  state_probe:   0.6539 ± 0.0182
+[labram | aperiodic_removed]
+  subject_probe: 0.8298 ± 0.0301
+  state_probe:   0.5418 ± 0.0400
+[labram | periodic_removed]
+  subject_probe: 0.8529 ± 0.0207
+  state_probe:   0.6553 ± 0.0154
+[labram | both_removed]
+  subject_probe: 0.8279 ± 0.0246
+  state_probe:   0.5441 ± 0.0396
+[cbramod | original]
+  subject_probe: 0.7481 ± 0.0246
+  state_probe:   0.5706 ± 0.0352
+[cbramod | aperiodic_removed]
+  subject_probe: 0.9404 ± 0.0256
+  state_probe:   0.6917 ± 0.0545
+[cbramod | periodic_removed]
+  subject_probe: 0.7490 ± 0.0229
+  state_probe:   0.5725 ± 0.0342
+[cbramod | both_removed]
+  subject_probe: 0.9404 ± 0.0256
+  state_probe:   0.6921 ± 0.0530
+[reve | original]
+  subject_probe: 0.6471 ± 0.0177
+  state_probe:   0.6520 ± 0.0274
+[reve | aperiodic_removed]
+  subject_probe: 0.8846 ± 0.0210
+  state_probe:   0.6136 ± 0.0554
+[reve | periodic_removed]
+  subject_probe: 0.6481 ± 0.0217
+  state_probe:   0.6527 ± 0.0254
+[reve | both_removed]
+  subject_probe: 0.8875 ± 0.0205
+  state_probe:   0.6142 ± 0.0553
+
+→ /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/fooof_ablation/adftd_probes.json

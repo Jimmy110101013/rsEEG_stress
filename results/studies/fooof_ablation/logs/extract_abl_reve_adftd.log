@@ -1,0 +1,19 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Extracting reve × adftd FOOOF-ablated features
+  norm=none, device=cuda:0
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  reve loaded: embed_dim=512
+  (Original features: use existing reve_adftd_perwindow.npz)
+  === Condition: aperiodic_removed ===
+    features shape: (5349, 512)
+    → results/features_cache/fooof_ablation/feat_reve_adftd_aperiodic_removed.npz
+  === Condition: periodic_removed ===
+    features shape: (5349, 512)
+    → results/features_cache/fooof_ablation/feat_reve_adftd_periodic_removed.npz
+  === Condition: both_removed ===
+    features shape: (5349, 512)
+    → results/features_cache/fooof_ablation/feat_reve_adftd_both_removed.npz
+
+Done.

@@ -1,0 +1,61 @@
+[16:48:00] START eegmat perm_s0 on cuda:4
+[16:53:53] DONE  eegmat perm_s0
+[16:53:53] START eegmat perm_s1 on cuda:4
+[16:59:18] DONE  eegmat perm_s1
+[16:59:18] START eegmat perm_s2 on cuda:4
+[17:03:52] DONE  eegmat perm_s2
+[17:03:52] START eegmat perm_s3 on cuda:4
+[17:09:30] DONE  eegmat perm_s3
+[17:09:30] START eegmat perm_s4 on cuda:4
+[17:15:11] DONE  eegmat perm_s4
+[17:15:11] START eegmat perm_s5 on cuda:4
+[17:21:02] DONE  eegmat perm_s5
+[17:21:02] START eegmat perm_s6 on cuda:4
+[17:27:40] DONE  eegmat perm_s6
+[17:27:40] START eegmat perm_s7 on cuda:4
+[17:33:30] DONE  eegmat perm_s7
+[17:33:30] START eegmat perm_s8 on cuda:4
+[17:38:10] DONE  eegmat perm_s8
+[17:38:10] START eegmat perm_s9 on cuda:4
+[17:43:26] DONE  eegmat perm_s9
+[17:43:26] START eegmat perm_s10 on cuda:4
+[17:48:51] DONE  eegmat perm_s10
+[17:48:51] START eegmat perm_s11 on cuda:4
+[17:54:08] DONE  eegmat perm_s11
+[17:54:08] START eegmat perm_s12 on cuda:4
+[17:59:36] DONE  eegmat perm_s12
+[17:59:36] START eegmat perm_s13 on cuda:4
+[18:07:06] DONE  eegmat perm_s13
+[18:07:06] START eegmat perm_s14 on cuda:4
+[18:13:09] DONE  eegmat perm_s14
+[18:13:09] START eegmat perm_s15 on cuda:4
+[18:18:19] DONE  eegmat perm_s15
+[18:18:19] START eegmat perm_s16 on cuda:4
+[18:25:17] DONE  eegmat perm_s16
+[18:25:17] START eegmat perm_s17 on cuda:4
+[18:33:30] DONE  eegmat perm_s17
+[18:33:30] START eegmat perm_s18 on cuda:4
+[18:40:13] DONE  eegmat perm_s18
+[18:40:13] START eegmat perm_s19 on cuda:4
+[18:45:27] DONE  eegmat perm_s19
+[18:45:27] START eegmat perm_s20 on cuda:4
+[18:51:22] DONE  eegmat perm_s20
+[18:51:22] START eegmat perm_s21 on cuda:4
+[18:57:09] DONE  eegmat perm_s21
+[18:57:09] START eegmat perm_s22 on cuda:4
+[19:03:13] DONE  eegmat perm_s22
+[19:03:13] START eegmat perm_s23 on cuda:4
+[19:08:40] DONE  eegmat perm_s23
+[19:08:40] START eegmat perm_s24 on cuda:4
+[19:13:22] DONE  eegmat perm_s24
+[19:13:22] START eegmat perm_s25 on cuda:4
+[19:18:08] DONE  eegmat perm_s25
+[19:18:08] START eegmat perm_s26 on cuda:4
+[19:24:26] DONE  eegmat perm_s26
+[19:24:26] START eegmat perm_s27 on cuda:4
+[19:31:29] DONE  eegmat perm_s27
+[19:31:29] START eegmat perm_s28 on cuda:4
+[19:38:03] DONE  eegmat perm_s28
+[19:38:03] START eegmat perm_s29 on cuda:4
+[19:44:02] DONE  eegmat perm_s29
+[19:44:02] CHAIN COMPLETE: 30 eegmat perms

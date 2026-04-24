@@ -1,0 +1,95 @@
+/raid/jupyter-linjimmy1003.md10/UCSD_stress/scripts/analysis/fooof_ablation.py:34: DeprecationWarning: 
+The `fooof` package is being deprecated and replaced by the `specparam` (spectral parameterization) package.
+This version of `fooof` (1.1) is fully functional, but will not be further updated.
+New projects are recommended to update to using `specparam` (see Changelog for details).
+  from fooof import FOOOF  # noqa: E402
+FOOOF ablation: dataset=adftd, norm=none, window=5.0s, pilot=0
+ADFTD: 65 recordings from 65 subjects (AD=36, HC=29)
+  Processing 65/65 recordings × 19 channels
+  [1/65] rec_pid=1, label=1, M=119
+  [2/65] rec_pid=2, label=1, M=158
+  [3/65] rec_pid=3, label=1, M=61
+  [4/65] rec_pid=4, label=1, M=141
+  [5/65] rec_pid=5, label=1, M=160
+  [6/65] rec_pid=6, label=1, M=127
+  [7/65] rec_pid=7, label=1, M=153
+  [8/65] rec_pid=8, label=1, M=159
+  [9/65] rec_pid=9, label=1, M=122
+  [10/65] rec_pid=10, label=1, M=258
+  [11/65] rec_pid=11, label=1, M=154
+  [12/65] rec_pid=12, label=1, M=179
+  [13/65] rec_pid=13, label=1, M=168
+  [14/65] rec_pid=14, label=1, M=189
+  [15/65] rec_pid=15, label=1, M=182
+  [16/65] rec_pid=16, label=1, M=197
+  [17/65] rec_pid=17, label=1, M=169
+  [18/65] rec_pid=18, label=1, M=169
+  [19/65] rec_pid=19, label=1, M=184
+  [20/65] rec_pid=20, label=1, M=173
+  [21/65] rec_pid=21, label=1, M=184
+  [22/65] rec_pid=22, label=1, M=164
+  [23/65] rec_pid=23, label=1, M=172
+  [24/65] rec_pid=24, label=1, M=153
+  [25/65] rec_pid=25, label=1, M=139
+  [26/65] rec_pid=26, label=1, M=183
+  [27/65] rec_pid=27, label=1, M=166
+  [28/65] rec_pid=28, label=1, M=165
+  [29/65] rec_pid=29, label=1, M=148
+  [30/65] rec_pid=30, label=1, M=111
+  [31/65] rec_pid=31, label=1, M=231
+  [32/65] rec_pid=32, label=1, M=170
+  [33/65] rec_pid=33, label=1, M=141
+  [34/65] rec_pid=34, label=1, M=194
+  [35/65] rec_pid=35, label=1, M=151
+  [36/65] rec_pid=36, label=1, M=170
+  [37/65] rec_pid=37, label=0, M=155
+  [38/65] rec_pid=38, label=0, M=178
+  [39/65] rec_pid=39, label=0, M=171
+  [40/65] rec_pid=40, label=0, M=203
+  [41/65] rec_pid=41, label=0, M=177
+  [42/65] rec_pid=42, label=0, M=195
+  [43/65] rec_pid=43, label=0, M=165
+  [44/65] rec_pid=44, label=0, M=176
+  [45/65] rec_pid=45, label=0, M=172
+  [46/65] rec_pid=46, label=0, M=151
+  [47/65] rec_pid=47, label=0, M=161
+  [48/65] rec_pid=48, label=0, M=202
+  [49/65] rec_pid=49, label=0, M=156
+  [50/65] rec_pid=50, label=0, M=165
+  [51/65] rec_pid=51, label=0, M=157
+  [52/65] rec_pid=52, label=0, M=152
+  [53/65] rec_pid=53, label=0, M=159
+  [54/65] rec_pid=54, label=0, M=168
+  [55/65] rec_pid=55, label=0, M=164
+  [56/65] rec_pid=56, label=0, M=177
+  [57/65] rec_pid=57, label=0, M=159
+  [58/65] rec_pid=58, label=0, M=152
+  [59/65] rec_pid=59, label=0, M=157
+  [60/65] rec_pid=60, label=0, M=150
+  [61/65] rec_pid=61, label=0, M=161
+  [62/65] rec_pid=62, label=0, M=182
+  [63/65] rec_pid=63, label=0, M=161
+  [64/65] rec_pid=64, label=0, M=169
+  [65/65] rec_pid=65, label=0, M=176
+
+=== Quality summary ===
+  dataset: adftd
+  norm: none
+  n_recordings: 65
+  n_channels: 19
+  total_channel_epochs: 1235
+  fit_success_rate: 1.0
+  r2_mean: 0.9848482608795166
+  r2_median: 0.9946514964103699
+  r2_p10: 0.9647942304611206
+  r2_p90: 0.9986765384674072
+  r2_ge_0.9_frac: 0.979757085020243
+  r2_ge_0.7_frac: 0.9991902834008097
+  aperiodic_chi_mean: 2.0051779747009277
+  aperiodic_chi_p10: 1.6400850296020508
+  aperiodic_chi_p90: 2.311625194549561
+  mean_peaks_per_channel: 3.442105263157895
+  out_file: results/features_cache/fooof_ablation/adftd_norm_none_w5.npz
+
+Saved: results/features_cache/fooof_ablation/adftd_norm_none_w5.npz
+Summary: results/features_cache/fooof_ablation/adftd_norm_none_w5.summary.json

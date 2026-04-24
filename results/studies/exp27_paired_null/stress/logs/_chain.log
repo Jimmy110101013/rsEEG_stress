@@ -1,0 +1,61 @@
+[16:47:58] START stress perm_s0 on cuda:3
+[17:00:26] DONE  stress perm_s0
+[17:00:26] START stress perm_s1 on cuda:3
+[17:14:13] DONE  stress perm_s1
+[17:14:13] START stress perm_s2 on cuda:3
+[17:28:56] DONE  stress perm_s2
+[17:28:56] START stress perm_s3 on cuda:3
+[17:44:19] DONE  stress perm_s3
+[17:44:19] START stress perm_s4 on cuda:3
+[17:54:54] DONE  stress perm_s4
+[17:54:54] START stress perm_s5 on cuda:3
+[18:10:49] DONE  stress perm_s5
+[18:10:49] START stress perm_s6 on cuda:3
+[18:25:05] DONE  stress perm_s6
+[18:25:05] START stress perm_s7 on cuda:3
+[18:37:47] DONE  stress perm_s7
+[18:37:47] START stress perm_s8 on cuda:3
+[18:47:17] DONE  stress perm_s8
+[18:47:17] START stress perm_s9 on cuda:3
+[19:04:05] DONE  stress perm_s9
+[19:04:05] START stress perm_s10 on cuda:3
+[19:18:09] DONE  stress perm_s10
+[19:18:09] START stress perm_s11 on cuda:3
+[19:30:48] DONE  stress perm_s11
+[19:30:48] START stress perm_s12 on cuda:3
+[19:42:21] DONE  stress perm_s12
+[19:42:21] START stress perm_s13 on cuda:3
+[19:53:27] DONE  stress perm_s13
+[19:53:27] START stress perm_s14 on cuda:3
+[20:04:27] DONE  stress perm_s14
+[20:04:27] START stress perm_s15 on cuda:3
+[20:19:08] DONE  stress perm_s15
+[20:19:08] START stress perm_s16 on cuda:3
+[20:36:11] DONE  stress perm_s16
+[20:36:11] START stress perm_s17 on cuda:3
+[20:50:46] DONE  stress perm_s17
+[20:50:46] START stress perm_s18 on cuda:3
+[21:01:46] DONE  stress perm_s18
+[21:01:46] START stress perm_s19 on cuda:3
+[21:15:54] DONE  stress perm_s19
+[21:15:54] START stress perm_s20 on cuda:3
+[21:27:45] DONE  stress perm_s20
+[21:27:45] START stress perm_s21 on cuda:3
+[21:40:44] DONE  stress perm_s21
+[21:40:44] START stress perm_s22 on cuda:3
+[21:55:35] DONE  stress perm_s22
+[21:55:35] START stress perm_s23 on cuda:3
+[22:09:53] DONE  stress perm_s23
+[22:09:53] START stress perm_s24 on cuda:3
+[22:22:11] DONE  stress perm_s24
+[22:22:11] START stress perm_s25 on cuda:3
+[22:34:12] DONE  stress perm_s25
+[22:34:12] START stress perm_s26 on cuda:3
+[22:49:56] DONE  stress perm_s26
+[22:49:56] START stress perm_s27 on cuda:3
+[23:03:27] DONE  stress perm_s27
+[23:03:27] START stress perm_s28 on cuda:3
+[23:20:44] DONE  stress perm_s28
+[23:20:44] START stress perm_s29 on cuda:3
+[23:32:10] DONE  stress perm_s29
+[23:32:10] CHAIN COMPLETE: 30 stress perms

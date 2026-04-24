@@ -1,0 +1,36 @@
+{
+  "fm": "reve",
+  "seed": 41,
+  "mode": "ft",
+  "best_epoch": 19,
+  "recipe": {
+    "lr": 0.00024,
+    "weight_decay": 0.01,
+    "layer_decay": 1.0,
+    "label_smoothing": 0.0,
+    "head_hidden": 0,
+    "drop_path": 0.0,
+    "encoder_lr_scale": 0.1,
+    "warmup_epochs": 2,
+    "optimizer_betas": [
+      0.9,
+      0.95
+    ],
+    "norm": "none"
+  },
+  "test_sample": {
+    "acc": 0.5262778977681786,
+    "bal_acc": 0.4926953554555229,
+    "f1": 0.49112893899236365,
+    "auroc": 0.6310949092363951
+  },
+  "test_subject": {
+    "acc": 0.6666666666666666,
+    "bal_acc": 0.6666666666666666,
+    "f1": 0.6428571428571428,
+    "auroc": 0.6611111111111111
+  },
+  "n_train_rec": 70,
+  "n_val_rec": 9,
+  "n_test_rec": 9
+}

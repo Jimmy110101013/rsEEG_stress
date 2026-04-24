@@ -1,0 +1,103 @@
+/raid/jupyter-linjimmy1003.md10/UCSD_stress/scripts/analysis/fooof_ablation.py:34: DeprecationWarning: 
+The `fooof` package is being deprecated and replaced by the `specparam` (spectral parameterization) package.
+This version of `fooof` (1.1) is fully functional, but will not be further updated.
+New projects are recommended to update to using `specparam` (see Changelog for details).
+  from fooof import FOOOF  # noqa: E402
+FOOOF ablation: dataset=sleepdep, norm=none, pilot=0
+[INFO] Skipped 0 subjects (incomplete sessions), 0 subjects (no SessionOrder), 2 subjects (failed cache markers)
+SleepDep: 72 recordings from 36 subjects (SD=36, NS=36)
+  Processing 72/72 recordings × 19 channels
+  [1/72] rec_pid=1, label=0, M=60
+  [2/72] rec_pid=1, label=1, M=60
+  [3/72] rec_pid=2, label=0, M=60
+  [4/72] rec_pid=2, label=1, M=60
+  [5/72] rec_pid=4, label=0, M=60
+  [6/72] rec_pid=4, label=1, M=60
+  [7/72] rec_pid=5, label=0, M=60
+  [8/72] rec_pid=5, label=1, M=60
+  [9/72] rec_pid=6, label=0, M=60
+  [10/72] rec_pid=6, label=1, M=60
+  [11/72] rec_pid=7, label=0, M=60
+  [12/72] rec_pid=7, label=1, M=60
+  [13/72] rec_pid=8, label=1, M=60
+  [14/72] rec_pid=8, label=0, M=60
+  [15/72] rec_pid=9, label=1, M=60
+  [16/72] rec_pid=9, label=0, M=60
+  [17/72] rec_pid=10, label=1, M=60
+  [18/72] rec_pid=10, label=0, M=60
+  [19/72] rec_pid=11, label=1, M=60
+  [20/72] rec_pid=11, label=0, M=60
+  [21/72] rec_pid=12, label=1, M=60
+  [22/72] rec_pid=12, label=0, M=60
+  [23/72] rec_pid=13, label=1, M=60
+  [24/72] rec_pid=13, label=0, M=60
+  [25/72] rec_pid=14, label=1, M=60
+  [26/72] rec_pid=14, label=0, M=60
+  [27/72] rec_pid=15, label=1, M=60
+  [28/72] rec_pid=15, label=0, M=60
+  [29/72] rec_pid=16, label=1, M=60
+  [30/72] rec_pid=16, label=0, M=60
+  [31/72] rec_pid=17, label=1, M=60
+  [32/72] rec_pid=17, label=0, M=60
+  [33/72] rec_pid=18, label=1, M=60
+  [34/72] rec_pid=18, label=0, M=60
+  [35/72] rec_pid=19, label=1, M=60
+  [36/72] rec_pid=19, label=0, M=60
+  [37/72] rec_pid=20, label=1, M=60
+  [38/72] rec_pid=20, label=0, M=60
+  [39/72] rec_pid=21, label=1, M=60
+  [40/72] rec_pid=21, label=0, M=60
+  [41/72] rec_pid=22, label=1, M=60
+  [42/72] rec_pid=22, label=0, M=60
+  [43/72] rec_pid=23, label=0, M=60
+  [44/72] rec_pid=23, label=1, M=60
+  [45/72] rec_pid=24, label=1, M=60
+  [46/72] rec_pid=24, label=0, M=60
+  [47/72] rec_pid=25, label=1, M=60
+  [48/72] rec_pid=25, label=0, M=60
+  [49/72] rec_pid=26, label=1, M=60
+  [50/72] rec_pid=26, label=0, M=60
+  [51/72] rec_pid=27, label=1, M=60
+  [52/72] rec_pid=27, label=0, M=60
+  [53/72] rec_pid=29, label=0, M=60
+  [54/72] rec_pid=29, label=1, M=60
+  [55/72] rec_pid=30, label=0, M=60
+  [56/72] rec_pid=30, label=1, M=60
+  [57/72] rec_pid=31, label=0, M=60
+  [58/72] rec_pid=31, label=1, M=60
+  [59/72] rec_pid=32, label=0, M=60
+  [60/72] rec_pid=32, label=1, M=60
+  [61/72] rec_pid=33, label=0, M=60
+  [62/72] rec_pid=33, label=1, M=60
+  [63/72] rec_pid=34, label=0, M=60
+  [64/72] rec_pid=34, label=1, M=60
+  [65/72] rec_pid=35, label=0, M=60
+  [66/72] rec_pid=35, label=1, M=60
+  [67/72] rec_pid=36, label=0, M=60
+  [68/72] rec_pid=36, label=1, M=60
+  [69/72] rec_pid=37, label=0, M=60
+  [70/72] rec_pid=37, label=1, M=60
+  [71/72] rec_pid=38, label=0, M=60
+  [72/72] rec_pid=38, label=1, M=60
+
+=== Quality summary ===
+  dataset: sleepdep
+  norm: none
+  n_recordings: 72
+  n_channels: 19
+  total_channel_epochs: 1368
+  fit_success_rate: 1.0
+  r2_mean: 0.9709592461585999
+  r2_median: 0.989109218120575
+  r2_p10: 0.9406056582927704
+  r2_p90: 0.994494891166687
+  r2_ge_0.9_frac: 0.9342105263157895
+  r2_ge_0.7_frac: 0.9890350877192983
+  aperiodic_chi_mean: 1.3801573514938354
+  aperiodic_chi_p10: 0.9705223977565767
+  aperiodic_chi_p90: 1.7309239149093627
+  mean_peaks_per_channel: 4.9035087719298245
+  out_file: results/features_cache/fooof_ablation/sleepdep_norm_none.npz
+
+Saved: results/features_cache/fooof_ablation/sleepdep_norm_none.npz
+Summary: results/features_cache/fooof_ablation/sleepdep_norm_none.summary.json

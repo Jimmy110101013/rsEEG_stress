@@ -1,0 +1,7 @@
+[18:17:00] START eegmat aug50 s42 on cuda:3
+[18:21:53] DONE  eegmat aug50 s42
+[18:21:53] START eegmat aug50 s123 on cuda:3
+[18:26:14] DONE  eegmat aug50 s123
+[18:26:14] START eegmat aug50 s2024 on cuda:3
+[18:30:36] DONE  eegmat aug50 s2024
+[18:30:36] CHAIN COMPLETE: eegmat aug50 3 seeds

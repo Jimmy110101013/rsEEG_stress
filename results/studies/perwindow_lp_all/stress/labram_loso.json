@@ -1,0 +1,39 @@
+{
+  "extractor": "labram",
+  "dataset": "stress",
+  "source_features": "results/features_cache/frozen_labram_stress_perwindow.npz",
+  "protocol": "Per-window LogisticRegression (liblinear, C=1.0, class_weight=balanced) on percentile-clipped + StandardScaler features. LeaveOneGroupOut at subject level (17 folds); window-level training within each fold; test-set window probs mean-pooled per recording; threshold 0.5; recording-level BA.",
+  "cv": "LOSO subject-level (17 folds)",
+  "n_recordings": 70,
+  "n_subjects": 17,
+  "n_positive": 14,
+  "n_negative": 56,
+  "embed_dim": 200,
+  "total_windows": 5558,
+  "seeds": [
+    42,
+    123,
+    2024,
+    7,
+    0,
+    1,
+    99,
+    31337
+  ],
+  "per_seed_ba": {
+    "42": 0.49107142857142855,
+    "123": 0.49107142857142855,
+    "2024": 0.49107142857142855,
+    "7": 0.49107142857142855,
+    "0": 0.49107142857142855,
+    "1": 0.49107142857142855,
+    "99": 0.49107142857142855,
+    "31337": 0.49107142857142855
+  },
+  "mean_8seed": 0.49107142857142855,
+  "std_8seed_ddof1": 0.0,
+  "mean_3seed_42_123_2024": 0.49107142857142855,
+  "std_3seed_42_123_2024_ddof1": 0.0,
+  "min": 0.49107142857142855,
+  "max": 0.49107142857142855
+}

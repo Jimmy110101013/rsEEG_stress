@@ -1,0 +1,3 @@
+[21:23:40] START adftd perm_s0 on cuda:7
+[22:10:20] DONE  adftd perm_s0
+[22:10:20] START adftd perm_s1 on cuda:7

@@ -1,0 +1,50 @@
+
+=== labram × stress ===
+  (FT source: ft_labram_stress_canonical)
+ LP shape=(55, 200)  FT shape=(55, 200)
+ LP : label= 5.68%  subj=62.88%  res=31.44%  knn={'knn_ba': 0.383}  logme=5.946  hscore=0.982
+ FT : label= 4.65%  subj=87.48%  res= 7.87%  knn={'knn_ba': 0.4787}  logme=6.003  hscore=0.982
+ CKA(LP, FT) = 0.4645
+ Δ: label=-1.03pp  subj=+24.60pp  → rescue_consistent_with_subject_shortcut
+
+=== cbramod × stress ===
+  (FT source: ft_cbramod_stress)
+ LP shape=(55, 200)  FT shape=(55, 200)
+ LP : label= 2.77%  subj=62.20%  res=35.04%  knn={'knn_ba': 0.4043}  logme=6.119  hscore=0.982
+ FT : label= 1.26%  subj=81.66%  res=17.08%  knn={'knn_ba': 0.4681}  logme=6.170  hscore=0.971
+ CKA(LP, FT) = 0.1725
+ Δ: label=-1.51pp  subj=+19.47pp  → rescue_consistent_with_subject_shortcut
+
+=== reve × stress ===
+  (FT source: ft_reve_stress)
+ LP shape=(55, 512)  FT shape=(55, 512)
+ LP : label= 3.10%  subj=57.82%  res=39.09%  knn={'knn_ba': 0.4362}  logme=6.332  hscore=0.982
+ FT : label= 3.28%  subj=63.98%  res=32.74%  knn={'knn_ba': 0.4574}  logme=6.314  hscore=0.981
+ CKA(LP, FT) = 0.9781
+ Δ: label=+0.19pp  subj=+6.16pp  → rescue_consistent_with_subject_shortcut
+
+=== labram × eegmat ===
+  (FT source: ft_labram_eegmat)
+ LP shape=(72, 200)  FT shape=(72, 200)
+ LP : label= 5.35%  subj=71.18%  res=23.47%  knn={'knn_ba': 0.5972}  logme=2.671  hscore=0.986
+ FT : label= 3.34%  subj=82.85%  res=13.81%  knn={'knn_ba': 0.6806}  logme=3.103  hscore=0.984
+ CKA(LP, FT) = 0.3785
+ Δ: label=-2.01pp  subj=+11.67pp  → rescue_consistent_with_subject_shortcut
+
+=== cbramod × eegmat ===
+  (FT source: ft_cbramod_eegmat)
+ LP shape=(72, 200)  FT shape=(72, 200)
+ LP : label= 3.72%  subj=79.62%  res=16.66%  knn={'knn_ba': 0.625}  logme=2.772  hscore=0.985
+ FT : label= 6.69%  subj=55.87%  res=37.45%  knn={'knn_ba': 0.5139}  logme=3.119  hscore=0.964
+ CKA(LP, FT) = 0.1416
+ Δ: label=+2.97pp  subj=-23.75pp  → rescue_consistent_with_label_signal
+
+=== reve × eegmat ===
+  (FT source: ft_reve_eegmat)
+ LP shape=(72, 512)  FT shape=(72, 512)
+ LP : label= 2.46%  subj=77.33%  res=20.21%  knn={'knn_ba': 0.5278}  logme=6.050  hscore=0.986
+ FT : label= 2.19%  subj=79.22%  res=18.59%  knn={'knn_ba': 0.5972}  logme=6.183  hscore=0.986
+ CKA(LP, FT) = 0.9589
+ Δ: label=-0.27pp  subj=+1.89pp  → no_meaningful_drift
+
+Saved: results/studies/representation_drift/lp_vs_ft_stress.json

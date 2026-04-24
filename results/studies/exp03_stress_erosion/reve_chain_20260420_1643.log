@@ -1,0 +1,2 @@
+=== reve perm_s0 start 16:43:56 ===
+scripts/experiments/_perm_null_reve_chain.sh: line 18: 2291907 Killed                  $PY train_ft.py $SHARED --run-id studies/exp03_stress_erosion/ft_null_reve/perm_s$s --permute-labels $s > $LOGDIR/reve_perm_s$s.log 2>&1

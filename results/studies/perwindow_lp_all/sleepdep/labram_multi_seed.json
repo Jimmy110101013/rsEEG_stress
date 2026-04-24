@@ -1,0 +1,41 @@
+{
+  "extractor": "labram",
+  "dataset": "sleepdep",
+  "source_features": "results/features_cache/frozen_labram_sleepdep_perwindow.npz",
+  "protocol": "Per-window LogisticRegression (C=1.0, class_weight=balanced) on StandardScaler-normed per-window features. Recording-level StratifiedGroupKFold(5) with groups=patient_id; window-level training within each fold; test-set window probs mean-pooled per recording; threshold 0.5; recording-level BA.",
+  "n_recordings": 72,
+  "n_subjects": 36,
+  "n_positive": 36,
+  "n_negative": 36,
+  "n_splits": 5,
+  "embed_dim": 200,
+  "total_windows": 4320,
+  "avg_windows_per_rec": 60.0,
+  "seeds": [
+    42,
+    123,
+    2024,
+    7,
+    0,
+    1,
+    99,
+    31337
+  ],
+  "per_seed_ba": {
+    "42": 0.625,
+    "123": 0.5972222222222222,
+    "2024": 0.6111111111111112,
+    "7": 0.6111111111111112,
+    "0": 0.5972222222222223,
+    "1": 0.6527777777777777,
+    "99": 0.6527777777777777,
+    "31337": 0.5833333333333333
+  },
+  "mean_8seed": 0.6163194444444444,
+  "std_8seed_ddof1": 0.025650165622714043,
+  "std_8seed_ddof0": 0.02399353291855075,
+  "mean_3seed_42_123_2024": 0.6111111111111112,
+  "std_3seed_42_123_2024_ddof1": 0.013888888888888895,
+  "min": 0.5833333333333333,
+  "max": 0.6527777777777777
+}

@@ -1,7 +1,7 @@
 # SUPERSEDED
 
 **Date**: 2026-04-23
-**Superseded by**: `results/final/adftd/{labram,cbramod,reve}/ft/seed{42,123,2024}/`
+**Superseded by**: `results/final/adftd/ft/{labram,cbramod,reve}/seed{42,123,2024}/`
 
 ## What this dir contains
 
@@ -16,7 +16,7 @@ Two upstream decisions:
 ## Canonical location now
 
 Paper cites ADFTD FT from:
-- `results/final/adftd/{labram,cbramod,reve}/ft/seed{42,123,2024}/summary.json`
+- `results/final/adftd/ft/{labram,cbramod,reve}/seed{42,123,2024}/summary.json`
 - `results/final/adftd/lp/{labram,cbramod,reve}.json`
 
 Do **not** consume this directory in new analyses. Retained for audit / historical reference only.

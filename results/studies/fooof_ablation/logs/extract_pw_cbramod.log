@@ -1,0 +1,23 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[Per-window] Extracting frozen cbramod × sleepdep
+  norm=none, device=cuda:0, window_sec=5.0
+[INFO] Skipped 0 subjects (incomplete sessions), 0 subjects (no SessionOrder), 2 subjects (failed cache markers)
+SleepDep: 72 recordings from 36 subjects (SD=36, NS=36)
+  sleepdep: 72 recordings, 36 subjects, 19ch
+[CBraMod] Loaded 209/209 params from weights/cbramod-base/pretrained_weights.pth
+  cbramod loaded: embed_dim=200
+  [1/72] M=60
+  [7/72] M=60
+  [14/72] M=60
+  [21/72] M=60
+  [28/72] M=60
+  [35/72] M=60
+  [42/72] M=60
+  [49/72] M=60
+  [56/72] M=60
+  [63/72] M=60
+  [70/72] M=60
+
+Saved: results/features_cache/frozen_cbramod_sleepdep_perwindow.npz
+  features: (4320, 200), n_rec=72, total_windows=4320

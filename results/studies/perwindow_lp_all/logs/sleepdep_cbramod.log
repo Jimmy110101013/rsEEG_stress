@@ -1,0 +1,15 @@
+cbramod × sleepdep per-window LP
+  features: (4320, 200)
+  n_rec=72, n_subj=36, pos=36, neg=36
+  total windows=4320 (avg 60.0 per recording)
+  seed=   42  BA=0.5417
+  seed=  123  BA=0.5278
+  seed= 2024  BA=0.5694
+  seed=    7  BA=0.5278
+  seed=    0  BA=0.5694
+  seed=    1  BA=0.5694
+  seed=   99  BA=0.4861
+  seed=31337  BA=0.5278
+
+→ results/studies/perwindow_lp_all/sleepdep/cbramod_multi_seed.json
+  8-seed mean=0.5399 std=0.0292 (ddof=1)

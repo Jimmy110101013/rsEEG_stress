@@ -1,0 +1,309 @@
+=== eegmat ===
+[1/3] temporal-block subject probe...
+[eegmat | labram | original]
+  seed=42: BA=0.6416
+  seed=123: BA=0.6416
+  seed=2024: BA=0.6416
+  mean=0.6416 ± 0.0000 (chance=0.0278)
+[eegmat | labram | aperiodic_removed]
+  seed=42: BA=0.4940
+  seed=123: BA=0.4940
+  seed=2024: BA=0.4940
+  mean=0.4940 ± 0.0000 (chance=0.0278)
+[eegmat | labram | periodic_removed]
+  seed=42: BA=0.6291
+  seed=123: BA=0.6291
+  seed=2024: BA=0.6291
+  mean=0.6291 ± 0.0000 (chance=0.0278)
+[eegmat | labram | both_removed]
+  seed=42: BA=0.4886
+  seed=123: BA=0.4886
+  seed=2024: BA=0.4886
+  mean=0.4886 ± 0.0000 (chance=0.0278)
+[eegmat | cbramod | original]
+  seed=42: BA=0.6209
+  seed=123: BA=0.6209
+  seed=2024: BA=0.6209
+  mean=0.6209 ± 0.0000 (chance=0.0278)
+[eegmat | cbramod | aperiodic_removed]
+  seed=42: BA=0.4876
+  seed=123: BA=0.4876
+  seed=2024: BA=0.4876
+  mean=0.4876 ± 0.0000 (chance=0.0278)
+[eegmat | cbramod | periodic_removed]
+  seed=42: BA=0.6112
+  seed=123: BA=0.6112
+  seed=2024: BA=0.6112
+  mean=0.6112 ± 0.0000 (chance=0.0278)
+[eegmat | cbramod | both_removed]
+  seed=42: BA=0.4790
+  seed=123: BA=0.4790
+  seed=2024: BA=0.4790
+  mean=0.4790 ± 0.0000 (chance=0.0278)
+[eegmat | reve | original]
+  seed=42: BA=0.5091
+  seed=123: BA=0.5091
+  seed=2024: BA=0.5091
+  mean=0.5091 ± 0.0000 (chance=0.0278)
+[eegmat | reve | aperiodic_removed]
+  seed=42: BA=0.2910
+  seed=123: BA=0.2910
+  seed=2024: BA=0.2910
+  mean=0.2910 ± 0.0000 (chance=0.0278)
+[eegmat | reve | periodic_removed]
+  seed=42: BA=0.5152
+  seed=123: BA=0.5152
+  seed=2024: BA=0.5152
+  mean=0.5152 ± 0.0000 (chance=0.0278)
+[eegmat | reve | both_removed]
+  seed=42: BA=0.2856
+  seed=123: BA=0.2856
+  seed=2024: BA=0.2856
+  mean=0.2856 ± 0.0000 (chance=0.0278)
+[2/3] PERMANOVA cosine...
+[eegmat | labram | frozen]
+  n_windows=1707 d=200 n_subj=36
+  label_frac=0.0258 subject_frac=0.4200 residual_frac=0.5543 design=within_subject p=0.0010 t=41.5s
+[eegmat | labram | ft]
+  n_windows=1707 d=200 n_subj=36
+  label_frac=0.0490 subject_frac=0.6614 residual_frac=0.2897 design=within_subject p=0.0010 t=41.7s
+[eegmat | cbramod | frozen]
+  n_windows=1707 d=200 n_subj=36
+  label_frac=0.0209 subject_frac=0.5472 residual_frac=0.4319 design=within_subject p=0.0010 t=41.5s
+[eegmat | cbramod | ft]
+  n_windows=1707 d=200 n_subj=36
+  label_frac=0.0338 subject_frac=0.6830 residual_frac=0.2832 design=within_subject p=0.0010 t=41.7s
+[eegmat | reve | frozen]
+  n_windows=1707 d=512 n_subj=36
+  label_frac=0.0062 subject_frac=0.2953 residual_frac=0.6985 design=within_subject p=0.0010 t=40.4s
+[eegmat | reve | ft]
+  n_windows=853 d=512 n_subj=36
+  label_frac=0.0104 subject_frac=0.5830 residual_frac=0.4066 design=within_subject p=0.0010 t=8.8s
+[3/3] Linear CKA...
+[eegmat | labram | frozen]
+  CKA(label)=0.0606  CKA(subject)=0.1714
+[eegmat | labram | ft]
+  CKA(label)=0.0521  CKA(subject)=0.1624
+[eegmat | cbramod | frozen]
+  CKA(label)=0.0351  CKA(subject)=0.1669
+[eegmat | cbramod | ft]
+  CKA(label)=0.0573  CKA(subject)=0.2487
+[eegmat | reve | frozen]
+  CKA(label)=0.0181  CKA(subject)=0.1269
+[eegmat | reve | ft]
+  CKA(label)=0.0330  CKA(subject)=0.2778
+=== eegmat done ===
+=== sleepdep ===
+[1/3] temporal-block subject probe...
+[sleepdep | labram | original]
+  seed=42: BA=0.6507
+  seed=123: BA=0.6507
+  seed=2024: BA=0.6507
+  mean=0.6507 ± 0.0000 (chance=0.0278)
+[sleepdep | labram | aperiodic_removed]
+  seed=42: BA=0.5428
+  seed=123: BA=0.5428
+  seed=2024: BA=0.5428
+  mean=0.5428 ± 0.0000 (chance=0.0278)
+[sleepdep | labram | periodic_removed]
+  seed=42: BA=0.6530
+  seed=123: BA=0.6530
+  seed=2024: BA=0.6530
+  mean=0.6530 ± 0.0000 (chance=0.0278)
+[sleepdep | labram | both_removed]
+  seed=42: BA=0.5394
+  seed=123: BA=0.5394
+  seed=2024: BA=0.5394
+  mean=0.5394 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | original]
+  seed=42: BA=0.6602
+  seed=123: BA=0.6602
+  seed=2024: BA=0.6602
+  mean=0.6602 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | aperiodic_removed]
+  seed=42: BA=0.6255
+  seed=123: BA=0.6255
+  seed=2024: BA=0.6255
+  mean=0.6255 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | periodic_removed]
+  seed=42: BA=0.6611
+  seed=123: BA=0.6611
+  seed=2024: BA=0.6611
+  mean=0.6611 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | both_removed]
+  seed=42: BA=0.6264
+  seed=123: BA=0.6264
+  seed=2024: BA=0.6264
+  mean=0.6264 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | original]
+  seed=42: BA=0.5104
+  seed=123: BA=0.5104
+  seed=2024: BA=0.5104
+  mean=0.5104 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | aperiodic_removed]
+  seed=42: BA=0.4926
+  seed=123: BA=0.4926
+  seed=2024: BA=0.4926
+  mean=0.4926 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | periodic_removed]
+  seed=42: BA=0.5086
+  seed=123: BA=0.5086
+  seed=2024: BA=0.5086
+  mean=0.5086 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | both_removed]
+  seed=42: BA=0.4889
+  seed=123: BA=0.4889
+  seed=2024: BA=0.4889
+  mean=0.4889 ± 0.0000 (chance=0.0278)
+[2/3] PERMANOVA cosine...
+[sleepdep | labram | frozen]
+  n_windows=4320 d=200 n_subj=36
+  label_frac=0.0022 subject_frac=0.6105 residual_frac=0.3873 design=within_subject p=0.0010 t=203.4s
+[sleepdep | labram | ft]
+  n_windows=4320 d=200 n_subj=36
+  label_frac=0.0031 subject_frac=0.5631 residual_frac=0.4338 design=within_subject p=0.0010 t=202.9s
+[sleepdep | cbramod | frozen]
+  n_windows=4320 d=200 n_subj=36
+  label_frac=0.0105 subject_frac=0.6307 residual_frac=0.3588 design=within_subject p=0.0010 t=203.3s
+[sleepdep | cbramod | ft]
+  n_windows=4320 d=200 n_subj=36
+  label_frac=0.0059 subject_frac=0.7000 residual_frac=0.2941 design=within_subject p=0.0010 t=201.7s
+[sleepdep | reve | frozen]
+  n_windows=4320 d=512 n_subj=36
+  label_frac=0.0048 subject_frac=0.3378 residual_frac=0.6574 design=within_subject p=0.0010 t=203.4s
+[sleepdep | reve | ft]
+  n_windows=2160 d=512 n_subj=36
+  label_frac=0.0036 subject_frac=0.4284 residual_frac=0.5680 design=within_subject p=0.0010 t=40.2s
+[3/3] Linear CKA...
+[sleepdep | labram | frozen]
+  CKA(label)=0.0079  CKA(subject)=0.1128
+[sleepdep | labram | ft]
+  CKA(label)=0.0057  CKA(subject)=0.1259
+[sleepdep | cbramod | frozen]
+  CKA(label)=0.0135  CKA(subject)=0.0914
+[sleepdep | cbramod | ft]
+  CKA(label)=0.0090  CKA(subject)=0.1322
+[sleepdep | reve | frozen]
+  CKA(label)=0.0018  CKA(subject)=0.0025
+[sleepdep | reve | ft]
+  CKA(label)=0.0060  CKA(subject)=0.0378
+=== sleepdep done ===
+=== stress ===
+[1/3] temporal-block subject probe...
+[stress | labram | original]
+  seed=42: BA=0.5701
+  seed=123: BA=0.5701
+  seed=2024: BA=0.5701
+  mean=0.5701 ± 0.0000 (chance=0.0714)
+[stress | labram | aperiodic_removed]
+  seed=42: BA=0.5538
+  seed=123: BA=0.5538
+  seed=2024: BA=0.5538
+  mean=0.5538 ± 0.0000 (chance=0.0714)
+[stress | labram | periodic_removed]
+  seed=42: BA=0.5668
+  seed=123: BA=0.5668
+  seed=2024: BA=0.5668
+  mean=0.5668 ± 0.0000 (chance=0.0714)
+[stress | labram | both_removed]
+  seed=42: BA=0.5506
+  seed=123: BA=0.5506
+  seed=2024: BA=0.5506
+  mean=0.5506 ± 0.0000 (chance=0.0714)
+[stress | cbramod | original]
+  seed=42: BA=0.5919
+  seed=123: BA=0.5919
+  seed=2024: BA=0.5919
+  mean=0.5919 ± 0.0000 (chance=0.0714)
+[stress | cbramod | aperiodic_removed]
+  seed=42: BA=0.5169
+  seed=123: BA=0.5169
+  seed=2024: BA=0.5169
+  mean=0.5169 ± 0.0000 (chance=0.0714)
+[stress | cbramod | periodic_removed]
+  seed=42: BA=0.5880
+  seed=123: BA=0.5880
+  seed=2024: BA=0.5880
+  mean=0.5880 ± 0.0000 (chance=0.0714)
+[stress | cbramod | both_removed]
+  seed=42: BA=0.5167
+  seed=123: BA=0.5167
+  seed=2024: BA=0.5167
+  mean=0.5167 ± 0.0000 (chance=0.0714)
+[stress | reve | original]
+  seed=42: BA=0.5979
+  seed=123: BA=0.5979
+  seed=2024: BA=0.5979
+  mean=0.5979 ± 0.0000 (chance=0.0714)
+[stress | reve | aperiodic_removed]
+  seed=42: BA=0.5531
+  seed=123: BA=0.5531
+  seed=2024: BA=0.5531
+  mean=0.5531 ± 0.0000 (chance=0.0714)
+[stress | reve | periodic_removed]
+  seed=42: BA=0.5961
+  seed=123: BA=0.5961
+  seed=2024: BA=0.5961
+  mean=0.5961 ± 0.0000 (chance=0.0714)
+[stress | reve | both_removed]
+  seed=42: BA=0.5547
+  seed=123: BA=0.5547
+  seed=2024: BA=0.5547
+  mean=0.5547 ± 0.0000 (chance=0.0714)
+[2/3] PERMANOVA cosine...
+[stress | labram | frozen]
+  n_windows=4421 d=200 n_subj=14
+  label_frac=0.0538 subject_frac=0.2444 residual_frac=0.7019 design=subject_trait p=0.1010 t=261.8s
+[stress | labram | ft]
+  n_windows=4421 d=200 n_subj=14
+  label_frac=0.0054 subject_frac=0.5470 residual_frac=0.4475 design=subject_trait p=0.9100 t=262.2s
+[stress | cbramod | frozen]
+  n_windows=4421 d=200 n_subj=14
+  label_frac=0.0201 subject_frac=0.3163 residual_frac=0.6636 design=subject_trait p=0.4770 t=261.4s
+[stress | cbramod | ft]
+  n_windows=4421 d=200 n_subj=14
+  label_frac=0.0160 subject_frac=0.7328 residual_frac=0.2512 design=subject_trait p=0.9530 t=261.3s
+[stress | reve | frozen]
+  n_windows=4421 d=512 n_subj=14
+  label_frac=0.0115 subject_frac=0.1484 residual_frac=0.8401 design=subject_trait p=0.4570 t=262.0s
+[stress | reve | ft]
+  n_windows=2195 d=512 n_subj=14
+  label_frac=0.0338 subject_frac=0.5522 residual_frac=0.4140 design=subject_trait p=0.6550 t=78.7s
+[3/3] Linear CKA...
+[stress | labram | frozen]
+  CKA(label)=0.1143  CKA(subject)=0.1991
+[stress | labram | ft]
+  CKA(label)=0.0204  CKA(subject)=0.3212
+[stress | cbramod | frozen]
+  CKA(label)=0.0440  CKA(subject)=0.1706
+[stress | cbramod | ft]
+  CKA(label)=0.0424  CKA(subject)=0.5403
+[stress | reve | frozen]
+  CKA(label)=0.0280  CKA(subject)=0.1374
+[stress | reve | ft]
+  CKA(label)=0.0708  CKA(subject)=0.4749
+=== stress done ===
+=== adftd ===
+[1/3] temporal-block subject probe...
+[adftd | labram | original]
+  seed=42: BA=0.4419
+  seed=123: BA=0.4419
+  seed=2024: BA=0.4419
+  mean=0.4419 ± 0.0000 (chance=0.0154)
+[adftd | labram | aperiodic_removed]
+  seed=42: BA=0.4970
+  seed=123: BA=0.4970
+  seed=2024: BA=0.4970
+  mean=0.4970 ± 0.0000 (chance=0.0154)
+[adftd | labram | periodic_removed]
+  seed=42: BA=0.4430
+  seed=123: BA=0.4430
+  seed=2024: BA=0.4430
+  mean=0.4430 ± 0.0000 (chance=0.0154)
+[adftd | labram | both_removed]
+  seed=42: BA=0.4957
+  seed=123: BA=0.4957
+  seed=2024: BA=0.4957
+  mean=0.4957 ± 0.0000 (chance=0.0154)
+[adftd | cbramod | original]
+  seed=42: BA=0.6728

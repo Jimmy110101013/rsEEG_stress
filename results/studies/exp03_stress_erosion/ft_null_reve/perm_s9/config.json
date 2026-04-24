@@ -10,7 +10,7 @@
   "run_id": "studies/exp03_stress_erosion/ft_null_reve/perm_s9",
   "label": "dass",
   "threshold": 50,
-  "device": "cuda:7",
+  "device": "cuda:0",
   "no_bf16": false,
   "loss": "focal",
   "mtl": false,

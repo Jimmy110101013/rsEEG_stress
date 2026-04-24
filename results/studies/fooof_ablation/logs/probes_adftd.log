@@ -1,0 +1,38 @@
+[labram | original]
+  subject_probe: nan ± nan
+  state_probe:   0.6334 ± 0.0327
+[labram | aperiodic_removed]
+  subject_probe: nan ± nan
+  state_probe:   0.5779 ± 0.0604
+[labram | periodic_removed]
+  subject_probe: nan ± nan
+  state_probe:   0.6312 ± 0.0330
+[labram | both_removed]
+  subject_probe: nan ± nan
+  state_probe:   0.5705 ± 0.0566
+[cbramod | original]
+  subject_probe: nan ± nan
+  state_probe:   0.5943 ± 0.0255
+[cbramod | aperiodic_removed]
+  subject_probe: nan ± nan
+  state_probe:   0.7236 ± 0.0629
+[cbramod | periodic_removed]
+  subject_probe: nan ± nan
+  state_probe:   0.5978 ± 0.0221
+[cbramod | both_removed]
+  subject_probe: nan ± nan
+  state_probe:   0.7219 ± 0.0623
+[reve | original]
+  subject_probe: nan ± nan
+  state_probe:   0.6629 ± 0.0210
+[reve | aperiodic_removed]
+  subject_probe: nan ± nan
+  state_probe:   0.6567 ± 0.0440
+[reve | periodic_removed]
+  subject_probe: nan ± nan
+  state_probe:   0.6646 ± 0.0247
+[reve | both_removed]
+  subject_probe: nan ± nan
+  state_probe:   0.6584 ± 0.0459
+
+→ results/studies/fooof_ablation/adftd_probes.json

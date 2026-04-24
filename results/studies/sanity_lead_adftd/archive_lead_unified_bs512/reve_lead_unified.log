@@ -1,0 +1,291 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+=== reve seed 41 mode=ft ===
+  recipe: {'lr': 0.0001, 'weight_decay': 0.0, 'layer_decay': 1.0, 'label_smoothing': 0.0, 'head_hidden': 0, 'drop_path': 0.0, 'encoder_lr_scale': 1.0, 'warmup_epochs': 0, 'optimizer_betas': (0.9, 0.999), 'norm': 'none'}
+ADFTD: 88 recordings from 88 subjects (AD=36, HC=29)
+  ADFTD 3-class: 88 recordings, 88 subjects, label counts={0: 29, 1: 36, 2: 23}
+  split: train rec=70/70 subj, val=9/9, test=9/9
+  windows: train=11158, val=1527, test=1389
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  mode=ft — full fine-tuning per recipe
+  Ep   1/200 | train_loss=1.9395 | val_sample_f1=0.272 auroc=0.500 | val_subj_f1=0.243 | lr=1.0e-04 | 10.6s
+  Ep   2/200 | train_loss=1.2267 | val_sample_f1=0.262 auroc=0.535 | val_subj_f1=0.167 | lr=1.0e-04 | 9.4s
+  Ep   3/200 | train_loss=1.2599 | val_sample_f1=0.280 auroc=0.595 | val_subj_f1=0.205 | lr=1.0e-04 | 9.3s
+  Ep   4/200 | train_loss=1.2087 | val_sample_f1=0.215 auroc=0.583 | val_subj_f1=0.167 | lr=1.0e-04 | 9.3s
+  Ep   5/200 | train_loss=1.1935 | val_sample_f1=0.346 auroc=0.596 | val_subj_f1=0.200 | lr=1.0e-04 | 9.9s
+  Ep   6/200 | train_loss=1.1325 | val_sample_f1=0.484 auroc=0.720 | val_subj_f1=0.422 | lr=1.0e-04 | 9.8s
+  Ep   7/200 | train_loss=1.0434 | val_sample_f1=0.429 auroc=0.550 | val_subj_f1=0.422 | lr=1.0e-04 | 9.9s
+  Ep   8/200 | train_loss=1.0841 | val_sample_f1=0.405 auroc=0.695 | val_subj_f1=0.444 | lr=1.0e-04 | 9.7s
+  Ep   9/200 | train_loss=1.0391 | val_sample_f1=0.383 auroc=0.482 | val_subj_f1=0.370 | lr=1.0e-04 | 9.4s
+  Ep  10/200 | train_loss=1.0009 | val_sample_f1=0.529 auroc=0.691 | val_subj_f1=0.422 | lr=9.9e-05 | 9.4s
+  Ep  11/200 | train_loss=0.9930 | val_sample_f1=0.661 auroc=0.770 | val_subj_f1=0.756 | lr=9.9e-05 | 9.4s
+  Ep  12/200 | train_loss=0.8693 | val_sample_f1=0.676 auroc=0.799 | val_subj_f1=0.806 | lr=9.9e-05 | 9.7s
+  Ep  13/200 | train_loss=0.8475 | val_sample_f1=0.495 auroc=0.678 | val_subj_f1=0.650 | lr=9.9e-05 | 10.0s
+  Ep  14/200 | train_loss=0.9228 | val_sample_f1=0.587 auroc=0.782 | val_subj_f1=0.775 | lr=9.9e-05 | 10.0s
+  Ep  15/200 | train_loss=0.8154 | val_sample_f1=0.600 auroc=0.824 | val_subj_f1=0.775 | lr=9.9e-05 | 9.9s
+  Ep  16/200 | train_loss=0.7552 | val_sample_f1=0.650 auroc=0.821 | val_subj_f1=0.775 | lr=9.8e-05 | 10.1s
+  Ep  17/200 | train_loss=0.6942 | val_sample_f1=0.578 auroc=0.810 | val_subj_f1=0.667 | lr=9.8e-05 | 9.5s
+  Ep  18/200 | train_loss=0.6393 | val_sample_f1=0.634 auroc=0.842 | val_subj_f1=0.775 | lr=9.8e-05 | 9.4s
+  Ep  19/200 | train_loss=0.5671 | val_sample_f1=0.595 auroc=0.833 | val_subj_f1=0.667 | lr=9.8e-05 | 9.4s
+  Ep  20/200 | train_loss=0.5383 | val_sample_f1=0.665 auroc=0.831 | val_subj_f1=0.806 | lr=9.8e-05 | 9.4s
+  Ep  21/200 | train_loss=0.6540 | val_sample_f1=0.431 auroc=0.766 | val_subj_f1=0.556 | lr=9.7e-05 | 9.4s
+  Ep  22/200 | train_loss=0.4677 | val_sample_f1=0.586 auroc=0.803 | val_subj_f1=0.775 | lr=9.7e-05 | 9.4s
+  Ep  23/200 | train_loss=0.6836 | val_sample_f1=0.519 auroc=0.833 | val_subj_f1=0.643 | lr=9.7e-05 | 9.4s
+  Ep  24/200 | train_loss=1.0537 | val_sample_f1=0.694 auroc=0.852 | val_subj_f1=0.775 | lr=9.6e-05 | 9.4s
+  Ep  25/200 | train_loss=0.6353 | val_sample_f1=0.653 auroc=0.827 | val_subj_f1=0.775 | lr=9.6e-05 | 9.4s
+  Ep  26/200 | train_loss=0.4136 | val_sample_f1=0.663 auroc=0.822 | val_subj_f1=0.775 | lr=9.6e-05 | 9.4s
+  Ep  27/200 | train_loss=0.2940 | val_sample_f1=0.597 auroc=0.804 | val_subj_f1=0.667 | lr=9.6e-05 | 9.4s
+  Ep  28/200 | train_loss=0.3083 | val_sample_f1=0.637 auroc=0.842 | val_subj_f1=0.775 | lr=9.5e-05 | 9.4s
+  Ep  29/200 | train_loss=0.2412 | val_sample_f1=0.632 auroc=0.829 | val_subj_f1=0.775 | lr=9.5e-05 | 9.5s
+  Ep  30/200 | train_loss=0.3368 | val_sample_f1=0.590 auroc=0.795 | val_subj_f1=0.775 | lr=9.5e-05 | 9.4s
+  Ep  31/200 | train_loss=0.2128 | val_sample_f1=0.524 auroc=0.724 | val_subj_f1=0.639 | lr=9.4e-05 | 9.4s
+  Ep  32/200 | train_loss=0.5119 | val_sample_f1=0.602 auroc=0.820 | val_subj_f1=0.667 | lr=9.4e-05 | 9.4s
+  Ep  33/200 | train_loss=0.3001 | val_sample_f1=0.594 auroc=0.821 | val_subj_f1=0.667 | lr=9.3e-05 | 9.3s
+  Ep  34/200 | train_loss=0.6002 | val_sample_f1=0.514 auroc=0.759 | val_subj_f1=0.546 | lr=9.3e-05 | 9.4s
+  Ep  35/200 | train_loss=0.2789 | val_sample_f1=0.628 auroc=0.800 | val_subj_f1=0.775 | lr=9.3e-05 | 9.4s
+  Ep  36/200 | train_loss=0.1832 | val_sample_f1=0.570 auroc=0.752 | val_subj_f1=0.775 | lr=9.2e-05 | 9.4s
+  Ep  37/200 | train_loss=0.1889 | val_sample_f1=0.583 auroc=0.773 | val_subj_f1=0.775 | lr=9.2e-05 | 9.4s
+  Ep  38/200 | train_loss=0.1935 | val_sample_f1=0.639 auroc=0.820 | val_subj_f1=0.775 | lr=9.1e-05 | 9.4s
+  Ep  39/200 | train_loss=0.0967 | val_sample_f1=0.619 auroc=0.802 | val_subj_f1=0.775 | lr=9.1e-05 | 9.4s
+  early stop @ ep 39
+
+  TEST  sample: f1=0.3600 acc=0.4363 auroc=0.5294 bal_acc=0.3668
+  TEST  subject: f1=0.2593 acc=0.3333 auroc=0.5265 bal_acc=0.2778
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+=== reve seed 41 mode=frozen ===
+  recipe: {'lr': 0.0001, 'weight_decay': 0.0, 'layer_decay': 1.0, 'label_smoothing': 0.0, 'head_hidden': 0, 'drop_path': 0.0, 'encoder_lr_scale': 1.0, 'warmup_epochs': 0, 'optimizer_betas': (0.9, 0.999), 'norm': 'none'}
+ADFTD: 88 recordings from 88 subjects (AD=36, HC=29)
+  ADFTD 3-class: 88 recordings, 88 subjects, label counts={0: 29, 1: 36, 2: 23}
+  split: train rec=70/70 subj, val=9/9, test=9/9
+  windows: train=11158, val=1527, test=1389
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  mode=frozen — backbone frozen, head-only LR=0.005
+  Ep   1/200 | train_loss=13.8976 | val_sample_f1=0.307 auroc=0.528 | val_subj_f1=0.222 | lr=5.0e-03 | 4.8s
+  Ep   2/200 | train_loss=7.5306 | val_sample_f1=0.346 auroc=0.607 | val_subj_f1=0.167 | lr=5.0e-03 | 3.8s
+  Ep   3/200 | train_loss=4.4242 | val_sample_f1=0.392 auroc=0.578 | val_subj_f1=0.422 | lr=5.0e-03 | 3.7s
+  Ep   4/200 | train_loss=4.7369 | val_sample_f1=0.301 auroc=0.503 | val_subj_f1=0.000 | lr=5.0e-03 | 3.8s
+  Ep   5/200 | train_loss=6.8225 | val_sample_f1=0.252 auroc=0.497 | val_subj_f1=0.067 | lr=5.0e-03 | 3.8s
+  Ep   6/200 | train_loss=5.6653 | val_sample_f1=0.319 auroc=0.480 | val_subj_f1=0.315 | lr=5.0e-03 | 3.9s
+  Ep   7/200 | train_loss=6.5629 | val_sample_f1=0.318 auroc=0.516 | val_subj_f1=0.205 | lr=5.0e-03 | 4.1s
+  Ep   8/200 | train_loss=6.7362 | val_sample_f1=0.388 auroc=0.590 | val_subj_f1=0.546 | lr=5.0e-03 | 3.8s
+  Ep   9/200 | train_loss=5.3585 | val_sample_f1=0.292 auroc=0.503 | val_subj_f1=0.361 | lr=5.0e-03 | 3.7s
+  Ep  10/200 | train_loss=5.8717 | val_sample_f1=0.307 auroc=0.483 | val_subj_f1=0.286 | lr=5.0e-03 | 3.7s
+  Ep  11/200 | train_loss=5.5799 | val_sample_f1=0.374 auroc=0.619 | val_subj_f1=0.317 | lr=5.0e-03 | 3.8s
+  Ep  12/200 | train_loss=4.2855 | val_sample_f1=0.396 auroc=0.615 | val_subj_f1=0.205 | lr=5.0e-03 | 3.8s
+  Ep  13/200 | train_loss=6.2680 | val_sample_f1=0.393 auroc=0.623 | val_subj_f1=0.509 | lr=4.9e-03 | 3.7s
+  Ep  14/200 | train_loss=4.9140 | val_sample_f1=0.415 auroc=0.602 | val_subj_f1=0.422 | lr=4.9e-03 | 3.7s
+  Ep  15/200 | train_loss=4.3503 | val_sample_f1=0.439 auroc=0.646 | val_subj_f1=0.422 | lr=4.9e-03 | 3.8s
+  Ep  16/200 | train_loss=5.2130 | val_sample_f1=0.377 auroc=0.583 | val_subj_f1=0.417 | lr=4.9e-03 | 3.8s
+  Ep  17/200 | train_loss=6.3371 | val_sample_f1=0.387 auroc=0.582 | val_subj_f1=0.444 | lr=4.9e-03 | 3.7s
+  Ep  18/200 | train_loss=4.9351 | val_sample_f1=0.321 auroc=0.523 | val_subj_f1=0.095 | lr=4.9e-03 | 3.7s
+  Ep  19/200 | train_loss=4.7587 | val_sample_f1=0.452 auroc=0.665 | val_subj_f1=0.579 | lr=4.9e-03 | 3.8s
+  Ep  20/200 | train_loss=5.0561 | val_sample_f1=0.394 auroc=0.594 | val_subj_f1=0.317 | lr=4.9e-03 | 3.8s
+  Ep  21/200 | train_loss=3.8235 | val_sample_f1=0.322 auroc=0.596 | val_subj_f1=0.281 | lr=4.9e-03 | 3.7s
+  Ep  22/200 | train_loss=4.0204 | val_sample_f1=0.405 auroc=0.587 | val_subj_f1=0.509 | lr=4.9e-03 | 3.9s
+  Ep  23/200 | train_loss=4.3686 | val_sample_f1=0.370 auroc=0.552 | val_subj_f1=0.409 | lr=4.8e-03 | 3.9s
+  Ep  24/200 | train_loss=4.6734 | val_sample_f1=0.334 auroc=0.527 | val_subj_f1=0.242 | lr=4.8e-03 | 3.9s
+  Ep  25/200 | train_loss=5.6001 | val_sample_f1=0.361 auroc=0.544 | val_subj_f1=0.389 | lr=4.8e-03 | 3.9s
+  Ep  26/200 | train_loss=3.9723 | val_sample_f1=0.359 auroc=0.555 | val_subj_f1=0.222 | lr=4.8e-03 | 4.0s
+  Ep  27/200 | train_loss=5.1944 | val_sample_f1=0.372 auroc=0.614 | val_subj_f1=0.433 | lr=4.8e-03 | 3.9s
+  Ep  28/200 | train_loss=3.9387 | val_sample_f1=0.406 auroc=0.632 | val_subj_f1=0.389 | lr=4.8e-03 | 3.9s
+  Ep  29/200 | train_loss=4.3590 | val_sample_f1=0.439 auroc=0.641 | val_subj_f1=0.444 | lr=4.7e-03 | 3.9s
+  Ep  30/200 | train_loss=4.6462 | val_sample_f1=0.340 auroc=0.539 | val_subj_f1=0.317 | lr=4.7e-03 | 3.9s
+  Ep  31/200 | train_loss=5.8963 | val_sample_f1=0.432 auroc=0.610 | val_subj_f1=0.389 | lr=4.7e-03 | 3.9s
+  Ep  32/200 | train_loss=5.0410 | val_sample_f1=0.397 auroc=0.579 | val_subj_f1=0.422 | lr=4.7e-03 | 3.9s
+  Ep  33/200 | train_loss=4.1767 | val_sample_f1=0.386 auroc=0.571 | val_subj_f1=0.422 | lr=4.7e-03 | 3.9s
+  Ep  34/200 | train_loss=4.9703 | val_sample_f1=0.242 auroc=0.521 | val_subj_f1=0.200 | lr=4.7e-03 | 3.8s
+  early stop @ ep 34
+
+  TEST  sample: f1=0.3676 acc=0.3952 auroc=0.5299 bal_acc=0.3694
+  TEST  subject: f1=0.5460 acc=0.5556 auroc=0.5651 bal_acc=0.5556
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+=== reve seed 42 mode=ft ===
+  recipe: {'lr': 0.0001, 'weight_decay': 0.0, 'layer_decay': 1.0, 'label_smoothing': 0.0, 'head_hidden': 0, 'drop_path': 0.0, 'encoder_lr_scale': 1.0, 'warmup_epochs': 0, 'optimizer_betas': (0.9, 0.999), 'norm': 'none'}
+ADFTD: 88 recordings from 88 subjects (AD=36, HC=29)
+  ADFTD 3-class: 88 recordings, 88 subjects, label counts={0: 29, 1: 36, 2: 23}
+  split: train rec=70/70 subj, val=9/9, test=9/9
+  windows: train=11390, val=1384, test=1300
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  mode=ft — full fine-tuning per recipe
+  Ep   1/200 | train_loss=1.5021 | val_sample_f1=0.209 auroc=0.442 | val_subj_f1=0.205 | lr=1.0e-04 | 11.1s
+  Ep   2/200 | train_loss=1.3334 | val_sample_f1=0.225 auroc=0.408 | val_subj_f1=0.205 | lr=1.0e-04 | 10.2s
+  Ep   3/200 | train_loss=1.2612 | val_sample_f1=0.236 auroc=0.362 | val_subj_f1=0.205 | lr=1.0e-04 | 10.2s
+  Ep   4/200 | train_loss=1.1567 | val_sample_f1=0.263 auroc=0.407 | val_subj_f1=0.182 | lr=1.0e-04 | 10.2s
+  Ep   5/200 | train_loss=1.0874 | val_sample_f1=0.258 auroc=0.409 | val_subj_f1=0.205 | lr=1.0e-04 | 10.2s
+  Ep   6/200 | train_loss=0.9897 | val_sample_f1=0.278 auroc=0.456 | val_subj_f1=0.205 | lr=1.0e-04 | 10.3s
+  Ep   7/200 | train_loss=1.0285 | val_sample_f1=0.267 auroc=0.426 | val_subj_f1=0.222 | lr=1.0e-04 | 10.5s
+  Ep   8/200 | train_loss=0.8989 | val_sample_f1=0.319 auroc=0.554 | val_subj_f1=0.333 | lr=1.0e-04 | 10.3s
+  Ep   9/200 | train_loss=0.8763 | val_sample_f1=0.279 auroc=0.431 | val_subj_f1=0.182 | lr=1.0e-04 | 10.3s
+  Ep  10/200 | train_loss=0.7644 | val_sample_f1=0.270 auroc=0.421 | val_subj_f1=0.182 | lr=9.9e-05 | 10.5s
+  Ep  11/200 | train_loss=0.7673 | val_sample_f1=0.239 auroc=0.362 | val_subj_f1=0.205 | lr=9.9e-05 | 10.4s
+  Ep  12/200 | train_loss=0.7654 | val_sample_f1=0.240 auroc=0.380 | val_subj_f1=0.205 | lr=9.9e-05 | 10.4s
+  Ep  13/200 | train_loss=0.6350 | val_sample_f1=0.249 auroc=0.354 | val_subj_f1=0.167 | lr=9.9e-05 | 10.3s
+  Ep  14/200 | train_loss=0.5905 | val_sample_f1=0.242 auroc=0.373 | val_subj_f1=0.182 | lr=9.9e-05 | 10.3s
+  Ep  15/200 | train_loss=0.5276 | val_sample_f1=0.222 auroc=0.357 | val_subj_f1=0.121 | lr=9.9e-05 | 10.3s
+  Ep  16/200 | train_loss=0.3845 | val_sample_f1=0.224 auroc=0.381 | val_subj_f1=0.167 | lr=9.8e-05 | 10.8s
+  Ep  17/200 | train_loss=0.3508 | val_sample_f1=0.245 auroc=0.369 | val_subj_f1=0.205 | lr=9.8e-05 | 10.3s
+  Ep  18/200 | train_loss=0.3398 | val_sample_f1=0.258 auroc=0.383 | val_subj_f1=0.243 | lr=9.8e-05 | 10.3s
+  Ep  19/200 | train_loss=0.3001 | val_sample_f1=0.236 auroc=0.397 | val_subj_f1=0.205 | lr=9.8e-05 | 10.2s
+  Ep  20/200 | train_loss=0.3568 | val_sample_f1=0.228 auroc=0.396 | val_subj_f1=0.148 | lr=9.8e-05 | 10.3s
+  Ep  21/200 | train_loss=0.5189 | val_sample_f1=0.241 auroc=0.353 | val_subj_f1=0.148 | lr=9.7e-05 | 10.2s
+  Ep  22/200 | train_loss=0.2517 | val_sample_f1=0.255 auroc=0.388 | val_subj_f1=0.205 | lr=9.7e-05 | 10.3s
+  Ep  23/200 | train_loss=0.4876 | val_sample_f1=0.225 auroc=0.342 | val_subj_f1=0.167 | lr=9.7e-05 | 10.3s
+  early stop @ ep 23
+
+  TEST  sample: f1=0.3789 acc=0.3808 auroc=0.5446 bal_acc=0.3476
+  TEST  subject: f1=0.3889 acc=0.4444 auroc=0.5000 bal_acc=0.3611
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+=== reve seed 42 mode=frozen ===
+  recipe: {'lr': 0.0001, 'weight_decay': 0.0, 'layer_decay': 1.0, 'label_smoothing': 0.0, 'head_hidden': 0, 'drop_path': 0.0, 'encoder_lr_scale': 1.0, 'warmup_epochs': 0, 'optimizer_betas': (0.9, 0.999), 'norm': 'none'}
+ADFTD: 88 recordings from 88 subjects (AD=36, HC=29)
+  ADFTD 3-class: 88 recordings, 88 subjects, label counts={0: 29, 1: 36, 2: 23}
+  split: train rec=70/70 subj, val=9/9, test=9/9
+  windows: train=11390, val=1384, test=1300
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  mode=frozen — backbone frozen, head-only LR=0.005
+  Ep   1/200 | train_loss=14.0364 | val_sample_f1=0.267 auroc=0.442 | val_subj_f1=0.121 | lr=5.0e-03 | 5.3s
+  Ep   2/200 | train_loss=6.4119 | val_sample_f1=0.272 auroc=0.537 | val_subj_f1=0.205 | lr=5.0e-03 | 4.2s
+  Ep   3/200 | train_loss=4.2364 | val_sample_f1=0.249 auroc=0.462 | val_subj_f1=0.121 | lr=5.0e-03 | 4.2s
+  Ep   4/200 | train_loss=4.2659 | val_sample_f1=0.277 auroc=0.455 | val_subj_f1=0.167 | lr=5.0e-03 | 4.2s
+  Ep   5/200 | train_loss=3.6293 | val_sample_f1=0.309 auroc=0.488 | val_subj_f1=0.205 | lr=5.0e-03 | 4.2s
+  Ep   6/200 | train_loss=6.1307 | val_sample_f1=0.286 auroc=0.471 | val_subj_f1=0.167 | lr=5.0e-03 | 4.2s
+  Ep   7/200 | train_loss=5.6700 | val_sample_f1=0.266 auroc=0.454 | val_subj_f1=0.205 | lr=5.0e-03 | 4.1s
+  Ep   8/200 | train_loss=6.4303 | val_sample_f1=0.226 auroc=0.411 | val_subj_f1=0.083 | lr=5.0e-03 | 4.2s
+  Ep   9/200 | train_loss=4.8039 | val_sample_f1=0.208 auroc=0.423 | val_subj_f1=0.067 | lr=5.0e-03 | 4.2s
+  Ep  10/200 | train_loss=4.4797 | val_sample_f1=0.321 auroc=0.609 | val_subj_f1=0.167 | lr=5.0e-03 | 4.2s
+  Ep  11/200 | train_loss=5.7358 | val_sample_f1=0.340 auroc=0.595 | val_subj_f1=0.167 | lr=5.0e-03 | 4.2s
+  Ep  12/200 | train_loss=7.3815 | val_sample_f1=0.379 auroc=0.588 | val_subj_f1=0.422 | lr=5.0e-03 | 4.2s
+  Ep  13/200 | train_loss=5.4535 | val_sample_f1=0.296 auroc=0.518 | val_subj_f1=0.205 | lr=4.9e-03 | 4.2s
+  Ep  14/200 | train_loss=4.4196 | val_sample_f1=0.277 auroc=0.468 | val_subj_f1=0.182 | lr=4.9e-03 | 4.2s
+  Ep  15/200 | train_loss=4.2427 | val_sample_f1=0.282 auroc=0.433 | val_subj_f1=0.167 | lr=4.9e-03 | 4.2s
+  Ep  16/200 | train_loss=4.7604 | val_sample_f1=0.355 auroc=0.487 | val_subj_f1=0.167 | lr=4.9e-03 | 4.4s
+  Ep  17/200 | train_loss=6.8450 | val_sample_f1=0.350 auroc=0.571 | val_subj_f1=0.167 | lr=4.9e-03 | 4.2s
+  Ep  18/200 | train_loss=4.3118 | val_sample_f1=0.254 auroc=0.444 | val_subj_f1=0.205 | lr=4.9e-03 | 4.2s
+  Ep  19/200 | train_loss=5.1029 | val_sample_f1=0.237 auroc=0.423 | val_subj_f1=0.205 | lr=4.9e-03 | 4.2s
+  Ep  20/200 | train_loss=4.3824 | val_sample_f1=0.267 auroc=0.456 | val_subj_f1=0.206 | lr=4.9e-03 | 4.2s
+  Ep  21/200 | train_loss=4.5227 | val_sample_f1=0.279 auroc=0.527 | val_subj_f1=0.205 | lr=4.9e-03 | 4.2s
+  Ep  22/200 | train_loss=5.5152 | val_sample_f1=0.237 auroc=0.403 | val_subj_f1=0.111 | lr=4.9e-03 | 4.1s
+  Ep  23/200 | train_loss=6.0172 | val_sample_f1=0.232 auroc=0.400 | val_subj_f1=0.074 | lr=4.8e-03 | 4.2s
+  Ep  24/200 | train_loss=6.2935 | val_sample_f1=0.284 auroc=0.530 | val_subj_f1=0.286 | lr=4.8e-03 | 4.2s
+  Ep  25/200 | train_loss=7.1317 | val_sample_f1=0.275 auroc=0.431 | val_subj_f1=0.167 | lr=4.8e-03 | 4.2s
+  Ep  26/200 | train_loss=5.6597 | val_sample_f1=0.278 auroc=0.435 | val_subj_f1=0.404 | lr=4.8e-03 | 4.2s
+  Ep  27/200 | train_loss=5.6071 | val_sample_f1=0.276 auroc=0.462 | val_subj_f1=0.333 | lr=4.8e-03 | 4.2s
+  early stop @ ep 27
+
+  TEST  sample: f1=0.4038 acc=0.4631 auroc=0.6117 bal_acc=0.4057
+  TEST  subject: f1=0.4167 acc=0.5556 auroc=0.7116 bal_acc=0.5000
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+=== reve seed 43 mode=ft ===
+  recipe: {'lr': 0.0001, 'weight_decay': 0.0, 'layer_decay': 1.0, 'label_smoothing': 0.0, 'head_hidden': 0, 'drop_path': 0.0, 'encoder_lr_scale': 1.0, 'warmup_epochs': 0, 'optimizer_betas': (0.9, 0.999), 'norm': 'none'}
+ADFTD: 88 recordings from 88 subjects (AD=36, HC=29)
+  ADFTD 3-class: 88 recordings, 88 subjects, label counts={0: 29, 1: 36, 2: 23}
+  split: train rec=70/70 subj, val=9/9, test=9/9
+  windows: train=11291, val=1398, test=1385
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  mode=ft — full fine-tuning per recipe
+  Ep   1/200 | train_loss=1.4235 | val_sample_f1=0.276 auroc=0.468 | val_subj_f1=0.205 | lr=1.0e-04 | 11.3s
+  Ep   2/200 | train_loss=1.2484 | val_sample_f1=0.257 auroc=0.461 | val_subj_f1=0.205 | lr=1.0e-04 | 10.4s
+  Ep   3/200 | train_loss=1.1974 | val_sample_f1=0.264 auroc=0.504 | val_subj_f1=0.167 | lr=1.0e-04 | 10.4s
+  Ep   4/200 | train_loss=1.3251 | val_sample_f1=0.249 auroc=0.445 | val_subj_f1=0.205 | lr=1.0e-04 | 10.4s
+  Ep   5/200 | train_loss=1.0417 | val_sample_f1=0.313 auroc=0.470 | val_subj_f1=0.339 | lr=1.0e-04 | 10.4s
+  Ep   6/200 | train_loss=0.9739 | val_sample_f1=0.272 auroc=0.468 | val_subj_f1=0.205 | lr=1.0e-04 | 10.3s
+  Ep   7/200 | train_loss=0.9220 | val_sample_f1=0.303 auroc=0.507 | val_subj_f1=0.200 | lr=1.0e-04 | 10.7s
+  Ep   8/200 | train_loss=0.8556 | val_sample_f1=0.353 auroc=0.566 | val_subj_f1=0.311 | lr=1.0e-04 | 10.4s
+  Ep   9/200 | train_loss=0.7609 | val_sample_f1=0.377 auroc=0.548 | val_subj_f1=0.340 | lr=1.0e-04 | 10.3s
+  Ep  10/200 | train_loss=0.8001 | val_sample_f1=0.374 auroc=0.565 | val_subj_f1=0.340 | lr=9.9e-05 | 10.3s
+  Ep  11/200 | train_loss=0.6825 | val_sample_f1=0.354 auroc=0.557 | val_subj_f1=0.259 | lr=9.9e-05 | 10.4s
+  Ep  12/200 | train_loss=0.5942 | val_sample_f1=0.360 auroc=0.557 | val_subj_f1=0.357 | lr=9.9e-05 | 10.7s
+  Ep  13/200 | train_loss=0.5389 | val_sample_f1=0.357 auroc=0.570 | val_subj_f1=0.435 | lr=9.9e-05 | 10.5s
+  Ep  14/200 | train_loss=0.7940 | val_sample_f1=0.351 auroc=0.528 | val_subj_f1=0.259 | lr=9.9e-05 | 10.5s
+  Ep  15/200 | train_loss=0.7723 | val_sample_f1=0.336 auroc=0.526 | val_subj_f1=0.194 | lr=9.9e-05 | 10.5s
+  Ep  16/200 | train_loss=0.3983 | val_sample_f1=0.362 auroc=0.543 | val_subj_f1=0.333 | lr=9.8e-05 | 10.5s
+  Ep  17/200 | train_loss=0.4157 | val_sample_f1=0.343 auroc=0.547 | val_subj_f1=0.259 | lr=9.8e-05 | 10.5s
+  Ep  18/200 | train_loss=0.3239 | val_sample_f1=0.353 auroc=0.559 | val_subj_f1=0.206 | lr=9.8e-05 | 10.5s
+  Ep  19/200 | train_loss=0.2076 | val_sample_f1=0.369 auroc=0.576 | val_subj_f1=0.206 | lr=9.8e-05 | 10.5s
+  Ep  20/200 | train_loss=0.1775 | val_sample_f1=0.356 auroc=0.555 | val_subj_f1=0.194 | lr=9.8e-05 | 10.5s
+  Ep  21/200 | train_loss=0.1525 | val_sample_f1=0.354 auroc=0.552 | val_subj_f1=0.206 | lr=9.7e-05 | 10.5s
+  Ep  22/200 | train_loss=0.2089 | val_sample_f1=0.364 auroc=0.561 | val_subj_f1=0.356 | lr=9.7e-05 | 10.6s
+  Ep  23/200 | train_loss=0.1989 | val_sample_f1=0.345 auroc=0.541 | val_subj_f1=0.333 | lr=9.7e-05 | 10.6s
+  Ep  24/200 | train_loss=0.2447 | val_sample_f1=0.356 auroc=0.537 | val_subj_f1=0.311 | lr=9.6e-05 | 10.5s
+  early stop @ ep 24
+
+  TEST  sample: f1=0.4293 acc=0.4267 auroc=0.6274 bal_acc=0.4640
+  TEST  subject: f1=0.3611 acc=0.3333 auroc=0.7280 bal_acc=0.3611
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+=== reve seed 43 mode=frozen ===
+  recipe: {'lr': 0.0001, 'weight_decay': 0.0, 'layer_decay': 1.0, 'label_smoothing': 0.0, 'head_hidden': 0, 'drop_path': 0.0, 'encoder_lr_scale': 1.0, 'warmup_epochs': 0, 'optimizer_betas': (0.9, 0.999), 'norm': 'none'}
+ADFTD: 88 recordings from 88 subjects (AD=36, HC=29)
+  ADFTD 3-class: 88 recordings, 88 subjects, label counts={0: 29, 1: 36, 2: 23}
+  split: train rec=70/70 subj, val=9/9, test=9/9
+  windows: train=11291, val=1398, test=1385
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+  mode=frozen — backbone frozen, head-only LR=0.005
+  Ep   1/200 | train_loss=15.2925 | val_sample_f1=0.336 auroc=0.524 | val_subj_f1=0.205 | lr=5.0e-03 | 5.0s
+  Ep   2/200 | train_loss=7.3576 | val_sample_f1=0.278 auroc=0.488 | val_subj_f1=0.121 | lr=5.0e-03 | 4.1s
+  Ep   3/200 | train_loss=6.5643 | val_sample_f1=0.298 auroc=0.540 | val_subj_f1=0.167 | lr=5.0e-03 | 4.0s
+  Ep   4/200 | train_loss=4.7792 | val_sample_f1=0.371 auroc=0.534 | val_subj_f1=0.413 | lr=5.0e-03 | 4.1s
+  Ep   5/200 | train_loss=5.0460 | val_sample_f1=0.346 auroc=0.575 | val_subj_f1=0.167 | lr=5.0e-03 | 4.1s
+  Ep   6/200 | train_loss=6.3271 | val_sample_f1=0.271 auroc=0.506 | val_subj_f1=0.121 | lr=5.0e-03 | 4.1s
+  Ep   7/200 | train_loss=5.0322 | val_sample_f1=0.319 auroc=0.514 | val_subj_f1=0.262 | lr=5.0e-03 | 4.1s
+  Ep   8/200 | train_loss=4.4738 | val_sample_f1=0.276 auroc=0.530 | val_subj_f1=0.182 | lr=5.0e-03 | 4.1s
+  Ep   9/200 | train_loss=4.9463 | val_sample_f1=0.310 auroc=0.486 | val_subj_f1=0.389 | lr=5.0e-03 | 4.1s
+  Ep  10/200 | train_loss=4.9056 | val_sample_f1=0.347 auroc=0.526 | val_subj_f1=0.389 | lr=5.0e-03 | 4.1s
+  Ep  11/200 | train_loss=6.8865 | val_sample_f1=0.370 auroc=0.548 | val_subj_f1=0.389 | lr=5.0e-03 | 4.0s
+  Ep  12/200 | train_loss=9.2820 | val_sample_f1=0.343 auroc=0.560 | val_subj_f1=0.205 | lr=5.0e-03 | 4.1s
+  Ep  13/200 | train_loss=5.4881 | val_sample_f1=0.325 auroc=0.520 | val_subj_f1=0.167 | lr=4.9e-03 | 4.1s
+  Ep  14/200 | train_loss=4.8934 | val_sample_f1=0.375 auroc=0.554 | val_subj_f1=0.333 | lr=4.9e-03 | 4.1s
+  Ep  15/200 | train_loss=6.4462 | val_sample_f1=0.330 auroc=0.559 | val_subj_f1=0.167 | lr=4.9e-03 | 4.1s
+  Ep  16/200 | train_loss=6.9752 | val_sample_f1=0.287 auroc=0.551 | val_subj_f1=0.300 | lr=4.9e-03 | 4.0s
+  Ep  17/200 | train_loss=6.3771 | val_sample_f1=0.260 auroc=0.509 | val_subj_f1=0.205 | lr=4.9e-03 | 4.0s
+  Ep  18/200 | train_loss=5.2571 | val_sample_f1=0.341 auroc=0.530 | val_subj_f1=0.262 | lr=4.9e-03 | 4.1s
+  Ep  19/200 | train_loss=4.4347 | val_sample_f1=0.358 auroc=0.548 | val_subj_f1=0.262 | lr=4.9e-03 | 4.1s
+  Ep  20/200 | train_loss=4.8450 | val_sample_f1=0.346 auroc=0.540 | val_subj_f1=0.311 | lr=4.9e-03 | 4.1s
+  Ep  21/200 | train_loss=3.8535 | val_sample_f1=0.377 auroc=0.559 | val_subj_f1=0.413 | lr=4.9e-03 | 4.1s
+  Ep  22/200 | train_loss=4.9212 | val_sample_f1=0.337 auroc=0.578 | val_subj_f1=0.413 | lr=4.9e-03 | 4.0s
+  Ep  23/200 | train_loss=5.1741 | val_sample_f1=0.327 auroc=0.534 | val_subj_f1=0.333 | lr=4.8e-03 | 4.1s
+  Ep  24/200 | train_loss=4.5611 | val_sample_f1=0.339 auroc=0.531 | val_subj_f1=0.333 | lr=4.8e-03 | 4.1s
+  Ep  25/200 | train_loss=4.8964 | val_sample_f1=0.317 auroc=0.523 | val_subj_f1=0.205 | lr=4.8e-03 | 4.1s
+  Ep  26/200 | train_loss=5.8757 | val_sample_f1=0.358 auroc=0.569 | val_subj_f1=0.205 | lr=4.8e-03 | 4.2s
+  Ep  27/200 | train_loss=6.7140 | val_sample_f1=0.307 auroc=0.493 | val_subj_f1=0.444 | lr=4.8e-03 | 4.5s
+  Ep  28/200 | train_loss=5.5461 | val_sample_f1=0.306 auroc=0.470 | val_subj_f1=0.389 | lr=4.8e-03 | 4.8s
+  Ep  29/200 | train_loss=6.2617 | val_sample_f1=0.272 auroc=0.550 | val_subj_f1=0.205 | lr=4.7e-03 | 4.2s
+  Ep  30/200 | train_loss=8.4943 | val_sample_f1=0.261 auroc=0.514 | val_subj_f1=0.167 | lr=4.7e-03 | 4.2s
+  Ep  31/200 | train_loss=5.3690 | val_sample_f1=0.295 auroc=0.501 | val_subj_f1=0.067 | lr=4.7e-03 | 4.3s
+  Ep  32/200 | train_loss=4.3757 | val_sample_f1=0.307 auroc=0.518 | val_subj_f1=0.083 | lr=4.7e-03 | 4.2s
+  Ep  33/200 | train_loss=6.5264 | val_sample_f1=0.343 auroc=0.536 | val_subj_f1=0.315 | lr=4.7e-03 | 4.3s
+  Ep  34/200 | train_loss=5.0754 | val_sample_f1=0.346 auroc=0.515 | val_subj_f1=0.389 | lr=4.7e-03 | 4.3s
+  Ep  35/200 | train_loss=5.6141 | val_sample_f1=0.351 auroc=0.525 | val_subj_f1=0.311 | lr=4.6e-03 | 4.3s
+  Ep  36/200 | train_loss=4.2991 | val_sample_f1=0.325 auroc=0.501 | val_subj_f1=0.244 | lr=4.6e-03 | 4.3s
+  early stop @ ep 36
+
+  TEST  sample: f1=0.3616 acc=0.4022 auroc=0.5566 bal_acc=0.3649
+  TEST  subject: f1=0.3175 acc=0.4444 auroc=0.5799 bal_acc=0.4167

@@ -1,0 +1,267 @@
+{
+  "protocol": {
+    "lp_features": "frozen_<fm>_<dataset>_<ch>ch.npz (recording-avg)",
+    "ft_features": "ft_<fm>_<dataset>/fold[1-5]_features.npz (concat 5-fold OOF)",
+    "stress_filter": "drops mixed-label subjects (same as fig_variance_atlas)",
+    "ft_caveat_labram_stress": "lr=1e-4 (HP-sweep); canonical lr=1e-5 has no cached features",
+    "metrics": "variance frac (nested SS), LogME, H-score, CKA, kNN-LOO"
+  },
+  "results": {
+    "stress": {
+      "labram": {
+        "fm": "labram",
+        "n_recordings_lp": 55,
+        "n_recordings_ft": 55,
+        "lp": {
+          "label_frac_pct": 5.676,
+          "subject_frac_pct": 62.8813,
+          "residual_frac_pct": 31.4427,
+          "subject_to_label_ratio": 11.079,
+          "knn_ba": {
+            "knn_ba": 0.383
+          },
+          "logme": {
+            "logme": 5.9459
+          },
+          "hscore": {
+            "hscore": 0.9817
+          }
+        },
+        "ft": {
+          "label_frac_pct": 4.6497,
+          "subject_frac_pct": 87.4787,
+          "residual_frac_pct": 7.8716,
+          "subject_to_label_ratio": 18.814,
+          "knn_ba": {
+            "knn_ba": 0.4787
+          },
+          "logme": {
+            "logme": 6.0031
+          },
+          "hscore": {
+            "hscore": 0.9818
+          }
+        },
+        "cka_lp_vs_ft": 0.4645,
+        "delta": {
+          "label_frac_pct": -1.0263,
+          "subject_frac_pct": 24.5974,
+          "logme": 0.05719999999999992,
+          "interpretation": "rescue_consistent_with_subject_shortcut"
+        }
+      },
+      "cbramod": {
+        "fm": "cbramod",
+        "n_recordings_lp": 55,
+        "n_recordings_ft": 55,
+        "lp": {
+          "label_frac_pct": 2.7655,
+          "subject_frac_pct": 62.1968,
+          "residual_frac_pct": 35.0376,
+          "subject_to_label_ratio": 22.49,
+          "knn_ba": {
+            "knn_ba": 0.4043
+          },
+          "logme": {
+            "logme": 6.1186
+          },
+          "hscore": {
+            "hscore": 0.9815
+          }
+        },
+        "ft": {
+          "label_frac_pct": 1.2569,
+          "subject_frac_pct": 81.6633,
+          "residual_frac_pct": 17.0798,
+          "subject_to_label_ratio": 64.971,
+          "knn_ba": {
+            "knn_ba": 0.4681
+          },
+          "logme": {
+            "logme": 6.1704
+          },
+          "hscore": {
+            "hscore": 0.9711
+          }
+        },
+        "cka_lp_vs_ft": 0.1725,
+        "delta": {
+          "label_frac_pct": -1.5086,
+          "subject_frac_pct": 19.4665,
+          "logme": 0.05180000000000007,
+          "interpretation": "rescue_consistent_with_subject_shortcut"
+        }
+      },
+      "reve": {
+        "fm": "reve",
+        "n_recordings_lp": 55,
+        "n_recordings_ft": 55,
+        "lp": {
+          "label_frac_pct": 3.0951,
+          "subject_frac_pct": 57.8152,
+          "residual_frac_pct": 39.0898,
+          "subject_to_label_ratio": 18.68,
+          "knn_ba": {
+            "knn_ba": 0.4362
+          },
+          "logme": {
+            "logme": 6.3324
+          },
+          "hscore": {
+            "hscore": 0.9824
+          }
+        },
+        "ft": {
+          "label_frac_pct": 3.2812,
+          "subject_frac_pct": 63.9784,
+          "residual_frac_pct": 32.7404,
+          "subject_to_label_ratio": 19.499,
+          "knn_ba": {
+            "knn_ba": 0.4574
+          },
+          "logme": {
+            "logme": 6.3144
+          },
+          "hscore": {
+            "hscore": 0.9814
+          }
+        },
+        "cka_lp_vs_ft": 0.9781,
+        "delta": {
+          "label_frac_pct": 0.1861,
+          "subject_frac_pct": 6.1632,
+          "logme": -0.017999999999999794,
+          "interpretation": "rescue_consistent_with_subject_shortcut"
+        }
+      }
+    },
+    "eegmat": {
+      "labram": {
+        "fm": "labram",
+        "n_recordings_lp": 72,
+        "n_recordings_ft": 72,
+        "lp": {
+          "label_frac_pct": 5.3485,
+          "subject_frac_pct": 71.1779,
+          "residual_frac_pct": 23.4736,
+          "subject_to_label_ratio": 13.308,
+          "knn_ba": {
+            "knn_ba": 0.5972
+          },
+          "logme": {
+            "logme": 2.6713
+          },
+          "hscore": {
+            "hscore": 0.9857
+          }
+        },
+        "ft": {
+          "label_frac_pct": 3.3414,
+          "subject_frac_pct": 82.8489,
+          "residual_frac_pct": 13.8097,
+          "subject_to_label_ratio": 24.795,
+          "knn_ba": {
+            "knn_ba": 0.6806
+          },
+          "logme": {
+            "logme": 3.1032
+          },
+          "hscore": {
+            "hscore": 0.9844
+          }
+        },
+        "cka_lp_vs_ft": 0.3785,
+        "delta": {
+          "label_frac_pct": -2.0071,
+          "subject_frac_pct": 11.671,
+          "logme": 0.4319000000000002,
+          "interpretation": "rescue_consistent_with_subject_shortcut"
+        }
+      },
+      "cbramod": {
+        "fm": "cbramod",
+        "n_recordings_lp": 72,
+        "n_recordings_ft": 72,
+        "lp": {
+          "label_frac_pct": 3.7221,
+          "subject_frac_pct": 79.6175,
+          "residual_frac_pct": 16.6604,
+          "subject_to_label_ratio": 21.39,
+          "knn_ba": {
+            "knn_ba": 0.625
+          },
+          "logme": {
+            "logme": 2.7715
+          },
+          "hscore": {
+            "hscore": 0.9854
+          }
+        },
+        "ft": {
+          "label_frac_pct": 6.6873,
+          "subject_frac_pct": 55.8676,
+          "residual_frac_pct": 37.4451,
+          "subject_to_label_ratio": 8.354,
+          "knn_ba": {
+            "knn_ba": 0.5139
+          },
+          "logme": {
+            "logme": 3.1186
+          },
+          "hscore": {
+            "hscore": 0.9639
+          }
+        },
+        "cka_lp_vs_ft": 0.1416,
+        "delta": {
+          "label_frac_pct": 2.9652,
+          "subject_frac_pct": -23.7499,
+          "logme": 0.34709999999999974,
+          "interpretation": "rescue_consistent_with_label_signal"
+        }
+      },
+      "reve": {
+        "fm": "reve",
+        "n_recordings_lp": 72,
+        "n_recordings_ft": 72,
+        "lp": {
+          "label_frac_pct": 2.4596,
+          "subject_frac_pct": 77.3263,
+          "residual_frac_pct": 20.214,
+          "subject_to_label_ratio": 31.438,
+          "knn_ba": {
+            "knn_ba": 0.5278
+          },
+          "logme": {
+            "logme": 6.0498
+          },
+          "hscore": {
+            "hscore": 0.986
+          }
+        },
+        "ft": {
+          "label_frac_pct": 2.1914,
+          "subject_frac_pct": 79.217,
+          "residual_frac_pct": 18.5916,
+          "subject_to_label_ratio": 36.15,
+          "knn_ba": {
+            "knn_ba": 0.5972
+          },
+          "logme": {
+            "logme": 6.1831
+          },
+          "hscore": {
+            "hscore": 0.9861
+          }
+        },
+        "cka_lp_vs_ft": 0.9589,
+        "delta": {
+          "label_frac_pct": -0.2682,
+          "subject_frac_pct": 1.8907,
+          "logme": 0.1332999999999993,
+          "interpretation": "no_meaningful_drift"
+        }
+      }
+    }
+  }
+}

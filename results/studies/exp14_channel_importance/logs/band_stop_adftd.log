@@ -1,0 +1,44 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+ADFTD: 65 recordings from 65 subjects (AD=36, HC=29)
+
+============================================================
+LABRAM × adftd: 65 recordings, band-stop ablation
+============================================================
+[LaBraM] Loaded 219/221 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+Extracting original features...
+  Original features: (65, 200)
+  delta (1-4 Hz): cosine_dist=0.000835 ± 0.000382
+  theta (4-8 Hz): cosine_dist=0.000625 ± 0.000421
+  alpha (8-13 Hz): cosine_dist=0.000536 ± 0.000591
+  beta (13-30 Hz): cosine_dist=0.000409 ± 0.000318
+ADFTD: 65 recordings from 65 subjects (AD=36, HC=29)
+
+============================================================
+CBRAMOD × adftd: 65 recordings, band-stop ablation
+============================================================
+[CBraMod] Loaded 209/209 params from weights/cbramod-base/pretrained_weights.pth
+Extracting original features...
+  Original features: (65, 200)
+  delta (1-4 Hz): cosine_dist=0.001529 ± 0.000763
+  theta (4-8 Hz): cosine_dist=0.000564 ± 0.000412
+  alpha (8-13 Hz): cosine_dist=0.001070 ± 0.001262
+  beta (13-30 Hz): cosine_dist=0.001675 ± 0.001303
+ADFTD: 65 recordings from 65 subjects (AD=36, HC=29)
+
+============================================================
+REVE × adftd: 65 recordings, band-stop ablation
+============================================================
+[PosBank] Loaded 543 positions from weights/reve-positions
+[REVE] Loaded 140/140 encoder params from weights/reve-base/model.safetensors
+Extracting original features...
+  Original features: (65, 512)
+  delta (1-4 Hz): cosine_dist=0.032705 ± 0.082059
+  theta (4-8 Hz): cosine_dist=0.012456 ± 0.030200
+  alpha (8-13 Hz): cosine_dist=0.005050 ± 0.012163
+  beta (13-30 Hz): cosine_dist=0.001080 ± 0.002448
+
+Saved → results/studies/exp14_channel_importance/band_stop_ablation.json
+
+Saved → results/studies/exp14_channel_importance/band_stop_ablation.{pdf,png}

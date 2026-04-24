@@ -1,0 +1,38 @@
+[labram | original]
+  subject_probe: 0.4062 ± 0.0362
+  state_probe:   0.6163 ± 0.0257
+[labram | aperiodic_removed]
+  subject_probe: 0.3611 ± 0.0492
+  state_probe:   0.5382 ± 0.0321
+[labram | periodic_removed]
+  subject_probe: 0.3993 ± 0.0418
+  state_probe:   0.6250 ± 0.0297
+[labram | both_removed]
+  subject_probe: 0.3576 ± 0.0502
+  state_probe:   0.5330 ± 0.0385
+[cbramod | original]
+  subject_probe: 0.4201 ± 0.0346
+  state_probe:   0.5399 ± 0.0292
+[cbramod | aperiodic_removed]
+  subject_probe: 0.3750 ± 0.0332
+  state_probe:   0.5278 ± 0.0278
+[cbramod | periodic_removed]
+  subject_probe: 0.4236 ± 0.0288
+  state_probe:   0.5382 ± 0.0275
+[cbramod | both_removed]
+  subject_probe: 0.3750 ± 0.0332
+  state_probe:   0.5243 ± 0.0254
+[reve | original]
+  subject_probe: 0.3750 ± 0.0257
+  state_probe:   0.5625 ± 0.0393
+[reve | aperiodic_removed]
+  subject_probe: 0.4167 ± 0.0332
+  state_probe:   0.5191 ± 0.0363
+[reve | periodic_removed]
+  subject_probe: 0.3750 ± 0.0257
+  state_probe:   0.5642 ± 0.0356
+[reve | both_removed]
+  subject_probe: 0.4167 ± 0.0332
+  state_probe:   0.5156 ± 0.0359
+
+→ results/studies/fooof_ablation/sleepdep_probes.json

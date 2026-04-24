@@ -1,0 +1,7 @@
+[18:11:06] START adftd noaug s42 on cuda:4
+[18:33:49] DONE  adftd noaug s42
+[18:33:49] START adftd noaug s123 on cuda:4
+[18:58:05] DONE  adftd noaug s123
+[18:58:05] START adftd noaug s2024 on cuda:4
+[19:21:56] DONE  adftd noaug s2024
+[19:21:56] CHAIN COMPLETE: adftd 3 noaug seeds

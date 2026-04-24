@@ -1,0 +1,2 @@
+=== cbramod perm_s0 start 16:43:51 ===
+scripts/experiments/_perm_null_cbramod_chain.sh: line 18: 2290932 Killed                  $PY train_ft.py $SHARED --run-id studies/exp03_stress_erosion/ft_null_cbramod/perm_s$s --permute-labels $s > $LOGDIR/cbramod_perm_s$s.log 2>&1

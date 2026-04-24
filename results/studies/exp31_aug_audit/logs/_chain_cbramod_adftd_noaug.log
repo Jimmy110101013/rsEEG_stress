@@ -1,0 +1,7 @@
+[18:55:16] START cbramod adftd noaug s42 on cuda:3
+[19:31:45] DONE  cbramod adftd noaug s42
+[19:31:45] START cbramod adftd noaug s123 on cuda:3
+[20:14:54] DONE  cbramod adftd noaug s123
+[20:14:54] START cbramod adftd noaug s2024 on cuda:3
+[20:53:46] DONE  cbramod adftd noaug s2024
+[20:53:46] CHAIN COMPLETE: cbramod adftd noaug

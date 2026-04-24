@@ -1,0 +1,8 @@
+=== 2026-04-21_17:20:53  START FOOOF ADFTD chain ===
+  [17:20:53] FOOOF fit + ablation on adftd (norm=none)
+  [17:25:25] extract-ablated: labram × adftd (3 conds)
+  [17:26:17] extract-ablated: cbramod × adftd (3 conds)
+  [17:27:13] extract-ablated: reve × adftd (3 conds)
+  [17:28:20] probes: subject + state on adftd
+=== 2026-04-21_17:59:25  END FOOOF ADFTD chain ===
+Results: results/studies/fooof_ablation/adftd_probes.json
