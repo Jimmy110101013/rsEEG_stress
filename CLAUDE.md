@@ -1,12 +1,14 @@
 # CLAUDE.md — UCSD_stress Technical Reference
 
 **Findings** (paper claims): `docs/findings.md` — 5 CLAIMs, `F-A`…`F-E`
-**Methodology notes**: `docs/methodology_notes.md` — guardrails (G-F07/F08), internal notes (N-F11/F12/F15/F18/F19/F21), archived (A-F04)
+**Methodology notes**: `docs/methodology_notes.md` — guardrails (G-F07/F08/F10/F12), internal notes, archived entries
 **Priorities**: `docs/TODO.md` (living task list)
-**Paper strategy**: `docs/paper_strategy.md`
+**Paper outline**: `docs/paper_outline.md` (IMRaD + figures/tables layout)
+**Experiments index**: `docs/paper_experiments_index.md` (single navigation doc — §/Fig/Table → source data/script/log/status)
 **Literature**: `docs/related_work.md`
 **η² pipeline**: `docs/eta_squared_pipeline_explanation.md`
-**History**: `docs/progress.md` (append-only log, not authoritative — findings.md supersedes)
+**Historical archive** (read-only): `docs/historical/` — prior drafts, reviews (R1–R4), pre-SDL strategy, `progress.md` legacy log, sdl_paper_draft v1/v2
+**Reference papers / specs**: `docs/reference/` (external PDFs — CbraMod, REVE, EEG-FM-Bench, Komarov, Wang 2025, etc.); `specs/` (HHT integration, normalization ablation — reference-only, never auto-loaded)
 
 > **ID migration (2026-04-15)**: old `F01`–`F21` were consolidated into 5 paper claims (`F-A`…`F-E`) plus guardrails/notes. Each claim's `Absorbs:` line in `findings.md` lists the original F## IDs, so prior references resolve via that mapping.
 
@@ -42,7 +44,7 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
   - Subject-level CV — `StratifiedGroupKFold(5)` by patient_id — **primary metric**.
   - Trial-level CV — `StratifiedKFold(5)` on recordings — reference-paper comparison only (subject leakage).
   - Global prediction pooling; SMA-3 smoothed early stopping (patience 15); `--aug-overlap 0.75` on minority class.
-  - Permutation null: `train_ft.py --permute-labels <seed>` shuffles recording-level labels before CV; use `scripts/run_perm_null.py` for a pool.
+  - Permutation null: `train_ft.py --permute-labels <seed>` shuffles recording-level labels before CV; use `scripts/experiments/run_perm_null.py` for a pool.
 
 ---
 
@@ -53,36 +55,46 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
 |---|---|
 | `train_ft.py` | Subject-level CV fine-tuning. Flags: `--label dass` (default), `--permute-labels <seed>`, `--save-features`. |
 | `train_trial.py` | Trial-level CV (reference comparison only). |
-| `train_lp.py` | Linear probing baseline (frozen encoder + MLP head). |
-| `pipeline/dataset.py` | `StressEEGDataset`, `WindowDataset`, `RecordingGroupSampler` |
+| ~~`train_lp.py`~~ | **DEPRECATED 2026-04-23** (G-F12). Pool-then-classify PyTorch LP — NOT the canonical protocol. Use `scripts/experiments/frozen_lp_perwindow_all.py` (per-window sklearn LogReg + recording-level pooling). See G-F10. Kept for historical reproducibility only. |
+| `pipeline/dataset.py` | `StressEEGDataset`, `WindowDataset`, `RecordingGroupSampler` (with `_preprocess` fallback when cache missing) |
 | `pipeline/eegmat_dataset.py` | EEGMAT within-subject loader |
+| `pipeline/meditation_dataset.py` | OpenNeuro ds001787 loader (BioSemi 64ch → COMMON_19; expert/novice between-subject) |
+| `pipeline/sam40_dataset.py` | SAM40 stress dataset loader |
 | `src/model.py` | `DecoupledStressModel` (extract_pooled + classify) |
 | `src/variance_analysis.py` | Nested SS, mixed-effects, cluster bootstrap, PERMANOVA, label-subspace |
-
-**Scripts layout** (reorganised into subdirectories)
-| Subdirectory | Contents |
-|---|---|
-| `scripts/figures/` | Paper figure generation (`build_*.py`, 24 scripts) |
-| `scripts/hhsa/` | HHSA pipeline — cache, holospectra, analysis directions (8 scripts) |
-| `scripts/experiments/` | Experiment launchers — `.sh` drivers + `run_*.py` orchestrators (19 scripts) |
-| `scripts/features/` | Feature extraction — frozen + FT (5 scripts) |
-| `scripts/analysis/` | Statistical analysis, PSD anchors, variance, WSCI, visualization (21 scripts) |
-
-**Key analysis + figure scripts**
-| Path | Purpose |
-|---|---|
-| `scripts/analysis/run_variance_analysis.py` | Regenerates `paper/figures/variance_analysis.json` |
-| `scripts/experiments/stress_frozen_lp_multiseed.py` | Multi-seed Frozen LP |
-| `scripts/experiments/run_perm_null.py` | Pool-launches permutation-null FT runs |
-| `scripts/experiments/run_hp_sweep.py` | HP grid sweep |
-| `scripts/analysis/summarize_sweep.py` | HP sweep leaderboard |
 | `src/wsci.py` | WSCI (Within-Subject Contrast Index) metric |
 
-**Results layout** (see `results/README.md` for full guide)
-- `results/features_cache/` — cached frozen + FT features
-- `results/studies/exp##_<slug>/` — self-contained investigations (exp01–exp11 current; new experiments increment from next available ID)
-- `results/hp_sweep/` — hyperparameter sweep results
-- `results/archive/` — read-only historical runs
+**Scripts layout** (subdirectories under `scripts/`)
+| Subdirectory | Contents |
+|---|---|
+| `scripts/figures/` | Paper figure builders (`build_*.py`, ~35 scripts — current Fig 2..6 + appendix + legacy SDL builders under `_historical/`) |
+| `scripts/hhsa/` | HHSA pipeline — cache, holospectra, analysis directions (9 scripts) |
+| `scripts/experiments/` | Experiment launchers — 14 `.py` orchestrators + 35 `.sh` chain drivers (perm-null, non-FM, FOOOF, final-FT, etc.) |
+| `scripts/features/` | Feature extraction — frozen + FT (8 scripts) |
+| `scripts/analysis/` | Statistical analysis, PSD anchors, variance, WSCI, representation drift (~37 scripts) |
+
+**Canonical LP / key analysis scripts**
+| Path | Purpose |
+|---|---|
+| `scripts/experiments/frozen_lp_perwindow_all.py` | **Canonical LP** (per G-F10): per-window sklearn LogReg + recording-level mean-pool → BA |
+| `scripts/experiments/stress_frozen_lp_{perwindow,loso,multiseed}.py` | Stress-specific LP variants |
+| `scripts/experiments/run_perm_null.py` | Pool-launches permutation-null FT runs |
+| `scripts/experiments/run_hp_sweep.py` | HP grid sweep |
+| `scripts/analysis/run_variance_analysis.py` | Regenerates variance analysis JSON (default out: `paper/figures/variance_analysis.json` — override with `--out` to land under current figure layout) |
+| `scripts/analysis/build_master_results_table.py` | Master results table JSON generator |
+| `scripts/analysis/summarize_sweep.py` | HP sweep leaderboard |
+| `scripts/analysis/representation_drift_lp_vs_ft.py` | LP vs FT representation drift |
+| `scripts/analysis/sleepdep_within_subject.py`, `compute_sleepdep_dir_consistency.py` | SleepDep within-subject direction consistency |
+| `scripts/figures/build_fig2_2x2.py` | 2×2 factorial panel (task-substrate × regime) |
+
+**Results layout** (see `results/README.md`)
+- `results/final/<dataset>/<experiment_type>/<fm>/seed*/` — canonical per-paper results (ft / lp / classical / band_stop / nonfm_deep / perm_null / variance_triangulation / subject_probe_temporal_block / fooof_ablation). Datasets: adftd / eegmat / sleepdep / stress / tdbrain / cross_cell.
+- `results/final_winfeat/` — parallel window-feature snapshot layer (same shape as `final/` but keeping fold-level feature artifacts).
+- `results/studies/exp##_<slug>/` — self-contained investigations. Current range: exp01–exp33 (exp22 skipped) + non-numbered (`exp_newdata`, `exp_30_sdl_vs_between`, `fooof_ablation`, `ft_vs_lp`, `perwindow_lp_all`, `representation_drift`, `sanity_lead_adftd`). New experiments increment from next available ID.
+- `results/hp_sweep/` — hyperparameter sweep results (`20260410_dass`).
+- `results/archive/` — read-only historical runs (pre-2026-04-10 work; dated subdirs).
+- `results/features_cache/` — frozen + FT feature caches (`.npz` and `ft_*` dirs are `.gitignore`d; one canonical tracked checkpoint).
+- `results/hhsa/` — HHSA analysis outputs (01_eyeball..08_am_coherence + cross_dataset_comparison). `cache/` and `holospectra/` are `.gitignore`d intermediates.
 
 ---
 
@@ -95,4 +107,4 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
 - **Cross-dataset FT taxonomy is now 3-model × 3-dataset** (F-C in `findings.md`). The old "LaBraM-only" constraint was F04 (now archived as A-F04 in `methodology_notes.md`).
 - **FM input norm is per-model.** Never use a global `--norm` in multi-model sweeps. See §2 above.
 - **GPU usage limit: max 3 GPUs.** Leave the remaining GPUs free for the user's own work. Chain sequential jobs on the same GPU with `&&` if needed.
-- **Index discipline — `docs/paper_experiments_index.md` is the single navigation doc.** Any commit that touches `results/studies/**`, `results/features_cache/**`, `results/hp_sweep/**`, `paper/figures/**/*.{pdf,png}`, or `paper/figures/_historical/source_tables/**` **must** update `docs/paper_experiments_index.md` in the same commit — update the matching section's Status / source-path / last-updated column, or add a new row. Never create parallel `results/my_task_2026-xx-xx/` directories; keep artifacts at canonical paths and let the index be the map. Task-bounded refresh plans (e.g. `docs/adftd_refresh_plan.md`) are companion docs, not replacements for the index.
+- **Index discipline — `docs/paper_experiments_index.md` is the single navigation doc.** Any commit that touches `results/studies/**`, `results/final/**`, `results/final_winfeat/**`, `results/features_cache/**`, `results/hp_sweep/**`, `paper/figures/**/*.{pdf,png}`, `paper/tables/**`, or `paper/figures/_historical/source_tables/**` **must** update `docs/paper_experiments_index.md` in the same commit — update the matching section's Status / source-path / last-updated column, or add a new row. Never create parallel `results/my_task_2026-xx-xx/` directories; keep artifacts at canonical paths and let the index be the map. Task-bounded refresh plans are companion docs, not replacements for the index; retire them into `docs/historical/` once the scope closes.

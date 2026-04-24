@@ -2,9 +2,11 @@
 
 **Scope.** This document specifies how we measure "does fine-tuning rewrite
 the LaBraM representation?" in a way that survives reviewer scrutiny.
-It is the reference for the numbers in `paper/figures/variance_analysis.json`
-and the figures in `paper/figures/label_subspace.*` and
-`paper/figures/cross_dataset_signal_strength.*`.
+It is the reference for the variance-analysis numbers (canonical source:
+`paper/figures/_historical/source_tables/variance_analysis_all.json` for the
+legacy 4-dataset pooled run; current per-cell triangulation lives under
+`results/studies/exp32_variance_triangulation/` and
+`results/final/<dataset>/variance_triangulation/`).
 
 **Naming.** The file is called `eta_squared_*` for historical reasons
 (the first draft of the analysis used naive per-dim η²). We no longer use
@@ -115,24 +117,24 @@ naive scaling-laws expectation.
 ## 3. Production results (2026-04-08)
 
 Full analysis (Stress, ADFTD, TDBRAIN):
-`/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python scripts/run_variance_analysis.py`
+`/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python scripts/analysis/run_variance_analysis.py`
 (n_boot=1000, n_perm=999, all 200 feature dims for mixed-effects).
 
 EEGMAT analysis (within-subject design needs the crossed decomposition path):
-`/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python scripts/analyze_eegmat.py`
+legacy `scripts/analyze_eegmat.py` was removed — current crossed-path output is regenerated via `scripts/analysis/run_variance_analysis.py --dataset eegmat` or by the per-cell triangulation pipeline under `results/studies/exp32_variance_triangulation/`.
 
 | Dataset | BA | n_rec / n_subj | Label type | Frozen label frac | FT pooled label frac | Change |
 |---|---|---|---|---|---|---|
-| ~~Stress~~ | ~~0.656~~ | 70 / 17  | between-subject | ~~**7.23%**~~ | ~~**7.24%**~~ | **STALE** — computed under subject-dass; see progress.md §4.6 |
+| ~~Stress~~ | ~~0.656~~ | 70 / 17  | between-subject | ~~**7.23%**~~ | ~~**7.24%**~~ | **STALE** — computed under subject-dass; see `docs/historical/progress.md` §4.6 |
 | EEGMAT   | 0.736 | 72 / 36  | **within-subject** | **5.35%** | **5.82%** | → (×1.09) |
 | ADFTD    | 0.752 | 195 / 65 | between-subject | 2.79% | 7.70% | ↑ ×2.76 |
 | TDBRAIN  | 0.681 | 734 / 359| between-subject | 2.97% | 1.47% | ↓ ×0.49 |
 
 > **Note (2026-04-10)**: The Stress row above is stale. The underlying FT
 > feature run used `--label subject-dass` (trait-memorization artifact,
-> see progress.md §4.6). Regenerating requires re-running Stress FT with
+> see `docs/historical/progress.md` §4.6). Regenerating requires re-running Stress FT with
 > `--label dass --save-features` and re-running
-> `scripts/run_variance_analysis.py` after adding the new ft_dir to its
+> `scripts/analysis/run_variance_analysis.py` after adding the new ft_dir to its
 > DATASETS dict. The 2026-04-10 Stress result is currently only
 > available at the **behavioral** level: Frozen LP 0.605 ± 0.030 vs
 > Real FT 0.443 ± 0.068 (`results/studies/exp03_stress_erosion/`).
@@ -173,8 +175,9 @@ and task recordings. The pooled label fraction $SS_{\text{label}}/SS_{\text{tota
 itself is still well-defined (it doesn't care about the subject design),
 but the nested decomposition $SS_\text{label} + SS_{\text{subject}|\text{label}} + SS_\text{residual}$
 needs to be replaced by the *crossed* decomposition $SS_\text{label} + SS_\text{subject} + SS_\text{interaction+resid}$.
-`scripts/analyze_eegmat.py` runs the crossed path and reports the same
-pooled label fraction in a directly comparable form.
+The crossed path is exercised by `scripts/analysis/run_variance_analysis.py`
+(EEGMAT branch) and reports the same pooled label fraction in a directly
+comparable form.
 
 ---
 
@@ -250,15 +253,17 @@ All math lives in `src/variance_analysis.py`:
 
 CLIs and figure producers:
 
-- `scripts/run_variance_analysis.py` — produces `paper/figures/variance_analysis.json`.
-  Run under `stress`.
-- `scripts/build_cross_dataset_figure.py` — Panel A: BA bars; Panel B:
-  pooled label fraction with fold-change annotations. Reads JSON,
-  renders figure. Runs under `stress` (or `timm_eeg`).
-- `scripts/build_label_subspace_figure.py` — 3×3 diagnostic figure
-  (label fraction bar, cumulative label SS curve, top-2 PCA projection)
-  plus t-SNE frozen-vs-fine-tuned. Runs under `stress` (needs
-  scikit-learn).
+- `scripts/analysis/run_variance_analysis.py` — produces the variance-analysis
+  JSON. Default `--out paper/figures/variance_analysis.json` is legacy; point
+  `--out` at `results/final/<dataset>/variance_triangulation/variance_analysis.json`
+  (or the study subdir) to land under the current layout. Run under `stress`.
+- Legacy figure builders (`build_cross_dataset_figure.py`,
+  `build_label_subspace_figure.py`) were part of the pre-SDL layout and have
+  been superseded. Current per-cell variance visuals are produced by
+  `scripts/figures/build_fig2_2x2.py` (see `paper/figures/fig2/`) and by the
+  appendix builders in `scripts/figures/` — consult
+  `docs/paper_experiments_index.md` §4.2 for the current source-of-truth
+  mapping.
 
 Tests: `tests/test_variance_analysis.py` — 10 tests including synthetic
 variance-component recovery, legacy reproduction, cluster bootstrap CI,
@@ -273,16 +278,15 @@ concentration/spread detection.
 STRESS=/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python
 
 # 1. Full statistical analysis → variance_analysis.json
-$STRESS scripts/run_variance_analysis.py
+$STRESS scripts/analysis/run_variance_analysis.py
 
-# 2. EEGMAT within-subject analysis → variance_analysis_eegmat.json
-$STRESS scripts/analyze_eegmat.py
+# 2. EEGMAT within-subject analysis (legacy: scripts/analyze_eegmat.py, removed;
+#    current per-cell path goes through exp32_variance_triangulation/)
 
-# 3. Cross-dataset summary figure (pooled label fraction panel)
-$STRESS scripts/build_cross_dataset_figure.py
-
-# 4. Diagnostic figure (label subspace + t-SNE)
-$STRESS scripts/build_label_subspace_figure.py
+# 3. Cross-dataset summary + label-subspace diagnostic figures
+#    Legacy builders (scripts/build_cross_dataset_figure.py,
+#    scripts/build_label_subspace_figure.py) removed. Current figure builders:
+#    scripts/figures/build_fig2_2x2.py and appendix builders in scripts/figures/.
 
 # 5. Tests
 conda run -n timm_eeg python tests/test_variance_analysis.py    # numpy-only

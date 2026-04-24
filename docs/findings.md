@@ -183,7 +183,7 @@ ADFTD 3-class (88 subjects, HC=29/AD=36/FTD=23), subject-independent 8:1:1 split
 
 **Evidence:**
 
-- **Pooled label fraction** (LaBraM frozen, 4 datasets): 2.8–7.2% — task labels explain a small slice of representation variance. Source: `paper/figures/variance_analysis.json`.
+- **Pooled label fraction** (LaBraM frozen, 4 datasets): 2.8–7.2% — task labels explain a small slice of representation variance. Source: `paper/figures/_historical/source_tables/variance_analysis_all.json` (legacy pooled run); current per-cell triangulation: `results/studies/exp32_variance_triangulation/`.
 - **Cosine similarity**: within-subject ≫ between-subject for all 3 FMs.
 - **Mixed-effects ICC**: subject identity dominates 71% of EEGMAT representation variance.
 - **RSA triangulation** (`results/studies/exp06_fm_task_fitness/fitness_metrics_full.json`): RSA subject-r > RSA label-r in **12/12** frozen model × dataset combinations. Confirmed by silhouette, Fisher score, kNN, LogME, H-score.
@@ -358,7 +358,7 @@ Real FT 0.443 ± 0.083 (3 seeds) vs null FT 0.497 ± 0.086 (10 perm), one-sided 
 ## F-NEURO: Cross-model neural band consensus diagnoses contrast strength
 
 **Status**: confirmed (2026-04-13)
-**Absorbs**: exp14 triad (channel ablation, band RSA, band-stop) — previously buried in paper_strategy.md §7; promoted to claim 2026-04-15.
+**Absorbs**: exp14 triad (channel ablation, band RSA, band-stop) — previously buried in `docs/historical/paper_strategy.md` §7; promoted to claim 2026-04-15.
 **Thesis role**: *independent neural test* of the contrast-strength hypothesis — not a BA metric, but a mechanism probe.
 
 Three complementary analyses (spatial, correlational spectral, causal spectral) on the same 3 FMs × 2 datasets, frozen representations only. Source: `results/studies/exp14_channel_importance/`.

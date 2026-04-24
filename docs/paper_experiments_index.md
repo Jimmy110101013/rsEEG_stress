@@ -91,7 +91,7 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 
 ## §4.4 Within-subject direction consistency — Fig 4
 
-**Figure**: `paper/figures/main/fig4{a,b,c}_*.{pdf,png}` (pending build)
+**Figure**: `paper/figures/fig4/fig4{a,b,c}_*.{pdf,png}` — canonical per-panel outputs (fig4a_eegmat_trajectory, fig4b_sleepdep_trajectory, fig4c_dir_consistency). Hand-composited master at `paper/figures/main/Fig4_dir_consist.png`.
 **Build script**: `scripts/figures/build_eegmat_within_subject_figure.py` + `scripts/figures/build_within_subject_supplementary.py`
 **Scope**: EEGMAT + SleepDep **only** (Stress / ADFTD excluded by design — no within-subject label contrast)
 
@@ -118,7 +118,7 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 |---|---|---|---|---|
 | EEGMAT | `results/studies/fooof_ablation/eegmat_probes.json` | `results/features_cache/fooof_ablation/feat_{fm}_eegmat_{cond}.npz` | `scripts/experiments/fooof_ablation_probes.py` | ✅ |
 | SleepDep | `results/studies/fooof_ablation/sleepdep_probes.json` | same pattern | | ✅ |
-| ADFTD | `results/studies/fooof_ablation/adftd_probes.json` | same pattern | | ✅ 2026-04-24 split1 + per-FM window (labram/cbramod=5s, reve=10s); `.bak_split3_20260423` retained. Session-level subject probe = NaN (1 rec/subject); superseded by temporal-block probe (see below) so all 4 cells now share a single protocol. State probe values valid and used in the delta table in `adftd_refresh_plan.md`. |
+| ADFTD | `results/studies/fooof_ablation/adftd_probes.json` | same pattern | | ✅ 2026-04-24 split1 + per-FM window (labram/cbramod=5s, reve=10s); `.bak_split3_20260423` previously retained, pruned 2026-04-25. Session-level subject probe = NaN (1 rec/subject); superseded by temporal-block probe (see below) so all 4 cells now share a single protocol. State probe values valid (ADFTD split1 refresh plan closed in commit d8bbac7, 2026-04-24). |
 | Stress | `results/studies/fooof_ablation/stress_probes.json` | same pattern | | ✅ |
 
 **Orchestrators** (per-cell shell drivers): `scripts/experiments/_fooof_{adftd,sleepdep}_chain.sh`
@@ -249,7 +249,7 @@ Three independent methods converge on **ADFTD LaBraM as the cross-cell label-sig
 |---|---|
 | JSON | `paper/figures/_historical/source_tables/exp14_channel_importance.json` |
 | Script | `scripts/analysis/compute_channel_importance.py` or `exp14_channel_importance/` scripts |
-| Figure | `paper/figures/main/fig7a_topomap.pdf` (existing) — needs migration to `paper/figures/appendix/` |
+| Figure | `paper/figures/_historical/v1_pre_sdl/fig7a_topomap.pdf` (legacy); new appendix channel-ablation figure = `paper/figures/appendix/figB1_channel_ablation.{pdf,png}` |
 
 ### B.2 Band-stop cosine distance (3 FM × 4 cells × 4 bands)
 Same raw JSON as §4.5 but different metric. See §4.5 table above + split into "cosine distance" vs "probe BA" metrics.
@@ -346,9 +346,9 @@ Extraction scripts:
 
 | Task | Plan doc | Status |
 |---|---|---|
-| ADFTD split1 refresh | `docs/adftd_refresh_plan.md` | 🏃 Step 2 mostly done (FOOOF + band-stop + band-RSA + LP ✅; Variance decomposition still blocked on FT-v2 features + script rewrite) |
-| Per-FM FT HP unification (4 cells) | (see memory obs 3348 / 3361 / 3385) | 🏃 runs completed 2026-04-23; feature extraction + table update pending |
-| New variance script (4-cell × 3 FM + SleepDep not TDBRAIN) | — | ⏳ not yet written |
+| ADFTD split1 refresh | — (plan retired; closed in commit d8bbac7, 2026-04-24) | ✅ Complete: FOOOF + band-stop + band-RSA + LP + non-FM deep split1 rerun all landed. Variance triangulation replaced the legacy decomposition. |
+| Per-FM FT HP unification (4 cells) | (see memory obs 3348 / 3361 / 3385) | ✅ runs completed 2026-04-23; results snapshotted under `results/final/` and propagated to master table. |
+| Variance triangulation (4-cell × 3 FM) | exp32_variance_triangulation/ | ✅ 2026-04-24 (probe + PERMANOVA + CKA cross-cell aggregation); see `results/studies/exp32_variance_triangulation/` |
 
 ---
 
@@ -374,4 +374,4 @@ See `docs/methodology_notes.md` — G-F07 … G-F12 codify pipeline policies (pe
 1. When you generate a new source JSON / figure / table, add its row here under the matching §.
 2. If you supersede something, move the old row to §Archive with the supersession date.
 3. Never create parallel `results/my_task_2026-xx-xx/` dirs. Put artifacts at canonical paths + add a row here.
-4. For time-bounded refresh operations (e.g. the ADFTD split1 refresh), use a task-specific plan doc (e.g. `docs/adftd_refresh_plan.md`) as a companion — but the **permanent** answer to "where is X?" lives here.
+4. For time-bounded refresh operations, use a task-specific plan doc in `docs/` as a companion — but the **permanent** answer to "where is X?" lives here. Once the scope closes, retire the plan doc into `docs/historical/` (or remove it) and update this index's §Active refresh tasks status to ✅.

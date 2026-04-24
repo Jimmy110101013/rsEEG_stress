@@ -15,7 +15,7 @@ Read this file when you need to:
 
 ### G-F07: subject-dass OR-aggregation is deprecated
 **Status**: policy (2026-04-10)
-**Evidence**: Only 3/17 subjects have within-subject DASS class transitions. Subject-dass turns per-recording stress classification into subject-identity broadcast. Canonical 0.656 LaBraM FT under subject-dass is a non-reproducible single-seed draw (HEAD re-run gives 0.45). Source: `docs/progress.md` §4.6.
+**Evidence**: Only 3/17 subjects have within-subject DASS class transitions. Subject-dass turns per-recording stress classification into subject-identity broadcast. Canonical 0.656 LaBraM FT under subject-dass is a non-reproducible single-seed draw (HEAD re-run gives 0.45). Source: `docs/historical/progress.md` §4.6.
 **Action**: `--label subject-dass` deprecated. All new work uses `--label dass` (per-recording). Historical subject-dass numbers are inflation artifacts — see F-B Axis 2.
 
 ---
@@ -72,7 +72,7 @@ Read this file when you need to:
 
 ### N-F12: Subject-adversarial losses (GRL, LEAD) ruled out
 **Status**: negative ablation (2026-04-05)
-**Evidence**: GRL λ=0.1 → 0.537 BA (−12 pp), λ=1.0 → 0.558 BA (−10 pp), LEAD loss → 0.439 BA. Full λ sweep [0.01–1.0] all worse than baseline. Source: `docs/progress.md` §6.
+**Evidence**: GRL λ=0.1 → 0.537 BA (−12 pp), λ=1.0 → 0.558 BA (−10 pp), LEAD loss → 0.439 BA. Full λ sweep [0.01–1.0] all worse than baseline. Source: `docs/historical/progress.md` §6.
 **Placement**: appendix or omit; negative result not central to Arc A.
 
 ---
@@ -178,4 +178,4 @@ Original F04 key numbers (for historical traceability):
 | Silent erosion | TDBRAIN (MDD vs HC) | 734/359 | 2.97% | 1.47% | −1.06 to −1.58 pp |
 | Stale | Stress (DASS) | 70/17 | 7.23% | 7.24% | n/a (subject-dass) |
 
-Source: `paper/figures/variance_analysis_matched.json`, `scripts/run_variance_analysis.py`.
+Source: legacy `paper/figures/variance_analysis_matched.json` (pre-reorg); regenerator = `scripts/analysis/run_variance_analysis.py`. Current per-cell outputs under `results/studies/exp32_variance_triangulation/` and `results/final/<dataset>/variance_triangulation/`.
