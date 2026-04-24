@@ -1,0 +1,5 @@
+[adftd | labram | frozen]
+  n_windows=10735 d=200 n_subj=65
+  label_frac=0.0137 subject_frac=0.3003 residual_frac=0.6860 design=subject_trait p=0.0840 t=3501.2s
+[adftd | labram | ft]
+  n_windows=10735 d=200 n_subj=65

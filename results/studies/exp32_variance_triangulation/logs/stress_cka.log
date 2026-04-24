@@ -1,0 +1,14 @@
+[stress | labram | frozen]
+  CKA(label)=0.1143  CKA(subject)=0.1991
+[stress | labram | ft]
+  CKA(label)=0.0204  CKA(subject)=0.3212
+[stress | cbramod | frozen]
+  CKA(label)=0.0440  CKA(subject)=0.1706
+[stress | cbramod | ft]
+  CKA(label)=0.0424  CKA(subject)=0.5403
+[stress | reve | frozen]
+  CKA(label)=0.0280  CKA(subject)=0.1374
+[stress | reve | ft]
+  CKA(label)=0.0708  CKA(subject)=0.4749
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp32_variance_triangulation/stress_cka.json

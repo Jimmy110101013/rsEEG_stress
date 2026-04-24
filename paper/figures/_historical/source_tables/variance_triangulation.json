@@ -1,0 +1,492 @@
+{
+  "cells": [
+    {
+      "cell": "eegmat",
+      "fms": [
+        {
+          "fm": "labram",
+          "trace_anova": {
+            "frozen_label_pct": 1.2619411634629607,
+            "ft_label_pct": 3.253855402727667,
+            "delta_label_pp": 1.9919142392647065,
+            "frozen_subject_pct": 21.164995655952524,
+            "ft_subject_pct": 59.74942657420761,
+            "delta_subject_pp": 38.58443091825509,
+            "label_design": "within_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 2.5772179338196706,
+            "ft_label_pct": 4.898306884556427,
+            "delta_label_pp": 2.3210889507367565,
+            "frozen_subject_pct": 41.996708066798334,
+            "ft_subject_pct": 66.13516784525862,
+            "delta_subject_pp": 24.13845977846029,
+            "p_label_frozen": 0.001,
+            "p_label_ft": 0.001,
+            "design": "within_subject"
+          },
+          "cka": {
+            "frozen_cka_label": 0.060591807544770275,
+            "ft_cka_label": 0.05208768153482888,
+            "delta_cka_label": -0.008504126009941396,
+            "frozen_cka_subject": 0.17142228164085924,
+            "ft_cka_subject": 0.1623922535887152,
+            "delta_cka_subject": -0.009030028052144035
+          },
+          "subject_probe": {
+            "original": 0.6817901234567901,
+            "aperiodic_removed": 0.5372839506172837,
+            "periodic_removed": 0.6839506172839506,
+            "both_removed": 0.5293827160493827,
+            "chance": 0.027777777777777776,
+            "n_subjects": 36
+          }
+        },
+        {
+          "fm": "cbramod",
+          "trace_anova": {
+            "frozen_label_pct": 1.0531307642833132,
+            "ft_label_pct": 2.286745412320055,
+            "delta_label_pp": 1.2336146480367414,
+            "frozen_subject_pct": 29.558095234629878,
+            "ft_subject_pct": 58.530954773233724,
+            "delta_subject_pp": 28.972859538603846,
+            "label_design": "within_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 2.0875841145514045,
+            "ft_label_pct": 3.376149869200212,
+            "delta_label_pp": 1.2885657546488078,
+            "frozen_subject_pct": 54.72108983546771,
+            "ft_subject_pct": 68.30200432675532,
+            "delta_subject_pp": 13.58091449128761,
+            "p_label_frozen": 0.001,
+            "p_label_ft": 0.001,
+            "design": "within_subject"
+          },
+          "cka": {
+            "frozen_cka_label": 0.03510364031225301,
+            "ft_cka_label": 0.057319514708353746,
+            "delta_cka_label": 0.02221587439610074,
+            "frozen_cka_subject": 0.16687352980257014,
+            "ft_cka_subject": 0.24867237778105455,
+            "delta_cka_subject": 0.08179884797848441
+          },
+          "subject_probe": {
+            "original": 0.693395061728395,
+            "aperiodic_removed": 0.5039506172839505,
+            "periodic_removed": 0.6910493827160493,
+            "both_removed": 0.5035802469135803,
+            "chance": 0.027777777777777776,
+            "n_subjects": 36
+          }
+        },
+        {
+          "fm": "reve",
+          "trace_anova": {
+            "frozen_label_pct": 0.39073015927062066,
+            "ft_label_pct": 0.6454102913748534,
+            "delta_label_pp": 0.2546801321042328,
+            "frozen_subject_pct": 16.206087373744733,
+            "ft_subject_pct": 31.9845776257327,
+            "delta_subject_pp": 15.77849025198797,
+            "label_design": "within_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 0.616175456541729,
+            "ft_label_pct": 1.0402104917077193,
+            "delta_label_pp": 0.4240350351659903,
+            "frozen_subject_pct": 29.531271463885822,
+            "ft_subject_pct": 58.3008065032562,
+            "delta_subject_pp": 28.769535039370375,
+            "p_label_frozen": 0.001,
+            "p_label_ft": 0.001,
+            "design": "within_subject"
+          },
+          "cka": {
+            "frozen_cka_label": 0.018056785186787862,
+            "ft_cka_label": 0.033011499606137445,
+            "delta_cka_label": 0.014954714419349584,
+            "frozen_cka_subject": 0.12692633929943117,
+            "ft_cka_subject": 0.27779773923778056,
+            "delta_cka_subject": 0.1508713999383494
+          },
+          "subject_probe": {
+            "original": 0.5710493827160494,
+            "aperiodic_removed": 0.3432716049382715,
+            "periodic_removed": 0.5660493827160494,
+            "both_removed": 0.3420987654320987,
+            "chance": 0.027777777777777776,
+            "n_subjects": 36
+          }
+        }
+      ]
+    },
+    {
+      "cell": "sleepdep",
+      "fms": [
+        {
+          "fm": "labram",
+          "trace_anova": {
+            "frozen_label_pct": 0.2978057596365153,
+            "ft_label_pct": 0.3130051759924738,
+            "delta_label_pp": 0.015199416355958506,
+            "frozen_subject_pct": 25.184250954907224,
+            "ft_subject_pct": 40.891835389302834,
+            "delta_subject_pp": 15.70758443439561,
+            "label_design": "within_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 0.21558568525786595,
+            "ft_label_pct": 0.306721062218292,
+            "delta_label_pp": 0.09113537696042606,
+            "frozen_subject_pct": 61.050784211039264,
+            "ft_subject_pct": 56.30835837637037,
+            "delta_subject_pp": -4.742425834668895,
+            "p_label_frozen": 0.001,
+            "p_label_ft": 0.001,
+            "design": "within_subject"
+          },
+          "cka": {
+            "frozen_cka_label": 0.007892251157429404,
+            "ft_cka_label": 0.005702447368684078,
+            "delta_cka_label": -0.0021898037887453257,
+            "frozen_cka_subject": 0.11281411440065967,
+            "ft_cka_subject": 0.1259252768210305,
+            "delta_cka_subject": 0.013111162420370831
+          },
+          "subject_probe": {
+            "original": 0.6307870370370371,
+            "aperiodic_removed": 0.5233796296296296,
+            "periodic_removed": 0.6310185185185184,
+            "both_removed": 0.5222222222222221,
+            "chance": 0.027777777777777776,
+            "n_subjects": 36
+          }
+        },
+        {
+          "fm": "cbramod",
+          "trace_anova": {
+            "frozen_label_pct": 0.8096700794669176,
+            "ft_label_pct": 0.5993144684144064,
+            "delta_label_pp": -0.2103556110525112,
+            "frozen_subject_pct": 32.486541866867405,
+            "ft_subject_pct": 52.08476016188984,
+            "delta_subject_pp": 19.598218295022434,
+            "label_design": "within_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 1.0501872141643196,
+            "ft_label_pct": 0.5864809025145727,
+            "delta_label_pp": -0.4637063116497469,
+            "frozen_subject_pct": 63.0703886316348,
+            "ft_subject_pct": 70.00053820605085,
+            "delta_subject_pp": 6.930149574416045,
+            "p_label_frozen": 0.001,
+            "p_label_ft": 0.001,
+            "design": "within_subject"
+          },
+          "cka": {
+            "frozen_cka_label": 0.013473783004508274,
+            "ft_cka_label": 0.008996375681245387,
+            "delta_cka_label": -0.004477407323262886,
+            "frozen_cka_subject": 0.09138007619856547,
+            "ft_cka_subject": 0.13215699183679128,
+            "delta_cka_subject": 0.0407769156382258
+          },
+          "subject_probe": {
+            "original": 0.5983796296296297,
+            "aperiodic_removed": 0.5638888888888889,
+            "periodic_removed": 0.5958333333333333,
+            "both_removed": 0.5638888888888889,
+            "chance": 0.027777777777777776,
+            "n_subjects": 36
+          }
+        },
+        {
+          "fm": "reve",
+          "trace_anova": {
+            "frozen_label_pct": 0.18212365454062993,
+            "ft_label_pct": 0.5819596168045906,
+            "delta_label_pp": 0.39983596226396073,
+            "frozen_subject_pct": 1.4560612511852427,
+            "ft_subject_pct": 21.866487047591892,
+            "delta_subject_pp": 20.41042579640665,
+            "label_design": "within_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 0.4849263765617233,
+            "ft_label_pct": 0.36107279337929715,
+            "delta_label_pp": -0.12385358318242616,
+            "frozen_subject_pct": 33.7782307786943,
+            "ft_subject_pct": 42.83896586191089,
+            "delta_subject_pp": 9.060735083216592,
+            "p_label_frozen": 0.001,
+            "p_label_ft": 0.001,
+            "design": "within_subject"
+          },
+          "cka": {
+            "frozen_cka_label": 0.0018447683370153517,
+            "ft_cka_label": 0.005952927614115613,
+            "delta_cka_label": 0.004108159277100261,
+            "frozen_cka_subject": 0.0024929971130782575,
+            "ft_cka_subject": 0.037808015979838204,
+            "delta_cka_subject": 0.035315018866759945
+          },
+          "subject_probe": {
+            "original": 0.4912037037037037,
+            "aperiodic_removed": 0.4724537037037037,
+            "periodic_removed": 0.4921296296296297,
+            "both_removed": 0.469212962962963,
+            "chance": 0.027777777777777776,
+            "n_subjects": 36
+          }
+        }
+      ]
+    },
+    {
+      "cell": "stress",
+      "fms": [
+        {
+          "fm": "labram",
+          "trace_anova": {
+            "frozen_label_pct": 2.6224150099714905,
+            "ft_label_pct": 1.250775347198043,
+            "delta_label_pp": -1.3716396627734475,
+            "frozen_subject_pct": 15.914992328156178,
+            "ft_subject_pct": 55.0751843185473,
+            "delta_subject_pp": 39.16019199039113,
+            "label_design": "between_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 5.375238082138716,
+            "ft_label_pct": 0.542612122901071,
+            "delta_label_pp": -4.832625959237645,
+            "frozen_subject_pct": 24.435761535109258,
+            "ft_subject_pct": 54.70273369550308,
+            "delta_subject_pp": 30.266972160393824,
+            "p_label_frozen": 0.101,
+            "p_label_ft": 0.91,
+            "design": "subject_trait"
+          },
+          "cka": {
+            "frozen_cka_label": 0.11426749881710216,
+            "ft_cka_label": 0.020393595385025512,
+            "delta_cka_label": -0.09387390343207665,
+            "frozen_cka_subject": 0.1990722102215512,
+            "ft_cka_subject": 0.32115821308725606,
+            "delta_cka_subject": 0.12208600286570487
+          },
+          "subject_probe": {
+            "original": 0.5330376390661324,
+            "aperiodic_removed": 0.524186120270924,
+            "periodic_removed": 0.5295667069201799,
+            "both_removed": 0.523375377197428,
+            "chance": 0.07142857142857142,
+            "n_subjects": 14
+          }
+        },
+        {
+          "fm": "cbramod",
+          "trace_anova": {
+            "frozen_label_pct": 1.4413708433947618,
+            "ft_label_pct": 2.045824394347524,
+            "delta_label_pp": 0.6044535509527622,
+            "frozen_subject_pct": 18.461533477664034,
+            "ft_subject_pct": 77.67806795462937,
+            "delta_subject_pp": 59.216534476965336,
+            "label_design": "between_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 2.0110188533302042,
+            "ft_label_pct": 1.5992695478314722,
+            "delta_label_pp": -0.411749305498732,
+            "frozen_subject_pct": 31.633061853108842,
+            "ft_subject_pct": 73.28492717835836,
+            "delta_subject_pp": 41.651865325249524,
+            "p_label_frozen": 0.477,
+            "p_label_ft": 0.953,
+            "design": "subject_trait"
+          },
+          "cka": {
+            "frozen_cka_label": 0.04403729979221832,
+            "ft_cka_label": 0.042385319568428004,
+            "delta_cka_label": -0.001651980223790317,
+            "frozen_cka_subject": 0.1706089637047206,
+            "ft_cka_subject": 0.5403471612310972,
+            "delta_cka_subject": 0.3697381975263766
+          },
+          "subject_probe": {
+            "original": 0.5756644194681024,
+            "aperiodic_removed": 0.4826941218086308,
+            "periodic_removed": 0.5725859782153122,
+            "both_removed": 0.48334413417361616,
+            "chance": 0.07142857142857142,
+            "n_subjects": 14
+          }
+        },
+        {
+          "fm": "reve",
+          "trace_anova": {
+            "frozen_label_pct": 0.5144367564413731,
+            "ft_label_pct": 1.883682065660595,
+            "delta_label_pp": 1.369245309219222,
+            "frozen_subject_pct": 8.41465595222502,
+            "ft_subject_pct": 36.28753077676481,
+            "delta_subject_pp": 27.87287482453979,
+            "label_design": "between_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 1.1512896060277444,
+            "ft_label_pct": 3.379944188155184,
+            "delta_label_pp": 2.2286545821274393,
+            "frozen_subject_pct": 14.839299787210388,
+            "ft_subject_pct": 55.222823965454346,
+            "delta_subject_pp": 40.38352417824396,
+            "p_label_frozen": 0.457,
+            "p_label_ft": 0.655,
+            "design": "subject_trait"
+          },
+          "cka": {
+            "frozen_cka_label": 0.027989218300114208,
+            "ft_cka_label": 0.07080397335535847,
+            "delta_cka_label": 0.042814755055244264,
+            "frozen_cka_subject": 0.13735289207751963,
+            "ft_cka_subject": 0.47491891010113624,
+            "delta_cka_subject": 0.33756601802361663
+          },
+          "subject_probe": {
+            "original": 0.5602435298708357,
+            "aperiodic_removed": 0.5372755631225821,
+            "periodic_removed": 0.5614112065167273,
+            "both_removed": 0.53796114197596,
+            "chance": 0.07142857142857142,
+            "n_subjects": 14
+          }
+        }
+      ]
+    },
+    {
+      "cell": "adftd",
+      "fms": [
+        {
+          "fm": "labram",
+          "trace_anova": {
+            "frozen_label_pct": 0.6444776609039188,
+            "ft_label_pct": 6.898604380808712,
+            "delta_label_pp": 6.254126719904793,
+            "frozen_subject_pct": 16.456015431805238,
+            "ft_subject_pct": 60.755679330402955,
+            "delta_subject_pp": 44.29966389859772,
+            "label_design": "between_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 1.4921364566010318,
+            "ft_label_pct": 10.382261270570666,
+            "delta_label_pp": 8.890124813969635,
+            "frozen_subject_pct": 30.564845280874913,
+            "ft_subject_pct": 55.25488355629451,
+            "delta_subject_pp": 24.690038275419596,
+            "p_label_frozen": 0.064,
+            "p_label_ft": 0.001,
+            "design": "subject_trait"
+          },
+          "cka": {
+            "frozen_cka_label": 0.020138099984661227,
+            "ft_cka_label": 0.13231422854828961,
+            "delta_cka_label": 0.11217612856362838,
+            "frozen_cka_subject": 0.06745060970796896,
+            "ft_cka_subject": 0.14676370316338225,
+            "delta_cka_subject": 0.07931309345541329
+          },
+          "subject_probe": {
+            "original": 0.4346483677292796,
+            "aperiodic_removed": 0.48757512625540633,
+            "periodic_removed": 0.4352465854061961,
+            "both_removed": 0.48557561207282934,
+            "chance": 0.015384615384615385,
+            "n_subjects": 65
+          }
+        },
+        {
+          "fm": "cbramod",
+          "trace_anova": {
+            "frozen_label_pct": 0.3715139304437686,
+            "ft_label_pct": 1.3958859720779644,
+            "delta_label_pp": 1.0243720416341957,
+            "frozen_subject_pct": 25.781354158323644,
+            "ft_subject_pct": 56.711038295036296,
+            "delta_subject_pp": 30.929684136712655,
+            "label_design": "between_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 0.05573427750074631,
+            "ft_label_pct": 3.656281448527617,
+            "delta_label_pp": 3.600547171026871,
+            "frozen_subject_pct": 40.27846859814404,
+            "ft_subject_pct": 39.52404049260234,
+            "delta_subject_pp": -0.754428105541699,
+            "p_label_frozen": 0.875,
+            "p_label_ft": 0.001,
+            "design": "subject_trait"
+          },
+          "cka": {
+            "frozen_cka_label": 0.006728410514578742,
+            "ft_cka_label": 0.024913343517634877,
+            "delta_cka_label": 0.018184933003056136,
+            "frozen_cka_subject": 0.0595316936902111,
+            "ft_cka_subject": 0.127260410177866,
+            "delta_cka_subject": 0.06772871648765488
+          },
+          "subject_probe": {
+            "original": 0.6006425374916237,
+            "aperiodic_removed": 0.8333105642084699,
+            "periodic_removed": 0.6011490712988137,
+            "both_removed": 0.8327768050818071,
+            "chance": 0.015384615384615385,
+            "n_subjects": 65
+          }
+        },
+        {
+          "fm": "reve",
+          "trace_anova": {
+            "frozen_label_pct": 0.2525138973179999,
+            "ft_label_pct": 0.06819157824434621,
+            "delta_label_pp": -0.1843223190736537,
+            "frozen_subject_pct": 7.127696905460461,
+            "ft_subject_pct": 5.054722040055895,
+            "delta_subject_pp": -2.0729748654045657,
+            "label_design": "between_subject"
+          },
+          "permanova": {
+            "frozen_label_pct": 0.03495910376563056,
+            "ft_label_pct": 1.368285750291825,
+            "delta_label_pp": 1.3333266465261946,
+            "frozen_subject_pct": 18.843595016843896,
+            "ft_subject_pct": 25.37372950833815,
+            "delta_subject_pp": 6.530134491494255,
+            "p_label_frozen": 0.83,
+            "p_label_ft": 0.018,
+            "design": "subject_trait"
+          },
+          "cka": {
+            "frozen_cka_label": 0.0033553526135404375,
+            "ft_cka_label": 0.0011373770706639376,
+            "delta_cka_label": -0.0022179755428765,
+            "frozen_cka_subject": 0.011089767018526016,
+            "ft_cka_subject": 0.00993390399217795,
+            "delta_cka_subject": -0.0011558630263480661
+          },
+          "subject_probe": {
+            "original": 0.2988683902651773,
+            "aperiodic_removed": 0.7107065594739617,
+            "periodic_removed": 0.29773451244708893,
+            "both_removed": 0.7124885527446427,
+            "chance": 0.015384615384615385,
+            "n_subjects": 65
+          }
+        }
+      ]
+    }
+  ]
+}

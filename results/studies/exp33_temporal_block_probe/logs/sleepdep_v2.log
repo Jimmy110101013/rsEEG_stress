@@ -1,0 +1,31 @@
+[sleepdep | labram | original]
+  seed=42: BA=0.5850
+  mean=0.5850 ± 0.0000 (chance=0.0278)
+[sleepdep | labram | aperiodic_removed]
+  seed=42: BA=0.5009
+  mean=0.5009 ± 0.0000 (chance=0.0278)
+[sleepdep | labram | periodic_removed]
+  seed=42: BA=0.5863
+  mean=0.5863 ± 0.0000 (chance=0.0278)
+[sleepdep | labram | both_removed]
+  seed=42: BA=0.5051
+  mean=0.5051 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | original]
+  seed=42: BA=0.5567
+  mean=0.5567 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | aperiodic_removed]
+  seed=42: BA=0.5387
+  mean=0.5387 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | periodic_removed]
+  seed=42: BA=0.5458
+  mean=0.5458 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | both_removed]
+  seed=42: BA=0.5405
+  mean=0.5405 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | original]
+  seed=42: BA=0.4905
+  mean=0.4905 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | aperiodic_removed]
+  seed=42: BA=0.4764
+  mean=0.4764 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | periodic_removed]

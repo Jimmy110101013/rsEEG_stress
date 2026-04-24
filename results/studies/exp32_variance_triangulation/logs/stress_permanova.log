@@ -1,0 +1,20 @@
+[stress | labram | frozen]
+  n_windows=4421 d=200 n_subj=14
+  label_frac=0.0538 subject_frac=0.2444 residual_frac=0.7019 design=subject_trait p=0.1010 t=261.8s
+[stress | labram | ft]
+  n_windows=4421 d=200 n_subj=14
+  label_frac=0.0054 subject_frac=0.5470 residual_frac=0.4475 design=subject_trait p=0.9100 t=262.2s
+[stress | cbramod | frozen]
+  n_windows=4421 d=200 n_subj=14
+  label_frac=0.0201 subject_frac=0.3163 residual_frac=0.6636 design=subject_trait p=0.4770 t=261.4s
+[stress | cbramod | ft]
+  n_windows=4421 d=200 n_subj=14
+  label_frac=0.0160 subject_frac=0.7328 residual_frac=0.2512 design=subject_trait p=0.9530 t=261.3s
+[stress | reve | frozen]
+  n_windows=4421 d=512 n_subj=14
+  label_frac=0.0115 subject_frac=0.1484 residual_frac=0.8401 design=subject_trait p=0.4570 t=262.0s
+[stress | reve | ft]
+  n_windows=2195 d=512 n_subj=14
+  label_frac=0.0338 subject_frac=0.5522 residual_frac=0.4140 design=subject_trait p=0.6550 t=78.7s
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp32_variance_triangulation/stress_permanova.json

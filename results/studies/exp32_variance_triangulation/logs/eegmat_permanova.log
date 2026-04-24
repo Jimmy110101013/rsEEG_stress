@@ -1,0 +1,21 @@
+[eegmat | labram | frozen]
+  n_windows=1707 d=200 n_subj=36
+  label_frac=0.0258 subject_frac=0.4200 residual_frac=0.5543 design=within_subject p=0.0010 t=41.5s
+[eegmat | labram | ft]
+  n_windows=1707 d=200 n_subj=36
+  label_frac=0.0490 subject_frac=0.6614 residual_frac=0.2897 design=within_subject p=0.0010 t=41.7s
+[eegmat | cbramod | frozen]
+  n_windows=1707 d=200 n_subj=36
+  label_frac=0.0209 subject_frac=0.5472 residual_frac=0.4319 design=within_subject p=0.0010 t=41.5s
+[eegmat | cbramod | ft]
+  n_windows=1707 d=200 n_subj=36
+  label_frac=0.0338 subject_frac=0.6830 residual_frac=0.2832 design=within_subject p=0.0010 t=41.7s
+[eegmat | reve | frozen]
+  n_windows=1707 d=512 n_subj=36
+  label_frac=0.0062 subject_frac=0.2953 residual_frac=0.6985 design=within_subject p=0.0010 t=40.4s
+[eegmat | reve | ft]
+  n_windows=853 d=512 n_subj=36
+  label_frac=0.0104 subject_frac=0.5830 residual_frac=0.4066 design=within_subject p=0.0010 t=8.8s
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp32_variance_triangulation/eegmat_permanova.json
+

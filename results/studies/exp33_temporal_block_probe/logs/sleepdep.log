@@ -1,0 +1,62 @@
+[sleepdep | labram | original]
+  seed=42: BA=0.6507
+  seed=123: BA=0.6507
+  seed=2024: BA=0.6507
+  mean=0.6507 ± 0.0000 (chance=0.0278)
+[sleepdep | labram | aperiodic_removed]
+  seed=42: BA=0.5428
+  seed=123: BA=0.5428
+  seed=2024: BA=0.5428
+  mean=0.5428 ± 0.0000 (chance=0.0278)
+[sleepdep | labram | periodic_removed]
+  seed=42: BA=0.6530
+  seed=123: BA=0.6530
+  seed=2024: BA=0.6530
+  mean=0.6530 ± 0.0000 (chance=0.0278)
+[sleepdep | labram | both_removed]
+  seed=42: BA=0.5394
+  seed=123: BA=0.5394
+  seed=2024: BA=0.5394
+  mean=0.5394 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | original]
+  seed=42: BA=0.6602
+  seed=123: BA=0.6602
+  seed=2024: BA=0.6602
+  mean=0.6602 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | aperiodic_removed]
+  seed=42: BA=0.6255
+  seed=123: BA=0.6255
+  seed=2024: BA=0.6255
+  mean=0.6255 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | periodic_removed]
+  seed=42: BA=0.6611
+  seed=123: BA=0.6611
+  seed=2024: BA=0.6611
+  mean=0.6611 ± 0.0000 (chance=0.0278)
+[sleepdep | cbramod | both_removed]
+  seed=42: BA=0.6264
+  seed=123: BA=0.6264
+  seed=2024: BA=0.6264
+  mean=0.6264 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | original]
+  seed=42: BA=0.5104
+  seed=123: BA=0.5104
+  seed=2024: BA=0.5104
+  mean=0.5104 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | aperiodic_removed]
+  seed=42: BA=0.4926
+  seed=123: BA=0.4926
+  seed=2024: BA=0.4926
+  mean=0.4926 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | periodic_removed]
+  seed=42: BA=0.5086
+  seed=123: BA=0.5086
+  seed=2024: BA=0.5086
+  mean=0.5086 ± 0.0000 (chance=0.0278)
+[sleepdep | reve | both_removed]
+  seed=42: BA=0.4889
+  seed=123: BA=0.4889
+  seed=2024: BA=0.4889
+  mean=0.4889 ± 0.0000 (chance=0.0278)
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp33_temporal_block_probe/sleepdep_probes.json

@@ -1,0 +1,38 @@
+[adftd | labram | original]
+  seed=42: BA=0.4346
+  mean=0.4346 ± 0.0000 (chance=0.0154)
+[adftd | labram | aperiodic_removed]
+  seed=42: BA=0.4876
+  mean=0.4876 ± 0.0000 (chance=0.0154)
+[adftd | labram | periodic_removed]
+  seed=42: BA=0.4352
+  mean=0.4352 ± 0.0000 (chance=0.0154)
+[adftd | labram | both_removed]
+  seed=42: BA=0.4856
+  mean=0.4856 ± 0.0000 (chance=0.0154)
+[adftd | cbramod | original]
+  seed=42: BA=0.6006
+  mean=0.6006 ± 0.0000 (chance=0.0154)
+[adftd | cbramod | aperiodic_removed]
+  seed=42: BA=0.8333
+  mean=0.8333 ± 0.0000 (chance=0.0154)
+[adftd | cbramod | periodic_removed]
+  seed=42: BA=0.6011
+  mean=0.6011 ± 0.0000 (chance=0.0154)
+[adftd | cbramod | both_removed]
+  seed=42: BA=0.8328
+  mean=0.8328 ± 0.0000 (chance=0.0154)
+[adftd | reve | original]
+  seed=42: BA=0.2989
+  mean=0.2989 ± 0.0000 (chance=0.0154)
+[adftd | reve | aperiodic_removed]
+  seed=42: BA=0.7107
+  mean=0.7107 ± 0.0000 (chance=0.0154)
+[adftd | reve | periodic_removed]
+  seed=42: BA=0.2977
+  mean=0.2977 ± 0.0000 (chance=0.0154)
+[adftd | reve | both_removed]
+  seed=42: BA=0.7125
+  mean=0.7125 ± 0.0000 (chance=0.0154)
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp33_temporal_block_probe/adftd_probes.json

@@ -1,0 +1,14 @@
+[sleepdep | labram | frozen]
+  CKA(label)=0.0079  CKA(subject)=0.1128
+[sleepdep | labram | ft]
+  CKA(label)=0.0057  CKA(subject)=0.1259
+[sleepdep | cbramod | frozen]
+  CKA(label)=0.0135  CKA(subject)=0.0914
+[sleepdep | cbramod | ft]
+  CKA(label)=0.0090  CKA(subject)=0.1322
+[sleepdep | reve | frozen]
+  CKA(label)=0.0018  CKA(subject)=0.0025
+[sleepdep | reve | ft]
+  CKA(label)=0.0060  CKA(subject)=0.0378
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp32_variance_triangulation/sleepdep_cka.json

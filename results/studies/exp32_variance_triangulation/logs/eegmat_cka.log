@@ -1,0 +1,14 @@
+[eegmat | labram | frozen]
+  CKA(label)=0.0606  CKA(subject)=0.1714
+[eegmat | labram | ft]
+  CKA(label)=0.0521  CKA(subject)=0.1624
+[eegmat | cbramod | frozen]
+  CKA(label)=0.0351  CKA(subject)=0.1669
+[eegmat | cbramod | ft]
+  CKA(label)=0.0573  CKA(subject)=0.2487
+[eegmat | reve | frozen]
+  CKA(label)=0.0181  CKA(subject)=0.1269
+[eegmat | reve | ft]
+  CKA(label)=0.0330  CKA(subject)=0.2778
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp32_variance_triangulation/eegmat_cka.json

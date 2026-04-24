@@ -1,0 +1,147 @@
+{
+  "dataset": "stress",
+  "protocol": "temporal_block_5fold",
+  "seeds": [
+    42
+  ],
+  "results": {
+    "labram": {
+      "original": {
+        "subject_probe_mean": 0.5330376390661324,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.5330376390661324
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 200
+      },
+      "aperiodic_removed": {
+        "subject_probe_mean": 0.524186120270924,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.524186120270924
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 200
+      },
+      "periodic_removed": {
+        "subject_probe_mean": 0.5295667069201799,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.5295667069201799
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 200
+      },
+      "both_removed": {
+        "subject_probe_mean": 0.523375377197428,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.523375377197428
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 200
+      }
+    },
+    "cbramod": {
+      "original": {
+        "subject_probe_mean": 0.5756644194681024,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.5756644194681024
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 200
+      },
+      "aperiodic_removed": {
+        "subject_probe_mean": 0.4826941218086308,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.4826941218086308
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 200
+      },
+      "periodic_removed": {
+        "subject_probe_mean": 0.5725859782153122,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.5725859782153122
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 200
+      },
+      "both_removed": {
+        "subject_probe_mean": 0.48334413417361616,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.48334413417361616
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 200
+      }
+    },
+    "reve": {
+      "original": {
+        "subject_probe_mean": 0.5602435298708357,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.5602435298708357
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 512
+      },
+      "aperiodic_removed": {
+        "subject_probe_mean": 0.5372755631225821,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.5372755631225821
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 512
+      },
+      "periodic_removed": {
+        "subject_probe_mean": 0.5614112065167273,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.5614112065167273
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 512
+      },
+      "both_removed": {
+        "subject_probe_mean": 0.53796114197596,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.53796114197596
+        ],
+        "n_subjects": 14,
+        "chance_rate": 0.07142857142857142,
+        "n_windows": 4421,
+        "feature_dim": 512
+      }
+    }
+  }
+}

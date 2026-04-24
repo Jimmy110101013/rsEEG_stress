@@ -118,12 +118,104 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 |---|---|---|---|---|
 | EEGMAT | `results/studies/fooof_ablation/eegmat_probes.json` | `results/features_cache/fooof_ablation/feat_{fm}_eegmat_{cond}.npz` | `scripts/experiments/fooof_ablation_probes.py` | ✅ |
 | SleepDep | `results/studies/fooof_ablation/sleepdep_probes.json` | same pattern | | ✅ |
-| ADFTD | `results/studies/fooof_ablation/adftd_probes.json` | same pattern | | ✅ 2026-04-24 split1 + per-FM window (labram/cbramod=5s, reve=10s); `.bak_split3_20260423` retained. **Subject-ID probe = NaN** (1 rec/subject → session-level holdout undefined); fig5b drops ADFTD by design, caption must note. State probe values valid and used in the delta table in `adftd_refresh_plan.md`. |
+| ADFTD | `results/studies/fooof_ablation/adftd_probes.json` | same pattern | | ✅ 2026-04-24 split1 + per-FM window (labram/cbramod=5s, reve=10s); `.bak_split3_20260423` retained. Session-level subject probe = NaN (1 rec/subject); superseded by temporal-block probe (see below) so all 4 cells now share a single protocol. State probe values valid and used in the delta table in `adftd_refresh_plan.md`. |
 | Stress | `results/studies/fooof_ablation/stress_probes.json` | same pattern | | ✅ |
 
 **Orchestrators** (per-cell shell drivers): `scripts/experiments/_fooof_{adftd,sleepdep}_chain.sh`
 
 **Resolved 2026-04-24**: `fooof_ablation.py` + `extract_fooof_ablated.py` now carry `MODEL_WINDOW = {labram:5, cbramod:5, reve:10}`. ADFTD chain runs FOOOF fit once per window → outputs `adftd_norm_none_w{5,10}.npz`, then extracts dispatch per-FM. Other cells unchanged (single-file naming `{cell}_norm_none.npz`).
+
+### Temporal-block subject probe (unified 4-cell protocol, 2026-04-24)
+
+**Motivation**: the legacy session-level subject probe needs ≥2 rec/subject and
+returns NaN on ADFTD (1 rec/subj) — it breaks Fig 5b's 4-cell symmetry.
+Replaced by a unified **5-fold temporal-block probe**: per subject, order all
+their windows temporally, split into 5 contiguous blocks; 5-fold CV trains L2
+logistic regression on 4 blocks and predicts subject ID on the held-out block;
+report macro-recall (balanced accuracy) across all N_subj classes. Chance
+rate = 1 / N_subj (1/36, 1/14, 1/65 for EEGMAT-SleepDep, Stress-pure, ADFTD).
+
+**Semantics per cell**: EEGMAT / SleepDep / Stress blocks span across
+recordings → probe measures temporal + cross-session stability. ADFTD blocks
+fall within the single recording → probe measures within-session fingerprint
+stability only. Both are valid subject-ID probes; ADFTD value is therefore a
+strictly-weaker test and should be read as an upper bound. See
+`docs/variance_window_level_wording.md` §4.5 for caption wording.
+
+**Script**: `scripts/analysis/run_temporal_block_subject_probe.py`
+**Output**: `results/studies/exp33_temporal_block_probe/{cell}_probes.json`
+**Final snapshot**: `results/final/{cell}/subject_probe_temporal_block/probes.json`
+**Consumed by**: Fig 5b-R (planned refactor; 1×2 panel with state + subject probe Δ BA)
+
+**Solver**: `LinearDiscriminantAnalysis(solver="lsqr", shrinkage="auto")` — closed-form, O(d³)
+replaced lbfgs LogReg after benchmarking showed LogReg on 10k-window × 65-class (ADFTD)
+took 600s/fold vs LDA's <1s/fold. LDA with Ledoit-Wolf shrinkage handles the ratio
+d/n ≈ 200/130 per class gracefully.
+
+| Cell | Conditions | n_subj | Chance | Status |
+|---|---|---|---|---|
+| EEGMAT | original / −aperiodic / −periodic / −both | 36 | 0.028 | ✅ 2026-04-24 |
+| SleepDep | same 4 | 36 | 0.028 | ✅ 2026-04-24 |
+| Stress (pure-label) | same 4 | 14 | 0.071 | ✅ 2026-04-24 |
+| ADFTD (split1) | same 4 | 65 | 0.015 | ✅ 2026-04-24 |
+
+**Key result at `original` condition (subject probe BA, LDA, 5-fold temporal-block)**:
+- EEGMAT: labram 0.682 / cbramod 0.693 / reve 0.571 (≈ 20-25× chance)
+- SleepDep: labram 0.631 / cbramod 0.598 / reve 0.491 (≈ 17-22× chance)
+- Stress: labram 0.533 / cbramod 0.576 / reve 0.560 (≈ 7-8× chance; smaller 14-subject chance of 0.071)
+- ADFTD: labram 0.435 / cbramod 0.601 / reve 0.299 (≈ 20-40× chance)
+
+Subject-ID recoverable in all 4 cells including ADFTD's within-session variant — fig5b 4-cell panel now feasible without the "N/A" placeholder.
+
+### Variance triangulation (PERMANOVA + linear CKA, 2026-04-24)
+
+**Motivation**: trace-ANOVA variance partition (Fig 2 / §4.2) assumes L2
+geometry and sums to 1. Add two orthogonal checks to strengthen the Δlabel_frac
+ranking claim:
+
+- **Crossed PERMANOVA on cosine distance** (Anderson 2001). Non-parametric,
+  distance-based R² partition; immune to high-d L2 concentration. Crossed
+  design auto-detected: `subject_trait` permutes labels at subject level,
+  `within_subject` permutes labels within subject. 999 permutations, n_max
+  = 4000 windows stratified-subsampled to cap pairwise-distance RAM. Reports
+  pseudo-R² for label / subject / residual plus p-value for label effect.
+- **Linear CKA** (Kornblith 2019) between features and label / subject
+  one-hot Grams. Scale- and rotation-invariant: disagreement with variance
+  partitions is informative, not bug. Reports CKA(label) and CKA(subject)
+  separately for frozen and FT sides.
+
+Both run on **all 4 cells × 3 FMs × {frozen, FT seed 42}**, parallel to the
+trace-ANOVA numbers in `variance_analysis_window_level.json`.
+
+**Scripts**: `scripts/analysis/run_permanova_cosine.py`,
+`scripts/analysis/run_cka_label_subject.py`
+**Outputs**: `results/studies/exp32_variance_triangulation/{cell}_{permanova,cka}.json`
+**Orchestrator**: `scripts/experiments/run_variance_triangulation.sh` (runs
+temporal-block probe + PERMANOVA + CKA sequentially per cell)
+**Snapshot**: `scripts/experiments/snapshot_variance_triangulation.sh` copies
+completed JSONs to `results/final/{cell}/variance_triangulation/{permanova,cka}.json`
+**Appendix**: planned B.5 — trace-ANOVA / PERMANOVA / CKA side-by-side table,
+with explicit note on where CKA diverges from variance methods.
+
+| Cell | PERMANOVA status | CKA status |
+|---|---|---|
+| EEGMAT | ✅ 2026-04-24 n_max=4000 n_perm=999 | ✅ 2026-04-24 |
+| SleepDep | ✅ 2026-04-24 n_max=4000 n_perm=999 | ✅ 2026-04-24 |
+| Stress | ✅ 2026-04-24 n_max=4000 n_perm=999 | ✅ 2026-04-24 |
+| ADFTD | ✅ 2026-04-24 **n_max=2000** n_perm=999 (smaller subsample to fit the 30-min shared-shell boundary; ~49s/run vs 260s at n_max=4000 for other cells) | ✅ 2026-04-24 |
+
+**Aggregated cross-cell table**: `scripts/analysis/aggregate_variance_triangulation.py` → `paper/figures/_historical/source_tables/variance_triangulation.json`
+
+**Cross-method triangulation (LaBraM Δlabel vs frozen)**:
+
+| Cell | ΔANOVA (pp) | ΔPERM (pp) | p(FT) | ΔCKA(label) |
+|---|---|---|---|---|
+| ADFTD | **+6.25** | **+8.89** | 0.001 | **+0.112** |
+| EEGMAT | +1.99 | +2.32 | 0.001 | -0.009 |
+| SleepDep | +0.02 | +0.09 | 0.001 | -0.002 |
+| Stress | -1.37 | **-4.83** | **0.910** | **-0.094** |
+
+Three independent methods converge on **ADFTD LaBraM as the cross-cell label-signal winner**, and on **Stress as a confirmed null** (p=0.91 for FT label effect). The single divergence point is EEGMAT LaBraM: CKA slightly negative while ANOVA/PERMANOVA positive — consistent with CKA's scale-invariance (it downweights magnitude scaling that ANOVA picks up). All other cell×FM combinations agree directionally.
 
 ### Band-stop ablation (§4.5 panel c + Appendix B.2)
 
@@ -202,6 +294,8 @@ Curated snapshots; every paper-cited number traces here. Raw runs stay in `resul
 | `results/final/{cell}/nonfm_deep/{eegnet,shallowconvnet}.json` | From-scratch deep baselines | ⏳ Phase 2 |
 | `results/final/{cell}/perm_null/{model}_null.json` | 30-seed null aggregate + p-value | ⏳ Phase 5 |
 | `results/final/{cell}/fooof_ablation/probes.json` | FOOOF ablation probe BAs | ⏳ Phase 4 |
+| `results/final/{cell}/subject_probe_temporal_block/probes.json` | 5-fold temporal-block subject probe × 4 FOOOF conditions | ✅ 2026-04-24 |
+| `results/final/{cell}/variance_triangulation/{permanova,cka}.json` | PERMANOVA cosine + linear CKA robustness checks | ✅ 2026-04-24 |
 | `results/final/{cell}/band_stop/probes.json` | Per-band probe BA + cosine | ⏳ Phase 4 |
 | `results/final/cross_cell/band_rsa.json` | 3 FM × 4 cells × 4 bands RSA | ⏳ Phase 6 |
 | `results/final/cross_cell/variance_decomp.json` | 4-cell variance partition | ⏳ Phase 6 |

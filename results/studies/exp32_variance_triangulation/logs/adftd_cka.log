@@ -1,0 +1,14 @@
+[adftd | labram | frozen]
+  CKA(label)=0.0201  CKA(subject)=0.0675
+[adftd | labram | ft]
+  CKA(label)=0.1323  CKA(subject)=0.1468
+[adftd | cbramod | frozen]
+  CKA(label)=0.0067  CKA(subject)=0.0595
+[adftd | cbramod | ft]
+  CKA(label)=0.0249  CKA(subject)=0.1273
+[adftd | reve | frozen]
+  CKA(label)=0.0034  CKA(subject)=0.0111
+[adftd | reve | ft]
+  CKA(label)=0.0011  CKA(subject)=0.0099
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp32_variance_triangulation/adftd_cka.json

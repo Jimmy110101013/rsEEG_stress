@@ -1,0 +1,147 @@
+{
+  "dataset": "adftd",
+  "protocol": "temporal_block_5fold",
+  "seeds": [
+    42
+  ],
+  "results": {
+    "labram": {
+      "original": {
+        "subject_probe_mean": 0.4346483677292796,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.4346483677292796
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 10735,
+        "feature_dim": 200
+      },
+      "aperiodic_removed": {
+        "subject_probe_mean": 0.48757512625540633,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.48757512625540633
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 10735,
+        "feature_dim": 200
+      },
+      "periodic_removed": {
+        "subject_probe_mean": 0.4352465854061961,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.4352465854061961
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 10735,
+        "feature_dim": 200
+      },
+      "both_removed": {
+        "subject_probe_mean": 0.48557561207282934,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.48557561207282934
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 10735,
+        "feature_dim": 200
+      }
+    },
+    "cbramod": {
+      "original": {
+        "subject_probe_mean": 0.6006425374916237,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.6006425374916237
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 10735,
+        "feature_dim": 200
+      },
+      "aperiodic_removed": {
+        "subject_probe_mean": 0.8333105642084699,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.8333105642084699
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 10735,
+        "feature_dim": 200
+      },
+      "periodic_removed": {
+        "subject_probe_mean": 0.6011490712988137,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.6011490712988137
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 10735,
+        "feature_dim": 200
+      },
+      "both_removed": {
+        "subject_probe_mean": 0.8327768050818071,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.8327768050818071
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 10735,
+        "feature_dim": 200
+      }
+    },
+    "reve": {
+      "original": {
+        "subject_probe_mean": 0.2988683902651773,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.2988683902651773
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 5349,
+        "feature_dim": 512
+      },
+      "aperiodic_removed": {
+        "subject_probe_mean": 0.7107065594739617,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.7107065594739617
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 5349,
+        "feature_dim": 512
+      },
+      "periodic_removed": {
+        "subject_probe_mean": 0.29773451244708893,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.29773451244708893
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 5349,
+        "feature_dim": 512
+      },
+      "both_removed": {
+        "subject_probe_mean": 0.7124885527446427,
+        "subject_probe_std": 0.0,
+        "subject_probe_bas": [
+          0.7124885527446427
+        ],
+        "n_subjects": 65,
+        "chance_rate": 0.015384615384615385,
+        "n_windows": 5349,
+        "feature_dim": 512
+      }
+    }
+  }
+}

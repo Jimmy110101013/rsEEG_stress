@@ -1,0 +1,38 @@
+[stress | labram | original]
+  seed=42: BA=0.5330
+  mean=0.5330 ± 0.0000 (chance=0.0714)
+[stress | labram | aperiodic_removed]
+  seed=42: BA=0.5242
+  mean=0.5242 ± 0.0000 (chance=0.0714)
+[stress | labram | periodic_removed]
+  seed=42: BA=0.5296
+  mean=0.5296 ± 0.0000 (chance=0.0714)
+[stress | labram | both_removed]
+  seed=42: BA=0.5234
+  mean=0.5234 ± 0.0000 (chance=0.0714)
+[stress | cbramod | original]
+  seed=42: BA=0.5757
+  mean=0.5757 ± 0.0000 (chance=0.0714)
+[stress | cbramod | aperiodic_removed]
+  seed=42: BA=0.4827
+  mean=0.4827 ± 0.0000 (chance=0.0714)
+[stress | cbramod | periodic_removed]
+  seed=42: BA=0.5726
+  mean=0.5726 ± 0.0000 (chance=0.0714)
+[stress | cbramod | both_removed]
+  seed=42: BA=0.4833
+  mean=0.4833 ± 0.0000 (chance=0.0714)
+[stress | reve | original]
+  seed=42: BA=0.5602
+  mean=0.5602 ± 0.0000 (chance=0.0714)
+[stress | reve | aperiodic_removed]
+  seed=42: BA=0.5373
+  mean=0.5373 ± 0.0000 (chance=0.0714)
+[stress | reve | periodic_removed]
+  seed=42: BA=0.5614
+  mean=0.5614 ± 0.0000 (chance=0.0714)
+[stress | reve | both_removed]
+  seed=42: BA=0.5380
+  mean=0.5380 ± 0.0000 (chance=0.0714)
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp33_temporal_block_probe/stress_probes.json

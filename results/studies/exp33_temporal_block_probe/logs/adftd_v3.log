@@ -1,0 +1,7 @@
+[adftd | labram | original]
+  seed=42: BA=0.4419
+  seed=123: BA=0.4419
+  seed=2024: BA=0.4419
+  mean=0.4419 ± 0.0000 (chance=0.0154)
+[adftd | labram | aperiodic_removed]
+  seed=42: BA=0.4970

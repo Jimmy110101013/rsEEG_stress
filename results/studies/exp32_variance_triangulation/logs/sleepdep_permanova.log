@@ -1,0 +1,20 @@
+[sleepdep | labram | frozen]
+  n_windows=4320 d=200 n_subj=36
+  label_frac=0.0022 subject_frac=0.6105 residual_frac=0.3873 design=within_subject p=0.0010 t=203.4s
+[sleepdep | labram | ft]
+  n_windows=4320 d=200 n_subj=36
+  label_frac=0.0031 subject_frac=0.5631 residual_frac=0.4338 design=within_subject p=0.0010 t=202.9s
+[sleepdep | cbramod | frozen]
+  n_windows=4320 d=200 n_subj=36
+  label_frac=0.0105 subject_frac=0.6307 residual_frac=0.3588 design=within_subject p=0.0010 t=203.3s
+[sleepdep | cbramod | ft]
+  n_windows=4320 d=200 n_subj=36
+  label_frac=0.0059 subject_frac=0.7000 residual_frac=0.2941 design=within_subject p=0.0010 t=201.7s
+[sleepdep | reve | frozen]
+  n_windows=4320 d=512 n_subj=36
+  label_frac=0.0048 subject_frac=0.3378 residual_frac=0.6574 design=within_subject p=0.0010 t=203.4s
+[sleepdep | reve | ft]
+  n_windows=2160 d=512 n_subj=36
+  label_frac=0.0036 subject_frac=0.4284 residual_frac=0.5680 design=within_subject p=0.0010 t=40.2s
+
+-> /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/studies/exp32_variance_triangulation/sleepdep_permanova.json

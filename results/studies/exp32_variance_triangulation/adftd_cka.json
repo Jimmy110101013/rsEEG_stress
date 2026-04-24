@@ -1,0 +1,72 @@
+{
+  "dataset": "adftd",
+  "protocol": "linear_CKA_label_subject",
+  "results": {
+    "labram": {
+      "frozen": {
+        "cka_label": 0.020138099984661227,
+        "cka_subject": 0.06745060970796896,
+        "n_windows": 10735,
+        "feature_dim": 200,
+        "n_labels": 2,
+        "n_subjects": 65
+      },
+      "ft": {
+        "cka_label": 0.13231422854828961,
+        "cka_subject": 0.14676370316338225,
+        "n_windows": 10735,
+        "feature_dim": 200,
+        "n_labels": 2,
+        "n_subjects": 65
+      },
+      "delta": {
+        "delta_cka_label": 0.11217612856362838,
+        "delta_cka_subject": 0.07931309345541329
+      }
+    },
+    "cbramod": {
+      "frozen": {
+        "cka_label": 0.006728410514578742,
+        "cka_subject": 0.0595316936902111,
+        "n_windows": 10735,
+        "feature_dim": 200,
+        "n_labels": 2,
+        "n_subjects": 65
+      },
+      "ft": {
+        "cka_label": 0.024913343517634877,
+        "cka_subject": 0.127260410177866,
+        "n_windows": 10735,
+        "feature_dim": 200,
+        "n_labels": 2,
+        "n_subjects": 65
+      },
+      "delta": {
+        "delta_cka_label": 0.018184933003056136,
+        "delta_cka_subject": 0.06772871648765488
+      }
+    },
+    "reve": {
+      "frozen": {
+        "cka_label": 0.0033553526135404375,
+        "cka_subject": 0.011089767018526016,
+        "n_windows": 5349,
+        "feature_dim": 512,
+        "n_labels": 2,
+        "n_subjects": 65
+      },
+      "ft": {
+        "cka_label": 0.0011373770706639376,
+        "cka_subject": 0.00993390399217795,
+        "n_windows": 5349,
+        "feature_dim": 512,
+        "n_labels": 2,
+        "n_subjects": 65
+      },
+      "delta": {
+        "delta_cka_label": -0.0022179755428765,
+        "delta_cka_subject": -0.0011558630263480661
+      }
+    }
+  }
+}
