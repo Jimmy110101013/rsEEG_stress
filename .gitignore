@@ -3,8 +3,30 @@ data/increase/
 data/normal/
 data/*.mat
 data/cache/
+data/cache*/
+data/adftd/
+data/adftd_ps/
+data/cognitive_state/
+data/eegmat/
+data/meditation/
+data/sam40/
+data/sleep_deprivation/
+data/tdbrain/
+data/tuab/
 *.set
 *.fdt
+
+# Training + experiment logs
+logs/
+
+# Regenerable feature caches
+results/features_cache/*.npz
+results/features_cache/ft_*/
+results/features_cache/fooof_ablation/
+
+# HHSA intermediates (~44G cache, ~460M holospectra)
+results/hhsa/cache/
+results/hhsa/holospectra/
 
 # Python
 __pycache__/
