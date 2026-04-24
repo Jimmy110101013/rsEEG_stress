@@ -89,7 +89,7 @@ def rebuild_lp(cell: str, model: str, dry: bool = False):
 # Section: FT provenance stamps
 # ---------------------------------------------------------------------------
 def rebuild_ft_provenance(cell: str, model: str, dry: bool = False):
-    ft_dir = FINAL / cell / model / "ft"
+    ft_dir = FINAL / cell / "ft" / model
     if not ft_dir.exists():
         print(f"  skip ft {cell}/{model}: {ft_dir.relative_to(REPO)} missing")
         return
