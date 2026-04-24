@@ -35,7 +35,6 @@ Guardrails, methodology notes, and archived findings live in `docs/methodology_n
 
 > **Notation**: All `mean ± std` values use **sample std** (divide by n−1).
 > Bootstrap 95% CIs are labelled `[low, high]`.
-> Audit script: `scripts/audit_std_convention.py`.
 
 > **ID scheme**: `F-A` … `F-E` + `F-NEURO` are paper-citable claims. Original
 > `F01`–`F21` IDs are preserved in each claim's "Absorbs" line for traceability.

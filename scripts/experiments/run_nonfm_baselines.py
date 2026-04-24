@@ -220,8 +220,8 @@ def phase_multiseed(gpus: list[int], best_lrs: dict[str, str]):
     print(f"Done. {ok}/{len(results)} OK.")
 
     if ok == len(results):
-        print("\nFeatures saved. Run variance analysis with:")
-        print(f"  {PY} scripts/analyze_nonfm_variance.py")
+        print("\nFeatures saved. For variance decomposition, use "
+              "scripts/analysis/run_variance_analysis.py.")
 
 
 def main():
