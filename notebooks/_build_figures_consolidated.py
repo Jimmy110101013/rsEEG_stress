@@ -297,22 +297,24 @@ def rep_psd(ds):
     b = float(d['aperiodic_b'][ri].mean()); chi = float(d['aperiodic_chi'][ri].mean())
     return dict(f=f, ap=P_ap, pe=P_pe, fit=10**b/(f**chi), chi=chi)
 
-# All 4 datasets now have FOOOF ablation + band-stop caches.
-# DS_PROBE omits adftd because at n_splits=1 (the canonical split for the 4-cell
-# factorial) ADFTD has 1 recording per subject, so the session-level subject-ID
-# probe is undefined (cross-session holdout requires ≥2 recs/subject). Keeping a
-# unified session-level probe is preferred over dropping to window-level just
-# for ADFTD — see docs/adftd_refresh_plan.md Step 3 note.
+# All 4 datasets now have FOOOF ablation + band-stop caches, and the unified
+# temporal-block subject probe (results/studies/exp33_temporal_block_probe/)
+# removes the previous session-level probe's ≥2 recs/subject constraint, so
+# every panel can use the same 4-cell set uniformly.
 DS_PSD   = ['eegmat','sleepdep','stress','adftd']
-DS_PROBE = ['eegmat','sleepdep','stress']
+DS_PROBE = ['eegmat','sleepdep','stress','adftd']
 DS_BAND  = ['eegmat','sleepdep','stress','adftd']
 
 DS_SHORT = {'eegmat':'EEGMAT','sleepdep':'SleepDep','stress':'Stress','adftd':'ADFTD'}
 DS_CMAP  = {'eegmat':'#2E8B8B','sleepdep':'#7A4B9C','stress':'#D55E00','adftd':'#1F77B4'}
 
 psd = {ds: rep_psd(ds) for ds in DS_PSD}
-F = {ds: json.load(open(REPO/f'results/studies/fooof_ablation/{ds}_probes.json'))['results']
-     for ds in DS_PROBE}
+# State probe comes from the original FOOOF-ablation JSONs.
+F_STATE = {ds: json.load(open(REPO/f'results/studies/fooof_ablation/{ds}_probes.json'))['results']
+           for ds in DS_PROBE}
+# Subject probe comes from the new temporal-block protocol (uniform 4 cells).
+F_SUBJ = {ds: json.load(open(REPO/f'results/studies/exp33_temporal_block_probe/{ds}_probes.json'))['results']
+          for ds in DS_PROBE}
 bs = json.load(open(REPO/'results/studies/exp14_channel_importance/band_stop_ablation.json'))
 """
 
@@ -337,46 +339,53 @@ plt.show()
 save(fig, 'fig5a_psd_fooof_fit')
 """
 
-# ---- Fig 5b — FOOOF ablation signature (per-FM, 3-panel strip; absolute pp) ----
-# Absolute Δ BA in percentage points. Cross-FM magnitude is norm-confounded
-# (LaBraM zscore vs CBraMod/REVE raw); read within-FM direction and ranking.
-FIG5B = r"""# Fig 5b — FOOOF ablation signature per FM (Δ BA, pp)
-fig, axes = plt.subplots(1, 3, figsize=(W_DOUBLE*0.82, W_SINGLE*0.65), sharex=True, sharey=True)
-markers = {'−aperiodic':'o','−periodic':'s'}
+# ---- Fig 5b — FOOOF ablation signature (1×2 grouped bars; uniform 4 cells × 3 FMs) ----
+# Left panel  : Δ state-probe BA   (FOOOF state probe, subject-level CV)
+# Right panel : Δ subject-probe BA (temporal-block subject probe, uniform across 4 cells)
+# Grouped bars: for each cell, 3 FM × 2 conditions = 6 bars.
+FIG5B = r"""# Fig 5b — FOOOF ablation Δ BA (state + subject probes, 4 cells × 3 FMs)
+fig, axes = plt.subplots(1, 2, figsize=(W_DOUBLE, W_SINGLE*0.95), sharey=False)
 COND_MAP = [('aperiodic_removed','−aperiodic'),('periodic_removed','−periodic')]
 
-for ax, fm in zip(axes, FMS):
-    ax.axhline(0, color='k', lw=0.5)
-    ax.axvline(0, color='k', lw=0.5)
-    for ds in DS_PROBE:
-        pts = []
-        for cond, short in COND_MAP:
-            dsub = (F[ds][fm][cond]['subject_probe_mean'] - F[ds][fm]['original']['subject_probe_mean'])*100
-            dsta = (F[ds][fm][cond]['state_probe_mean'] - F[ds][fm]['original']['state_probe_mean'])*100
-            pts.append((short, dsub, dsta))
+CELLS = DS_PROBE
+n_fm, n_cond = len(FMS), len(COND_MAP)
+group_w = 0.9
+bar_w = group_w / (n_fm * n_cond)
 
-        ax.plot([p[1] for p in pts], [p[2] for p in pts], color=DS_CMAP[ds], lw=1.0, alpha=0.35)
-        for short, dsub, dsta in pts:
-            ax.scatter(dsub, dsta, s=80, color=DS_CMAP[ds], marker=markers[short], edgecolor='k', lw=0.5, zorder=3)
-
-    ax.set_title(f"{fm.upper()}  ({'zscore' if fm=='labram' else 'raw'})", fontsize=9.5, color=FM_COLOR[fm], fontweight='bold')
-    ax.set_xlabel('Δ Subject-ID probe BA (pp)', fontsize=8)
+def _plot(ax, source_dict, probe_key, ylabel):
+    for ci, ds in enumerate(CELLS):
+        for fi, fm in enumerate(FMS):
+            orig = source_dict[ds][fm]['original'][probe_key]
+            for co, (cond, short) in enumerate(COND_MAP):
+                v = source_dict[ds][fm][cond][probe_key]
+                delta = (v - orig) * 100
+                x = ci + (fi*n_cond + co - (n_fm*n_cond-1)/2) * bar_w
+                hatch = '' if short == '−aperiodic' else '////'
+                alpha = 0.95 if short == '−aperiodic' else 0.55
+                ax.bar(x, delta, width=bar_w*0.9,
+                       color=FM_COLOR[fm], alpha=alpha, edgecolor='k', lw=0.4,
+                       hatch=hatch)
+    ax.axhline(0, color='k', lw=0.6)
+    ax.set_xticks(range(len(CELLS)))
+    ax.set_xticklabels([DS_SHORT[d] for d in CELLS], fontsize=8)
+    ax.set_ylabel(ylabel, fontsize=8.5)
     ax.tick_params(labelsize=7.5)
+    ax.grid(axis='y', alpha=0.3, lw=0.4)
 
-axes[0].set_ylabel('Δ State probe BA (pp)', fontsize=8.5)
-axes[0].set_xlim(-30, 30)
-axes[0].set_ylim(-15, 15)
+_plot(axes[0], F_STATE, 'state_probe_mean',   'Δ State probe BA (pp)')
+_plot(axes[1], F_SUBJ,  'subject_probe_mean', 'Δ Subject probe BA (pp)')
+axes[0].set_title('State probe (subject-level CV)', fontsize=9.5)
+axes[1].set_title('Subject probe (5-fold temporal-block)', fontsize=9.5)
 
-ds_leg = [Line2D([],[], marker='o', ls='', color=DS_CMAP[d], markeredgecolor='k', markersize=7, label=DS_SHORT[d]) for d in DS_PROBE]
-cond_leg = [Line2D([],[], marker='o', ls='', color='gray', markeredgecolor='k', markersize=7, label='−aperiodic'),
-            Line2D([],[], marker='s', ls='', color='gray', markeredgecolor='k', markersize=7, label='−periodic')]
+fm_leg = [Patch(facecolor=FM_COLOR[fm], edgecolor='k', lw=0.4, label=fm.upper()) for fm in FMS]
+cond_leg = [Patch(facecolor='lightgray', edgecolor='k', lw=0.4, label='−aperiodic'),
+            Patch(facecolor='lightgray', edgecolor='k', lw=0.4, hatch='////', alpha=0.55, label='−periodic')]
+fig.legend(handles=fm_leg + cond_leg, loc='lower center', ncol=5, fontsize=7.5,
+           frameon=False, bbox_to_anchor=(0.5, -0.02))
 
-fig.legend(handles=ds_leg, loc='center left', bbox_to_anchor=(0.83, 0.6), fontsize=6.5, frameon=False)
-fig.legend(handles=cond_leg, loc='center left', bbox_to_anchor=(0.83, 0.4), fontsize=6.5, frameon=False)
-
-fig.subplots_adjust(left=0.1, right=0.82, bottom=0.22, top=0.85, wspace=0.28)
+plt.tight_layout(rect=[0, 0.06, 1, 1])
 plt.show()
-save(fig, 'fig5b_fooof_scatter')
+save(fig, 'fig5b_fooof_ablation_bars')
 """
 
 # ---- Fig 5c — Band-stop sensitivity per band (3 ds) ----

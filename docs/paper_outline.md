@@ -247,94 +247,62 @@ TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary
 
 ---
 
-## Appendix A — TDBRAIN replication on the between × separable cell
-> 中文：TDBRAIN 作為 ADFTD cell 的 external replication，確認 between-subject trait cell 的 pattern 不是 ADFTD-specific。
+## Appendix A — Variance decomposition triangulation
+> 中文：主文 Fig 2 用 trace-ANOVA（L2 幾何上的 SS 分解）給 label/subject variance fraction；附錄補兩個幾何正交的 robustness check，證明 cross-cell 排序不是 L2-specific artifact。
 
-### A.1 Variance atlas replication
-> 中文：TDBRAIN 上 variance decomposition 與 LP→FT drift 是否重現 ADFTD pattern。
+### A.1 Crossed PERMANOVA on cosine distance
+> 中文：Anderson 2001 crossed-design PERMANOVA，用 cosine 距離重算 pseudo-R² label/subject/residual；對 high-dim L2 concentration 免疫。
 
-- **Fig A.1**  Variance atlas on TDBRAIN (3 FM)
+- **Protocol**: 4 cells × 3 FMs × {frozen, FT seed 42}; 999 permutations; n_max=4000 subsample (ADFTD n_max=2000 for runtime)
+- **Script**: `scripts/analysis/run_permanova_cosine.py`
+- **Source JSON**: `results/final/{cell}/variance_triangulation/permanova.json`
+- **Tab A.1**: per-cell × per-FM label_frac / subject_frac (frozen & FT), Δlabel_frac (pp), p-value under label permutation
+- Key reading: Stress FT p = 0.66–0.95 across three FMs formally certifies the null-indistinguishable cell; ADFTD LaBraM Δlabel_frac = +8.9 pp (p = 0.001) is the largest cross-cell label gain.
 
-### A.2 Positioning note
-> 中文：TDBRAIN 為何只放 Appendix — 與 ADFTD 落在同一 cell，作為 breadth check 而非獨立 datapoint。
+### A.2 Linear CKA between representation and label / subject indicator
+> 中文：Kornblith 2019 的 linear CKA，測 feature Gram 與 label/subject one-hot Gram 的對齊度。Scale/rotation-invariant，與 variance partition 測不同幾何面向。
 
-## Appendix C — Architecture ceiling across 4 cells
-> 中文：4-cell × 4 架構類別（classical ML / non-FM deep / 3 FM FT）的 ceiling panel，驗證 §4.1 Tab 1 觀察到的 per-cell BA ceiling 是「cell 屬性」而非 FM-specific。主文 §4.2–§4.5 的四個 diagnostic 已先完整解釋 mechanism，此 panel 在最後作為 architecture breadth check，非 load-bearing step。
+- **Protocol**: 4 cells × 3 FMs × {frozen, FT seed 42}
+- **Script**: `scripts/analysis/run_cka_label_subject.py`
+- **Source JSON**: `results/final/{cell}/variance_triangulation/cka.json`
+- **Tab A.2**: CKA(label) and CKA(subject) for frozen and FT, delta values
+- Key reading: three methods agree on cross-cell ordering (ADFTD >> EEGMAT > SleepDep ≈ Stress). EEGMAT LaBraM is the single CKA/ANOVA sign-flip: CKA slightly negative, ANOVA/PERMANOVA slightly positive — consistent with CKA ignoring scale changes that variance partition captures.
 
-### C.1 Architecture panel × 4 cells
-> 中文：classical ML (LogReg / SVM / RF / XGBoost) + non-FM deep (EEGNet / ShallowConvNet) + 3 FM FT (LaBraM / CBraMod / REVE)，跨約 6 個參數量級；每個 cell 的 BA 落在架構-不變的 band。
+### A.3 Cross-method convergence table
+> 中文：三方法合併成一張 Δlabel_frac 表，ADFTD 三法全勝 / Stress 三法全敗的讀法放在這。
 
-- **Fig 6** (planning label Fig C.1): 4-panel architecture ceiling, Subject-CV BA vs log(trainable params), one panel per cell (EEGMAT / SleepDep / ADFTD / Stress)
-- Per-cell readings:
-  - Stress (between × null-indistinguishable): ceiling 0.43–0.58, all architectures clustered near chance → cell property
-  - SleepDep (within × null-indistinguishable): similar architecture-invariant near-chance band
-  - ADFTD (between × separable): LaBraM + EEGNet both near 0.71–0.77, sizeable non-FM baseline
-  - EEGMAT (within × separable): classical RF 0.89 above FM band, FM band 0.6–0.74
-
-### C.2 Positioning note
-> 中文：為何 ceiling 放在 Appendix — 主文 §4.1 Tab 1 已給 per-cell BA 的 setup，§4.2–§4.5 四個 diagnostic 已解釋 mechanism；Fig 6 在 Appendix 作為 architecture breadth 佐證，讓 reviewer 確認「更換架構不會逃離 cell-level ceiling」，不是 load-bearing 的論證步驟。原本規劃的 C.2 classical vs FM frozen LP 4-cell 比較已被 §4.1 Tab 1 的 classical / non-FM baseline 欄吸收，不另出圖。
-
-- Why positioned in Appendix: Tab 1 and the four diagnostics already carry the main argument. Fig 6 supports the "ceiling is cell-property" reading by showing it persists across architectures spanning six orders of magnitude in trainable parameters, but the claim is not needed to establish any mechanism — it is a breadth check.
-
----
-
-## Appendix B — Neuro-interpretability of FM frozen representations
-> 中文：完整覆蓋 "FM 用哪些 component / 頻段 / 通道" 的三軸因果與相關分析；不屬主診斷工具但補充 spectral / spatial 落點。
-
-### B.1 Channel ablation (spatial axis)
-> 中文：30 通道 zero-out 後 cosine distance 的 topomap。
-
-- **Fig B.1**  30-channel ablation topomap (3 FM × Stress 70 rec)
-
-### B.2 Band-stop ablation per cell (frequency-band causal axis)
-> 中文：對 delta/theta/alpha/beta 分別帶阻，看每格 FM cosine distance 落點。metric 為 **cosine distance**（representation geometry sensitivity），與 §4.5 band-stop 量 **probe BA**（decoding causal effect）互補 — 同一擾動、不同 metric，cross-reference 已在 §4.5 說明。
-
-- **Fig B.2**  Band-stop cosine distance (3 FM × 4 datasets × 4 bands)
-
-### B.3 Band RSA (correlational spectral axis)
-> 中文：band power RDM 與 FM RDM 的 Spearman r per cell。
-
-- **Fig B.3**  Per-band Spearman r matrix (3 FM × 4 datasets × 4 bands)
-
-### B.4 Synthesis — 4-axis FM interpretability framework
-> 中文：本論文涵蓋四個正交因果切片 — component (FOOOF)、frequency band、spatial channel、correlational spectrum。
-
-- Cross-reference §4.4 (FOOOF aperiodic/periodic) as component axis
-- Synthesis: subject dominance lives jointly in posterior channels × broadband × aperiodic 1/f
+- **Aggregator**: `scripts/analysis/aggregate_variance_triangulation.py`
+- **Output**: `paper/figures/_historical/source_tables/variance_triangulation.json`
+- Cross-cell summary (LaBraM): ADFTD ANOVA +6.25 / PERMANOVA +8.89 (p=0.001) / ΔCKA +0.112. Stress ANOVA −1.37 / PERMANOVA −4.83 (p=0.91) / ΔCKA −0.094. EEGMAT and SleepDep both small-positive, weak-aligned reading confirmed.
 
 ---
 
 ## Figure master list
-> 中文：主文 5 圖（Fig 1 pipeline/teaser + Fig 2–5 四個 diagnostic） + Appendix 5 圖（A.1 + B.1–3 + C.1 = Fig 6 ceiling）。Tab 1 in §4.1 (placed)；Tab 2/3 proposed。
+> 中文：主文 4 個 diagnostic 圖（Fig 2–5）＋ Fig 1 pipeline schematic；Appendix 僅保留 triangulation tables（無附圖）。Tab 1 in §4.1 (placed)；Tab 2/3 proposed。
 
 ### Main text (4 diagnostic figures; benchmark landscape carried by Tab 1 in §4.1, no figure)
 | Final Fig # | Planning label | Location | Content | Source file | Status |
 |---|---|---|---|---|---|
-| Fig 2 | Fig 4.2 | §4.2 | Variance decomposition 4 cells (stacked bars, frozen FM only) | `paper/figures/fig2/fig2_representation_2x2.{pdf,png}` | Existing — verify 4-cell extension |
+| Fig 2 | Fig 4.2 | §4.2 | Variance decomposition 4 cells × 3 FMs (stacked bars frozen+FT, Δlabel callout) | `paper/figures/fig2/fig2_representation_2x2.{pdf,png}` | ✅ rebuilt 2026-04-24 |
 | Fig 3 | Fig 4.3 | §4.3 | Permutation-null density 4 cells | `paper/figures/fig3/fig3_honest_evaluation.{pdf,png}` | Existing — verify 4-cell extension |
 | Fig 4 (a/b/c) | Fig 4.4 | §4.4 | Within-subject LOO trajectory + direction consistency (EEGMAT + SleepDep) | `paper/figures/fig4/fig4{a,b,c}_*.{pdf,png}` | Existing — Stress/ADFTD excluded by design |
-| Fig 5 (a/b/c) | Fig 4.5 | §4.5 | Causal anchor ablation (PSD+FOOOF fit, FOOOF scatter, band-stop line) | `paper/figures/fig5/fig5{a,b,c}_*.{pdf,png}` | Existing — verify 4-cell extension |
+| Fig 5a | Fig 4.5a | §4.5 | PSD + FOOOF fit 4 cells (shared loglog, aperiodic + periodic overlay) | `paper/figures/fig5/fig5a_psd_fooof_fit.{pdf,png}` | ✅ |
+| Fig 5b | Fig 4.5b | §4.5 | FOOOF ablation Δ BA — 1×2 grouped bars (state + subject probes, 4 cells × 3 FMs × 2 conds) | `paper/figures/fig5/fig5b_fooof_ablation_bars.{pdf,png}` | ✅ rebuilt 2026-04-24 with temporal-block subject probe |
+| Fig 5c | Fig 4.5c | §4.5 | Band-stop cosine distance per FM (3-panel strip × 4 cells × 4 bands) | `paper/figures/fig5/fig5c_band_stop.{pdf,png}` | Existing |
 
 Note: **Fig 1 reserved for a planned pipeline/teaser schematic** (data → 2×2 cell assignment → diagnostic toolkit → per-cell verdict); not yet built. Benchmark landscape (setup, §4.1) is carried by Tab 1 only — no standalone figure.
 
-### Appendix A (1 figure)
-| # | Location | Content | Status |
-|---|---|---|---|
-| Fig A.1 | A.1 | TDBRAIN variance atlas (3 FM) | Existing — subset of old 12-cell |
+### Appendix A — Variance triangulation (tables only, no figures)
+| Tab # | Location | Content | Source | Status |
+|---|---|---|---|---|
+| Tab A.1 | A.1 | PERMANOVA cosine — 4 cells × 3 FMs × {frz, FT} pseudo-R² + p(label) | `results/final/{cell}/variance_triangulation/permanova.json` | ✅ 2026-04-24 |
+| Tab A.2 | A.2 | Linear CKA — 4 cells × 3 FMs × {frz, FT} CKA(label), CKA(subject), Δ | `results/final/{cell}/variance_triangulation/cka.json` | ✅ 2026-04-24 |
+| Tab A.3 | A.3 | Cross-method convergence (Δlabel_frac): ANOVA / PERMANOVA / CKA | `paper/figures/_historical/source_tables/variance_triangulation.json` | ✅ 2026-04-24 |
 
-### Appendix B (3 figures)
-| # | Location | Content | Status |
-|---|---|---|---|
-| Fig B.1 | B.1 | 30-channel ablation topomap (Stress) | Existing (exp14) |
-| Fig B.2 | B.2 | Band-stop cosine distance (3 FM × 4 DS × 4 bands) | Existing — extend to 4 DS |
-| Fig B.3 | B.3 | Per-band Spearman r matrix (3 FM × 4 DS × 4 bands) | Existing — extend to 4 DS |
-
-### Appendix C (1 figure)
-| Final Fig # | Planning label | Location | Content | Source file | Status |
-|---|---|---|---|---|---|
-| Fig 6 | Fig C.1 | C.1 | 4-cell architecture ceiling × 4 architecture classes (classical / non-FM deep / FM FT) — breadth check that the cell-level BA ceiling observed in §4.1 Tab 1 is architecture-agnostic, not FM-specific | `paper/figures/main/Fig6_ceiling.png` (canonical) | Existing — panel titles need terminology update (`coherent/incoherent/absent` → `separable/null-indistinguishable`) |
-
-Positioning note: Fig 6 enters *after* the four diagnostics (§4.2–§4.5) have explained why each cell sits at its BA band. It is a breadth check supporting "ceiling is cell property, not FM property", not a standalone finding. The original Appendix C.2 (classical XGBoost vs FM frozen LP, 4 cells) is subsumed by Tab 1's classical/non-FM baseline columns and is dropped.
+**Removed from Appendix (consolidated into main text or dropped as redundant 2026-04-24)**:
+- *former App A TDBRAIN replication* — ADFTD cell already covered by main text; TDBRAIN kept as internal benchmark only, not cited in paper
+- *former App B Neuro-interpretability (channel ablation / band-stop cosine / band-RSA)* — B.2 band-stop cosine is redundant with Fig 5c; B.1 channel topomap (Stress-only) and B.3 band-RSA do not carry a main claim
+- *former App C Architecture ceiling (Fig 6)* — ceiling claim already established by Tab 1's per-cell classical/non-FM/FM columns
 
 ### Tables
 | Tab # | Location | Content | Source file | Status |
