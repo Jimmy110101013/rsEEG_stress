@@ -1,0 +1,348 @@
+{
+  "sweep_id": "20260409_main",
+  "generated_at": "2026-04-09T23:21:51",
+  "gpus": [
+    3,
+    4
+  ],
+  "seeds": [
+    42,
+    123,
+    2024
+  ],
+  "dl_grid": {
+    "lr": [
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "dropout": [
+      0.1,
+      0.5
+    ]
+  },
+  "fm_grid": {
+    "lr": [
+      1e-05,
+      3e-05,
+      0.0001
+    ],
+    "encoder_lr_scale": [
+      0.1,
+      1.0
+    ]
+  },
+  "common_args": {
+    "mode": "ft",
+    "folds": 5,
+    "epochs": 100,
+    "patience": 20,
+    "batch-size": 32,
+    "label": "subject-dass",
+    "loss": "focal",
+    "head-hidden": 128,
+    "csv": "data/comprehensive_labels.csv",
+    "weight-decay": 0.05,
+    "grad-clip": 2.0,
+    "warmup-epochs": 3,
+    "aug-overlap": 0.75
+  },
+  "per_model_fixed": {
+    "eegnet": {
+      "norm": "zscore"
+    },
+    "shallowconvnet": {
+      "norm": "zscore"
+    },
+    "deepconvnet": {
+      "norm": "zscore"
+    },
+    "eegconformer": {
+      "norm": "zscore"
+    },
+    "labram": {
+      "norm": "zscore"
+    },
+    "cbramod": {
+      "norm": "none"
+    },
+    "reve": {
+      "norm": "none"
+    }
+  },
+  "n_runs_planned": 18,
+  "n_runs_completed_ok": 18,
+  "n_runs_failed": 0,
+  "runs": [
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "encoder_lr_scale": 0.1,
+        "lr": 0.0001
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-4_s123",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-4_s123",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-4_s123",
+      "device": "cuda:3",
+      "duration_sec": 1805.732130877208,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale0.1_lr1e-4_s123.log"
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "encoder_lr_scale": 0.1,
+        "lr": 0.0001
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-4_s2024",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-4_s2024",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-4_s2024",
+      "device": "cuda:4",
+      "duration_sec": 1689.7096184138209,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale0.1_lr1e-4_s2024.log"
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "encoder_lr_scale": 0.1,
+        "lr": 0.0001
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-4_s42",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-4_s42",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-4_s42",
+      "device": "cuda:4",
+      "duration_sec": 1752.3022449561395,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale0.1_lr1e-4_s42.log"
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "encoder_lr_scale": 0.1,
+        "lr": 1e-05
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-5_s123",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-5_s123",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-5_s123",
+      "device": "cuda:4",
+      "duration_sec": 2145.2019946603104,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale0.1_lr1e-5_s123.log"
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "encoder_lr_scale": 0.1,
+        "lr": 1e-05
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-5_s2024",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-5_s2024",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-5_s2024",
+      "device": "cuda:3",
+      "duration_sec": 2489.065310761798,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale0.1_lr1e-5_s2024.log"
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "encoder_lr_scale": 0.1,
+        "lr": 1e-05
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-5_s42",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-5_s42",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr1e-5_s42",
+      "device": "cuda:3",
+      "duration_sec": 1985.7062338651158,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale0.1_lr1e-5_s42.log"
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "encoder_lr_scale": 0.1,
+        "lr": 3e-05
+      },
+      "run_name": "reve_encoderlrscale0.1_lr3e-5_s123",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr3e-5_s123",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr3e-5_s123",
+      "device": "cuda:4",
+      "duration_sec": 1977.7674371488392,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale0.1_lr3e-5_s123.log"
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "encoder_lr_scale": 0.1,
+        "lr": 3e-05
+      },
+      "run_name": "reve_encoderlrscale0.1_lr3e-5_s2024",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr3e-5_s2024",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr3e-5_s2024",
+      "device": "cuda:3",
+      "duration_sec": 1978.2560482518747,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale0.1_lr3e-5_s2024.log"
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "encoder_lr_scale": 0.1,
+        "lr": 3e-05
+      },
+      "run_name": "reve_encoderlrscale0.1_lr3e-5_s42",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr3e-5_s42",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale0.1_lr3e-5_s42",
+      "device": "cuda:4",
+      "duration_sec": 1893.864757123869,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale0.1_lr3e-5_s42.log"
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "encoder_lr_scale": 1.0,
+        "lr": 0.0001
+      },
+      "run_name": "reve_encoderlrscale1_lr1e-4_s123",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-4_s123",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-4_s123",
+      "device": "cuda:4",
+      "duration_sec": 2138.8530832440592,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale1_lr1e-4_s123.log"
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "encoder_lr_scale": 1.0,
+        "lr": 0.0001
+      },
+      "run_name": "reve_encoderlrscale1_lr1e-4_s2024",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-4_s2024",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-4_s2024",
+      "device": "cuda:3",
+      "duration_sec": 1889.177849567961,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale1_lr1e-4_s2024.log"
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "encoder_lr_scale": 1.0,
+        "lr": 0.0001
+      },
+      "run_name": "reve_encoderlrscale1_lr1e-4_s42",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-4_s42",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-4_s42",
+      "device": "cuda:3",
+      "duration_sec": 1643.2478637620807,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale1_lr1e-4_s42.log"
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "encoder_lr_scale": 1.0,
+        "lr": 1e-05
+      },
+      "run_name": "reve_encoderlrscale1_lr1e-5_s123",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-5_s123",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-5_s123",
+      "device": "cuda:4",
+      "duration_sec": 1896.6340435189195,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale1_lr1e-5_s123.log"
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "encoder_lr_scale": 1.0,
+        "lr": 1e-05
+      },
+      "run_name": "reve_encoderlrscale1_lr1e-5_s2024",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-5_s2024",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-5_s2024",
+      "device": "cuda:3",
+      "duration_sec": 2180.904559429735,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale1_lr1e-5_s2024.log"
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "encoder_lr_scale": 1.0,
+        "lr": 1e-05
+      },
+      "run_name": "reve_encoderlrscale1_lr1e-5_s42",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-5_s42",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr1e-5_s42",
+      "device": "cuda:3",
+      "duration_sec": 1757.9329202887602,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale1_lr1e-5_s42.log"
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "encoder_lr_scale": 1.0,
+        "lr": 3e-05
+      },
+      "run_name": "reve_encoderlrscale1_lr3e-5_s123",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr3e-5_s123",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr3e-5_s123",
+      "device": "cuda:3",
+      "duration_sec": 1864.206340237055,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale1_lr3e-5_s123.log"
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "encoder_lr_scale": 1.0,
+        "lr": 3e-05
+      },
+      "run_name": "reve_encoderlrscale1_lr3e-5_s2024",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr3e-5_s2024",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr3e-5_s2024",
+      "device": "cuda:4",
+      "duration_sec": 2010.2169467220083,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale1_lr3e-5_s2024.log"
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "encoder_lr_scale": 1.0,
+        "lr": 3e-05
+      },
+      "run_name": "reve_encoderlrscale1_lr3e-5_s42",
+      "run_id": "hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr3e-5_s42",
+      "results_dir": "results/hp_sweep/20260409_main/reve/reve_encoderlrscale1_lr3e-5_s42",
+      "device": "cuda:4",
+      "duration_sec": 1858.3947697547264,
+      "returncode": 0,
+      "log": "/raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs/reve_encoderlrscale1_lr3e-5_s42.log"
+    }
+  ]
+}

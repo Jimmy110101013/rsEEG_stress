@@ -1,0 +1,23 @@
+{
+  "mode": "ft",
+  "label": "dass",
+  "extractor": "labram",
+  "folds": 5,
+  "epochs": 50,
+  "patience": 15,
+  "lr": 1e-05,
+  "batch_size": 32,
+  "grad_accum": 1,
+  "seed": 42,
+  "device": "cuda:5",
+  "no_bf16": false,
+  "loss": "focal",
+  "norm": "none",
+  "dropout": 0.1,
+  "weight_decay": 0.05,
+  "warmup_epochs": 3,
+  "no_scheduler": false,
+  "threshold": 60,
+  "aug_overlap": 0.75,
+  "grad_clip": 1.0
+}

@@ -1,0 +1,824 @@
+{
+  "sweep_id": "20260410_dass",
+  "runs": [
+    {
+      "model": "cbramod",
+      "seed": 123,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "cbramod_encoderlrscale0.1_lr1e-4_s123",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-4_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-4_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 2024,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "cbramod_encoderlrscale0.1_lr1e-4_s2024",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-4_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-4_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 42,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "cbramod_encoderlrscale0.1_lr1e-4_s42",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-4_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-4_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 123,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "cbramod_encoderlrscale0.1_lr1e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 2024,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "cbramod_encoderlrscale0.1_lr1e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 42,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "cbramod_encoderlrscale0.1_lr1e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 123,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "cbramod_encoderlrscale0.1_lr3e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr3e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr3e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 2024,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "cbramod_encoderlrscale0.1_lr3e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr3e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr3e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 42,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "cbramod_encoderlrscale0.1_lr3e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr3e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr3e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 123,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "cbramod_encoderlrscale1.0_lr1e-4_s123",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-4_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-4_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 2024,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "cbramod_encoderlrscale1.0_lr1e-4_s2024",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-4_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-4_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 42,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "cbramod_encoderlrscale1.0_lr1e-4_s42",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-4_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-4_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 123,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "cbramod_encoderlrscale1.0_lr1e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 2024,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "cbramod_encoderlrscale1.0_lr1e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 42,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "cbramod_encoderlrscale1.0_lr1e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr1e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 123,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "cbramod_encoderlrscale1.0_lr3e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr3e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr3e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 2024,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "cbramod_encoderlrscale1.0_lr3e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr3e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr3e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "cbramod",
+      "seed": 42,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "cbramod_encoderlrscale1.0_lr3e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr3e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale1.0_lr3e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 123,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "labram_encoderlrscale0.1_lr1e-4_s123",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-4_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-4_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 2024,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "labram_encoderlrscale0.1_lr1e-4_s2024",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-4_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-4_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 42,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "labram_encoderlrscale0.1_lr1e-4_s42",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-4_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-4_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 123,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "labram_encoderlrscale0.1_lr1e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 2024,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "labram_encoderlrscale0.1_lr1e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 42,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "labram_encoderlrscale0.1_lr1e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr1e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 123,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "labram_encoderlrscale0.1_lr3e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr3e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr3e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 2024,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "labram_encoderlrscale0.1_lr3e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr3e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr3e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 42,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "labram_encoderlrscale0.1_lr3e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr3e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale0.1_lr3e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 123,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "labram_encoderlrscale1.0_lr1e-4_s123",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-4_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-4_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 2024,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "labram_encoderlrscale1.0_lr1e-4_s2024",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-4_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-4_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 42,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "labram_encoderlrscale1.0_lr1e-4_s42",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-4_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-4_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 123,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "labram_encoderlrscale1.0_lr1e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 2024,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "labram_encoderlrscale1.0_lr1e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 42,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "labram_encoderlrscale1.0_lr1e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 123,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "labram_encoderlrscale1.0_lr3e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr3e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr3e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 2024,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "labram_encoderlrscale1.0_lr3e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr3e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr3e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "labram",
+      "seed": 42,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "labram_encoderlrscale1.0_lr3e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr3e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr3e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-4_s123",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-4_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-4_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-4_s2024",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-4_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-4_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-4_s42",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-4_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-4_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "reve_encoderlrscale0.1_lr1e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr1e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "reve_encoderlrscale0.1_lr3e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr3e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr3e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "reve_encoderlrscale0.1_lr3e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr3e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr3e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 0.1
+      },
+      "run_name": "reve_encoderlrscale0.1_lr3e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr3e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr3e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "lr": 0.0001,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "reve_encoderlrscale1.0_lr1e-4_s42",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr1e-4_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr1e-4_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "reve_encoderlrscale1.0_lr1e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr1e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr1e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "reve_encoderlrscale1.0_lr1e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr1e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr1e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "lr": 1e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "reve_encoderlrscale1.0_lr1e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr1e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr1e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 123,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "reve_encoderlrscale1.0_lr3e-5_s123",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr3e-5_s123",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr3e-5_s123",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 2024,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "reve_encoderlrscale1.0_lr3e-5_s2024",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr3e-5_s2024",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr3e-5_s2024",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    },
+    {
+      "model": "reve",
+      "seed": 42,
+      "hp": {
+        "lr": 3e-05,
+        "encoder_lr_scale": 1.0
+      },
+      "run_name": "reve_encoderlrscale1.0_lr3e-5_s42",
+      "run_id": "hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr3e-5_s42",
+      "results_dir": "results/hp_sweep/20260410_dass/reve/reve_encoderlrscale1.0_lr3e-5_s42",
+      "device": "cuda",
+      "duration_sec": 0,
+      "returncode": 0,
+      "log": ""
+    }
+  ],
+  "n_runs_planned": 54,
+  "n_runs_completed_ok": 52,
+  "n_runs_failed": 2,
+  "seeds": [
+    42,
+    123,
+    2024
+  ],
+  "fm_grid": {
+    "lr": [
+      1e-05,
+      3e-05,
+      0.0001
+    ],
+    "encoder_lr_scale": [
+      0.1,
+      1.0
+    ]
+  },
+  "common_args": {
+    "label": "dass",
+    "epochs": 50,
+    "patience": 15
+  },
+  "gpus": [
+    6,
+    7
+  ],
+  "per_model_fixed": {
+    "labram": {
+      "norm": "zscore"
+    },
+    "cbramod": {
+      "norm": "none"
+    },
+    "reve": {
+      "norm": "none"
+    }
+  }
+}

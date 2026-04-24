@@ -1,0 +1,218 @@
+/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/lib/python3.11/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Mode: FT | Extractor: labram | Folds: 5
+LR: 0.0001 | WD: 0.05 | Beta2: 0.999 | Grad clip: 2.0
+Head: hidden=128, dropout=0.0 | Norm: zscore | Loss: focal
+Full FT: encoder_lr_scale=1.0
+Augmentation: 75% overlap for increase class
+
+Results → results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-4_s123/
+Dataset: 70 recordings loaded (14 increase, 56 normal)
+Cache: 70 recordings ready (70 cached, 0 new)
+
+============================================================
+Fold 1/5
+============================================================
+  Train:  45 samples, 12 subjects [1, 2, 3, 4, 6, 7, 9, 10, 13, 14, 16, 18], label_0=34, label_1=11
+    Val:  12 samples,  2 subjects [11, 12], label_0=11, label_1=1
+   Test:  13 samples,  3 subjects [5, 8, 17], label_0=11, label_1=2
+  Building window datasets...
+    WindowDataset: 5684 windows (class_0=2641, class_1=3043)
+    WindowDataset: 1311 windows (class_0=1250, class_1=61)
+    WindowDataset: 837 windows (class_0=711, class_1=126)
+[LaBraM] Loaded 221/223 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  Trainable parameters: 5,872,179
+  Class weights: [1.0761075019836426, 0.9339467883110046]
+  Fold 1 | Ep   1/50 | t_loss=0.1203 t_acc=0.772 | v_win_bal=0.517 v_rec_bal=0.500 | lr=3.3e-05 | 17.5s
+  Fold 1 | Ep   2/50 | t_loss=0.0543 t_acc=0.922 | v_win_bal=0.456 v_rec_bal=0.455 | lr=6.7e-05 | 13.9s
+  Fold 1 | Ep   3/50 | t_loss=0.0286 t_acc=0.973 | v_win_bal=0.464 v_rec_bal=0.500 | lr=1.0e-04 | 13.8s
+  Fold 1 | Ep   4/50 | t_loss=0.0170 t_acc=0.986 | v_win_bal=0.649 v_rec_bal=0.864 | lr=1.0e-04 | 13.8s
+  Fold 1 | Ep   5/50 | t_loss=0.0146 t_acc=0.989 | v_win_bal=0.458 v_rec_bal=0.455 | lr=1.0e-04 | 13.8s
+  Fold 1 | Ep   6/50 | t_loss=0.0097 t_acc=0.993 | v_win_bal=0.545 v_rec_bal=0.364 | lr=9.9e-05 | 14.4s
+  Fold 1 | Ep   7/50 | t_loss=0.0060 t_acc=0.996 | v_win_bal=0.515 v_rec_bal=0.318 | lr=9.8e-05 | 14.3s
+  Fold 1 | Ep   8/50 | t_loss=0.0082 t_acc=0.994 | v_win_bal=0.445 v_rec_bal=0.500 | lr=9.7e-05 | 13.9s
+  Fold 1 | Ep   9/50 | t_loss=0.0088 t_acc=0.994 | v_win_bal=0.567 v_rec_bal=0.455 | lr=9.6e-05 | 13.9s
+  Fold 1 | Ep  10/50 | t_loss=0.0066 t_acc=0.995 | v_win_bal=0.452 v_rec_bal=0.409 | lr=9.5e-05 | 14.0s
+  Fold 1 | Ep  11/50 | t_loss=0.0029 t_acc=0.997 | v_win_bal=0.496 v_rec_bal=0.318 | lr=9.3e-05 | 13.8s
+  Fold 1 | Ep  12/50 | t_loss=0.0039 t_acc=0.998 | v_win_bal=0.708 v_rec_bal=0.818 | lr=9.1e-05 | 13.8s
+  Fold 1 | Ep  13/50 | t_loss=0.0042 t_acc=0.997 | v_win_bal=0.475 v_rec_bal=0.455 | lr=8.9e-05 | 13.9s
+  Fold 1 | Ep  14/50 | t_loss=0.0015 t_acc=0.999 | v_win_bal=0.515 v_rec_bal=0.409 | lr=8.7e-05 | 13.9s
+  Fold 1 | Ep  15/50 | t_loss=0.0031 t_acc=0.998 | v_win_bal=0.564 v_rec_bal=0.409 | lr=8.5e-05 | 13.8s
+  Fold 1 | Ep  16/50 | t_loss=0.0018 t_acc=0.999 | v_win_bal=0.488 v_rec_bal=0.409 | lr=8.2e-05 | 13.8s
+  Fold 1 | Ep  17/50 | t_loss=0.0038 t_acc=0.997 | v_win_bal=0.438 v_rec_bal=0.364 | lr=8.0e-05 | 13.9s
+  Fold 1 | Ep  18/50 | t_loss=0.0010 t_acc=0.999 | v_win_bal=0.501 v_rec_bal=0.318 | lr=7.7e-05 | 13.9s
+  Fold 1 | Ep  19/50 | t_loss=0.0033 t_acc=0.998 | v_win_bal=0.431 v_rec_bal=0.455 | lr=7.4e-05 | 13.9s
+  Early stop at epoch 19
+  -> Test (best @ epoch 4): acc=0.9231, bal_acc=0.9545
+
+============================================================
+Fold 2/5
+============================================================
+  Train:  41 samples, 11 subjects [1, 2, 4, 6, 7, 8, 9, 10, 13, 14, 17], label_0=31, label_1=10
+    Val:  17 samples,  4 subjects [3, 5, 16, 18], label_0=14, label_1=3
+   Test:  12 samples,  2 subjects [11, 12], label_0=11, label_1=1
+  Building window datasets...
+    WindowDataset: 5268 windows (class_0=2478, class_1=2790)
+    WindowDataset: 1064 windows (class_0=874, class_1=190)
+    WindowDataset: 1311 windows (class_0=1250, class_1=61)
+[LaBraM] Loaded 221/223 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  Fold 2 | Ep   1/50 | t_loss=0.1180 t_acc=0.768 | v_win_bal=0.468 v_rec_bal=0.381 | lr=3.3e-05 | 12.6s
+  Fold 2 | Ep   2/50 | t_loss=0.0493 t_acc=0.937 | v_win_bal=0.482 v_rec_bal=0.500 | lr=6.7e-05 | 12.7s
+  Fold 2 | Ep   3/50 | t_loss=0.0164 t_acc=0.983 | v_win_bal=0.509 v_rec_bal=0.548 | lr=1.0e-04 | 12.8s
+  Fold 2 | Ep   4/50 | t_loss=0.0196 t_acc=0.982 | v_win_bal=0.503 v_rec_bal=0.524 | lr=1.0e-04 | 12.8s
+  Fold 2 | Ep   5/50 | t_loss=0.0182 t_acc=0.984 | v_win_bal=0.514 v_rec_bal=0.452 | lr=1.0e-04 | 12.8s
+  Fold 2 | Ep   6/50 | t_loss=0.0114 t_acc=0.990 | v_win_bal=0.496 v_rec_bal=0.500 | lr=9.9e-05 | 12.7s
+  Fold 2 | Ep   7/50 | t_loss=0.0065 t_acc=0.995 | v_win_bal=0.527 v_rec_bal=0.631 | lr=9.8e-05 | 12.7s
+  Fold 2 | Ep   8/50 | t_loss=0.0078 t_acc=0.993 | v_win_bal=0.508 v_rec_bal=0.500 | lr=9.7e-05 | 12.7s
+  Fold 2 | Ep   9/50 | t_loss=0.0033 t_acc=0.998 | v_win_bal=0.534 v_rec_bal=0.595 | lr=9.6e-05 | 12.7s
+  Fold 2 | Ep  10/50 | t_loss=0.0028 t_acc=0.997 | v_win_bal=0.530 v_rec_bal=0.500 | lr=9.5e-05 | 12.7s
+  Fold 2 | Ep  11/50 | t_loss=0.0011 t_acc=0.999 | v_win_bal=0.497 v_rec_bal=0.631 | lr=9.3e-05 | 12.6s
+  Fold 2 | Ep  12/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.496 v_rec_bal=0.631 | lr=9.1e-05 | 12.7s
+  Fold 2 | Ep  13/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.496 v_rec_bal=0.631 | lr=8.9e-05 | 12.7s
+  Fold 2 | Ep  14/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.497 v_rec_bal=0.631 | lr=8.7e-05 | 12.7s
+  Fold 2 | Ep  15/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.498 v_rec_bal=0.631 | lr=8.5e-05 | 12.6s
+  Fold 2 | Ep  16/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.495 v_rec_bal=0.631 | lr=8.2e-05 | 12.6s
+  Fold 2 | Ep  17/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.497 v_rec_bal=0.631 | lr=8.0e-05 | 12.6s
+  Fold 2 | Ep  18/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.495 v_rec_bal=0.631 | lr=7.7e-05 | 12.6s
+  Fold 2 | Ep  19/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.496 v_rec_bal=0.631 | lr=7.4e-05 | 13.1s
+  Fold 2 | Ep  20/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.501 v_rec_bal=0.631 | lr=7.1e-05 | 12.9s
+  Fold 2 | Ep  21/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.495 v_rec_bal=0.631 | lr=6.8e-05 | 12.6s
+  Fold 2 | Ep  22/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.497 v_rec_bal=0.631 | lr=6.5e-05 | 12.6s
+  Fold 2 | Ep  23/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.494 v_rec_bal=0.631 | lr=6.2e-05 | 12.6s
+  Fold 2 | Ep  24/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.499 v_rec_bal=0.631 | lr=5.8e-05 | 12.9s
+  Fold 2 | Ep  25/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.496 v_rec_bal=0.631 | lr=5.5e-05 | 12.5s
+  Fold 2 | Ep  26/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.498 v_rec_bal=0.631 | lr=5.2e-05 | 12.6s
+  Fold 2 | Ep  27/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.494 v_rec_bal=0.631 | lr=4.8e-05 | 12.6s
+  Fold 2 | Ep  28/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.497 v_rec_bal=0.631 | lr=4.5e-05 | 12.6s
+  Early stop at epoch 28
+  -> Test (best @ epoch 7): acc=0.7500, bal_acc=0.4091
+
+============================================================
+Fold 3/5
+============================================================
+  Train:  45 samples, 11 subjects [1, 2, 3, 5, 6, 7, 8, 13, 16, 17, 18], label_0=35, label_1=10
+    Val:  12 samples,  2 subjects [11, 12], label_0=11, label_1=1
+   Test:  13 samples,  4 subjects [4, 9, 10, 14], label_0=10, label_1=3
+  Building window datasets...
+    WindowDataset: 4890 windows (class_0=2388, class_1=2502)
+    WindowDataset: 1311 windows (class_0=1250, class_1=61)
+    WindowDataset: 1226 windows (class_0=964, class_1=262)
+[LaBraM] Loaded 221/223 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  Fold 3 | Ep   1/50 | t_loss=0.1267 t_acc=0.743 | v_win_bal=0.624 v_rec_bal=0.909 | lr=3.3e-05 | 12.1s
+  Fold 3 | Ep   2/50 | t_loss=0.0486 t_acc=0.940 | v_win_bal=0.717 v_rec_bal=0.773 | lr=6.7e-05 | 12.1s
+  Fold 3 | Ep   3/50 | t_loss=0.0368 t_acc=0.963 | v_win_bal=0.623 v_rec_bal=0.773 | lr=1.0e-04 | 12.1s
+  Fold 3 | Ep   4/50 | t_loss=0.0162 t_acc=0.988 | v_win_bal=0.396 v_rec_bal=0.364 | lr=1.0e-04 | 12.0s
+  Fold 3 | Ep   5/50 | t_loss=0.0207 t_acc=0.983 | v_win_bal=0.466 v_rec_bal=0.500 | lr=1.0e-04 | 12.1s
+  Fold 3 | Ep   6/50 | t_loss=0.0100 t_acc=0.992 | v_win_bal=0.550 v_rec_bal=0.409 | lr=9.9e-05 | 12.1s
+  Fold 3 | Ep   7/50 | t_loss=0.0100 t_acc=0.992 | v_win_bal=0.423 v_rec_bal=0.409 | lr=9.8e-05 | 12.1s
+  Fold 3 | Ep   8/50 | t_loss=0.0046 t_acc=0.996 | v_win_bal=0.516 v_rec_bal=0.273 | lr=9.7e-05 | 12.1s
+  Fold 3 | Ep   9/50 | t_loss=0.0055 t_acc=0.995 | v_win_bal=0.415 v_rec_bal=0.455 | lr=9.6e-05 | 12.2s
+  Fold 3 | Ep  10/50 | t_loss=0.0033 t_acc=0.998 | v_win_bal=0.404 v_rec_bal=0.364 | lr=9.5e-05 | 12.1s
+  Fold 3 | Ep  11/50 | t_loss=0.0062 t_acc=0.996 | v_win_bal=0.653 v_rec_bal=0.818 | lr=9.3e-05 | 12.1s
+  Fold 3 | Ep  12/50 | t_loss=0.0042 t_acc=0.998 | v_win_bal=0.455 v_rec_bal=0.409 | lr=9.1e-05 | 9.5s
+  Fold 3 | Ep  13/50 | t_loss=0.0008 t_acc=0.999 | v_win_bal=0.497 v_rec_bal=0.364 | lr=8.9e-05 | 6.6s
+  Fold 3 | Ep  14/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.497 v_rec_bal=0.364 | lr=8.7e-05 | 6.6s
+  Fold 3 | Ep  15/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.499 v_rec_bal=0.364 | lr=8.5e-05 | 6.7s
+  Fold 3 | Ep  16/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.490 v_rec_bal=0.364 | lr=8.2e-05 | 9.4s
+  Early stop at epoch 16
+  -> Test (best @ epoch 1): acc=0.3077, bal_acc=0.3167
+
+============================================================
+Fold 4/5
+============================================================
+  Train:  41 samples, 11 subjects [1, 2, 4, 5, 7, 8, 9, 10, 14, 17, 18], label_0=31, label_1=10
+    Val:  12 samples,  2 subjects [11, 12], label_0=11, label_1=1
+   Test:  17 samples,  4 subjects [3, 6, 13, 16], label_0=14, label_1=3
+  Building window datasets...
+    WindowDataset: 5063 windows (class_0=2273, class_1=2790)
+    WindowDataset: 1311 windows (class_0=1250, class_1=61)
+    WindowDataset: 1269 windows (class_0=1079, class_1=190)
+[LaBraM] Loaded 221/223 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  Fold 4 | Ep   1/50 | t_loss=0.1265 t_acc=0.728 | v_win_bal=0.541 v_rec_bal=0.273 | lr=3.3e-05 | 9.3s
+  Fold 4 | Ep   2/50 | t_loss=0.0429 t_acc=0.945 | v_win_bal=0.528 v_rec_bal=0.273 | lr=6.7e-05 | 11.8s
+  Fold 4 | Ep   3/50 | t_loss=0.0298 t_acc=0.976 | v_win_bal=0.493 v_rec_bal=0.364 | lr=1.0e-04 | 12.0s
+  Fold 4 | Ep   4/50 | t_loss=0.0199 t_acc=0.982 | v_win_bal=0.490 v_rec_bal=0.455 | lr=1.0e-04 | 11.9s
+  Fold 4 | Ep   5/50 | t_loss=0.0116 t_acc=0.992 | v_win_bal=0.450 v_rec_bal=0.364 | lr=1.0e-04 | 11.9s
+  Fold 4 | Ep   6/50 | t_loss=0.0088 t_acc=0.993 | v_win_bal=0.481 v_rec_bal=0.409 | lr=9.9e-05 | 12.3s
+  Fold 4 | Ep   7/50 | t_loss=0.0047 t_acc=0.995 | v_win_bal=0.430 v_rec_bal=0.455 | lr=9.8e-05 | 11.9s
+  Fold 4 | Ep   8/50 | t_loss=0.0079 t_acc=0.995 | v_win_bal=0.451 v_rec_bal=0.364 | lr=9.7e-05 | 12.0s
+  Fold 4 | Ep   9/50 | t_loss=0.0066 t_acc=0.995 | v_win_bal=0.459 v_rec_bal=0.500 | lr=9.6e-05 | 12.0s
+  Fold 4 | Ep  10/50 | t_loss=0.0047 t_acc=0.997 | v_win_bal=0.407 v_rec_bal=0.364 | lr=9.5e-05 | 11.9s
+  Fold 4 | Ep  11/50 | t_loss=0.0049 t_acc=0.996 | v_win_bal=0.471 v_rec_bal=0.364 | lr=9.3e-05 | 11.9s
+  Fold 4 | Ep  12/50 | t_loss=0.0038 t_acc=0.997 | v_win_bal=0.443 v_rec_bal=0.409 | lr=9.1e-05 | 12.0s
+  Fold 4 | Ep  13/50 | t_loss=0.0041 t_acc=0.998 | v_win_bal=0.437 v_rec_bal=0.409 | lr=8.9e-05 | 11.9s
+  Fold 4 | Ep  14/50 | t_loss=0.0032 t_acc=0.997 | v_win_bal=0.471 v_rec_bal=0.455 | lr=8.7e-05 | 12.0s
+  Fold 4 | Ep  15/50 | t_loss=0.0011 t_acc=0.999 | v_win_bal=0.463 v_rec_bal=0.500 | lr=8.5e-05 | 12.0s
+  Fold 4 | Ep  16/50 | t_loss=0.0031 t_acc=0.998 | v_win_bal=0.404 v_rec_bal=0.409 | lr=8.2e-05 | 12.0s
+  Fold 4 | Ep  17/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.406 v_rec_bal=0.364 | lr=8.0e-05 | 12.0s
+  Fold 4 | Ep  18/50 | t_loss=0.0019 t_acc=0.999 | v_win_bal=0.421 v_rec_bal=0.364 | lr=7.7e-05 | 12.0s
+  Fold 4 | Ep  19/50 | t_loss=0.0058 t_acc=0.996 | v_win_bal=0.458 v_rec_bal=0.364 | lr=7.4e-05 | 12.0s
+  Fold 4 | Ep  20/50 | t_loss=0.0033 t_acc=0.998 | v_win_bal=0.440 v_rec_bal=0.455 | lr=7.1e-05 | 11.9s
+  Fold 4 | Ep  21/50 | t_loss=0.0004 t_acc=0.999 | v_win_bal=0.466 v_rec_bal=0.500 | lr=6.8e-05 | 11.9s
+  Fold 4 | Ep  22/50 | t_loss=0.0017 t_acc=0.998 | v_win_bal=0.458 v_rec_bal=0.500 | lr=6.5e-05 | 11.9s
+  Fold 4 | Ep  23/50 | t_loss=0.0001 t_acc=1.000 | v_win_bal=0.467 v_rec_bal=0.500 | lr=6.2e-05 | 11.9s
+  Fold 4 | Ep  24/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.454 v_rec_bal=0.409 | lr=5.8e-05 | 12.0s
+  Fold 4 | Ep  25/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.454 v_rec_bal=0.409 | lr=5.5e-05 | 12.0s
+  Fold 4 | Ep  26/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.455 v_rec_bal=0.409 | lr=5.2e-05 | 12.0s
+  Fold 4 | Ep  27/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.454 v_rec_bal=0.409 | lr=4.8e-05 | 12.0s
+  Fold 4 | Ep  28/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.455 v_rec_bal=0.409 | lr=4.5e-05 | 12.0s
+  Fold 4 | Ep  29/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.456 v_rec_bal=0.409 | lr=4.2e-05 | 12.0s
+  Fold 4 | Ep  30/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.456 v_rec_bal=0.409 | lr=3.8e-05 | 12.0s
+  Fold 4 | Ep  31/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.456 v_rec_bal=0.409 | lr=3.5e-05 | 11.7s
+  Fold 4 | Ep  32/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.457 v_rec_bal=0.409 | lr=3.2e-05 | 11.9s
+  Fold 4 | Ep  33/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.456 v_rec_bal=0.409 | lr=2.9e-05 | 11.9s
+  Fold 4 | Ep  34/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.455 v_rec_bal=0.409 | lr=2.6e-05 | 12.2s
+  Fold 4 | Ep  35/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.456 v_rec_bal=0.409 | lr=2.3e-05 | 11.8s
+  Fold 4 | Ep  36/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.457 v_rec_bal=0.409 | lr=2.0e-05 | 11.9s
+  Fold 4 | Ep  37/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.457 v_rec_bal=0.409 | lr=1.8e-05 | 12.3s
+  Fold 4 | Ep  38/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.448 v_rec_bal=0.409 | lr=1.5e-05 | 11.9s
+  Early stop at epoch 38
+  -> Test (best @ epoch 9): acc=0.7059, bal_acc=0.4286
+
+============================================================
+Fold 5/5
+============================================================
+  Train:  43 samples, 11 subjects [3, 4, 5, 6, 8, 9, 10, 13, 14, 16, 17], label_0=35, label_1=8
+    Val:  12 samples,  2 subjects [11, 12], label_0=11, label_1=1
+   Test:  15 samples,  4 subjects [1, 2, 7, 18], label_0=10, label_1=5
+  Building window datasets...
+    WindowDataset: 5042 windows (class_0=2754, class_1=2288)
+    WindowDataset: 1311 windows (class_0=1250, class_1=61)
+    WindowDataset: 915 windows (class_0=598, class_1=317)
+[LaBraM] Loaded 221/223 params from weights/labram-base/model.safetensors
+[LaBraM] Missing: ['fc_norm.weight', 'fc_norm.bias']
+  Fold 5 | Ep   1/50 | t_loss=0.1268 t_acc=0.738 | v_win_bal=0.732 v_rec_bal=0.818 | lr=3.3e-05 | 11.8s
+  Fold 5 | Ep   2/50 | t_loss=0.0488 t_acc=0.941 | v_win_bal=0.489 v_rec_bal=0.500 | lr=6.7e-05 | 11.8s
+  Fold 5 | Ep   3/50 | t_loss=0.0303 t_acc=0.971 | v_win_bal=0.482 v_rec_bal=0.500 | lr=1.0e-04 | 11.8s
+  Fold 5 | Ep   4/50 | t_loss=0.0116 t_acc=0.991 | v_win_bal=0.493 v_rec_bal=0.500 | lr=1.0e-04 | 11.8s
+  Fold 5 | Ep   5/50 | t_loss=0.0071 t_acc=0.995 | v_win_bal=0.486 v_rec_bal=0.500 | lr=1.0e-04 | 11.8s
+  Fold 5 | Ep   6/50 | t_loss=0.0031 t_acc=0.998 | v_win_bal=0.489 v_rec_bal=0.500 | lr=9.9e-05 | 11.8s
+  Fold 5 | Ep   7/50 | t_loss=0.0039 t_acc=0.997 | v_win_bal=0.498 v_rec_bal=0.500 | lr=9.8e-05 | 11.8s
+  Fold 5 | Ep   8/50 | t_loss=0.0028 t_acc=0.998 | v_win_bal=0.483 v_rec_bal=0.500 | lr=9.7e-05 | 11.8s
+  Fold 5 | Ep   9/50 | t_loss=0.0083 t_acc=0.994 | v_win_bal=0.491 v_rec_bal=0.500 | lr=9.6e-05 | 11.8s
+  Fold 5 | Ep  10/50 | t_loss=0.0020 t_acc=0.998 | v_win_bal=0.512 v_rec_bal=0.500 | lr=9.5e-05 | 11.9s
+  Fold 5 | Ep  11/50 | t_loss=0.0040 t_acc=0.997 | v_win_bal=0.492 v_rec_bal=0.500 | lr=9.3e-05 | 11.8s
+  Fold 5 | Ep  12/50 | t_loss=0.0032 t_acc=0.997 | v_win_bal=0.566 v_rec_bal=0.455 | lr=9.1e-05 | 11.8s
+  Fold 5 | Ep  13/50 | t_loss=0.0069 t_acc=0.995 | v_win_bal=0.492 v_rec_bal=0.500 | lr=8.9e-05 | 11.9s
+  Fold 5 | Ep  14/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.491 v_rec_bal=0.500 | lr=8.7e-05 | 11.9s
+  Fold 5 | Ep  15/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.491 v_rec_bal=0.500 | lr=8.5e-05 | 11.8s
+  Fold 5 | Ep  16/50 | t_loss=0.0000 t_acc=1.000 | v_win_bal=0.492 v_rec_bal=0.500 | lr=8.2e-05 | 11.8s
+  Early stop at epoch 16
+  -> Test (best @ epoch 1): acc=0.5333, bal_acc=0.5000
+
+============================================================
+Global Results (5-Fold, subject-level CV)
+Mode: FT | Extractor: labram | Loss: focal
+============================================================
+              acc: 0.6429
+          bal_acc: 0.5357
+               f1: 0.6667
+            kappa: 0.0602
+  Total predictions: 70 (should equal dataset size: 70)
+
+Results saved to results/hp_sweep/20260410_dass/labram/labram_encoderlrscale1.0_lr1e-4_s123/
+23/

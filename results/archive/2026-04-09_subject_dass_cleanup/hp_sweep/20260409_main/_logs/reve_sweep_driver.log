@@ -1,0 +1,56 @@
+Sweep id          : 20260409_main
+Models            : ['reve']
+GPUs              : [3, 4]
+Seeds             : [42, 123, 2024]
+Total runs        : 18
+Sweep dir         : /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main
+Per-run log dir   : /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/_logs
+
+First 5 planned runs:
+  reve_encoderlrscale0.1_lr1e-5_s42
+  reve_encoderlrscale0.1_lr1e-5_s123
+  reve_encoderlrscale0.1_lr1e-5_s2024
+  reve_encoderlrscale0.1_lr3e-5_s42
+  reve_encoderlrscale0.1_lr3e-5_s123
+  ... (+13 more)
+
+[  1/18] START on cuda:3: reve_encoderlrscale0.1_lr1e-5_s42
+[  1/18] START on cuda:4: reve_encoderlrscale0.1_lr1e-5_s123
+[  1/18] OK  on cuda:3 ( 33.1 min): reve_encoderlrscale0.1_lr1e-5_s42
+[  2/18] START on cuda:3: reve_encoderlrscale0.1_lr1e-5_s2024
+[  2/18] OK  on cuda:4 ( 35.8 min): reve_encoderlrscale0.1_lr1e-5_s123
+[  3/18] START on cuda:4: reve_encoderlrscale0.1_lr3e-5_s42
+[  3/18] OK  on cuda:4 ( 31.6 min): reve_encoderlrscale0.1_lr3e-5_s42
+[  4/18] START on cuda:4: reve_encoderlrscale0.1_lr3e-5_s123
+[  4/18] OK  on cuda:3 ( 41.5 min): reve_encoderlrscale0.1_lr1e-5_s2024
+[  5/18] START on cuda:3: reve_encoderlrscale0.1_lr3e-5_s2024
+[  5/18] OK  on cuda:4 ( 33.0 min): reve_encoderlrscale0.1_lr3e-5_s123
+[  6/18] START on cuda:4: reve_encoderlrscale0.1_lr1e-4_s42
+[  6/18] OK  on cuda:3 ( 33.0 min): reve_encoderlrscale0.1_lr3e-5_s2024
+[  7/18] START on cuda:3: reve_encoderlrscale0.1_lr1e-4_s123
+[  7/18] OK  on cuda:4 ( 29.2 min): reve_encoderlrscale0.1_lr1e-4_s42
+[  8/18] START on cuda:4: reve_encoderlrscale0.1_lr1e-4_s2024
+[  8/18] OK  on cuda:3 ( 30.1 min): reve_encoderlrscale0.1_lr1e-4_s123
+[  9/18] START on cuda:3: reve_encoderlrscale1_lr1e-5_s42
+[  9/18] OK  on cuda:4 ( 28.2 min): reve_encoderlrscale0.1_lr1e-4_s2024
+[ 10/18] START on cuda:4: reve_encoderlrscale1_lr1e-5_s123
+[ 10/18] OK  on cuda:3 ( 29.3 min): reve_encoderlrscale1_lr1e-5_s42
+[ 11/18] START on cuda:3: reve_encoderlrscale1_lr1e-5_s2024
+[ 11/18] OK  on cuda:4 ( 31.6 min): reve_encoderlrscale1_lr1e-5_s123
+[ 12/18] START on cuda:4: reve_encoderlrscale1_lr3e-5_s42
+[ 12/18] OK  on cuda:3 ( 36.3 min): reve_encoderlrscale1_lr1e-5_s2024
+[ 13/18] START on cuda:3: reve_encoderlrscale1_lr3e-5_s123
+[ 13/18] OK  on cuda:4 ( 31.0 min): reve_encoderlrscale1_lr3e-5_s42
+[ 14/18] START on cuda:4: reve_encoderlrscale1_lr3e-5_s2024
+[ 14/18] OK  on cuda:3 ( 31.1 min): reve_encoderlrscale1_lr3e-5_s123
+[ 15/18] START on cuda:3: reve_encoderlrscale1_lr1e-4_s42
+[ 15/18] OK  on cuda:4 ( 33.5 min): reve_encoderlrscale1_lr3e-5_s2024
+[ 16/18] START on cuda:4: reve_encoderlrscale1_lr1e-4_s123
+[ 16/18] OK  on cuda:3 ( 27.4 min): reve_encoderlrscale1_lr1e-4_s42
+[ 17/18] START on cuda:3: reve_encoderlrscale1_lr1e-4_s2024
+[ 17/18] OK  on cuda:4 ( 35.6 min): reve_encoderlrscale1_lr1e-4_s123
+[ 18/18] OK  on cuda:3 ( 31.5 min): reve_encoderlrscale1_lr1e-4_s2024
+
+Sweep finished in 293.2 min  |  ok=18  fail=0
+
+→ Manifest: /raid/jupyter-linjimmy1003.md10/UCSD_stress/results/hp_sweep/20260409_main/sweep_manifest.json

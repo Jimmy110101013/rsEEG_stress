@@ -1,0 +1,182 @@
+{
+  "generated_at": "2026-04-09T23:23:37",
+  "description": "Frozen-LP vs FT BA matrix + HP sweep leaderboard + Lin-compare runs. Snapshot from 2026-04-09 session.",
+  "frozen_lp_vs_ft_matrix": {
+    "note": "Frozen LP = sklearn LogisticRegression on mean-pooled 200-d LaBraM features, subject-level StratifiedGroupKFold(5), class_weight=balanced. Multi-seed mean ± std over seeds [42,123,2024].",
+    "stress_per_rec_dass": {
+      "label_source": "data/comprehensive_labels.csv Group column (per-recording, matches Lin 2025 protocol)",
+      "n_rec": 70,
+      "n_subj": 17,
+      "frozen_lp_ba_mean": 0.6161,
+      "frozen_lp_ba_std": 0.0292,
+      "ft_ba_llrd_1.0": 0.5357,
+      "ft_ba_llrd_0.65": 0.5536,
+      "ft_run_llrd_1.0": "results/lin_compare/labram_dass_llrd1.0_s42",
+      "ft_run_llrd_0.65": "results/lin_compare/labram_dass_llrd0.65_s42",
+      "delta_ft_minus_frozen_llrd_1.0": -0.0804,
+      "delta_ft_minus_frozen_llrd_0.65": -0.0625,
+      "classification": "EROSION (new finding 2026-04-09 — reclassified from no-op)"
+    },
+    "stress_subject_dass_oragg": {
+      "label_source": "OR-aggregated across each subject's recordings (our canonical --label subject-dass mode)",
+      "n_rec": 70,
+      "n_subj": 17,
+      "frozen_lp_ba_mean": 0.5399,
+      "frozen_lp_ba_std": 0.0183,
+      "ft_ba_canonical": 0.6559,
+      "delta_ft_minus_frozen": 0.116,
+      "classification": "Trait memorization artifact — FT helps only because label becomes subject-identity broadcast"
+    },
+    "adftd": {
+      "label_source": "HC vs AD from ADFTD dataset",
+      "n_rec": 195,
+      "n_subj": 65,
+      "frozen_lp_ba_mean": 0.6694,
+      "frozen_lp_ba_std": 0.0248,
+      "ft_ba_canonical": 0.7521,
+      "delta_ft_minus_frozen": 0.0827,
+      "classification": "INJECTION (confirmed by behavioral evidence)"
+    },
+    "tdbrain": {
+      "label_source": "HC vs MDD from TDBRAIN",
+      "n_rec": 734,
+      "n_subj": 359,
+      "frozen_lp_ba_mean": 0.6794,
+      "frozen_lp_ba_std": 0.0073,
+      "frozen_lp_multi_seed_seeds_42_123_2024_7_0": [
+        0.6895,
+        0.6728,
+        0.6758,
+        0.6751,
+        0.7352
+      ],
+      "ft_ba_canonical": 0.6812,
+      "delta_ft_minus_frozen": 0.0018,
+      "classification": "Silent erosion — BA 打平但 representation label fraction 掉 50%"
+    },
+    "eegmat": {
+      "label_source": "rest vs mental-arithmetic task (within-subject paired)",
+      "n_rec": 72,
+      "n_subj": 36,
+      "frozen_lp_ba_mean": 0.6713,
+      "frozen_lp_ba_std": 0.0458,
+      "ft_ba_canonical": 0.7361,
+      "delta_ft_minus_frozen": 0.0648,
+      "classification": "MILD INJECTION (reclassified from no-op 2026-04-09 — BA gain confirms FT adds signal)"
+    }
+  },
+  "hp_sweep_20260409_main_leaderboard": {
+    "label_mode": "subject-dass",
+    "note": "All 126 runs used COMMON_ARGS with --label subject-dass. Per-model best config by mean BA over 3 seeds. REVE re-ran 2026-04-09 afternoon after original sweep was killed by UI crash.",
+    "models": {
+      "reve": {
+        "best_config": "elrs=0.1, lr=3e-05",
+        "mean_ba": 0.6987,
+        "std": 0.0701,
+        "range": [
+          0.6124,
+          0.784
+        ]
+      },
+      "cbramod": {
+        "best_config": "elrs=1.0, lr=1e-04",
+        "mean_ba": 0.6229,
+        "std": 0.0311,
+        "range": [
+          0.5911,
+          0.6651
+        ]
+      },
+      "labram": {
+        "best_config": "elrs=1.0, lr=1e-04",
+        "mean_ba": 0.6092,
+        "std": 0.0441,
+        "range": [
+          0.5472,
+          0.6462
+        ]
+      },
+      "eegnet": {
+        "best_config": "lr=3e-4",
+        "mean_ba": 0.5559,
+        "std": 0.0524,
+        "range": [
+          0.4829,
+          0.6351
+        ]
+      },
+      "shallowconvnet": {
+        "best_config": "lr=1e-3",
+        "mean_ba": 0.5366,
+        "std": 0.0278,
+        "range": [
+          0.5143,
+          0.5916
+        ]
+      },
+      "deepconvnet": {
+        "best_config": "lr=3e-4",
+        "mean_ba": 0.5279,
+        "std": 0.029,
+        "range": [
+          0.5,
+          0.5851
+        ]
+      },
+      "eegconformer": {
+        "best_config": "lr=3e-4",
+        "mean_ba": 0.5209,
+        "std": 0.0243,
+        "range": [
+          0.4718,
+          0.5486
+        ]
+      }
+    },
+    "caveat": "Canonical LaBraM historical value is 0.6559 (same HP cell as sweep's 2nd-best), not reproduced by today's sweep due to code drift since 2026-04-05. Root cause still unresolved as of 2026-04-09 evening."
+  },
+  "lin_2025_comparison": {
+    "paper": "Wang, Zhang, Chen, Truong, Jung — arXiv:2505.23042 (2025)",
+    "lin_protocol": "Per-recording DASS labels, 80/10/10 by-recording split (not by-subject), 5s windows with 75% overlap, patches shuffled within each set before exporting pickles",
+    "lin_hp": {
+      "lr": 1e-05,
+      "batch_size": 32,
+      "epochs": 50,
+      "weight_decay": 0.05,
+      "layer_decay": 0.65,
+      "warmup": 3
+    },
+    "lin_numbers": {
+      "seed_2_best": 0.9047,
+      "seed_42": 0.8705,
+      "seed_0": 0.8701,
+      "seed_1": 0.6684,
+      "mean_across_seeds": 0.81
+    },
+    "our_strict_equivalent": {
+      "protocol": "Per-recording DASS (Group column), subject-level StratifiedGroupKFold(5), same FT recipe as canonical LaBraM 0.6559",
+      "ft_ba_llrd_1.0": 0.5357,
+      "ft_ba_llrd_0.65": 0.5536,
+      "gap_vs_lin_avg": "~26 pp, entirely attributable to split protocol + label aggregation",
+      "frozen_lp_ba": 0.6161,
+      "observation": "Frozen LP BEATS FT under strict evaluation — Stress is an erosion dataset."
+    }
+  },
+  "key_reclassifications_2026_04_09": [
+    "Stress (per-rec dass) moved from 'no-op' → 'erosion': frozen LP (0.62) > FT (0.54) by 6-8 pp",
+    "Stress subject-dass 0.66 reinterpreted as 'trait memorization artifact' rather than 'ceiling': FT only helps because OR-aggregated label is de facto subject-ID broadcast",
+    "EEGMAT moved from 'no-op' → 'mild injection': FT (0.74) > frozen LP (0.67), +6.5 pp",
+    "TDBRAIN erosion confirmed behaviorally: frozen LP (0.68) ≈ FT (0.68), paired with -1.5 pp label fraction",
+    "REVE moved from 'ruled out / chance-ish' → 'top sweep performer on subject-dass': 0.70 (but high seed variance ±7 pp, and subject-dass interpretation caveat applies)",
+    "CBraMod similarly from 'ruled out 0.488' → '0.62 sweep best' (label mode note: sweep is subject-dass)"
+  ],
+  "followups_pending": [
+    "Multi-seed confirmation of Stress FT --label dass (need seeds 123, 2024 — today only ran seed 42)",
+    "Permutation null for Stress per-rec dass Δ (does -0.08 exceed what label-shuffle FT would produce?)",
+    "Recompute paper/figures/variance_analysis.json Stress entry using per-rec dass labels (currently uses subject-dass)",
+    "CBraMod / REVE repeat with --label dass to check if their sweep numbers are also trait-memorization artifacts",
+    "Code drift root cause — what changed between 2026-04-05 canonical and 2026-04-09 sweep that dropped LaBraM 0.656 → 0.591 at identical HP",
+    "HNC MDD replication of erosion mode (pending HDF5 decryption + integration)",
+    "Stress FT feature extraction with --label dass to enable pooled label fraction recompute"
+  ]
+}
