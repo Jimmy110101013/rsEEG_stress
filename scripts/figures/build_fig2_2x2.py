@@ -13,16 +13,18 @@ axis-defining diagnostic metric, printed as 3 values (one per FM).
 Output: paper/figures/main/fig2_representation_2x2.{pdf,png}
 """
 from __future__ import annotations
-import json
+import sys
 from pathlib import Path
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.lines import Line2D
-from matplotlib.patches import Patch
+REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
 
-REPO = Path("/raid/jupyter-linjimmy1003.md10/UCSD_stress")
+import matplotlib as mpl  # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+from matplotlib.lines import Line2D  # noqa: E402
+from matplotlib.patches import Patch  # noqa: E402
+
 OUT  = REPO / "paper/figures/main"
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -39,11 +41,13 @@ FMS        = ["labram", "cbramod", "reve"]
 FM_PRETTY  = {"labram": "LaBraM", "cbramod": "CBraMod", "reve": "REVE"}
 FM_COLOR   = {"labram": "#1f3a5f", "cbramod": "#B8442C", "reve": "#2E8B57"}
 
-# ── load source tables ─────────────────────────────────────
-va_all  = json.loads((REPO / "results/final/source_tables/variance_analysis_all.json").read_text())
-va_sd   = json.loads((REPO / "results/final/source_tables/sleepdep_variance_rsa.json").read_text())
-dc_main = json.loads((REPO / "results/final/source_tables/f14_within_subject.json").read_text())   # eegmat+stress
-dc_sd   = json.loads((REPO / "results/final/source_tables/sleepdep_within_subject.json").read_text())
+# ── load source tables via canonical accessor ──────────────
+from src import results
+
+va_all  = results.source_table("variance_analysis_all")
+va_sd   = results.source_table("sleepdep_variance_rsa")
+dc_main = results.source_table("f14_within_subject")       # eegmat+stress
+dc_sd   = results.source_table("sleepdep_within_subject")
 
 
 def variance_entry(fm: str, ds: str) -> dict | None:

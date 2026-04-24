@@ -40,24 +40,19 @@ Usage
 """
 from __future__ import annotations
 
-import glob
-import json
-import statistics
+import sys
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
+
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+
+from src import results  # noqa: E402
+
 OUT = REPO / "paper/figures/main/fig3_honest_evaluation_4panel.pdf"
 OUT_PNG = OUT.with_suffix(".png")
-
-NULL_ROOTS = {
-    "EEGMAT":   "results/studies/exp27_paired_null/eegmat",
-    "ADFTD":    "results/studies/exp27_paired_null/adftd",
-    "Stress":   "results/studies/exp27_paired_null/stress",
-    "SleepDep": "results/studies/exp27_paired_null/sleepdep",
-}
 
 # 2×2 factorial, row-major. Rows = CV regime; columns = label substrate.
 #   (0,0) within × neural     (0,1) within × behavioral
@@ -81,34 +76,18 @@ PERM_LEVEL = {
 
 
 def _load_null(ds: str) -> np.ndarray:
-    root = REPO / NULL_ROOTS[ds]
-    paths = sorted(root.glob("perm_s*/summary.json"))
-    return np.array([json.load(open(p))["subject_bal_acc"] for p in paths])
+    return np.array([s["subject_bal_acc"]
+                     for s in results.perm_null_summaries(ds)])
 
 
 def _real_labram_ft(ds: str) -> tuple[float, float, int]:
-    """Return (mean, sd, n) of LaBraM FT BA under the recipe matching
-    the null chain. Stress uses best-HP (lr=1e-4) per exp27 chain config;
-    EEGMAT/ADFTD use canonical (lr=1e-5); SleepDep uses its canonical
-    (lr=1e-5, bs=4)."""
-    if ds in {"EEGMAT", "ADFTD"}:
-        tab = json.load(open(
-            REPO / "results/final/source_tables/master_frozen_ft_table_v2.json"
-        ))["table"]
-        r = tab["labram"][ds.lower()]
-        return float(r["ft_mean"]), float(r["ft_std"]), int(r["ft_n"])
-    # Stress + SleepDep: pull from exp_30 fm_performance, matching null recipe
-    perf = json.load(open(
-        REPO / "results/studies/exp_30_sdl_vs_between/tables/fm_performance.json"
-    ))
-    rows = [r for r in perf
-            if r["mode"] == "ft" and r["fm"] == "labram"
-            and r["dataset"] == ds.lower() and r["bal_acc"] is not None]
-    bas = [r["bal_acc"] for r in rows]
-    if not bas:
-        raise RuntimeError(f"No real-FT seeds found for {ds}")
-    sd = statistics.stdev(bas) if len(bas) > 1 else 0.0
-    return statistics.mean(bas), sd, len(bas)
+    """LaBraM FT BA under the recipe matching exp27's null chain.
+
+    Handled by src.results.labram_ft_ba_null_matched, which hides the
+    EEGMAT/ADFTD (master table) vs Stress/SleepDep (exp_30 fm_performance)
+    bifurcation in the underlying storage.
+    """
+    return results.labram_ft_ba_null_matched(ds)
 
 
 def _p_value(real: float, null: np.ndarray) -> float:
