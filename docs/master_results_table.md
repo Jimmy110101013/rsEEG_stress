@@ -14,7 +14,7 @@ All BA = subject-level 5-fold CV, 3 seeds.
 | cbramod | 0.440 ± 0.019 | 0.414 ± 0.029 | backbone lr=1e-4 / head lr=5e-4, wd=0.05, CE+LS 0.1, norm=none |
 | reve | 0.458 ± 0.019 | 0.476 ± 0.051 | max_lr=2.4e-4, encoder_lr_scale=0.1, wd=0.01, warmup 2ep, norm=none |
 
-> FT synced 2026-04-23 from `results/final/stress/{model}/ft/seed{42,123,2024}/summary.json` (subject_bal_acc, 3-seed mean ± ddof=1). Previous `0.443/0.548/0.577` came from pre-unified-HP runs; new range `0.41–0.48` tightens the null-indistinguishable reading of the Stress cell.
+> FT synced 2026-04-23 from `results/final/stress/ft/{model}/seed{42,123,2024}/summary.json` (subject_bal_acc, 3-seed mean ± ddof=1). Previous `0.443/0.548/0.577` came from pre-unified-HP runs; new range `0.41–0.48` tightens the null-indistinguishable reading of the Stress cell.
 
 **Classical ML** (per-rec features, 3 seeds):
 
@@ -44,7 +44,7 @@ All BA = subject-level 5-fold CV, 3 seeds.
 | cbramod | 0.581 ± 0.042 | 0.698 ± 0.020 | backbone lr=1e-4 / head lr=5e-4, wd=0.05, CE+LS 0.1, norm=none |
 | reve | 0.668 ± 0.027 | 0.683 ± 0.019 | max_lr=2.4e-4, encoder_lr_scale=0.1, wd=0.01, warmup 2ep, norm=none |
 
-> Both LP and FT refreshed 2026-04-23 under split1 (65/65). LP = 3-seed subset of 8-seed `perwindow_lp_all/adftd/{model}_multi_seed.json`. FT = 3-seed (42/123/2024) from `results/final/adftd/{model}/ft/seed{N}/summary.json` (subject_bal_acc). CBraMod FT jumped +16 pp vs the old unified-HP run (0.537 → 0.698) — per-FM HP recipe recovered the signal (G-F09).
+> Both LP and FT refreshed 2026-04-23 under split1 (65/65). LP = 3-seed subset of 8-seed `perwindow_lp_all/adftd/{model}_multi_seed.json`. FT = 3-seed (42/123/2024) from `results/final/adftd/ft/{model}/seed{N}/summary.json` (subject_bal_acc). CBraMod FT jumped +16 pp vs the old unified-HP run (0.537 → 0.698) — per-FM HP recipe recovered the signal (G-F09).
 
 **Classical ML** (per-rec features, 3 seeds):
 
@@ -56,12 +56,14 @@ All BA = subject-level 5-fold CV, 3 seeds.
 | RF | 0.645 ± 0.035 |
 | XGBoost | 0.578 ± 0.051 |
 
-**Non-FM deep** (from-scratch, 3 seeds):
+**Non-FM deep** (from-scratch, 3 seeds; **split1 refreshed 2026-04-24**):
 
 | Arch | BA |
 |---|---|
-| eegnet | 0.773 ± 0.027 |
-| shallowconvnet | 0.685 ± 0.038 |
+| eegnet | 0.761 ± 0.076 |
+| shallowconvnet | 0.716 ± 0.050 |
+
+> Split3 legacy (n_samples=195): eegnet 0.773 ± 0.027, shallowconvnet 0.685 ± 0.038 — archived under `results/studies/exp15_nonfm_baselines/adftd.bak_split3_20260424/`. Split1 shifts: EEGNet −1.2 pp, ShallowConvNet +3 pp; both consistent with the 3× smaller recording count widening seed variance. Aggregated at `results/final/adftd/nonfm_deep/summary.json`.
 
 ## SleepDep
 - Recordings / Subjects: **72 / 36**
@@ -74,7 +76,7 @@ All BA = subject-level 5-fold CV, 3 seeds.
 | cbramod | 0.546 ± 0.021 | 0.486 ± 0.048 | backbone lr=1e-4 / head lr=5e-4, wd=0.05, CE+LS 0.1, norm=none |
 | reve | 0.537 ± 0.049 | 0.509 ± 0.076 | max_lr=2.4e-4, encoder_lr_scale=0.1, wd=0.01, warmup 2ep, norm=none |
 
-> FT synced 2026-04-23 from `results/final/sleepdep/{model}/ft/seed{N}/summary.json`. Three-FM FT range tightened from `0.53–0.56` → `0.49–0.58`; CBraMod dropped ~7 pp under per-FM HP (unlike EEGMAT/ADFTD where per-FM HP rescued it), consistent with SleepDep being weak-aligned — no signal for the HP change to expose.
+> FT synced 2026-04-23 from `results/final/sleepdep/ft/{model}/seed{N}/summary.json`. Three-FM FT range tightened from `0.53–0.56` → `0.49–0.58`; CBraMod dropped ~7 pp under per-FM HP (unlike EEGMAT/ADFTD where per-FM HP rescued it), consistent with SleepDep being weak-aligned — no signal for the HP change to expose.
 
 **Classical ML** (per-rec features, 3 seeds):
 
@@ -104,7 +106,7 @@ All BA = subject-level 5-fold CV, 3 seeds.
 | cbramod | 0.718 ± 0.021 | 0.727 ± 0.040 | backbone lr=1e-4 / head lr=5e-4, wd=0.05, CE+LS 0.1, norm=none |
 | reve | 0.736 ± 0.014 | 0.727 ± 0.053 | max_lr=2.4e-4, encoder_lr_scale=0.1, wd=0.01, warmup 2ep, norm=none |
 
-> FT synced 2026-04-23 from `results/final/eegmat/{model}/ft/seed{N}/summary.json`. **Narrative flip**: CBraMod previously looked like an EEGMAT outlier at 0.620; per-FM HP rescues it to 0.727 — now ties LaBraM/REVE. All three FMs FT ≈ LP (~0.72), consistent with EEGMAT being strong-aligned at the frozen level so FT adds little (already saturated).
+> FT synced 2026-04-23 from `results/final/eegmat/ft/{model}/seed{N}/summary.json`. **Narrative flip**: CBraMod previously looked like an EEGMAT outlier at 0.620; per-FM HP rescues it to 0.727 — now ties LaBraM/REVE. All three FMs FT ≈ LP (~0.72), consistent with EEGMAT being strong-aligned at the frozen level so FT adds little (already saturated).
 
 **Classical ML** (per-rec features, 3 seeds):
 
@@ -129,8 +131,8 @@ All BA = subject-level 5-fold CV, 3 seeds.
 | Dataset | Regime | n_samples / n_subj | LaBraM LP | LaBraM FT | CBraMod LP | CBraMod FT | REVE LP | REVE FT | Classical best | Non-FM best |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Stress (DASS) | subject-label, weak-aligned | 70/17 | 0.506 ± 0.014 | 0.455 ± 0.076 | 0.440 ± 0.019 | 0.414 ± 0.029 | 0.458 ± 0.019 | 0.476 ± 0.051 | LogReg_L2 0.506 ± 0.019 | shallowconvnet 0.563 ± 0.024 |
-| ADFTD | subject-label, strong-aligned | 65/65 | 0.643 ± 0.054 | **0.737 ± 0.055** | 0.581 ± 0.042 | 0.698 ± 0.020 | 0.668 ± 0.027 | 0.683 ± 0.019 | SVM_RBF 0.647 ± 0.009 | eegnet 0.773 ± 0.027 |
+| ADFTD | subject-label, strong-aligned | 65/65 | 0.643 ± 0.054 | **0.737 ± 0.055** | 0.581 ± 0.042 | 0.698 ± 0.020 | 0.668 ± 0.027 | 0.683 ± 0.019 | SVM_RBF 0.647 ± 0.009 | eegnet 0.761 ± 0.076 |
 | SleepDep | within-subject, weak-aligned | 72/36 | 0.611 ± 0.014 | 0.579 ± 0.016 | 0.546 ± 0.021 | 0.486 ± 0.048 | 0.537 ± 0.049 | 0.509 ± 0.076 | SVM_RBF 0.574 ± 0.056 | shallowconvnet 0.602 ± 0.021 |
 | EEGMAT | within-subject, strong-aligned | 72/36 | 0.736 ± 0.037 | 0.685 ± 0.016 | 0.718 ± 0.021 | 0.727 ± 0.040 | 0.736 ± 0.014 | 0.727 ± 0.053 | RF 0.889 ± 0.014 | eegnet 0.694 ± 0.024 |
 
-> All 4 cells × 3 FMs FT synced 2026-04-23 from `results/final/{cell}/{model}/ft/seed{42,123,2024}/summary.json` (per-FM canonical HP, G-F09). Regime labels updated to task-substrate alignment terminology.
+> All 4 cells × 3 FMs FT synced 2026-04-23 from `results/final/{cell}/ft/{model}/seed{42,123,2024}/summary.json` (per-FM canonical HP, G-F09). Regime labels updated to task-substrate alignment terminology.

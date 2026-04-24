@@ -36,10 +36,11 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 | Classical ML baseline | LogReg/SVM/RF/XGB, 3 seeds | `results/studies/exp02_classical_dass/{cell}/` |
 | Non-FM deep baseline | EEGNet / ShallowConvNet, 3 seeds | `results/studies/exp15_nonfm_baselines/{cell}/` |
 
-**Status 2026-04-23**:
-- LP: ✅ all 4 cells fresh (ADFTD refreshed today on split1; Stress/EEGMAT/SleepDep unchanged since 2026-04-20)
+**Status 2026-04-24**:
+- LP: ✅ all 4 cells fresh (ADFTD split1 2026-04-23; Stress/EEGMAT/SleepDep unchanged since 2026-04-20)
 - FT: ✅ all 4 cells × 3 FMs × 3 seeds complete at `results/final/{cell}/ft/{model}/seed{42,123,2024}/summary.json` under per-FM canonical HP (G-F09). Ceiling table.tex + master_results_table.md + paper_outline.md §4.1 entry statements all synced 2026-04-23.
-- Classical & Non-FM deep: ✅ fresh
+- Classical: ✅ all 4 cells at split1. ADFTD snapshot at `results/final/adftd/classical/summary.json`.
+- Non-FM deep: ✅ all 4 cells. **ADFTD refreshed 2026-04-24 on split1** (eegnet 0.761 ± 0.076, shallowconvnet 0.716 ± 0.050; snapshot at `results/final/adftd/nonfm_deep/summary.json`; split3 archive at `exp15_nonfm_baselines/adftd.bak_split3_20260424/`).
 
 ---
 

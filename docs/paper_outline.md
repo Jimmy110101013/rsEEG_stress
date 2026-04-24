@@ -109,7 +109,7 @@ TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary
 
 - Entry statement for each cell (LaBraM / CBraMod / REVE, LP→FT, all 3-seed; FT under per-FM canonical HP G-F09, source `results/final/{cell}/ft/{model}/`):
   - *Subject-label × weak-aligned (Stress-DASS)*: LP 0.51 / 0.44 / 0.46, FT 0.46 / 0.41 / 0.48 — FM stays in 0.41–0.48 band, **all three FMs ≤ chance**, classical LogReg 0.506 matches
-  - *Subject-label × strong-aligned (ADFTD, split1 65/65)*: LP 0.64 / 0.58 / 0.67, FT 0.74 / 0.70 / 0.68 — LaBraM leads, all three FMs 0.68–0.74 tight band; classical SVM 0.647 and EEGNet 0.773 give a sizeable non-FM baseline for this cell (EEGNet matches the top FM)
+  - *Subject-label × strong-aligned (ADFTD, split1 65/65)*: LP 0.64 / 0.58 / 0.67, FT 0.74 / 0.70 / 0.68 — LaBraM leads, all three FMs 0.68–0.74 tight band; classical SVM 0.647 and EEGNet 0.761 ± 0.076 (split1 refreshed 2026-04-24) give a sizeable non-FM baseline for this cell (EEGNet matches the top FM within std)
   - *Within-subject × strong-aligned (EEGMAT)*: LP 0.74 / 0.72 / 0.74, FT 0.69 / 0.73 / 0.73 — strong LP signal, FT ≈ LP (saturated); all three FMs tight at ≈0.70; classical RF 0.889 beats all FMs
   - *Within-subject × weak-aligned (SleepDep)*: LP 0.61 / 0.55 / 0.54, FT 0.58 / 0.49 / 0.51 — FMs FT ≈ chance across all three; classical SVM 0.574 ≈ FM
 - **Bridging statement**: BA alone does not explain why each cell arrives where it does — §4.2–§4.5 diagnostics characterise the mechanism behind each cell's benchmark landscape
