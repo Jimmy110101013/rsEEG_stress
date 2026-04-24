@@ -99,3 +99,97 @@ def labram_ft_ba_null_matched(dataset: str) -> tuple[float, float, int]:
         raise RuntimeError(f"No real-FT seeds found for {ds} in {perf_path}")
     sd = statistics.stdev(bas) if len(bas) > 1 else 0.0
     return statistics.mean(bas), sd, len(bas)
+
+
+# ---------------------------------------------------------------------------
+# Linear probing (per-window LP, 8-seed output from train_lp.py)
+# ---------------------------------------------------------------------------
+
+def lp_multiseed(dataset: str, fm: str) -> dict:
+    """Return the 8-seed per-window LP JSON for (dataset, fm).
+
+    Current home: ``results/studies/perwindow_lp_all/<dataset>/<fm>_multi_seed.json``
+    (scratchpad). When promoted to ``results/final/<dataset>/lp/<fm>.json``,
+    flip this body; callers stay untouched.
+    """
+    p = STUDIES / "perwindow_lp_all" / dataset.lower() / f"{fm}_multi_seed.json"
+    if not p.exists():
+        raise FileNotFoundError(f"No LP multiseed at {p}")
+    return json.loads(p.read_text())
+
+
+def lp_stats_3seed(dataset: str, fm: str) -> dict:
+    """3-seed (seeds 42/123/2024) LP statistics matching the paper's Table 1.
+
+    Returns ``{mean, std, n_seeds, source}``. Std is sample std (ddof=1).
+    """
+    d = lp_multiseed(dataset, fm)
+    return {
+        "mean": float(d["mean_3seed_42_123_2024"]),
+        "std":  float(d["std_3seed_42_123_2024_ddof1"]),
+        "n_seeds": 3,
+        "source": f"results/studies/perwindow_lp_all/{dataset}/{fm}_multi_seed.json",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Fine-tuning per-seed outputs (scattered across exp dirs — for now)
+# ---------------------------------------------------------------------------
+
+# Where each (dataset, fm) 3-seed FT run currently lives. Value is a callable
+# taking a seed and returning the summary.json path. Absent keys → 1-seed
+# fallback at results/features_cache/ft_<fm>_<ds>/summary.json.
+#
+# TODO: once all cells are snapshotted at results/final/<ds>/ft/<fm>/seed*/,
+# replace this table with a single rule and delete per-cell branches.
+_FT_3SEED = {
+    ("sleepdep", "labram"):  lambda s: f"exp_newdata/sleepdep_ft_labram_s{s}/summary.json",
+    ("sleepdep", "cbramod"): lambda s: f"exp_newdata/sleepdep_ft_cbramod_s{s}/summary.json",
+    ("sleepdep", "reve"):    lambda s: f"exp_newdata/sleepdep_ft_reve_s{s}/summary.json",
+    ("adftd",    "labram"):  lambda s: f"exp07_adftd_multiseed/labram_s{s}/summary.json",
+    ("adftd",    "cbramod"): lambda s: f"exp07_adftd_multiseed/cbramod_s{s}/summary.json",
+    ("adftd",    "reve"):    lambda s: f"exp07_adftd_multiseed/reve_s{s}/summary.json",
+    ("stress",   "labram"):  lambda s: f"exp05_stress_feat_multiseed/s{s}_llrd1.0/summary.json",
+    ("eegmat",   "labram"):  lambda s: f"exp04_eegmat_feat_multiseed/s{s}_llrd1.0/summary.json",
+}
+
+
+def ft_stats(dataset: str, fm: str, *, seeds=(42, 123, 2024)) -> dict | None:
+    """Return ``{mean, std, n_seeds, source}`` for FT balanced accuracy.
+
+    Prefers the 3-seed run at the known ``exp##`` location for (dataset, fm).
+    Falls back to the 1-seed ``results/features_cache/ft_<fm>_<ds>/summary.json``
+    if 3-seed isn't available. Returns ``None`` if no data exists.
+
+    std is sample std (ddof=1); ``None`` for 1-seed fallbacks.
+    """
+    import numpy as np  # local to keep module import light
+
+    ds = dataset.lower()
+    key = (ds, fm)
+    if key in _FT_3SEED:
+        path_fn = _FT_3SEED[key]
+        vals, sources = [], []
+        for s in seeds:
+            p = STUDIES / path_fn(s)
+            if p.exists():
+                vals.append(float(json.loads(p.read_text())["subject_bal_acc"]))
+                sources.append(str(p.relative_to(REPO)))
+        if len(vals) == len(seeds):
+            return {
+                "mean": float(np.mean(vals)),
+                "std":  float(np.std(vals, ddof=1)),
+                "n_seeds": len(vals),
+                "source": f"results/studies/{path_fn('{seed}').replace('{seed}', '{'+','.join(str(s) for s in seeds)+'}')}",
+            }
+
+    fallback = REPO / f"results/features_cache/ft_{fm}_{ds}/summary.json"
+    if fallback.exists():
+        d = json.loads(fallback.read_text())
+        return {
+            "mean": float(d["subject_bal_acc"]),
+            "std":  None,
+            "n_seeds": 1,
+            "source": str(fallback.relative_to(REPO)),
+        }
+    return None

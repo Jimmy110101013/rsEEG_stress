@@ -6,11 +6,16 @@ Output:
   paper/tables/_source/table1_master_performance.json  — raw numbers
 """
 from __future__ import annotations
-import json, subprocess
+import json
+import subprocess
+import sys
 from pathlib import Path
-import numpy as np
 
-REPO = Path("/raid/jupyter-linjimmy1003.md10/UCSD_stress")
+REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
+
+from src import results  # noqa: E402
+
 OUT_DIR = REPO / "paper/tables"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 (OUT_DIR / "_source").mkdir(parents=True, exist_ok=True)
@@ -30,64 +35,8 @@ QUADRANT_GROUP = {
 }
 
 
-def lp_stats(ds, fm):
-    p = REPO / f"results/studies/perwindow_lp_all/{ds}/{fm}_multi_seed.json"
-    d = json.load(open(p))
-    return {
-        "mean": float(d["mean_3seed_42_123_2024"]),
-        "std":  float(d["std_3seed_42_123_2024_ddof1"]),
-        "n_seeds": 3,
-        "source": str(p.relative_to(REPO)),
-    }
-
-
-def ft_stats(ds, fm):
-    """Return {mean, std, n_seeds, source} or None. Prefers 3-seed; falls back to 1-seed."""
-    # 3-seed paths
-    if ds == "sleepdep":
-        vals = []
-        for s in [42, 123, 2024]:
-            p = REPO / f"results/studies/exp_newdata/sleepdep_ft_{fm}_s{s}/summary.json"
-            if p.exists():
-                vals.append(float(json.load(open(p))["subject_bal_acc"]))
-        if len(vals) == 3:
-            return {"mean": float(np.mean(vals)), "std": float(np.std(vals, ddof=1)),
-                    "n_seeds": 3, "source": f"exp_newdata/sleepdep_ft_{fm}_s{{42,123,2024}}"}
-    if ds == "adftd":
-        vals = []
-        for s in [42, 123, 2024]:
-            p = REPO / f"results/studies/exp07_adftd_multiseed/{fm}_s{s}/summary.json"
-            if p.exists():
-                vals.append(float(json.load(open(p))["subject_bal_acc"]))
-        if len(vals) == 3:
-            return {"mean": float(np.mean(vals)), "std": float(np.std(vals, ddof=1)),
-                    "n_seeds": 3, "source": f"exp07_adftd_multiseed/{fm}_s{{42,123,2024}}"}
-    if ds == "stress" and fm == "labram":
-        vals = []
-        for s in [42, 123, 2024]:
-            p = REPO / f"results/studies/exp05_stress_feat_multiseed/s{s}_llrd1.0/summary.json"
-            if p.exists():
-                vals.append(float(json.load(open(p))["subject_bal_acc"]))
-        if len(vals) == 3:
-            return {"mean": float(np.mean(vals)), "std": float(np.std(vals, ddof=1)),
-                    "n_seeds": 3, "source": "exp05_stress_feat_multiseed/s{42,123,2024}_llrd1.0"}
-    if ds == "eegmat" and fm == "labram":
-        vals = []
-        for s in [42, 123, 2024]:
-            p = REPO / f"results/studies/exp04_eegmat_feat_multiseed/s{s}_llrd1.0/summary.json"
-            if p.exists():
-                vals.append(float(json.load(open(p))["subject_bal_acc"]))
-        if len(vals) == 3:
-            return {"mean": float(np.mean(vals)), "std": float(np.std(vals, ddof=1)),
-                    "n_seeds": 3, "source": "exp04_eegmat_feat_multiseed/s{42,123,2024}_llrd1.0"}
-
-    # fallback 1-seed
-    p = REPO / f"results/features_cache/ft_{fm}_{ds}/summary.json"
-    if p.exists():
-        d = json.load(open(p))
-        return {"mean": float(d["subject_bal_acc"]), "std": None,
-                "n_seeds": 1, "source": str(p.relative_to(REPO))}
-    return None
+lp_stats = results.lp_stats_3seed
+ft_stats = results.ft_stats
 
 
 def fmt_cell(stats):

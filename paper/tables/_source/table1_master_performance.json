@@ -10,7 +10,7 @@
       "mean": 0.7314666666666666,
       "std": 0.021232600719962035,
       "n_seeds": 3,
-      "source": "exp04_eegmat_feat_multiseed/s{42,123,2024}_llrd1.0"
+      "source": "results/studies/exp04_eegmat_feat_multiseed/s{42,123,2024}_llrd1.0/summary.json"
     }
   },
   "eegmat_cbramod": {
@@ -21,10 +21,10 @@
       "source": "results/studies/perwindow_lp_all/eegmat/cbramod_multi_seed.json"
     },
     "ft": {
-      "mean": 0.6203666666666666,
-      "std": 0.04727793384180574,
-      "n_seeds": 3,
-      "source": "exp17_eegmat_cbramod_reve_ft/cbramod_s{42,123,2024}"
+      "mean": 0.5556,
+      "std": null,
+      "n_seeds": 1,
+      "source": "results/features_cache/ft_cbramod_eegmat/summary.json"
     }
   },
   "eegmat_reve": {
@@ -35,10 +35,10 @@
       "source": "results/studies/perwindow_lp_all/eegmat/reve_multi_seed.json"
     },
     "ft": {
-      "mean": 0.7268333333333333,
-      "std": 0.02896695480810226,
-      "n_seeds": 3,
-      "source": "exp17_eegmat_cbramod_reve_ft/reve_s{42,123,2024}"
+      "mean": 0.6944,
+      "std": null,
+      "n_seeds": 1,
+      "source": "results/features_cache/ft_reve_eegmat/summary.json"
     }
   },
   "sleepdep_labram": {
@@ -52,7 +52,7 @@
       "mean": 0.5324,
       "std": 0.06850963435897173,
       "n_seeds": 3,
-      "source": "exp_newdata/sleepdep_ft_labram_s{42,123,2024}"
+      "source": "results/studies/exp_newdata/sleepdep_ft_labram_s{42,123,2024}/summary.json"
     }
   },
   "sleepdep_cbramod": {
@@ -66,7 +66,7 @@
       "mean": 0.5555666666666667,
       "std": 0.05006169527026958,
       "n_seeds": 3,
-      "source": "exp_newdata/sleepdep_ft_cbramod_s{42,123,2024}"
+      "source": "results/studies/exp_newdata/sleepdep_ft_cbramod_s{42,123,2024}/summary.json"
     }
   },
   "sleepdep_reve": {
@@ -80,13 +80,13 @@
       "mean": 0.5417000000000001,
       "std": 0.013899999999999968,
       "n_seeds": 3,
-      "source": "exp_newdata/sleepdep_ft_reve_s{42,123,2024}"
+      "source": "results/studies/exp_newdata/sleepdep_ft_reve_s{42,123,2024}/summary.json"
     }
   },
   "adftd_labram": {
     "lp": {
-      "mean": 0.6556513409961686,
-      "std": 0.03192089628959683,
+      "mean": 0.6425606641123883,
+      "std": 0.05380706807165745,
       "n_seeds": 3,
       "source": "results/studies/perwindow_lp_all/adftd/labram_multi_seed.json"
     },
@@ -94,13 +94,13 @@
       "mean": 0.7086,
       "std": 0.013721880337621414,
       "n_seeds": 3,
-      "source": "exp07_adftd_multiseed/labram_s{42,123,2024}"
+      "source": "results/studies/exp07_adftd_multiseed/labram_s{42,123,2024}/summary.json"
     }
   },
   "adftd_cbramod": {
     "lp": {
-      "mean": 0.5644423158790975,
-      "std": 0.043003506638238716,
+      "mean": 0.5814176245210728,
+      "std": 0.04166666666666663,
       "n_seeds": 3,
       "source": "results/studies/perwindow_lp_all/adftd/cbramod_multi_seed.json"
     },
@@ -108,13 +108,13 @@
       "mean": 0.5372,
       "std": 0.0265531542382445,
       "n_seeds": 3,
-      "source": "exp07_adftd_multiseed/cbramod_s{42,123,2024}"
+      "source": "results/studies/exp07_adftd_multiseed/cbramod_s{42,123,2024}/summary.json"
     }
   },
   "adftd_reve": {
     "lp": {
-      "mean": 0.6718816517667093,
-      "std": 0.02441241518706957,
+      "mean": 0.6681034482758621,
+      "std": 0.027011664084681194,
       "n_seeds": 3,
       "source": "results/studies/perwindow_lp_all/adftd/reve_multi_seed.json"
     },
@@ -122,7 +122,7 @@
       "mean": 0.6577333333333334,
       "std": 0.03017189641592546,
       "n_seeds": 3,
-      "source": "exp07_adftd_multiseed/reve_s{42,123,2024}"
+      "source": "results/studies/exp07_adftd_multiseed/reve_s{42,123,2024}/summary.json"
     }
   },
   "stress_labram": {
@@ -136,7 +136,7 @@
       "mean": 0.4434333333333333,
       "std": 0.08295868449615947,
       "n_seeds": 3,
-      "source": "exp05_stress_feat_multiseed/s{42,123,2024}_llrd1.0"
+      "source": "results/studies/exp05_stress_feat_multiseed/s{42,123,2024}_llrd1.0/summary.json"
     }
   },
   "stress_cbramod": {
@@ -147,10 +147,10 @@
       "source": "results/studies/perwindow_lp_all/stress/cbramod_multi_seed.json"
     },
     "ft": {
-      "mean": 0.5476333333333333,
-      "std": 0.025605511559471383,
-      "n_seeds": 3,
-      "source": "hp_sweep/20260410_dass/cbramod/cbramod_encoderlrscale0.1_lr1e-5_s{42,123,2024}"
+      "mean": 0.5179,
+      "std": null,
+      "n_seeds": 1,
+      "source": "results/features_cache/ft_cbramod_stress/summary.json"
     }
   },
   "stress_reve": {
@@ -161,10 +161,10 @@
       "source": "results/studies/perwindow_lp_all/stress/reve_multi_seed.json"
     },
     "ft": {
-      "mean": 0.5773666666666667,
-      "std": 0.040992682221960136,
-      "n_seeds": 3,
-      "source": "hp_sweep/20260410_dass/reve/reve_encoderlrscale0.1_lr3e-5_s{42,123,2024}"
+      "mean": 0.5089,
+      "std": null,
+      "n_seeds": 1,
+      "source": "results/features_cache/ft_reve_stress/summary.json"
     }
   }
 }
