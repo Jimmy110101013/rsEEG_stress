@@ -1,5 +1,5 @@
 """Compute variance decomposition + RSA for SleepDep (3 FMs).
-Writes results to paper/figures/_historical/source_tables/sleepdep_variance_rsa.json
+Writes results to results/final/source_tables/sleepdep_variance_rsa.json
 to be consumed by Fig 2 build script."""
 from __future__ import annotations
 import json, sys
@@ -36,7 +36,7 @@ def crossed_ss_fractions(features, subject, label):
 
 CACHE = REPO / "results/features_cache"
 FT_BASE = REPO / "results/studies/exp_newdata"
-OUT = REPO / "paper/figures/_historical/source_tables/sleepdep_variance_rsa.json"
+OUT = REPO / "results/final/source_tables/sleepdep_variance_rsa.json"
 
 
 def compute_rsa(features, labels, patient_ids):

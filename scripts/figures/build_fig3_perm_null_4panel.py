@@ -23,7 +23,7 @@ p-value ``p = (#{null ≥ real} + 1) / (n_null + 1)``.
 Sources
 -------
 - Null BAs: ``results/studies/exp27_paired_null/{ds}/perm_s*/summary.json``
-- Real BAs: ``paper/figures/_historical/source_tables/master_frozen_ft_table_v2.json``
+- Real BAs: ``results/final/source_tables/master_frozen_ft_table_v2.json``
   for EEGMAT / ADFTD; ``results/studies/exp_30_sdl_vs_between/tables/fm_performance.json``
   for Stress / SleepDep (per-dataset 3-seed FT under the recipe that matches
   the null chain's training config).
@@ -93,7 +93,7 @@ def _real_labram_ft(ds: str) -> tuple[float, float, int]:
     (lr=1e-5, bs=4)."""
     if ds in {"EEGMAT", "ADFTD"}:
         tab = json.load(open(
-            REPO / "paper/figures/_historical/source_tables/master_frozen_ft_table_v2.json"
+            REPO / "results/final/source_tables/master_frozen_ft_table_v2.json"
         ))["table"]
         r = tab["labram"][ds.lower()]
         return float(r["ft_mean"]), float(r["ft_std"]), int(r["ft_n"])

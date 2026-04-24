@@ -4,7 +4,7 @@ Matches EEGMAT definition (scripts/figures/build_within_subject_supplementary.py
 direction per subject = (x_sleep_deprived - x_rested) / ||.||, then mean pairwise
 cosine similarity across subjects = `dir_consistency`.
 
-Writes into paper/figures/_historical/source_tables/sleepdep_within_subject.json.
+Writes into results/final/source_tables/sleepdep_within_subject.json.
 Consumed by Fig 4 build script.
 """
 from __future__ import annotations
@@ -17,7 +17,7 @@ from scipy.spatial.distance import cosine
 REPO = Path("/raid/jupyter-linjimmy1003.md10/UCSD_stress")
 CACHE = REPO / "results/features_cache"
 FT_BASE = REPO / "results/studies/exp_newdata"
-OUT = REPO / "paper/figures/_historical/source_tables/sleepdep_within_subject.json"
+OUT = REPO / "results/final/source_tables/sleepdep_within_subject.json"
 
 
 def dir_consistency(X, pids, labels):

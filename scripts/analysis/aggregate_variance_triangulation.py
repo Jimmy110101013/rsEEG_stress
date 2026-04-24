@@ -4,11 +4,11 @@ Reads:
   results/studies/exp33_temporal_block_probe/{cell}_probes.json
   results/studies/exp32_variance_triangulation/{cell}_permanova.json
   results/studies/exp32_variance_triangulation/{cell}_cka.json
-  paper/figures/_historical/source_tables/variance_analysis_window_level.json
+  results/final/source_tables/variance_analysis_window_level.json
     (trace-ANOVA baseline, already built)
 
 Emits a cross-cell comparison at
-  paper/figures/_historical/source_tables/variance_triangulation.json
+  results/final/source_tables/variance_triangulation.json
 with the shape:
 
   {
@@ -43,7 +43,7 @@ def pct(x):
 
 
 def load_trace_anova():
-    p = REPO / "paper/figures/_historical/source_tables/variance_analysis_window_level.json"
+    p = REPO / "results/final/source_tables/variance_analysis_window_level.json"
     if not p.exists():
         return {}
     return json.loads(p.read_text())
@@ -133,7 +133,7 @@ def main():
 
         out["cells"].append(cell_row)
 
-    out_path = REPO / "paper/figures/_historical/source_tables/variance_triangulation.json"
+    out_path = REPO / "results/final/source_tables/variance_triangulation.json"
     out_path.write_text(json.dumps(out, indent=2))
     print(f"-> {out_path}")
 

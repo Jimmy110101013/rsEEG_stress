@@ -40,10 +40,10 @@ FM_PRETTY  = {"labram": "LaBraM", "cbramod": "CBraMod", "reve": "REVE"}
 FM_COLOR   = {"labram": "#1f3a5f", "cbramod": "#B8442C", "reve": "#2E8B57"}
 
 # ── load source tables ─────────────────────────────────────
-va_all  = json.loads((REPO / "paper/figures/_historical/source_tables/variance_analysis_all.json").read_text())
-va_sd   = json.loads((REPO / "paper/figures/_historical/source_tables/sleepdep_variance_rsa.json").read_text())
-dc_main = json.loads((REPO / "paper/figures/_historical/source_tables/f14_within_subject.json").read_text())   # eegmat+stress
-dc_sd   = json.loads((REPO / "paper/figures/_historical/source_tables/sleepdep_within_subject.json").read_text())
+va_all  = json.loads((REPO / "results/final/source_tables/variance_analysis_all.json").read_text())
+va_sd   = json.loads((REPO / "results/final/source_tables/sleepdep_variance_rsa.json").read_text())
+dc_main = json.loads((REPO / "results/final/source_tables/f14_within_subject.json").read_text())   # eegmat+stress
+dc_sd   = json.loads((REPO / "results/final/source_tables/sleepdep_within_subject.json").read_text())
 
 
 def variance_entry(fm: str, ds: str) -> dict | None:

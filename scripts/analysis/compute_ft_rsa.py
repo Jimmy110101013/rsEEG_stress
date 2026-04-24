@@ -1,5 +1,5 @@
 """Compute FT RSA (label-r, subject-r) for stress + eegmat (3 FMs each).
-Writes to paper/figures/_historical/source_tables/ft_rsa_stress_eegmat.json."""
+Writes to results/final/source_tables/ft_rsa_stress_eegmat.json."""
 from __future__ import annotations
 import json
 from pathlib import Path
@@ -9,7 +9,7 @@ from scipy.stats import spearmanr
 
 REPO = Path("/raid/jupyter-linjimmy1003.md10/UCSD_stress")
 CACHE = REPO / "results/features_cache"
-OUT = REPO / "paper/figures/_historical/source_tables/ft_rsa_stress_eegmat.json"
+OUT = REPO / "results/final/source_tables/ft_rsa_stress_eegmat.json"
 
 
 def compute_rsa(features, labels, pids):

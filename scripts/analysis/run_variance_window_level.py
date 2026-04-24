@@ -21,7 +21,7 @@ Reads `results/features_cache/frozen_{model}_{cell}_perwindow.npz` — expects
 fields: features (N_windows, D), window_rec_idx (N_windows,),
 rec_labels (n_rec,), rec_pids (n_rec,).
 
-Writes `paper/figures/_historical/source_tables/variance_analysis_window_level.json`
+Writes `results/final/source_tables/variance_analysis_window_level.json`
 — one entry per (model, cell) pair.
 
 Usage:
@@ -264,7 +264,7 @@ def main():
                          "(if available). Frozen side does not depend on this.")
     ap.add_argument(
         "--out",
-        default="paper/figures/_historical/source_tables/variance_analysis_window_level.json",
+        default="results/final/source_tables/variance_analysis_window_level.json",
     )
     args = ap.parse_args()
 

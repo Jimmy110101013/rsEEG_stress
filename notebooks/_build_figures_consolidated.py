@@ -81,7 +81,7 @@ FIG2 = r"""# Fig 2 — Representation structure across the 4-dataset 2×2 factor
 # 2×2 grid: (within|subject-trait) × (strong-aligned|weak-aligned)
 # Each panel: window-level variance stacked bars (frz/FT, 3 FMs) + Δlabel_frac callout
 # Source: variance_analysis_window_level.json (window-level crossed SS, Jan 2026-04-24+)
-va = json.load(open(REPO/'paper/figures/_historical/source_tables/variance_analysis_window_level.json'))
+va = json.load(open(REPO/'results/final/source_tables/variance_analysis_window_level.json'))
 
 def variance_entry(fm, ds):
     # Return dict with frozen/ft label_frac, subject_frac, delta_label_frac — all as percentages.
@@ -209,7 +209,7 @@ def paired_endpoints(pids, y2):
     return pairs
 
 sup = json.load(open(REPO/'results/studies/exp11_longitudinal_dss/within_subject_supplementary.json'))
-sd_sup = json.load(open(REPO/'paper/figures/_historical/source_tables/sleepdep_within_subject.json'))
+sd_sup = json.load(open(REPO/'results/final/source_tables/sleepdep_within_subject.json'))
 for mode in ['frozen', 'ft']:
     sup[mode]['sleepdep'] = sd_sup[mode]['sleepdep']
 
@@ -533,7 +533,7 @@ save(fig, 'fig6_architecture_ceiling')
 # APPENDIX — A.1 / B.1 / B.2 (keep simple)
 # ============================================================
 FIG_A1 = r"""# Fig A.1 — ADFTD + TDBRAIN variance atlas
-va = json.load(open(REPO/'paper/figures/_historical/source_tables/variance_analysis_all.json'))
+va = json.load(open(REPO/'results/final/source_tables/variance_analysis_all.json'))
 DATASETS = ['adftd','tdbrain']
 fig, axes = plt.subplots(2, 6, figsize=(W_DOUBLE, W_DOUBLE*0.38), sharey='row')
 for col, (fm,ds) in enumerate([(fm,ds) for ds in DATASETS for fm in FMS]):
