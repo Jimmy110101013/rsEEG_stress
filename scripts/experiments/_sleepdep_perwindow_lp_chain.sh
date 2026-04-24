@@ -8,7 +8,7 @@ mkdir -p $LOGDIR
 echo "=== $(date +%F_%T)  START SleepDep per-window LP chain ==="
 for MODEL in labram cbramod reve; do
   echo "  [$(date +%T)] $MODEL × sleepdep"
-  $PY scripts/experiments/frozen_lp_perwindow_all.py \
+  $PY train_lp.py \
       --extractor $MODEL --dataset sleepdep \
       > $LOGDIR/sleepdep_${MODEL}.log 2>&1
 done

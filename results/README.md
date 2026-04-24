@@ -58,10 +58,9 @@ Producers:
 - `train_ft.py --save-features` → populates `ft_<model>_<dataset>/`
 
 Consumers:
-- `scripts/stress_frozen_lp_multiseed.py`
-- `scripts/analyze_eegmat.py`
-- `scripts/run_variance_analysis.py`
-- `scripts/build_label_subspace_figure.py`
+- `train_lp.py` (canonical per-window LP entry point)
+- `scripts/analysis/run_variance_analysis.py`
+- `scripts/figures/build_*.py` (figure builders — paths vary by figure)
 
 ## `studies/`
 

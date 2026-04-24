@@ -1,537 +1,242 @@
-"""Linear Probing with Subject-Level Stratified Group K-Fold CV (DEPRECATED).
+"""Canonical linear probing (LP) for EEG foundation-model features.
 
-.. deprecated:: 2026-04-23
-    This script implements a PyTorch pool-then-classify linear probe
-    (optionally with MLP head + mixup). It is NOT the canonical LP protocol
-    for the paper.
+Protocol (codified as guardrail G-F10 in docs/methodology_notes.md):
+  1. Per-window frozen features cached at
+     results/features_cache/frozen_{extractor}_{dataset}_perwindow.npz
+  2. CV at RECORDING level — StratifiedGroupKFold(n_splits) with
+     groups=patient_id (default) or LeaveOneGroupOut (--cv loso).
+  3. For each fold: all train-recording windows are training samples.
+     Per-dim 1-99 percentile clip (train-fit) → StandardScaler →
+     LogisticRegression(liblinear, class_weight=balanced, C=1.0).
+  4. Test-set window probabilities mean-pooled per recording →
+     threshold 0.5 → recording-level balanced accuracy.
+  5. Default 8 seeds; report mean + std + per-seed BA.
 
-    Canonical LP → use :mod:`scripts.experiments.frozen_lp_perwindow_all`:
-    sklearn LogisticRegression trained on per-window frozen features,
-    test-fold window probabilities mean-pooled per recording, threshold
-    0.5 → recording-level BA. 8-seed results live under
-    ``results/studies/perwindow_lp_all/{dataset}/{model}_multi_seed.json``
-    (see ``results/studies/perwindow_lp_all/SUMMARY.md`` for the 2026-04-20
-    protocol migration notes and narrative deltas). Guardrail G-F10 in
-    ``docs/methodology_notes.md`` codifies the per-window + aggregate
-    protocol; G-F12 documents this deprecation.
+CLI:
+    PY=/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python
+    $PY train_lp.py --extractor labram --dataset eegmat
+    $PY train_lp.py --extractor reve --dataset tdbrain
+    $PY train_lp.py --extractor labram --dataset stress --cv loso
 
-    Kept in the tree for historical pool-then-classify runs only — do not
-    cite its numbers in the paper.
+Library use:
+    from train_lp import run_canonical_lp
+    result = run_canonical_lp(extractor="labram", dataset="stress")
 
-Global prediction pooling: predictions from each fold's held-out test set are
-concatenated and metrics are computed once at the end (no per-fold averaging).
-
-Usage:
-    conda run -n timm_eeg python train_lp.py --extractor reve --folds 5 --loss focal
-    conda run -n timm_eeg python train_lp.py --extractor mock_fm --folds 5 --epochs 5
-    conda run -n timm_eeg python train_lp.py --extractor reve --stride 5.0 --noise 0.1 --mixup 0.2
+History: the pre-2026-04-25 body was a PyTorch pool-then-classify probe
+(optionally with MLP head + mixup). That implementation is preserved at
+git tag `lp-pool-then-classify-v1` for reproducibility of pre-migration
+numbers. G-F12 in docs/methodology_notes.md records the migration rationale.
 """
-import warnings as _warnings
-
-_warnings.warn(
-    "train_lp.py is DEPRECATED. The paper's canonical LP protocol is "
-    "scripts/experiments/frozen_lp_perwindow_all.py (per-window sklearn "
-    "LogReg + test-time prob mean-pool). See docs/methodology_notes.md "
-    "G-F10 / G-F12 and results/studies/perwindow_lp_all/SUMMARY.md.",
-    DeprecationWarning,
-    stacklevel=2,
-)
+from __future__ import annotations
 
 import argparse
-import copy
-import time
-from collections import deque
-from typing import Tuple
+import json
+from pathlib import Path
 
 import numpy as np
-import torch
-import torch.nn as nn
-from sklearn.metrics import (
-    accuracy_score,
-    balanced_accuracy_score,
-    cohen_kappa_score,
-    f1_score,
-)
-from sklearn.model_selection import StratifiedGroupKFold
-from torch.utils.data import DataLoader, Subset, TensorDataset
-
-# Register extractors
-import baseline.mock_fm  # noqa: F401
-import baseline.reve  # noqa: F401
-import baseline.labram  # noqa: F401
-import baseline.cbramod  # noqa: F401
-from baseline.abstract import create_extractor
-from pipeline.dataset import StressEEGDataset, stress_collate_fn
-from src.loss import FocalLoss
-from src.model import DecoupledStressModel
-
-# ──────────────────── Defaults (aligned with REVE reference) ─────
-CSV_PATH = "data/comprehensive_labels.csv"
-DATA_ROOT = "data"
-BATCH_SIZE = 4
-LR = 5e-3
-N_EPOCHS = 50
-PATIENCE = 15
-EMBED_DIM = 512
-SMA_WINDOW = 3
-# ──────────────────────────────────────────────────
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import balanced_accuracy_score
+from sklearn.model_selection import LeaveOneGroupOut, StratifiedGroupKFold
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 
-def parse_args():
-    p = argparse.ArgumentParser(description="Linear Probing with Subject-Level K-Fold CV")
-    p.add_argument("--extractor", default="mock_fm")
-    p.add_argument("--folds", type=int, default=5)
-    p.add_argument("--epochs", type=int, default=N_EPOCHS)
-    p.add_argument("--patience", type=int, default=PATIENCE)
-    p.add_argument("--lr", type=float, default=LR)
-    p.add_argument("--batch-size", type=int, default=BATCH_SIZE)
-    p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--device", default="cuda:6")
-    p.add_argument("--no-bf16", action="store_true")
-    p.add_argument("--loss", choices=["focal", "ce"], default="focal")
-    p.add_argument("--norm", choices=["zscore", "none"], default="zscore",
-                   help="EEG normalization (zscore=per-epoch z-score, none=raw µV)")
-    p.add_argument("--dropout", type=float, default=0.05,
-                   help="Dropout rate before classification head")
-    p.add_argument("--freeze-cls", action="store_true",
-                   help="Freeze REVE cls_query_token (unfrozen by default per REVE ref)")
-    p.add_argument("--weight-decay", type=float, default=1e-2)
-    p.add_argument("--warmup-epochs", type=int, default=3,
-                   help="Exponential LR warmup epochs (0=off)")
-    p.add_argument("--no-scheduler", action="store_true",
-                   help="Disable ReduceLROnPlateau scheduler")
-    # Augmentation
-    p.add_argument("--stride", type=float, default=None,
-                   help="Epoch stride in seconds (default=window_sec, no overlap)")
-    p.add_argument("--noise", type=float, default=0.0,
-                   help="Gaussian noise std added during training (0=off)")
-    p.add_argument("--mixup", type=float, default=0.0,
-                   help="Mixup alpha parameter (0=off)")
-    return p.parse_args()
+DEFAULT_SEEDS = (42, 123, 2024, 7, 0, 1, 99, 31337)
+EXTRACTOR_CHOICES = ("labram", "cbramod", "reve")
+DATASET_CHOICES = ("stress", "eegmat", "adftd", "tdbrain", "meditation", "sleepdep")
+CV_CHOICES = ("stratified-kfold", "loso")
 
 
-# ──────────────────── Helpers ─────────────────────
+def _fit_fold(X_tr, y_tr, X_te):
+    """Train-set percentile clip → StandardScaler → LogReg → return test probs."""
+    lo = np.percentile(X_tr, 1, axis=0)
+    hi = np.percentile(X_tr, 99, axis=0)
+    X_tr_c = np.clip(X_tr, lo, hi)
+    X_te_c = np.clip(X_te, lo, hi)
+
+    clf = Pipeline([
+        ("sc", StandardScaler()),
+        ("lr", LogisticRegression(
+            max_iter=5000, class_weight="balanced", C=1.0,
+            solver="liblinear", tol=1e-3,
+        )),
+    ])
+    clf.fit(X_tr_c, y_tr)
+    return clf.predict_proba(X_te_c)[:, 1]
 
 
-def print_split_info(name: str, indices, labels: np.ndarray, patient_ids: np.ndarray):
-    split_labels = labels[indices]
-    split_pids = np.unique(patient_ids[indices])
-    n0 = int((split_labels == 0).sum())
-    n1 = int((split_labels == 1).sum())
-    print(f"  {name:>5s}: {len(indices):>3d} samples, "
-          f"{len(split_pids):>2d} subjects {sorted(split_pids.tolist())}, "
-          f"label_0={n0}, label_1={n1}")
+def _pool_fold(rec_prob, rec_pred, test_rec, window_rec_idx_te, prob_te):
+    for r in test_rec:
+        m = window_rec_idx_te == r
+        if m.any():
+            rec_prob[r] = float(prob_te[m].mean())
+            rec_pred[r] = int(rec_prob[r] >= 0.5)
 
 
-def mixup_batch(
-    x: torch.Tensor, y: torch.Tensor, alpha: float
-) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, float]:
-    """Mixup augmentation. Returns (mixed_x, y_a, y_b, lam)."""
-    lam = np.random.beta(alpha, alpha) if alpha > 0 else 1.0
-    idx = torch.randperm(x.size(0), device=x.device)
-    mixed_x = lam * x + (1 - lam) * x[idx]
-    return mixed_x, y, y[idx], lam
+def eval_seed(window_feats, window_rec_idx, rec_labels, rec_pids,
+              seed, cv="stratified-kfold", n_splits=5):
+    """Run per-window LP with prediction pooling for one seed.
 
+    Returns (recording-level BA, per-recording pooled prob).
 
-# ──────────────────── Core ────────────────────────
+    cv: "stratified-kfold" (default) → StratifiedGroupKFold(n_splits) shuffled
+        with random_state=seed. "loso" → LeaveOneGroupOut; seed is then
+        nominal (LOSO is deterministic; multiple seeds kept for symmetry).
+    """
+    n_rec = len(rec_labels)
+    rec_indices = np.arange(n_rec)
+    rec_prob = np.full(n_rec, np.nan, dtype=float)
+    rec_pred = np.zeros(n_rec, dtype=int)
 
-
-def precompute_features(model, loader, device, use_amp):
-    """Run frozen backbone once, return TensorDataset of (pooled, labels)."""
-    model.eval()
-    all_pooled, all_labels = [], []
-
-    with torch.no_grad():
-        for epochs_batch, labels, _scores, mask, _pids in loader:
-            epochs_batch = epochs_batch.to(device)
-            mask = mask.to(device)
-
-            with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                pooled = model.extract_pooled(epochs_batch, mask)
-
-            all_pooled.append(pooled.float().cpu())
-            all_labels.append(labels)
-
-    return TensorDataset(torch.cat(all_pooled), torch.cat(all_labels))
-
-
-def train_one_fold(
-    fold_idx: int,
-    train_labels: np.ndarray,
-    train_loader: DataLoader,
-    val_loader: DataLoader,
-    test_loader: DataLoader,
-    args,
-    device: torch.device,
-) -> Tuple[np.ndarray, np.ndarray]:
-    """Train a single fold. Returns (y_true_test, y_pred_test) arrays."""
-    use_amp = not args.no_bf16 and device.type == "cuda"
-
-    # Fresh model per fold
-    extractor = create_extractor(args.extractor)
-    embed_dim = extractor.embed_dim
-    model = DecoupledStressModel(extractor, embed_dim=embed_dim, dropout=args.dropout).to(device)
-    model.freeze_backbone(unfreeze_cls_query=not args.freeze_cls)
-
-    # Verify freeze
-    trainable = [n for n, p in model.named_parameters() if p.requires_grad]
-    frozen = [n for n, p in model.named_parameters() if not p.requires_grad]
-    if fold_idx == 0:
-        print(f"  Trainable params: {len(trainable)} | Frozen: {len(frozen)}")
-        for n in trainable:
-            print(f"    [trainable] {n}")
-
-    # Feature caching: run backbone once, skip if noise or cls_query is trainable
-    use_feature_cache = (args.noise == 0 and args.freeze_cls)
-    if use_feature_cache:
-        t_cache = time.time()
-        print("  Precomputing features (frozen backbone)...", end=" ", flush=True)
-        train_feat_ds = precompute_features(model, train_loader, device, use_amp)
-        val_feat_ds = precompute_features(model, val_loader, device, use_amp)
-        test_feat_ds = precompute_features(model, test_loader, device, use_amp)
-        print(f"done ({time.time() - t_cache:.1f}s)")
-        train_loader = DataLoader(train_feat_ds, batch_size=args.batch_size, shuffle=True)
-        val_loader = DataLoader(val_feat_ds, batch_size=args.batch_size, shuffle=False)
-        test_loader = DataLoader(test_feat_ds, batch_size=args.batch_size, shuffle=False)
-
-    counts = np.bincount(train_labels)
-    class_weights = torch.tensor(len(train_labels) / (len(counts) * counts), dtype=torch.float32).to(device)
-    if args.loss == "focal":
-        criterion = FocalLoss(gamma=2.0, alpha=class_weights)
+    if cv == "loso":
+        splitter = LeaveOneGroupOut().split(rec_indices, rec_labels, groups=rec_pids)
+    elif cv == "stratified-kfold":
+        kf = StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=seed)
+        splitter = kf.split(rec_indices, rec_labels, groups=rec_pids)
     else:
-        criterion = nn.CrossEntropyLoss(weight=class_weights)
-    optimizer = torch.optim.AdamW(
-        filter(lambda p: p.requires_grad, model.parameters()),
-        lr=args.lr, betas=(0.92, 0.999), eps=1e-9,
-        weight_decay=args.weight_decay,
-    )
-    warmup_scheduler = None
-    if args.warmup_epochs > 0:
-        # Exponential warmup per REVE reference: (10^(step/total) - 1) / 9
-        total_warmup = args.warmup_epochs
-        warmup_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            optimizer,
-            lr_lambda=lambda epoch: (10 ** (min(epoch, total_warmup) / total_warmup) - 1) / 9,
+        raise ValueError(f"unknown cv={cv!r}; expected one of {CV_CHOICES}")
+
+    for train_rec, test_rec in splitter:
+        train_mask = np.isin(window_rec_idx, train_rec)
+        test_mask = np.isin(window_rec_idx, test_rec)
+
+        prob_te = _fit_fold(
+            window_feats[train_mask],
+            rec_labels[window_rec_idx[train_mask]],
+            window_feats[test_mask],
         )
-    if not args.no_scheduler:
-        plateau_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optimizer, mode='max', factor=0.5, patience=5, min_lr=1e-6,
-        )
-    else:
-        plateau_scheduler = None
+        _pool_fold(rec_prob, rec_pred, test_rec,
+                   window_rec_idx[test_mask], prob_te)
 
-    best_raw_bal_acc = 0.0
-    best_state = None
-    best_epoch = 0
-    # Smoothed early stopping
-    val_history = deque(maxlen=SMA_WINDOW)
-    best_smoothed = 0.0
-    no_improve = 0
-    grad_verified = False
-
-    for epoch in range(1, args.epochs + 1):
-        # ── Train ──
-        model.train()
-        train_loss, n_steps = 0.0, 0
-        t0 = time.time()
-
-        if use_feature_cache:
-            for pooled_feats, labels in train_loader:
-                pooled_feats, labels = pooled_feats.to(device), labels.to(device)
-
-                use_mixup = args.mixup > 0
-                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                    if use_mixup:
-                        pooled_feats, y_a, y_b, lam = mixup_batch(pooled_feats, labels, args.mixup)
-                        cls_logits, _ = model.classify(pooled_feats)
-                        loss = lam * criterion(cls_logits, y_a) + (1 - lam) * criterion(cls_logits, y_b)
-                    else:
-                        cls_logits, _ = model.classify(pooled_feats)
-                        loss = criterion(cls_logits, labels)
-
-                optimizer.zero_grad()
-                loss.backward()
-
-                if not grad_verified:
-                    _verify_gradients(model)
-                    grad_verified = True
-
-                optimizer.step()
-                train_loss += loss.item()
-                n_steps += 1
-        else:
-            for epochs_batch, labels, _scores, mask, _pids in train_loader:
-                epochs_batch, labels, mask = (
-                    epochs_batch.to(device),
-                    labels.to(device),
-                    mask.to(device),
-                )
-
-                # Training-time augmentation: Gaussian noise
-                if args.noise > 0:
-                    epochs_batch = epochs_batch + args.noise * torch.randn_like(epochs_batch)
-
-                use_mixup = args.mixup > 0
-
-                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                    pooled = model.extract_pooled(epochs_batch, mask)
-                    if use_mixup:
-                        pooled, y_a, y_b, lam = mixup_batch(pooled, labels, args.mixup)
-                        cls_logits, _ = model.classify(pooled)
-                        loss = lam * criterion(cls_logits, y_a) + (1 - lam) * criterion(cls_logits, y_b)
-                    else:
-                        cls_logits, _ = model.classify(pooled)
-                        loss = criterion(cls_logits, labels)
-
-                optimizer.zero_grad()
-                loss.backward()
-
-                if not grad_verified:
-                    _verify_gradients(model)
-                    grad_verified = True
-
-                optimizer.step()
-                train_loss += loss.item()
-                n_steps += 1
-
-        train_loss /= max(n_steps, 1)
-
-        # ── Val ──
-        val_metrics = evaluate(model, val_loader, criterion, device, use_amp, use_feature_cache)
-        elapsed = time.time() - t0
-
-        current_lr = optimizer.param_groups[0]['lr']
-        print(
-            f"  Fold {fold_idx+1} | Epoch {epoch:>3}/{args.epochs} | "
-            f"train_loss={train_loss:.4f} | "
-            f"val_loss={val_metrics['loss']:.4f} | "
-            f"val_bal_acc={val_metrics['bal_acc']:.4f} | "
-            f"lr={current_lr:.1e} | {elapsed:.1f}s"
-        )
-
-        if warmup_scheduler is not None and epoch <= args.warmup_epochs:
-            warmup_scheduler.step()
-        elif plateau_scheduler is not None:
-            plateau_scheduler.step(val_metrics["bal_acc"])
-
-        # Checkpoint on raw bal_acc improvement
-        if val_metrics["bal_acc"] > best_raw_bal_acc:
-            best_raw_bal_acc = val_metrics["bal_acc"]
-            best_state = copy.deepcopy(model.state_dict())
-            best_epoch = epoch
-
-        # Smoothed early stopping
-        val_history.append(val_metrics["bal_acc"])
-        smoothed = np.mean(val_history)
-        if smoothed > best_smoothed:
-            best_smoothed = smoothed
-            no_improve = 0
-        else:
-            no_improve += 1
-            if no_improve >= args.patience:
-                print(f"  Early stop at epoch {epoch} (patience={args.patience})")
-                break
-
-    # Reload best checkpoint and evaluate on test set
-    if best_state is not None:
-        model.load_state_dict(best_state)
-    else:
-        print("  [WARN] No improvement during training, using last model")
-
-    y_true, y_pred = predict(model, test_loader, device, use_amp, use_feature_cache)
-    return y_true, y_pred, best_epoch
+    return float(balanced_accuracy_score(rec_labels, rec_pred)), rec_prob
 
 
-def evaluate(model, loader, criterion, device, use_amp, cached=False) -> dict:
-    model.eval()
-    all_preds, all_labels = [], []
-    total_loss, n_steps = 0.0, 0
+def run_canonical_lp(extractor, dataset, features_npz=None, out_path=None,
+                     cv="stratified-kfold", n_splits=5, seeds=DEFAULT_SEEDS,
+                     verbose=True):
+    """Run the canonical LP and return the result dict.
 
-    with torch.no_grad():
-        if cached:
-            for pooled_feats, labels in loader:
-                pooled_feats, labels = pooled_feats.to(device), labels.to(device)
-                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                    cls_logits, _ = model.classify(pooled_feats)
-                    loss = criterion(cls_logits, labels)
-                total_loss += loss.item()
-                n_steps += 1
-                all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
-                all_labels.append(labels.cpu().numpy())
-        else:
-            for epochs_batch, labels, _scores, mask, _pids in loader:
-                epochs_batch, labels, mask = (
-                    epochs_batch.to(device), labels.to(device), mask.to(device),
-                )
-                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                    cls_logits, _ = model(epochs_batch, mask)
-                    loss = criterion(cls_logits, labels)
-                total_loss += loss.item()
-                n_steps += 1
-                all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
-                all_labels.append(labels.cpu().numpy())
+    If out_path is provided (or None → default study path), the result is
+    written to JSON. Returns the dict either way.
+    """
+    features_npz = features_npz or \
+        f"results/features_cache/frozen_{extractor}_{dataset}_perwindow.npz"
+    out_path = Path(out_path or
+        f"results/studies/perwindow_lp_all/{dataset}/{extractor}_multi_seed.json")
 
-    y_true = np.concatenate(all_labels)
-    y_pred = np.concatenate(all_preds)
+    data = np.load(features_npz)
+    window_feats = data["features"]
+    window_rec_idx = data["window_rec_idx"]
+    rec_labels = data["rec_labels"]
+    rec_pids = data["rec_pids"]
+    rec_n_epochs = data["rec_n_epochs"]
 
-    return {
-        "loss": total_loss / max(n_steps, 1),
-        "acc": accuracy_score(y_true, y_pred),
-        "bal_acc": balanced_accuracy_score(y_true, y_pred),
-        "f1": f1_score(y_true, y_pred, average="weighted", zero_division=0),
-        "kappa": cohen_kappa_score(y_true, y_pred),
+    n_rec = len(rec_labels)
+    n_subj = len(np.unique(rec_pids))
+    pos = int(rec_labels.sum())
+    neg = int((1 - rec_labels).sum())
+
+    # Drop n_splits to min class size if needed (stratified-kfold only).
+    effective_n_splits = n_splits
+    if cv == "stratified-kfold":
+        min_class_count = min(pos, neg)
+        if min_class_count < n_splits:
+            effective_n_splits = min_class_count
+            if verbose:
+                print(f"  note: reducing n_splits {n_splits} → "
+                      f"{effective_n_splits} (min class size = {min_class_count})")
+
+    if verbose:
+        cv_desc = "LOSO" if cv == "loso" else f"StratifiedGroupKFold({effective_n_splits})"
+        print(f"{extractor} × {dataset} per-window LP ({cv_desc})")
+        print(f"  features: {window_feats.shape}")
+        print(f"  n_rec={n_rec}, n_subj={n_subj}, pos={pos}, neg={neg}")
+        print(f"  total windows={window_feats.shape[0]} "
+              f"(avg {rec_n_epochs.mean():.1f} per recording)")
+
+    per_seed = {}
+    for s in seeds:
+        ba, _ = eval_seed(window_feats, window_rec_idx, rec_labels, rec_pids,
+                          s, cv=cv, n_splits=effective_n_splits)
+        per_seed[str(s)] = ba
+        if verbose:
+            print(f"  seed={s:>5}  BA={ba:.4f}")
+
+    vals = np.array(list(per_seed.values()))
+    cv_label = "LOSO" if cv == "loso" else f"StratifiedGroupKFold({effective_n_splits})"
+    out = {
+        "extractor": extractor,
+        "dataset": dataset,
+        "source_features": features_npz,
+        "cv": cv,
+        "protocol": (
+            f"Per-window LogisticRegression (liblinear, C=1.0, "
+            f"class_weight=balanced) on StandardScaler-normed per-window "
+            f"features after per-dim 1-99 percentile clip (train-fit). "
+            f"Recording-level CV = {cv_label} with groups=patient_id; "
+            f"window-level training within each fold; test-set window probs "
+            f"mean-pooled per recording; threshold 0.5; recording-level BA."
+        ),
+        "n_recordings": int(n_rec),
+        "n_subjects": int(n_subj),
+        "n_positive": pos,
+        "n_negative": neg,
+        "n_splits": effective_n_splits if cv == "stratified-kfold" else n_subj,
+        "embed_dim": int(window_feats.shape[1]),
+        "total_windows": int(window_feats.shape[0]),
+        "avg_windows_per_rec": float(rec_n_epochs.mean()),
+        "seeds": list(seeds),
+        "per_seed_ba": per_seed,
+        "mean_8seed": float(vals.mean()),
+        "std_8seed_ddof1": float(vals.std(ddof=1)),
+        "std_8seed_ddof0": float(vals.std(ddof=0)),
+        "mean_3seed_42_123_2024": float(vals[:3].mean()),
+        "std_3seed_42_123_2024_ddof1": float(vals[:3].std(ddof=1)),
+        "min": float(vals.min()),
+        "max": float(vals.max()),
     }
 
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w") as f:
+        json.dump(out, f, indent=2)
 
-def predict(model, loader, device, use_amp, cached=False) -> Tuple[np.ndarray, np.ndarray]:
-    """Run inference and return (y_true, y_pred) arrays."""
-    model.eval()
-    all_preds, all_labels = [], []
+    if verbose:
+        print(f"\n→ {out_path}")
+        print(f"  8-seed mean={out['mean_8seed']:.4f} "
+              f"std={out['std_8seed_ddof1']:.4f} (ddof=1)")
 
-    with torch.no_grad():
-        if cached:
-            for pooled_feats, labels in loader:
-                pooled_feats, labels = pooled_feats.to(device), labels.to(device)
-                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                    cls_logits, _ = model.classify(pooled_feats)
-                all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
-                all_labels.append(labels.cpu().numpy())
-        else:
-            for epochs_batch, labels, _scores, mask, _pids in loader:
-                epochs_batch, labels, mask = (
-                    epochs_batch.to(device), labels.to(device), mask.to(device),
-                )
-                with torch.autocast("cuda", dtype=torch.bfloat16, enabled=use_amp):
-                    cls_logits, _ = model(epochs_batch, mask)
-                all_preds.append(cls_logits.argmax(dim=1).cpu().numpy())
-                all_labels.append(labels.cpu().numpy())
-
-    return np.concatenate(all_labels), np.concatenate(all_preds)
+    return out
 
 
-def _verify_gradients(model):
-    for name, param in model.extractor.named_parameters():
-        assert param.grad is None, f"Backbone param {name} has gradient — not frozen!"
-    head_grads = sum(
-        1 for p in model.head_cls.parameters() if p.grad is not None
-    )
-    assert head_grads > 0, "Head has no gradients!"
-    print("  ✓ Freeze verified: backbone frozen, head has gradients")
-
-
-def seed_everything(seed: int):
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
+def _parse_seeds(s):
+    return tuple(int(x) for x in s.split(","))
 
 
 def main():
-    args = parse_args()
-    seed_everything(args.seed)
-    device = torch.device(args.device if torch.cuda.is_available() else "cpu")
-    print(f"Device: {device} | Extractor: {args.extractor} | Folds: {args.folds} | Loss: {args.loss}")
-    print(f"Norm: {args.norm} | Dropout: {args.dropout} | WD: {args.weight_decay} | Scheduler: {not args.no_scheduler}")
-    if not args.freeze_cls:
-        print("CLS query token: unfrozen")
-    if args.stride:
-        print(f"Stride: {args.stride}s (overlapping epochs)")
-    if args.noise > 0:
-        print(f"Gaussian noise: std={args.noise}")
-    if args.mixup > 0:
-        print(f"Mixup: alpha={args.mixup} (embedding-level)")
-    print()
+    p = argparse.ArgumentParser(description=__doc__.split("\n\n", 1)[0])
+    p.add_argument("--extractor", required=True, choices=EXTRACTOR_CHOICES)
+    p.add_argument("--dataset", required=True, choices=DATASET_CHOICES)
+    p.add_argument("--cv", default="stratified-kfold", choices=CV_CHOICES,
+                   help="StratifiedGroupKFold(5) (default) or LeaveOneGroupOut.")
+    p.add_argument("--n-splits", type=int, default=5,
+                   help="Ignored when --cv loso. Auto-reduced if < min class size.")
+    p.add_argument("--features-npz", default=None,
+                   help="Override auto path results/features_cache/frozen_{fm}_{ds}_perwindow.npz")
+    p.add_argument("--out-path", default=None,
+                   help="Override auto path results/studies/perwindow_lp_all/{ds}/{fm}_multi_seed.json")
+    p.add_argument("--seeds", type=_parse_seeds, default=DEFAULT_SEEDS,
+                   help="Comma-separated seed list (default 8 seeds).")
+    args = p.parse_args()
 
-    dataset = StressEEGDataset(CSV_PATH, DATA_ROOT, stride_sec=args.stride, norm=args.norm)
-    labels = dataset.get_labels()
-    patient_ids = dataset.get_patient_ids()
-
-    # Outer CV: subject-level stratified split → Test set
-    outer_cv = StratifiedGroupKFold(
-        n_splits=args.folds, shuffle=True, random_state=args.seed
+    run_canonical_lp(
+        extractor=args.extractor,
+        dataset=args.dataset,
+        features_npz=args.features_npz,
+        out_path=args.out_path,
+        cv=args.cv,
+        n_splits=args.n_splits,
+        seeds=args.seeds,
     )
-
-    global_y_true, global_y_pred = [], []
-
-    for fold_idx, (trainval_idx, test_idx) in enumerate(
-        outer_cv.split(np.zeros(len(dataset)), labels, groups=patient_ids)
-    ):
-        # Inner split: hold out ~1 group from trainval as Val
-        inner_cv = StratifiedGroupKFold(
-            n_splits=args.folds - 1, shuffle=True, random_state=args.seed
-        )
-        train_inner_idx, val_inner_idx = next(
-            inner_cv.split(
-                np.zeros(len(trainval_idx)),
-                labels[trainval_idx],
-                groups=patient_ids[trainval_idx],
-            )
-        )
-        train_idx = trainval_idx[train_inner_idx]
-        val_idx = trainval_idx[val_inner_idx]
-
-        print(f"\n{'='*60}")
-        print(f"Fold {fold_idx+1}/{args.folds}")
-        print(f"{'='*60}")
-        print_split_info("Train", train_idx, labels, patient_ids)
-        print_split_info("Val", val_idx, labels, patient_ids)
-        print_split_info("Test", test_idx, labels, patient_ids)
-
-        # Warn if any split has only one class
-        for name, idx in [("Val", val_idx), ("Test", test_idx)]:
-            if len(np.unique(labels[idx])) < 2:
-                print(f"  [WARN] {name} set has only one class — metrics may be unreliable")
-
-        train_loader = DataLoader(
-            Subset(dataset, train_idx),
-            batch_size=args.batch_size, shuffle=True,
-            collate_fn=stress_collate_fn, num_workers=0,
-        )
-        val_loader = DataLoader(
-            Subset(dataset, val_idx),
-            batch_size=args.batch_size, shuffle=False,
-            collate_fn=stress_collate_fn, num_workers=0,
-        )
-        test_loader = DataLoader(
-            Subset(dataset, test_idx),
-            batch_size=args.batch_size, shuffle=False,
-            collate_fn=stress_collate_fn, num_workers=0,
-        )
-
-        y_true, y_pred, best_epoch = train_one_fold(
-            fold_idx, labels[train_idx],
-            train_loader, val_loader, test_loader,
-            args, device,
-        )
-        global_y_true.append(y_true)
-        global_y_pred.append(y_pred)
-
-        fold_acc = accuracy_score(y_true, y_pred)
-        fold_bal = balanced_accuracy_score(y_true, y_pred)
-        print(
-            f"  -> Test (best @ epoch {best_epoch}): "
-            f"acc={fold_acc:.4f}, bal_acc={fold_bal:.4f}"
-        )
-
-    # ── Global Aggregation ──
-    y_true_all = np.concatenate(global_y_true)
-    y_pred_all = np.concatenate(global_y_pred)
-
-    print(f"\n{'='*60}")
-    print(f"Global LP Results ({args.folds}-Fold, subject-level CV)")
-    print(f"Extractor: {args.extractor} | Loss: {args.loss}")
-    if args.stride:
-        print(f"Stride: {args.stride}s | ", end="")
-    if args.noise > 0:
-        print(f"Noise: {args.noise} | ", end="")
-    if args.mixup > 0:
-        print(f"Mixup: {args.mixup} | ", end="")
-    print(f"{'='*60}")
-
-    print(f"  {'acc':>12s}: {accuracy_score(y_true_all, y_pred_all):.4f}")
-    print(f"  {'bal_acc':>12s}: {balanced_accuracy_score(y_true_all, y_pred_all):.4f}")
-    print(f"  {'f1':>12s}: {f1_score(y_true_all, y_pred_all, average='weighted', zero_division=0):.4f}")
-    print(f"  {'kappa':>12s}: {cohen_kappa_score(y_true_all, y_pred_all):.4f}")
-    print(f"  Total predictions: {len(y_true_all)} (should equal dataset size: {len(dataset)})")
 
 
 if __name__ == "__main__":

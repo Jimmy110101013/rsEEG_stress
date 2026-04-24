@@ -197,10 +197,9 @@ def phase_frozen_10s(gpu: int):
         d = np.load(out_path)
         print(f"  OK ({dur:.0f}s) → {out_path} shape={d['features'].shape}")
 
-        # Run frozen LP on 10s features
-        print(f"\n  Running frozen LP on 10s features...")
-        from scripts.experiments.stress_frozen_lp_multiseed import run_frozen_lp
-        # We'll do this inline since it's just sklearn, no GPU needed
+        # Frozen LP on 10s features: invoke `python train_lp.py --extractor reve
+        # --dataset stress --features-npz <10s.npz>` directly if needed. (Prior
+        # pool-then-classify inline LP removed 2026-04-25.)
     else:
         status = "FAIL" if rc != 0 else "output missing"
         print(f"  {status}")

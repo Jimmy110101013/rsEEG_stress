@@ -363,7 +363,7 @@ See `docs/methodology_notes.md` — G-F07 … G-F12 codify pipeline policies (pe
 - `paper/figures/_historical/` — pre-2026-04-18 figures (SDL narrative)
 - `results/features_cache/archive_split3_20260423/` — ADFTD split3 frozen features (superseded by split1)
 - `results/studies/exp_newdata/exp_newdata/` — HP-contaminated FT runs (pre per-FM unification)
-- `train_lp.py` — deprecated pool-then-classify LP (G-F12)
+- `train_lp.py` pre-2026-04-25 pool-then-classify body — retired in rewrite; preserved at git tag `lp-pool-then-classify-v1` (G-F12)
 - `results/studies/perwindow_lp_all/SUMMARY.md` 2026-04-20 section — ADFTD row uses split3; see today's refresh for split1
 - `docs/historical/` — superseded narrative drafts
 

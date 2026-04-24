@@ -55,7 +55,7 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
 |---|---|
 | `train_ft.py` | Subject-level CV fine-tuning. Flags: `--label dass` (default), `--permute-labels <seed>`, `--save-features`. |
 | `train_trial.py` | Trial-level CV (reference comparison only). |
-| ~~`train_lp.py`~~ | **DEPRECATED 2026-04-23** (G-F12). Pool-then-classify PyTorch LP — NOT the canonical protocol. Use `scripts/experiments/frozen_lp_perwindow_all.py` (per-window sklearn LogReg + recording-level pooling). See G-F10. Kept for historical reproducibility only. |
+| `train_lp.py` | **Canonical LP entry point** (rewritten 2026-04-25, G-F10): per-window sklearn LogReg + train-fit percentile clip + recording-level mean-pool → BA. CLI: `python train_lp.py --extractor {labram,cbramod,reve} --dataset {stress,eegmat,adftd,tdbrain,sleepdep,meditation} [--cv {stratified-kfold,loso}]`. Library: `from train_lp import run_canonical_lp, eval_seed`. The pre-rewrite pool-then-classify body is preserved at git tag `lp-pool-then-classify-v1`. |
 | `pipeline/dataset.py` | `StressEEGDataset`, `WindowDataset`, `RecordingGroupSampler` (with `_preprocess` fallback when cache missing) |
 | `pipeline/eegmat_dataset.py` | EEGMAT within-subject loader |
 | `pipeline/meditation_dataset.py` | OpenNeuro ds001787 loader (BioSemi 64ch → COMMON_19; expert/novice between-subject) |
@@ -76,8 +76,7 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
 **Canonical LP / key analysis scripts**
 | Path | Purpose |
 |---|---|
-| `scripts/experiments/frozen_lp_perwindow_all.py` | **Canonical LP** (per G-F10): per-window sklearn LogReg + recording-level mean-pool → BA |
-| `scripts/experiments/stress_frozen_lp_{perwindow,loso,multiseed}.py` | Stress-specific LP variants |
+| `train_lp.py` | Canonical LP (see above in Training row) |
 | `scripts/experiments/run_perm_null.py` | Pool-launches permutation-null FT runs |
 | `scripts/experiments/run_hp_sweep.py` | HP grid sweep |
 | `scripts/analysis/run_variance_analysis.py` | Regenerates variance analysis JSON (default out: `paper/figures/variance_analysis.json` — override with `--out` to land under current figure layout) |

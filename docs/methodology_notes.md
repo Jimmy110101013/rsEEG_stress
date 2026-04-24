@@ -37,10 +37,10 @@ Read this file when you need to:
 
 ---
 
-### G-F12: `train_lp.py` is deprecated — canonical LP is per-window sklearn LogReg
-**Status**: policy (2026-04-23)
-**Evidence**: `train_lp.py` implements a PyTorch pool-then-classify probe (optionally MLP head + mixup) — not community-standard and not the paper's LP source. On 2026-04-20 all paper LP numbers were migrated to `scripts/experiments/frozen_lp_perwindow_all.py` (sklearn LogReg, per-window train, test prob mean-pool per recording, threshold 0.5). The migration exposed an 8 pp drop on Stress LaBraM LP (0.605 → 0.525) and a narrative flip on EEGMAT (LP 0.736 ≈ FT 0.731 — FT not a rescue). Full 4-dataset × 3-FM × 8-seed results + narrative deltas in `results/studies/perwindow_lp_all/SUMMARY.md`.
-**Action**: `train_lp.py` marked deprecated in its docstring and emits `DeprecationWarning` on import (2026-04-23). Do not cite its numbers in the paper. All LP work uses `frozen_lp_perwindow_all.py`; master Tab 1 (`scripts/figures/build_frozen_vs_ft_table.py`) should source from `results/studies/perwindow_lp_all/{dataset}/{model}_multi_seed.json` — pending TODO to redirect that script off pooled `_19ch.npz` files. Variance decomposition (§4.2 Fig 2) and band RSA (Appendix B.3 Fig B.3) still require pooled `_19ch.npz` features (recording-level analyses); these are distinct from LP and unaffected.
+### G-F12: Canonical LP = per-window sklearn LogReg via `train_lp.py`
+**Status**: policy (2026-04-23, rewrite landed 2026-04-25)
+**Evidence**: The pre-2026-04-20 `train_lp.py` implemented a PyTorch pool-then-classify probe (optionally MLP head + mixup) — not community-standard and not the paper's LP source. On 2026-04-20 all paper LP numbers were migrated to the per-window sklearn LogReg protocol (per-window train, test prob mean-pool per recording, threshold 0.5). The migration exposed an 8 pp drop on Stress LaBraM LP (0.605 → 0.525) and a narrative flip on EEGMAT (LP 0.736 ≈ FT 0.731 — FT not a rescue). Full 4-dataset × 3-FM × 8-seed results + narrative deltas in `results/studies/perwindow_lp_all/SUMMARY.md`.
+**Action (2026-04-25)**: `train_lp.py` was rewritten in place to be the canonical per-window LP entry point (CLI + `run_canonical_lp`/`eval_seed` library API, `--cv stratified-kfold|loso`). The previous pool-then-classify body is preserved at git tag `lp-pool-then-classify-v1` for reproducing pre-migration numbers if a reviewer asks. Four subsumed scripts were deleted in the same commit: `scripts/experiments/{frozen_lp_perwindow_all,stress_frozen_lp_perwindow,stress_frozen_lp_loso,stress_frozen_lp_multiseed}.py`. Master Tab 1 should source from `results/studies/perwindow_lp_all/{dataset}/{model}_multi_seed.json`. Variance decomposition (§4.2 Fig 2) and band RSA (Appendix B.3 Fig B.3) still require pooled `_19ch.npz` features (recording-level analyses); these are distinct from LP and unaffected.
 
 ---
 
@@ -53,7 +53,7 @@ Read this file when you need to:
 
 ### G-F10: LEAD-style per-window training + majority-vote aggregation is community standard
 **Status**: policy (2026-04-19)
-**Evidence**: LaBraM (`engine_for_finetuning.py`), CBraMod (`finetune_evaluator.py`), EEGPT, EEG-FM-Bench all train with per-window CE loss and evaluate at window level. LEAD §2.2 adds majority-vote aggregation: train per-window CE, at test time each subject's windows vote → one prediction per subject. Our `train_ft.py --mode ft` matches this (per-window loss, `evaluate_recording_level` majority vote). Our `train_lp.py` does NOT — it pools features across windows first then classifies on the pooled vector per recording (pool-then-classify), which is stricter and non-standard.
+**Evidence**: LaBraM (`engine_for_finetuning.py`), CBraMod (`finetune_evaluator.py`), EEGPT, EEG-FM-Bench all train with per-window CE loss and evaluate at window level. LEAD §2.2 adds majority-vote aggregation: train per-window CE, at test time each subject's windows vote → one prediction per subject. Our `train_ft.py --mode ft` matches this (per-window loss, `evaluate_recording_level` majority vote). Since the 2026-04-25 rewrite, `train_lp.py` is also per-window (train at window level, test-set window probabilities mean-pooled per recording, threshold 0.5). The pre-2026-04-20 pool-then-classify body (feature pooling before LogReg) was the non-standard variant and is now retired — preserved at git tag `lp-pool-then-classify-v1` per G-F12.
 **Action**:
 - Paper methods section must explicitly document the FT vs LP protocol difference.
 - When reporting FT results, headline metric is subject-level F1/AUROC (LEAD primary); sample-level is secondary.
