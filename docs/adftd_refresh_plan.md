@@ -92,17 +92,17 @@ Each FM runs pooled→perwindow sequentially on one GPU (chained with `&&`). Thr
 ## Step 2 — Downstream analyses (after Step 1)
 
 - [x] Per-window frozen LP (3 FMs × 8 seeds) → `results/studies/perwindow_lp_all/adftd/` (2026-04-23)
-- [ ] Variance decomposition → update `paper/figures/variance_analysis.json` (waiting on FT v2 + script rewrite)
+- [x] **Variance decomposition → done via window-level approach (2026-04-24)**. Rather than re-extract FT features at split1 recording-level (which was blocked by n_rec=n_subj degeneracy for nested SS), we switched unit of analysis to the window level uniformly across all 4 cells. New pipeline at `scripts/analysis/run_variance_window_level.py`; output `paper/figures/_historical/source_tables/variance_analysis_window_level.json` covers 4 cell × 3 FM × (frozen + FT seed42 + Δlabel_frac). ADFTD LaBraM Δlabel_frac = **+6.25 pp** (largest across 4 cells), consistent with strong-aligned cell expectation. Wording for §3.6.1 / §4.2 scope condition in `docs/variance_window_level_wording.md`.
 - [x] FOOOF ablation → update `results/studies/fooof_ablation/adftd_probes.json` (2026-04-24, per-FM window)
 - [x] Band RSA → update ADFTD row in band RSA outputs (2026-04-23)
 - [x] Band-stop ablation (reads ADFTD dataset cache, n_splits=1) → update band-stop outputs (2026-04-24, per-FM window)
 
 ## Step 3 — Figure / table rebuild
 
-- [ ] Fig 2 (§4.2) variance decomposition — re-render (pending Step 2 variance)
+- [x] **Fig 2 (§4.2) variance decomposition — rebuilt 2026-04-24** via updated FIG2 cell in `notebooks/_build_figures_consolidated.py` consuming `variance_analysis_window_level.json`. Output: `paper/figures/fig2/fig2_representation_2x2.{pdf,png}`. 2×2 factorial panel layout with Δlabel_frac callouts per panel.
 - [x] Fig 5 (§4.5) panels re-rendered 2026-04-24 via canonical builder `notebooks/_build_figures_consolidated.py` → `paper/figures/fig5/fig5{a,b,c}_*.{pdf,png}`. **Protocol decision (2026-04-24)**: fig5b drops ADFTD (3 datasets shown: EEGMAT/SleepDep/Stress). Rationale: session-level subject-ID probe is undefined at n_splits=1 (1 rec/subject); unifying on session-level keeps the probe semantics consistent with the paper's "FM trait-memorization" narrative, rather than down-grading to window-level holdout. ADFTD still contributes via fig5a (PSD) + fig5c (band-stop). Caption must note this. Legacy builders `scripts/figures/build_fooof_ablation_figure.py` + `build_band_stop_all_bands_figure.py` removed.
 - [x] Fig B.2 band-stop per-FM breakdown re-rendered 2026-04-24 (`paper/figures/appendix/figB2_band_stop_breakdown.{pdf,png}`); Fig B.3 band-RSA already done 2026-04-23
-- [ ] Tab 1 (§4.1) — re-assemble LP + FT columns; note that FT already uses per-FM HP run
+- [ ] Tab 1 (§4.1) — re-assemble LP + FT + classical + non-FM columns. ADFTD split1: LP + FT + classical already in `docs/master_results_table.md`; non-FM deep split1 rerun in progress 2026-04-24 (GPU 3; ETA ~16:00). When non-FM completes, update master table non-FM row and regenerate Tab 1 LaTeX.
 
 ## Step 2 numeric deltas (2026-04-24)
 

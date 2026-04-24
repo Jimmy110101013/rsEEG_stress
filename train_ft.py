@@ -198,15 +198,20 @@ def parse_args():
 
 
 def extract_test_features(model, dataset, test_idx, device, use_amp=True, ch_select_idx=None):
-    """Extract pooled features from test set using the fine-tuned model.
+    """Extract pooled + per-window features from test set using the fine-tuned model.
 
     Returns:
-        features: (N_test, embed_dim) numpy array
+        dict with keys:
+          features: (N_test, embed_dim) — recording-level pooled features
+          window_features: (N_total_windows, embed_dim)
+          window_rec_idx: (N_total_windows,) — index into test_idx for each window
     """
     model.eval()
-    all_feats = []
+    all_pooled = []
+    all_window = []
+    window_rec_idx = []
     with torch.no_grad():
-        for i in test_idx:
+        for local_i, i in enumerate(test_idx):
             item = dataset[i]
             epochs = item[0]  # (M, C, T)
             if ch_select_idx is not None:
@@ -218,10 +223,16 @@ def extract_test_features(model, dataset, test_idx, device, use_amp=True, ch_sel
                 with torch.autocast('cuda', dtype=torch.bfloat16, enabled=use_amp):
                     feats = model.extractor(batch)  # (sub_B, embed_dim)
                 epoch_feats.append(feats.float().cpu())
-            epoch_feats = torch.cat(epoch_feats, dim=0)
-            pooled = epoch_feats.mean(dim=0).numpy()
-            all_feats.append(pooled)
-    return np.stack(all_feats)
+            epoch_feats = torch.cat(epoch_feats, dim=0).numpy()  # (M, embed_dim)
+            pooled = epoch_feats.mean(axis=0)
+            all_pooled.append(pooled)
+            all_window.append(epoch_feats)
+            window_rec_idx.extend([local_i] * M)
+    return {
+        "features": np.stack(all_pooled),
+        "window_features": np.concatenate(all_window, axis=0),
+        "window_rec_idx": np.array(window_rec_idx, dtype=np.int64),
+    }
 
 
 def print_split_info(name: str, indices, labels: np.ndarray, patient_ids: np.ndarray):
@@ -1061,12 +1072,18 @@ def train_one_fold_ft(
     # Test — recording-level
     test_rec = evaluate_recording_level(model, test_loader, device, use_amp)
 
-    # Extract test-fold features if requested
+    # Extract test-fold features if requested (pooled + per-window)
     ft_features = None
+    ft_window_features = None
+    ft_window_rec_idx = None
     if args.save_features:
         print(f"  Extracting test-fold features ({len(test_idx)} recordings)...")
-        ft_features = extract_test_features(model, dataset, test_idx, device, use_amp)
-        print(f"  Features shape: {ft_features.shape}")
+        feat_dict = extract_test_features(model, dataset, test_idx, device, use_amp)
+        ft_features = feat_dict["features"]
+        ft_window_features = feat_dict["window_features"]
+        ft_window_rec_idx = feat_dict["window_rec_idx"]
+        print(f"  Features shape: pooled={ft_features.shape} "
+              f"per-window={ft_window_features.shape}")
 
     # Return in the same format as predict() for compatibility with main()
     scores = np.zeros(len(test_rec["y_true"]))
@@ -1081,6 +1098,8 @@ def train_one_fold_ft(
         "win_correct": np.full(len(test_rec["y_true"]), np.nan),
         "win_total": np.full(len(test_rec["y_true"]), np.nan),
         "ft_features": ft_features,
+        "ft_window_features": ft_window_features,
+        "ft_window_rec_idx": ft_window_rec_idx,
     }, best_epoch, curves
 
 
@@ -1417,16 +1436,19 @@ def main():
             )
         global_results.append(test_results)
 
-        # Save test-fold features if extracted
+        # Save test-fold features if extracted (pooled + per-window)
         if test_results.get("ft_features") is not None:
             feat_path = os.path.join(results_dir, f"fold{fold_idx+1}_features.npz")
-            np.savez_compressed(
-                feat_path,
+            save_kwargs = dict(
                 features=test_results["ft_features"],
                 labels=labels[test_idx],
                 patient_ids=patient_ids[test_idx],
                 test_idx=test_idx,
             )
+            if test_results.get("ft_window_features") is not None:
+                save_kwargs["window_features"] = test_results["ft_window_features"]
+                save_kwargs["window_rec_idx"] = test_results["ft_window_rec_idx"]
+            np.savez_compressed(feat_path, **save_kwargs)
             print(f"  Saved features → {feat_path}")
 
         # Save curves

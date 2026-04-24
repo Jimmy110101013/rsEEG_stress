@@ -78,25 +78,31 @@ def save(fig, name, out_dir=None):
 # FIG 2 — Subject-dominated representation geometry
 # ============================================================
 FIG2 = r"""# Fig 2 — Representation structure across the 4-dataset 2×2 factorial
-# 2×2 grid: (within|between) × (coherent|absent/incoherent)
-# Each panel: variance stacked bars (frz/FT, 3 FMs) + callout (dir_cons or Δlabel_frac)
-va      = json.load(open(REPO/'paper/figures/_historical/source_tables/variance_analysis_all.json'))
-va_sd   = json.load(open(REPO/'paper/figures/_historical/source_tables/sleepdep_variance_rsa.json'))
-dc_main = json.load(open(REPO/'paper/figures/_historical/source_tables/f14_within_subject.json'))
-dc_sd   = json.load(open(REPO/'paper/figures/_historical/source_tables/sleepdep_within_subject.json'))
+# 2×2 grid: (within|subject-trait) × (strong-aligned|weak-aligned)
+# Each panel: window-level variance stacked bars (frz/FT, 3 FMs) + Δlabel_frac callout
+# Source: variance_analysis_window_level.json (window-level crossed SS, Jan 2026-04-24+)
+va = json.load(open(REPO/'paper/figures/_historical/source_tables/variance_analysis_window_level.json'))
 
 def variance_entry(fm, ds):
-    return va_sd.get(f'{fm}_{ds}') if ds == 'sleepdep' else va.get(f'{fm}_{ds}')
+    # Return dict with frozen/ft label_frac, subject_frac, delta_label_frac — all as percentages.
+    e = va.get(f'{fm}_{ds}')
+    if e is None: return None
+    fz = e.get('frozen') or {}
+    ft = e.get('ft')
+    out = {
+        'frozen_label_frac':   fz.get('label_frac',   0) * 100,
+        'frozen_subject_frac': fz.get('subject_frac', 0) * 100,
+    }
+    if ft is not None:
+        out['ft_label_frac']   = ft.get('label_frac',   0) * 100
+        out['ft_subject_frac'] = ft.get('subject_frac', 0) * 100
+        out['delta_label_frac'] = e.get('delta_label_frac', 0) * 100
+    return out
 
-def dir_cons(fm, ds):
-    if ds == 'eegmat':   return dc_main['frozen']['eegmat'][fm]['dir_consistency']
-    if ds == 'sleepdep': return dc_sd['frozen']['sleepdep'][fm]['dir_consistency']
-    return None
-
-PANELS = [('eegmat',   'EEGMAT',        'Within × coherent',   'dir_cons'),
-          ('sleepdep', 'SleepDep',      'Within × incoherent', 'dir_cons'),
-          ('adftd',    'ADFTD',         'Between × coherent',  'delta_label'),
-          ('stress',   'Stress (DASS)', 'Between × absent',    'delta_label')]
+PANELS = [('eegmat',   'EEGMAT',        'Within × strong-aligned',        'delta_label'),
+          ('sleepdep', 'SleepDep',      'Within × weak-aligned',          'delta_label'),
+          ('adftd',    'ADFTD',         'Subject-trait × strong-aligned', 'delta_label'),
+          ('stress',   'Stress (DASS)', 'Subject-trait × weak-aligned',   'delta_label')]
 FM_PRETTY = {'labram': 'LaBraM', 'cbramod': 'CBraMod', 'reve': 'REVE'}
 
 fig, axes = plt.subplots(2, 2, figsize=(W_DOUBLE, W_DOUBLE*0.75), sharey=True)
@@ -104,14 +110,16 @@ for ax, (ds, pretty, quadrant, metric) in zip(axes.flat, PANELS):
     for i, fm in enumerate(FMS):
         entry = variance_entry(fm, ds)
         if entry is None: continue
-        fs, fl = entry.get('frozen_subject_frac') or 0, entry.get('frozen_label_frac') or 0
-        ts, tl = entry.get('ft_subject_frac')     or 0, entry.get('ft_label_frac')     or 0
+        fs = entry.get('frozen_subject_frac') or 0
+        fl = entry.get('frozen_label_frac')   or 0
+        ts = entry.get('ft_subject_frac')     or 0
+        tl = entry.get('ft_label_frac')       or 0
         ax.bar(3*i,   fs, width=0.8, color=FM_COLOR[fm], alpha=0.35, edgecolor='k', lw=0.5)
         ax.bar(3*i,   fl, width=0.8, bottom=fs, color=FM_COLOR[fm], alpha=0.95, edgecolor='k', lw=0.5)
         ax.bar(3*i+1, ts, width=0.8, color=FM_COLOR[fm], alpha=0.35, edgecolor='k', lw=0.5, hatch='///')
         ax.bar(3*i+1, tl, width=0.8, bottom=ts, color=FM_COLOR[fm], alpha=0.95, edgecolor='k', lw=0.5, hatch='///')
-        ax.text(3*i,   fs+fl+2, f'{fl:.1f}', ha='center', fontsize=6.5, fontweight='bold')
-        ax.text(3*i+1, ts+tl+2, f'{tl:.1f}', ha='center', fontsize=6.5, fontweight='bold')
+        ax.text(3*i,   fs+fl+2, f'{fl:.2f}', ha='center', fontsize=6.5, fontweight='bold')
+        ax.text(3*i+1, ts+tl+2, f'{tl:.2f}', ha='center', fontsize=6.5, fontweight='bold')
         ax.text(3*i,   4, 'frz', ha='center', fontsize=6, color='white', fontweight='bold')
         ax.text(3*i+1, 4, 'FT',  ha='center', fontsize=6, color='white', fontweight='bold')
     ax.set_xticks([3*i+0.5 for i in range(len(FMS))])
@@ -122,16 +130,10 @@ for ax, (ds, pretty, quadrant, metric) in zip(axes.flat, PANELS):
     ax.set_title(f'{pretty}\n({quadrant})', fontsize=9, pad=4)
     ax.grid(axis='y', alpha=0.25, lw=0.4)
 
-    if metric == 'dir_cons':
-        vals = [(fm, dir_cons(fm, ds)) for fm in FMS]
-        s = '  '.join(f'{FM_PRETTY[fm][:3]}={v:+.3f}' for fm, v in vals if v is not None)
-        ax.text(0.02, 0.97, f'dir_consistency (frozen):\n{s}', transform=ax.transAxes,
-                fontsize=6.5, va='top', bbox=dict(boxstyle='round,pad=0.3', facecolor='#FFF8E1', edgecolor='#888', lw=0.4))
-    else:
-        vals = [(fm, (variance_entry(fm, ds) or {}).get('delta_label_frac')) for fm in FMS]
-        s = '  '.join(f'{FM_PRETTY[fm][:3]}={v:+.1f}' for fm, v in vals if v is not None)
-        ax.text(0.02, 0.97, f'Δlabel_frac (FT − frz, %):\n{s}', transform=ax.transAxes,
-                fontsize=6.5, va='top', bbox=dict(boxstyle='round,pad=0.3', facecolor='#E8F5E9', edgecolor='#888', lw=0.4))
+    vals = [(fm, (variance_entry(fm, ds) or {}).get('delta_label_frac')) for fm in FMS]
+    s = '  '.join(f'{FM_PRETTY[fm][:3]}={v:+.2f}' for fm, v in vals if v is not None)
+    ax.text(0.02, 0.97, f'Δlabel_frac (FT − frz, pp):\n{s}', transform=ax.transAxes,
+            fontsize=6.5, va='top', bbox=dict(boxstyle='round,pad=0.3', facecolor='#E8F5E9', edgecolor='#888', lw=0.4))
 
 legend = [Patch(facecolor='#888', alpha=0.35, edgecolor='k', lw=0.5, label='subject_frac'),
           Patch(facecolor='#888', alpha=0.95, edgecolor='k', lw=0.5, label='label_frac'),

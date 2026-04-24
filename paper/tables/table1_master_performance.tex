@@ -1,0 +1,39 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=1.5cm,landscape]{geometry}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{xcolor}
+\pagestyle{empty}
+\begin{document}
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{\textbf{Subject-level 5-fold cross-validated balanced accuracy --- linear probe (LP) vs full fine-tuning (FT) across the four-dataset $2\times 2$ factorial.}
+Columns ordered by quadrant of (within-subject state vs subject-trait labelling) $\times$ (strong- vs weak-aligned task-substrate).
+Values are 3-seed mean $\pm$ sample standard deviation (ddof=1); seeds 42/123/2024.
+LP = L2-penalised logistic regression on per-window frozen features with recording-level probabilistic pooling, \texttt{class\_weight=balanced}.
+FT = full fine-tuning under per-FM canonical HP (LaBraM: lr=5e-4, layer-decay=0.65, wd=0.05, CE+LS=0.1; CBraMod: lr=5e-4, encoder-lr-scale=0.2, wd=0.05, CE+LS=0.1; REVE: lr=2.4e-4, encoder-lr-scale=0.1, wd=0.01, warmup=2ep, CE); see Methods~\S3.5.
+Stress uses the DASS per-recording binary label matching Komarov et al.\ (2020) and Wang et al.\ (2025); 14/17 subjects have consistent labels across recordings, 3/17 straddle both classes and are excluded from this table.
+ADFTD uses one recording per subject (split1) for subject-disjoint CV.
+Dataset sizes (recordings / subjects): EEGMAT 72 / 36; SleepDep 72 / 36; ADFTD 65 / 65; Stress 55 / 14.}
+\label{tab:master_performance}
+
+\begin{tabular}{l cc cc cc cc}
+\toprule
+ & \multicolumn{2}{c}{\textbf{EEGMAT}} & \multicolumn{2}{c}{\textbf{SleepDep}} & \multicolumn{2}{c}{\textbf{ADFTD}} & \multicolumn{2}{c}{\textbf{Stress (DASS)}} \\
+ & \multicolumn{2}{c}{\footnotesize within $\times$ strong-aligned} & \multicolumn{2}{c}{\footnotesize within $\times$ weak-aligned} & \multicolumn{2}{c}{\footnotesize subject-trait $\times$ strong-aligned} & \multicolumn{2}{c}{\footnotesize subject-trait $\times$ weak-aligned} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
+\textbf{Method} & LP & FT & LP & FT & LP & FT & LP & FT \\
+\midrule
+LaBraM  & $0.736 \pm 0.037$ & $0.685 \pm 0.016$ & $0.611 \pm 0.014$ & $0.579 \pm 0.016$ & $0.643 \pm 0.054$ & $\mathbf{0.737 \pm 0.055}$ & $0.506 \pm 0.014$ & $0.455 \pm 0.076$ \\
+CBraMod & $0.718 \pm 0.021$ & $0.727 \pm 0.040$ & $0.546 \pm 0.021$ & $0.486 \pm 0.048$ & $0.581 \pm 0.042$ & $0.698 \pm 0.020$ & $0.440 \pm 0.019$ & $0.414 \pm 0.029$ \\
+REVE    & $0.736 \pm 0.014$ & $0.727 \pm 0.053$ & $0.537 \pm 0.049$ & $0.509 \pm 0.076$ & $0.668 \pm 0.027$ & $0.683 \pm 0.019$ & $0.458 \pm 0.019$ & $0.476 \pm 0.051$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

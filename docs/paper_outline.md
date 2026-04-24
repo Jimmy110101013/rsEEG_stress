@@ -91,8 +91,8 @@ TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary
   > 中文：使用各 FM 原論文 canonical recipe，不做 per-dataset HP 調參以避免 test contamination。
 - 3.6 Diagnostic toolkit — method specifications
   > 中文：§4 所有診斷工具的 method 層細節，結果層放 §4。
-  - 3.6.1 Variance decomposition (recording-level)
-    > 中文：Label / Subject / Residual 三項 variance 分解程序。
+  - 3.6.1 Variance decomposition (**window-level**, 2026-04-24)
+    > 中文：Label / Subject / Residual 三項 variance 分解程序，unit of analysis 為 per-window FM embedding；同樣 protocol 均勻適用 4 cell（包括 single-session ADFTD）。 Scope condition: ≥2 windows per recording（所有 5/10s windows 皆滿足）。Recording-level 舊作法 (split3 pseudo-recordings) 因 ADFTD n_rec=n_subj degenerate 而捨棄。衡量量：`label_frac`, `subject_frac`, `residual_frac`（相加 ≤1），`delta_label_frac = label_frac(FT) − label_frac(frozen)` 為主要 cross-cell 可比量（anatomy baseline 在 frozen/FT 兩側抵銷）。詳見 `docs/variance_window_level_wording.md`。
   - 3.6.2 Permutation-null test
     > 中文：label shuffle 建立 null 分布，作為 honest-eval 的統計錨。
   - 3.6.3 Within-subject direction consistency (scope: within-subject cells only by construction)
@@ -107,22 +107,24 @@ TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary
 ### 4.1 Benchmark landscape across the four cells (setup, not a finding)
 > 中文：Results 入口 — 先給 4 cell × 3 FM 的 BA summary 定位每格 "起點"；BA 本身不是論文發現，而是後續 diagnostic 解讀的 context。數字來自 `docs/master_results_table.md`，由 **Tab 1** (`table1_master_performance.tex`) 承載，**不另做 figure**。
 
-- Entry statement for each cell (LaBraM / CBraMod / REVE, LP→FT, all 3-seed; FT under per-FM canonical HP G-F09, source `results/final/{cell}/{model}/ft/`):
+- Entry statement for each cell (LaBraM / CBraMod / REVE, LP→FT, all 3-seed; FT under per-FM canonical HP G-F09, source `results/final/{cell}/ft/{model}/`):
   - *Subject-label × weak-aligned (Stress-DASS)*: LP 0.51 / 0.44 / 0.46, FT 0.46 / 0.41 / 0.48 — FM stays in 0.41–0.48 band, **all three FMs ≤ chance**, classical LogReg 0.506 matches
   - *Subject-label × strong-aligned (ADFTD, split1 65/65)*: LP 0.64 / 0.58 / 0.67, FT 0.74 / 0.70 / 0.68 — LaBraM leads, all three FMs 0.68–0.74 tight band; classical SVM 0.647 and EEGNet 0.773 give a sizeable non-FM baseline for this cell (EEGNet matches the top FM)
   - *Within-subject × strong-aligned (EEGMAT)*: LP 0.74 / 0.72 / 0.74, FT 0.69 / 0.73 / 0.73 — strong LP signal, FT ≈ LP (saturated); all three FMs tight at ≈0.70; classical RF 0.889 beats all FMs
   - *Within-subject × weak-aligned (SleepDep)*: LP 0.61 / 0.55 / 0.54, FT 0.58 / 0.49 / 0.51 — FMs FT ≈ chance across all three; classical SVM 0.574 ≈ FM
 - **Bridging statement**: BA alone does not explain why each cell arrives where it does — §4.2–§4.5 diagnostics characterise the mechanism behind each cell's benchmark landscape
 
-### 4.2 Representation geometry across the 2×2 (Diagnostic 1: variance decomposition)
-> 中文：每格 frozen FM representation 的 Label / Subject / Residual 三項 variance 分解，揭示 subject structure 主導的程度；FT 狀態先不畫 trajectory（LP→FT drift analysis 延後）。
+### 4.2 Representation geometry across the 2×2 (Diagnostic 1: window-level variance decomposition)
+> 中文：4-cell window-level variance decomposition，stacked bars 展示 frozen vs FT 的 label / subject / residual 分配；每 panel callout `Δlabel_frac` 作為 cross-cell 可比的主要量。
 
-- **Fig 4.2**  4-cell variance decomposition — stacked bars per cell (Label / Subject / Residual), frozen FM × 3 FM
-- Per-cell reading: subject_frac 與 label_frac 的相對大小刻畫每格 frozen representation 的 "geometry budget"
-  - *Between × null-indistinguishable (Stress)*: subject-dominant (label_frac ≈ 0)
-  - *Between × separable (ADFTD)*: label_frac > 0 but still subject-dominated
-  - *Within × separable (EEGMAT)*: label_frac 最高
-  - *Within × null-indistinguishable (SleepDep)*: label_frac low, subject-dominated
+- **Fig 4.2**  4-cell window-level variance decomposition — per cell × FM × (frozen, FT) stacked bars (label / subject / residual); Δlabel_frac callout per panel. Built from `paper/figures/_historical/source_tables/variance_analysis_window_level.json` via FIG2 in `notebooks/_build_figures_consolidated.py`. Output at `paper/figures/fig2/fig2_representation_2x2.{pdf,png}`.
+- **Primary cross-cell reading** — `Δlabel_frac = label_frac(FT) − label_frac(frozen)` tracks task-substrate alignment strength (LaBraM row, pp):
+  - *Subject-trait × strong-aligned (ADFTD split1)*: **Δ = +6.25**（最大；FT lifts label structure substantially)
+  - *Within × strong-aligned (EEGMAT)*: Δ = +1.99（positive; FT adds further alignment on top of already-separable frozen signal）
+  - *Within × weak-aligned (SleepDep)*: Δ = +0.02（null; nothing for FT to rescue）
+  - *Subject-trait × weak-aligned (Stress)*: Δ = −1.37（negative; FT redistributes to subject without improving label）
+- **Within-cell reading** — absolute `subject_frac` and `label_frac` interpretable within-dataset only (cross-cell absolute magnitudes confounded by anatomy + session-mean at window level; see §3.6.1 scope note).
+- **Cross-cell secondary finding**: Δsubject_frac is **uniformly large and positive** (+15 to +60 pp) across all 12 (cell × FM) pairs — FT reliably compresses representation toward subject-identity structure regardless of whether label alignment improves. Discussion material for §5.
 
 ### 4.3 Honest-evaluation calibration (Diagnostic 2: permutation null)
 > 中文：用 label-shuffle null 逐 cell 確認觀察到的 BA 是真 signal；此節同時給出 Stress 在 subject-disjoint protocol 下的 reference numbers，與 Wang 2025 trial-level CV 報告做 protocol-consistent 對齊（非 gap-closing 論述）。
@@ -156,7 +158,7 @@ TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary
 >
 > **Band-stop metric note**：§4.5 量 **probe BA after band removal**（下游 decoding 的 causal effect）；Appendix B.2 量 **cosine distance between original and band-stopped representations**（representation geometry sensitivity）。同一擾動、互補 metric — §4.5 回答「model 有沒有在用這個頻段 decode」，B.2 回答「representation 對該頻段的 geometry 有多敏感」。
 
-- **Fig 4.5**  Three-panel anchor dissection (PSD + FOOOF fit representative, FOOOF ablation scatter, band-stop line), 4 cells
+- **Fig 4.5**  Three-panel anchor dissection: (a) PSD + FOOOF fit (4 cells), (b) FOOOF ablation probe BA — **split into two sub-panels 2026-04-24**: (b-L) state probe BA across 4 cells (subject-disjoint, defined everywhere), (b-R) **session-level** subject probe BA across 3 cells (EEGMAT / SleepDep / Stress); ADFTD marked N/A with a scope-condition footnote (single-session cohort; session-level holdout undefined). (c) band-stop cosine distance per band (4 cells). Appendix B.4 adds a within-session window-level subject probe for ADFTD as complementary context under a different protocol. Rationale for the subject-probe panel split: the session-level protocol measures "stable trait identity across recording sessions," a quantity only defined where multiple sessions exist per subject; retaining this semantics is more informative than down-grading to a window-level substitute that saturates at ceiling.
 - Per-cell anchor attribution (source: `results/studies/fooof_ablation/{stress,adftd,eegmat,sleepdep}_probes.json`):
   - *Stress (between × null-indistinguishable)*: **absent anchor** — no recoverable anchor in either intervention
   - *ADFTD (between × separable)*: LaBraM state probe drops 0.654→0.542 (−11.2 pp) under aperiodic removal, periodic removal barely moves it (0.654→0.655), REVE drops 0.652→0.614 (−3.8 pp) → **aperiodic-anchored trait signal**. CBraMod shows an **opposite-sign signature**: aperiodic removal *raises* state probe 0.571→0.692 (+12 pp) and subject probe 0.748→0.940 (+19 pp). Candidate explanation (anchor + model interaction): CBraMod's internal `x/100` input scaling is µV-calibrated and particularly sensitive to broadband amplitude; FOOOF-reconstruction on ADFTD (88 trait-heterogeneous subjects) acts as amplitude normalisation, *improving* subject and trait discriminability rather than removing a learned aperiodic anchor. This reinforces rather than overturns the taxonomy: ADFTD's trait signal co-varies with aperiodic 1/f for the two FMs that treat input as raw µV (LaBraM zscore, REVE raw µV), while CBraMod sees a different signal under its input pipeline. The opposite sign is a *model × preprocessing* artefact, not a violation of the anchor-type framework.
@@ -170,11 +172,25 @@ TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary
 ### 5.1 What the toolkit carries beyond this paper, and what it does not
 > 中文：分清楚哪些東西可以帶出本論文 — toolkit 與其 scope conditions 可以 reuse，2×2 本身 (n=1 per cell) 不可以外推。
 
+**Scope map (explicit; each diagnostic listed with the cell types it covers, and why)**:
+
+| Diagnostic | Cell coverage | Scope condition | Rationale |
+|---|---|---|---|
+| Window-level variance decomposition (Fig 4.2) | 4 cells | ≥2 windows per recording (universal at 5/10 s windows) | Unit-of-analysis shift decouples from session structure; see §3.6.1 |
+| Permutation null (Fig 3) | 4 cells | Label-shuffle exchangeable at subject level | Standard subject-level perm applies to both within-subject and trait designs |
+| Within-subject direction consistency (Fig 4.4) | 2 cells (EEGMAT, SleepDep) | Same subject has ≥2 recordings under contrasting label | By label design; subject-trait cells excluded by construction |
+| FOOOF state probe (Fig 4.5 panel b-L) | 4 cells | Per-window features + subject-disjoint CV | Subject-disjoint K-fold works at single-session |
+| FOOOF subject probe — session level (Fig 4.5 panel b-R) | 3 cells (EEGMAT, SleepDep, Stress) | ≥2 recordings per subject | Measures trait-anchor persistence across sessions |
+| FOOOF subject probe — within-session (Appendix B.4) | 4 cells (incl. ADFTD) | ≥2 windows per recording | Complementary only; ceiling-bound, measures different quantity |
+| Band-stop ablation (Fig 4.5 panel c) | 4 cells | Per-recording features | Universal at the representation level |
+
+**Design claim**: this scope heterogeneity is a feature, not a limitation. Single-session clinical rsEEG cohorts are the majority pattern in published datasets (ADFTD, BrainLat, CAUEEG, TDBRAIN's HC arm, Cavanagh UNM PD's HC arm). A toolkit that refused to run on single-session cohorts would cede the majority of the small-N clinical rsEEG landscape. The contribution documented here is the pairing of each tool with an explicit scope condition, such that a practitioner can read off which diagnostics will inform their cell before any FM is trained.
+
 - **Reusable beyond this paper (the toolkit and its scope conditions)**:
-  - Each of the four diagnostics has a defined input (raw EEG + label metadata), a defined output (a per-cell verdict), and a defined scope condition stating when the diagnostic runs
+  - Each diagnostic has a defined input (raw EEG + label metadata), a defined output (a per-cell verdict), and a defined scope condition stating when the diagnostic runs
   - Within-subject direction consistency runs only when the label design supports a within-subject contrast; this scope condition is stated up-front, so a future user can tell without running anything whether their dataset qualifies
   - Causal anchor ablation produces an `absent` / `α-broadband` / `1/f-aperiodic` verdict computable from EEG alone before any FM is trained — the three anchor types (not the specific dataset assignments in this paper) are what carries over
-  - Frozen variance decomposition produces label_frac vs subject_frac from frozen FM features — the label-dominated vs subject-dominated reading is what carries over
+  - Window-level variance decomposition produces label_frac vs subject_frac vs Δlabel_frac from per-window FM features — the ranking across cells is what carries over (not absolute magnitudes, which are confounded by anatomy at the window level)
 - **Not extrapolated beyond this paper (the 2×2 as a predictive map)**:
   - We do not claim that every future (between × null-indistinguishable) dataset will fail the way Stress does
   - We do not claim that every future (within × separable) dataset will decode the way EEGMAT does

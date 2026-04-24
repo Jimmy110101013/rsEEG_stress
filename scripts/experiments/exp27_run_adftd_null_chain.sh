@@ -9,17 +9,18 @@ cd "$(dirname "$0")/../.."
 
 PY="/raid/jupyter-linjimmy1003.md10/.conda/envs/stress/bin/python"
 GPU=${GPU:-7}
-N_PERMS=${1:-30}
+SEED_START=${SEED_START:-0}
+SEED_END=${SEED_END:-29}
 
 OUT_ROOT="results/studies/exp27_paired_null/adftd"
 mkdir -p "${OUT_ROOT}/logs"
 
-for seed in $(seq 0 $((N_PERMS-1))); do
+for seed in $(seq ${SEED_START} ${SEED_END}); do
   RUN_ID="studies/exp27_paired_null/adftd/perm_s${seed}"
   LOG="${OUT_ROOT}/logs/perm_s${seed}.log"
   echo "[$(date +%H:%M:%S)] START adftd perm_s${seed} on cuda:${GPU}" | tee -a "${OUT_ROOT}/logs/_chain.log"
   PYTHONUNBUFFERED=1 "$PY" train_ft.py \
-    --mode ft --extractor labram --dataset adftd \
+    --mode ft --extractor labram --dataset adftd --n-splits 1 \
     --folds 5 --epochs 50 --patience 15 \
     --lr 1e-5 --encoder-lr-scale 0.1 --batch-size 32 --seed 42 \
     --loss focal --head-hidden 128 --norm zscore \
@@ -31,4 +32,5 @@ for seed in $(seq 0 $((N_PERMS-1))); do
     > "${LOG}" 2>&1
   echo "[$(date +%H:%M:%S)] DONE  adftd perm_s${seed}" | tee -a "${OUT_ROOT}/logs/_chain.log"
 done
-echo "[$(date +%H:%M:%S)] CHAIN COMPLETE: ${N_PERMS} adftd perms" | tee -a "${OUT_ROOT}/logs/_chain.log"
+N_DONE=$((SEED_END - SEED_START + 1))
+echo "[$(date +%H:%M:%S)] CHAIN COMPLETE: ${N_DONE} adftd perms (s${SEED_START}-s${SEED_END})" | tee -a "${OUT_ROOT}/logs/_chain.log"

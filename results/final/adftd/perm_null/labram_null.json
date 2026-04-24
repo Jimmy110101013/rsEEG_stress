@@ -1,0 +1,159 @@
+{
+  "model": "labram",
+  "dataset": "adftd",
+  "split": "split1",
+  "protocol": "subject-level label permutation, 5-fold StratifiedGroupKFold subject-disjoint",
+  "n_perms": 30,
+  "null_bas": [
+    {
+      "seed": 0,
+      "subject_bal_acc": 0.5565
+    },
+    {
+      "seed": 1,
+      "subject_bal_acc": 0.478
+    },
+    {
+      "seed": 2,
+      "subject_bal_acc": 0.5024
+    },
+    {
+      "seed": 3,
+      "subject_bal_acc": 0.4981
+    },
+    {
+      "seed": 4,
+      "subject_bal_acc": 0.4909
+    },
+    {
+      "seed": 5,
+      "subject_bal_acc": 0.4497
+    },
+    {
+      "seed": 6,
+      "subject_bal_acc": 0.5364
+    },
+    {
+      "seed": 7,
+      "subject_bal_acc": 0.5053
+    },
+    {
+      "seed": 8,
+      "subject_bal_acc": 0.4981
+    },
+    {
+      "seed": 9,
+      "subject_bal_acc": 0.4679
+    },
+    {
+      "seed": 10,
+      "subject_bal_acc": 0.5115
+    },
+    {
+      "seed": 11,
+      "subject_bal_acc": 0.5809
+    },
+    {
+      "seed": 12,
+      "subject_bal_acc": 0.5158
+    },
+    {
+      "seed": 13,
+      "subject_bal_acc": 0.5048
+    },
+    {
+      "seed": 14,
+      "subject_bal_acc": 0.6298
+    },
+    {
+      "seed": 15,
+      "subject_bal_acc": 0.5714
+    },
+    {
+      "seed": 16,
+      "subject_bal_acc": 0.5814
+    },
+    {
+      "seed": 17,
+      "subject_bal_acc": 0.4392
+    },
+    {
+      "seed": 18,
+      "subject_bal_acc": 0.5125
+    },
+    {
+      "seed": 19,
+      "subject_bal_acc": 0.3113
+    },
+    {
+      "seed": 20,
+      "subject_bal_acc": 0.387
+    },
+    {
+      "seed": 21,
+      "subject_bal_acc": 0.3774
+    },
+    {
+      "seed": 22,
+      "subject_bal_acc": 0.5192
+    },
+    {
+      "seed": 23,
+      "subject_bal_acc": 0.5881
+    },
+    {
+      "seed": 24,
+      "subject_bal_acc": 0.5158
+    },
+    {
+      "seed": 25,
+      "subject_bal_acc": 0.4847
+    },
+    {
+      "seed": 26,
+      "subject_bal_acc": 0.4914
+    },
+    {
+      "seed": 27,
+      "subject_bal_acc": 0.4607
+    },
+    {
+      "seed": 28,
+      "subject_bal_acc": 0.4665
+    },
+    {
+      "seed": 29,
+      "subject_bal_acc": 0.4842
+    }
+  ],
+  "null_summary": {
+    "mean": 0.49723,
+    "std_ddof1": 0.06508396778062141,
+    "min": 0.3113,
+    "max": 0.6298,
+    "median": 0.50025
+  },
+  "real_bas_3seed": [
+    {
+      "seed": 42,
+      "subject_bal_acc": 0.7854
+    },
+    {
+      "seed": 123,
+      "subject_bal_acc": 0.7471
+    },
+    {
+      "seed": 2024,
+      "subject_bal_acc": 0.6777
+    }
+  ],
+  "real_summary": {
+    "mean": 0.7367333333333334,
+    "std_ddof1": 0.054593253551453905
+  },
+  "p_value": 0.03225806451612903,
+  "n_null_ge_real_mean": 0,
+  "source_null": "results/studies/exp27_paired_null/adftd/perm_s{0..29}/summary.json",
+  "source_real": "results/final/adftd/ft/labram/seed{42,123,2024}/summary.json",
+  "last_updated": "2026-04-24"
+}

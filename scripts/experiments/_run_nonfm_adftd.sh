@@ -27,6 +27,7 @@ run_one() {
         --run-id "$RUN_ID" \
         --device "$GPU" \
         --dataset "$DATASET" \
+        --n-splits 1 \
         --extractor "$MODEL" \
         --mode ft \
         --norm zscore \
@@ -55,9 +56,14 @@ echo "=========================================="
 echo "NON-FM × ADFTD on ${GPU} — $(date)"
 echo "=========================================="
 
+ARCH_FILTER="${ARCH:-both}"  # both | eegnet | shallowconvnet
 for SEED in 42 123 2024; do
-    run_one eegnet 1e-3 "$SEED"
-    run_one shallowconvnet 5e-4 "$SEED"
+    if [ "$ARCH_FILTER" = "both" ] || [ "$ARCH_FILTER" = "eegnet" ]; then
+        run_one eegnet 1e-3 "$SEED"
+    fi
+    if [ "$ARCH_FILTER" = "both" ] || [ "$ARCH_FILTER" = "shallowconvnet" ]; then
+        run_one shallowconvnet 5e-4 "$SEED"
+    fi
 done
 
 echo "=========================================="

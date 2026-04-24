@@ -43,24 +43,31 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 
 ---
 
-## §4.2 Variance decomposition — Fig 2
+## §4.2 Variance decomposition — Fig 2 (window-level, unified 2026-04-24)
 
-**Figure**: `paper/figures/main/fig2_representation_2x2.{pdf,png}`
-**Build script**: `scripts/figures/build_fig2_2x2.py`
-**Protocol**: variance partition on **frozen** per-recording pooled features (ANOVA-style crossed SS for within-subject, nested SS for subject-label)
+**Figure**: `paper/figures/fig2/fig2_representation_2x2.{pdf,png}` (canonical; rebuilt 2026-04-24 from `variance_analysis_window_level.json`)
+**Build**: `notebooks/_build_figures_consolidated.py` → compiles `notebooks/figures_consolidated.ipynb`; FIG2 cell is executable standalone via `exec(ns['SETUP'] + '\n' + ns['FIG2'])`.
+**Analysis script**: `scripts/analysis/run_variance_window_level.py` (uniform for all 4 cells × 3 FMs; frozen + FT side both from per-window features).
+**Protocol**: window-level crossed SS decomposition `SS_total = SS_label + SS_subject + SS_residual_clipped` applied uniformly to all 4 cells, including single-session ADFTD. See `docs/variance_window_level_wording.md` for scope-condition wording intended for §3.6.1 and §4.2.
 
-| Cell | Source JSON | Script | Status |
+| Cell | Frozen source | FT source (seed 42) | Status |
 |---|---|---|---|
-| EEGMAT | `paper/figures/_historical/source_tables/variance_analysis_all.json` | `scripts/analysis/run_variance_analysis.py` (legacy, labram-only 4 datasets) | stale — needs FT v2 path update |
-| SleepDep | `paper/figures/_historical/source_tables/sleepdep_variance_rsa.json` | `scripts/analysis/compute_sleepdep_variance_rsa.py` | fresh |
-| ADFTD | `paper/figures/_historical/source_tables/variance_analysis_all.json` | (same legacy) | ⏳ needs refresh on split1 features — waiting on FT v2 + new variance script |
-| Stress | `paper/figures/_historical/source_tables/variance_analysis_all.json` | (same legacy) | stale |
+| EEGMAT | `results/features_cache/frozen_{fm}_eegmat_perwindow.npz` | `results/final_winfeat/eegmat/{fm}/seed42/fold*_features.npz` | ✅ 2026-04-24 |
+| SleepDep | `results/features_cache/frozen_{fm}_sleepdep_perwindow.npz` | `results/final_winfeat/sleepdep/{fm}/seed42/fold*_features.npz` | ✅ 2026-04-24 |
+| ADFTD (split1, 65/65) | `results/features_cache/frozen_{fm}_adftd_perwindow.npz` | `results/final_winfeat/adftd/{fm}/seed42/fold*_features.npz` | ✅ 2026-04-24 |
+| Stress (55/14 pure-label) | `results/features_cache/frozen_{fm}_stress_perwindow.npz` | `results/final_winfeat/stress/{fm}/seed42/fold*_features.npz` | ✅ 2026-04-24; auto-drops 3 mixed-label subjects (pid 3, 11, 17) |
 
-**Input features** (pooled, per-recording): `results/features_cache/frozen_{labram,cbramod,reve}_{cell}_{19ch,30ch}.npz`
+**Combined output JSON**: `paper/figures/_historical/source_tables/variance_analysis_window_level.json`
+**Shape per entry**: `{frozen: {label_frac, subject_frac, residual_frac, label_subject_ratio, SS_*, label_design}, ft: {same fields}, delta_label_frac, delta_subject_frac, ft_seed}`.
 
-**Known issues**:
-- `run_variance_analysis.py` is labram-only + uses TDBRAIN instead of SleepDep + hardcodes pre-unification FT paths. Needs rewrite to consume 4 cells × 3 FMs × new FT features.
-- ADFTD row assumes n_splits=3 (n_rec=195); split1 refresh pending script update.
+**Key numbers** (LaBraM Δlabel_frac, pp): ADFTD +6.25 >> EEGMAT +1.99 >> SleepDep +0.02 ≈ Stress −1.37 — cleanly tracks strong/weak task-substrate alignment.
+
+**Supersedes**:
+- `variance_analysis_all.json` — recording-level, split3 ADFTD, pre-canonical FT HP. Retained for historical reference only.
+- `sleepdep_variance_rsa.json` — dataset-specific script. Window-level run unifies approach.
+- Old `scripts/analysis/run_variance_analysis.py` — labram-only, recording-level, stale paths. Keep for recording-level sensitivity analyses if needed; not used for Fig 2.
+
+**FT side is seed 42 only**. Full 3-seed window-level FT variance is a future extension — not required for Fig 2 main claim since Δlabel_frac ordering is monotonic under canonical HP.
 
 ---
 
@@ -74,7 +81,7 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 |---|---|---|---|
 | EEGMAT | `results/studies/exp27_paired_null/eegmat/` | `results/studies/exp17_eegmat_cbramod_reve_ft/` + `exp04_eegmat_feat_multiseed/` | ✅ 30 seeds complete, unified HP |
 | SleepDep | `results/studies/exp27_paired_null/sleepdep/` | `results/studies/exp_newdata/` | ✅ 30 seeds complete (2026-04-22 obs 3381, SleepDep n=30 rebuild) |
-| ADFTD | `results/studies/exp27_paired_null/adftd/` | `results/studies/exp07_adftd_multiseed/` | ✅ 30 seeds, subject-level perm; FT real side being re-run under HP unification |
+| ADFTD | `results/studies/exp27_paired_null/adftd/` (split1, 2026-04-24; split3 archived under `adftd.bak_split3_20260424/`) | `results/final/adftd/ft/labram/seed{42,123,2024}/` | ✅ 30 seeds split1 subject-level perm. **p = 0.0323** (real FT 3-seed mean 0.7367 vs null mean 0.4972, 0/30 null ≥ real). Aggregated to `results/final/adftd/perm_null/labram_null.json` |
 | Stress | `results/studies/exp03_stress_erosion/ft_null_{labram,cbramod,reve}/` | `results/studies/exp05_stress_feat_multiseed/` | ✅ 30 seeds |
 
 **Log**: `results/studies/fooof_ablation/adftd_probes.json` (no — this is FOOOF; correct null logs are under each study dir's `logs/`)
