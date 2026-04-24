@@ -30,6 +30,68 @@ methodological motivator for dataset selection" (see §5 below).
 
 ---
 
+## 1b. Literature audit of split protocols + FT<LP prior art (2026-04-18)
+
+Systematic scan of 10 major EEG-FM / benchmark papers (LaBraM, CBraMod,
+REVE, BIOT, BENDR, EEGPT, EEG-FM-Bench, AdaBrain-Bench, Neuro-GPT,
+NeuroLM) establishes three facts that directly support v2 framing:
+
+**(A) FT < LP under subject-disjoint evaluation is published prior art,
+not an artefact of our pipeline.**
+
+- **BENDR** (Kostas et al., Frontiers 2021; arXiv:2101.12037): LOSO /
+  leave-multi-subjects-out across 5 datasets. Verbatim from Fig 3 /
+  Table 2: *"the fine-tuned linear classification… that bypassed the
+  transformer entirely after pre-training was highest performing four
+  out of five times"*. Only P300 had FT > LP.
+- **AdaBrain-Bench** (2025; arXiv:2507.09882) documents EEGPT on
+  BCI-IV-2a under Cross-Subject Transfer: **LP 47.89 % vs FT 25.81 %**
+  (-22 pp under full FT). Explicitly framed as large-model overfitting.
+- **EEGPT** (NeurIPS 2024) chooses **linear probing as its headline
+  evaluation metric**, not FT — authorial admission that FT is
+  unstable/inferior in their setting.
+
+**(B) The field's dominant protocol is fixed subject-disjoint split
+with 3–5 seeds, NOT subject-level k-fold CV.**
+
+- LaBraM / BIOT / CBraMod / REVE / NeuroLM: single predefined 80/20
+  patient split + 3–5 random weight seeds. Their ±std reflects
+  initialisation noise only, NOT data-sampling variance.
+- BENDR + Neuro-GPT: LOSO subject CV (the only exceptions).
+- EEG-FM-Bench + AdaBrain-Bench: 5 seeds per fixed split.
+
+*Implication*: our 5-fold subject-CV × 3-seed protocol is **more
+rigorous** than the community standard. When we report ±3 pp
+uncertainty, that ±3 pp includes train/test-subject variation that
+single-split protocols structurally cannot see.
+
+**(C) Split protocol bifurcation between task families is explicit in
+source papers (not just implied).**
+
+- **SEED / SEED-V / SEED-VII** (emotion) — always trial-level within-
+  subject. CBraMod (§C.6): *"fifteen trials of each session into three
+  equal parts (5:5:5) as training, validation and test sets"*. NeuroLM:
+  *"total 15 trials into training, validation, and test trials by
+  9:3:3 according to chronological order"*. EEG-FM-Bench: *"a subject-
+  dependent strategy is adopted for SEED, SEED-V, SEED-VII"*.
+- **TUAB / TUEV / diagnostic tasks** — subject-disjoint fixed splits
+  (BIOT/LaBraM/CBraMod all inherit).
+- **Motor-imagery (PhysioMI, BCIC-IV-2a)** — depends on paper; often
+  subject-level in one paper, trial-level in another.
+
+*Implication*: the apparent "FT always wins" narrative in most EEG-FM
+headline tables is partially an artefact of which-datasets-are-split-
+which-way. BENDR/EEGPT-style honest subject-disjoint reporting reveals
+the FT<LP pattern the community has largely stopped publishing.
+
+**Conclusion**: our exp_30 FT<LP observation in 7/9 between-arm cells
+**is not anomalous**. It replicates BENDR (2021) and AdaBrain-Bench
+(2025) under a more rigorous CV protocol than most published work.
+The paper can frame this as rediscovery-with-mechanism rather than as
+a bug to defend.
+
+---
+
 ## 2. The central claim (Abstract-level)
 
 EEG foundation models (LaBraM, CBraMod, REVE) are marketed as general-
@@ -64,11 +126,42 @@ subject variance, 0–28% label variance) across all six datasets and
 three FMs. Demonstrated via nested/crossed SS decomposition,
 corroborated by PERMANOVA and subject-ID probe BA.
 
-**C2 (differential benchmark inflation).** Subject-ID decodability from
-frozen features predicts ΔBA in between-subject benchmarks
-(Spearman ρ = 0.70, 95% CI [0.12, 0.98], n = 9) but is null in clean
-within-subject benchmarks (ρ ≈ 0, n = 6). This is the quantitative
-signature of subject-leakage transfer.
+**C2 (revised 2026-04-18 after literature audit + FT<LP evidence).**
+Two coordinated observations, both requiring subject-disjoint CV:
+
+(C2a) **Under subject-disjoint CV, full fine-tuning degrades balanced
+accuracy relative to frozen linear probing in most between-subject
+diagnostic benchmarks** (7/9 cells in our exp_30, ΔBA ∈ [−10.5, +4.2] pp).
+This replicates BENDR (Frontiers 2021, 4/5 datasets LOSO) and AdaBrain-
+Bench (2025, EEGPT on BCI-IV-2a cross-subject transfer: LP 47.9 vs
+FT 25.8), and is obscured in LaBraM/CBraMod/REVE headline tables
+because those papers use fixed single-split protocols with limited
+weight-init seeds and do not report LP vs FT side-by-side.
+
+(C2b) **The magnitude of this FT degradation is predicted by frozen
+subject-ID decodability.** In between-arm (n = 9): seed-robust
+Spearman ρ(subject_id_ba_lr, ΔBA) = +0.50, 95% CI [+0.03, +0.83] —
+cells with stronger subject encoding in frozen features degrade
+*less* under FT (or degrade to positive ΔBA in the extreme case of
+ADFTD/LaBraM). In within-strict arm (n = 6): ρ = +0.43, CI crosses 0
+(underpowered). Mechanism: subject-rich frozen representations give
+FT a structured landscape to project onto; subject-impoverished
+representations leave FT to drift / overfit.
+
+**What C2 is NOT claiming:**
+- Not claiming between-arm mean ΔBA > within-arm mean ΔBA (our data
+  reverse this; literature under apples-to-apples T3+T4 pairing has
+  a modest +11.7 vs +6.8 gap).
+- Not claiming subject leakage *inflates* FT gain under our CV
+  (we cut leakage; the mechanism under our protocol is
+  representation-quality buffering against FT degradation, not
+  shortcut exploitation). The *leakage-inflation claim* requires a
+  controlled stratified-vs-disjoint comparison (ADFTD stratified
+  ablation, path B in §8, if ever pursued).
+- Not claiming our FT pipeline failed. Our FT pipeline matches
+  published defaults; the FT<LP pattern under honest subject-CV is
+  what BENDR + AdaBrain-Bench already established and what most
+  FM papers' protocol choices structurally hide.
 
 **Dropped claims (relative to earlier v2 draft):**
 
@@ -119,14 +212,29 @@ signature of subject-leakage transfer.
           Could be condensed into §3.2 if space is tight.
 
 §4  Discussion
+    §4.0  Mechanism — correlation, not mean (added 2026-04-18)
+          Both arms show positive mean ΔBA; arms differ in *what
+          predicts* ΔBA. Between-arm FT gain is predicted by frozen
+          subject-ID decodability (ρ ≈ +0.50, seed-robust) while within-
+          arm FT gain is not (ρ attenuated, CI crosses 0 at n=6).
+          Interpretation: between-arm FT partly exploits subject
+          fingerprints as label shortcut (label ≡ subject); within-arm
+          FT learns legitimate task-discriminative features (label ⊥
+          subject). Chance-adjusted subject decodability is in fact
+          *higher* in within-arm on average (0.22 vs 0.14) — subject
+          signal is present everywhere, but only translates to FT gain
+          when design aligns subject with label.
     §4.1  Implications for EEG FM pretraining — motivates subject-
           invariant objectives (subject-adversarial loss, cross-subject
           contrastive, etc.)
     §4.2  Benchmark design recommendations — within-subject tasks as
           gold standard; between-subject benchmarks should report
           subject-ID decodability as leakage proxy
-    §4.3  Limitations (including C3 negative result — no within-arm
-          predictor at this N)
+    §4.3  Limitations
+          - C3 negative (no within-arm predictor at n=6)
+          - Mean ΔBA does not cleanly separate arms (reader intuition
+            from Fig 2 may mislead). Main figure (Fig 4) must clearly
+            show correlation story rather than magnitude story.
 
 §5  Appendix / Supplementary
     Buckets (final decision at paper-finalisation, not now):
