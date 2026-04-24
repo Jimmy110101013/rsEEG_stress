@@ -1,8 +1,15 @@
 # Related Work (Living Document)
 
-*Last updated: 2026-04-08. Major reframe after EEG-FM-Bench (Xiong et al. 2025) closest-prior pressure test: TDBRAIN fold-drift dilution is now the headline novelty; Stress and ADFTD are the framing endpoints. See §2.1 and §9.*
+*Last updated: 2026-04-19.*
 
-**2026-04-15 — R4 literature audit note.** External novelty audit (`docs/review_R4_literature.md`) confirms no 2024–2026 publication scoops either F-A (subject-dominance via variance decomposition) or F-C (model × dataset FT direction-flip taxonomy). **EEG-Bench (Scherer et al., arXiv:2512.08959, NeurIPS 2025)** is the single most important adjacent paper and now appears as a fourth independent clinical-EEG benchmark (§2.5). The November 2025 bioRxiv sample-size psychiatry paper (§2A below) is added as a direct anchor for the §8 power-floor framing, the NeurIPS 2025 EEG Foundation Challenge (§10) provides field-level endorsement of cross-subject clinical decoding as the open problem, and the Massive-SFT / Robustness-Tradeoff papers (§4.6–§4.7) provide cross-modality precedent for F-C. All five paper claims (F-A…F-E) remain defensible.
+**Current defensibility status after HP audit (2026-04-19)** — see `findings.md` top banner for full inventory.
+- **HP-safe** (pipeline independent of FT runs): F-A (variance decomposition, 18/18 subject > label), F-NEURO (spectral anchors on frozen reps), F-HHSA (raw EEG), F-E (classical RF), Frozen LP numbers.
+- **Pending sanity reproduction** (all depend on HP-contaminated exp_newdata FT): F-C (FT direction flip), F-D.2-4 (Stress FT, architecture ceiling, permutation null), ρ(subject_id_BA, ΔBA) correlation, mean ΔBA between/within.
+- **Crowded niches** (no longer novel — literature scooped): "FT underperforms under subject-level CV" (ICLR 2026 *Are EEG FMs Worth It?*, Dingkun *EEG-FM-Benchmark*, Xiong *EEG-FM-Bench*); reconstruction-objective critique (Laya, STELAR, EEGDM, NeuroRVQ); subject identity as strong FM signal (*Subject-Aware Contrastive*, TS4H NeurIPS 2025 — same empirical fact, opposite framing).
+
+**Open niche** (post-sanity-reproduction): quantitative mechanism linking subject-axis strength to FT behavior (requires HP-clean FT rerun to verify).
+
+**Framework precedents**: EEG-Bench (Scherer, arXiv:2512.08959, NeurIPS 2025 — §2.5), NeurIPS 2025 EEG Foundation Challenge (§10), bioRxiv 2025.11 sample-size psychiatry (§2A), Massive-SFT / Robustness-Tradeoff (§4.6–§4.7).
 
 ---
 
@@ -82,7 +89,19 @@
 - **Relevance**: Fourth independent clinical-EEG benchmark (alongside EEG-FM-Bench, AdaBrain-Bench, Brain4FMs) converging on "FMs are not universally superior on clinical cross-subject tasks." Does not preempt F-A (variance decomposition), F-C (direction-flipping FT), or F-D (Stress power-floor); strengthens F-B.
 - **Ref**: arXiv:2512.08959
 
-### 2.6 Recent EEG FM Reviews / Surveys
+### 2.7 "Are EEG Foundation Models Worth It?" (ICLR 2026, OpenReview)
+- **Scope**: 6-axis evaluation framework (accuracy, robustness, scaling, transfer, efficiency, task diversity); benchmarks multiple open-source FMs against compact NN decoders and classical (non-neural) baselines under strict LOSO zero-shot on diverse BCI tasks. Introduces own ST-EEGFormer (ViT + MAE, 8M segments) as control.
+- **Headline finding**: *"Linear-probed foundation models generally underperform across all protocols."* FT-FMs fail to beat compact NN or classical decoders on data-scarce BCI; no scaling law observed across neural decoders.
+- **Relevance**: Direct prior art for our "FT underperforms under subject-level CV" observation. They provide the *failure-surface* documentation; they do NOT attribute it to subject-identity dominance or quantify ρ(subject-decodability, ΔBA). Our mechanism claim remains distinct.
+- **Ref**: OpenReview forum id 5Xwm8e6vbh.
+
+### 2.8 EEG-FM-Benchmark (Dingkun et al., 2026)
+- **Scope**: 12 open-source FMs × 13 datasets × 9 paradigms, cross-subject LOSO vs within-subject few-shot comparison, full-FT vs head-only FT vs trained-from-scratch compact baselines.
+- **Status**: Diagnostic only; no proposed mechanism or solution. Distinct from EEG-FM-Bench arXiv:2508.17742 (Xiong et al., §2.1) — uses the same protocol scaffolding but a different dataset / model mix.
+- **Relevance**: Second independent benchmark confirming FT ≯ compact baselines under LOSO. Further tightens the "failure surface is already published" reality check.
+- **Ref**: GitHub `Dingkun0817/EEG-FM-Benchmark` (associated paper in preparation as of April 2026).
+
+### 2.9 Recent EEG FM Reviews / Surveys
 - **Kwon et al. 2026** — *Eur J Neurosci*, DOI 10.1111/ejn.70376. Review of EEG FMs toward unified representations; useful field-survey cite.
 - **"Foundation Models for EEG Decoding"** (PubMed 41145005) — recent review synthesis.
 - **"Inter- and Intra-Subject Variability in EEG: A Systematic Survey"** (arXiv:2602.01019, Feb 2026) — systematic review framing for the inter-subject variability problem our F-A quantifies.
@@ -145,16 +164,22 @@
   1. **Subject-level CE loss**: Average predictions across all segments from same subject, compute CE on the averaged prediction. Forces consistent per-subject predictions. Combined with sample-level CE: `L = α·L_sam + β·L_sub` (α=β=0.5)
   2. **Index group-shuffling**: Custom batching to guarantee ≥G samples per subject per batch (G=8 for FT), making subject-level loss meaningful
   3. **Multi-sampling segmentation**: Segment at multiple rates for multi-scale augmentation
-- **Evaluation**: Subject-independent train/val/test 6:2:2, 5 seeds (41–45) on fixed splits. NOT LOSO and NOT k-fold.
-- **vs LaBraM**: LEAD (1,186 hrs pretraining) beats LaBraM (2,000 hrs) — attributed to domain-focused pretraining + subject regularization
-- **Verified key numbers (Table 2, single-dataset training, ADFTD, 53,215 samples / 65 subjects)**:
-  - LaBraM sample-level: Acc 55.07, F1 71.03
-  - LaBraM subject-level: **Acc 57.14, F1 72.73** ← anchor for our ADFTD comparison
-  - (Earlier note in this doc claiming LaBraM F1 = 93.77% / AUROC 75% was incorrect — verified 2026-04-07 against LEAD arXiv v1 Table 2.)
-- **Our LaBraM-FT on same dataset**: Subject Acc 0.7538, F1 0.7541, BA 0.7521 (5-fold StratifiedGroupKFold) — slightly **above** LEAD's reported vanilla LaBraM, confirming our FT recipe is properly trained, not undertrained.
-- **TDBRAIN role in LEAD**: TDBRAIN (911 subjects) is used ONLY for self-supervised pre-training of LEAD, NOT as a downstream evaluation dataset. LEAD's 5 downstream datasets are ADFTD, BrainLat, CNBPM, Cognision-ERP, Cognision-rsEEG. **No published LaBraM-on-TDBRAIN-MDD-classification benchmark exists** in LEAD, EEG-FM-Bench (2508.17742), or AdaBrain-Bench (2507.09882, confirmed 2026-04-07).
-- **Handcrafted features**: Only as baseline (32 features → linear classifier, performs poorly)
-- **Relevance**: Their subject-level CE loss is directly applicable to our problem. Our global pooling (averaging epoch features) achieves a similar structural effect. Their gated temporal-spatial attention is analogous to CBraMod's criss-cross but with learnable fusion instead of concatenation
+- **Task**: 3-class HC vs AD vs FTD, 88 subjects / 167,083 samples. ADFTD is never reported as binary in this paper (binary AD/HC appears only for ADFSU, ADSZ, APAVA).
+- **Evaluation**: Subject-independent 8:1:1 train/val/test (Monte Carlo CV), 5 seeds (41–45). NOT LOSO, NOT k-fold.
+- **FT hyperparameters** (§3.1, unified across all 16 baselines including LaBraM/CBraMod): AdamW + CosineAnnealingLR, **lr=1e-4** (pre-training uses 2e-4), batch=512, up to 200 epochs with patience=15 on best sample-level F1.
+- **LaBraM checkpoint**: `labram-base.pth` from `935963004/LaBraM`. ~5.82M params. Paper adds Conv1D channel-mapping layer; other architecture default.
+- **LaBraM on ADFTD — reproduction targets (v4 Table 2 + Appendix G.1 Table 8)**:
+
+  | Level | Acc | F1 | AUROC | AUPRC |
+  |---|---|---|---|---|
+  | Sample-level | 77.00±3.76 | 75.64±4.68 | 91.22±2.72 | 84.75±4.41 |
+  | Subject-level | 92.00±7.48 | 91.14±8.64 | 93.77±6.16 | 88.78±10.19 |
+
+- **CBraMod on ADFTD (v4 Table 2)**: sample F1 68.33±4.53, AUROC 86.95±2.89; subject F1 82.21±6.30, AUROC 87.10±3.77.
+- **LEAD own result**: sample F1 81.01±5.02 / AUROC 94.03±1.33; subject F1 93.95±4.95 / AUROC 95.36±3.85.
+- **vs LaBraM**: LEAD (1,186 hrs pretraining) beats LaBraM (2,000 hrs) — attributed to domain-focused pretraining + subject regularization.
+- **TDBRAIN role**: used ONLY for LEAD self-supervised pre-training, NOT as downstream eval. LEAD's 5 downstream datasets are ADFTD, BrainLat, CNBPM, Cognision-ERP, Cognision-rsEEG. No published LaBraM-on-TDBRAIN-MDD benchmark in LEAD, EEG-FM-Bench, or AdaBrain-Bench.
+- **Relevance to us**: LEAD's subject-level CE loss and majority-vote aggregation define the community protocol. Their ADFTD numbers are our sanity reproduction target (`results/studies/sanity_lead_adftd/`, run 2026-04-19+).
 - **Ref**: arXiv:2502.01678
 
 ### 4.3 EEG-GraphAdapter (2024)
@@ -184,6 +209,13 @@
 ### 4.4c Li et al., "On the Robustness Tradeoff in Fine-Tuning" (ICCV 2025)
 - **One-liner**: Full fine-tuning systematically trades robustness against accuracy in vision models.
 - **Relevance**: Vision-domain analogue of our TDBRAIN active-erosion finding — FT can damage pretrained features even when downstream accuracy looks flat. Supports the generality of the erosion mode we document.
+
+### 4.6 Subject-Aware Contrastive Learning for EEG FMs (TS4H workshop, NeurIPS 2025)
+- **Scope**: Patch-based LBM-style transformer pretrained with **intra-subject / inter-session contrastive positives** (no augmentation). Same-subject patches are forced to cluster in embedding space. Compared to LaBraM under LP and full FT; evaluated via alignment, uniformity, smooth-effective-rank, plus downstream task BA.
+- **Framing (opposite of ours)**: **"Subject identity is signal, not confound."** They treat intra-subject regularity as the natural supervision signal for SSL and design pretraining to amplify it.
+- **Why critique is still defensible despite their embrace**: their application target is within-subject BCI (calibrate-then-deploy). For **cross-subject clinical screening** (our ADFTD / MDD / Stress target population — test subjects are new), subject-conditioned representations are the wrong inductive bias. Our Type-C claim is specifically about **cross-subject clinical deployment**, where subject-axis dominance becomes leakage, not signal.
+- **How to cite them**: corroborating evidence for the empirical fact (FM features are highly subject-decodable), paired with a principled objection on application domain. They validate our diagnostic; they do not pre-empt our prescription.
+- **Ref**: OpenReview forum id MdgBATPjEu (TS4H workshop, NeurIPS 2025, Sep 23 2025).
 
 ### 4.5 Huang, "Using Cluster Bootstrapping to Analyze Nested Data with a Few Clusters" (Educational and Psychological Measurement, 2018)
 - **Methodological claim**: For nested data (observations within clusters), the standard percentile bootstrap underestimates SE because it treats correlated observations as independent. The fix is to resample *clusters* with replacement and include all observations from each resampled cluster.
@@ -316,34 +348,23 @@ Young graduate students' brains may maintain stable resting-state EEG patterns e
 
 ## 9. Summary: Our Positioning
 
-The headline novelty is the **three modes of FT behavior** on resting-state and task-evoked EEG — label-signal injection / mild injection / active erosion — measured with two complementary metrics:
-1. **Representation-level**: pooled label fraction $SS_\text{label}/SS_\text{total}$ on the 200-d encoder output (paired matched-subsample resampling 100 draws/rung + subject-level label-permutation null).
-2. **Behavioral-level**: multi-seed subject BA via Frozen LP (LogisticRegression on cached features) vs canonical-recipe FT.
+> **⚠️ Superseded by Type C critique pivot (2026-04-18) + HP audit (2026-04-19).** The previous §9 content built a "three modes of FT behavior" taxonomy (ADFTD injection / TDBRAIN erosion / EEGMAT projection / Stress no-op) with hardcoded Δ label-fraction numbers (2.79→7.70%, 2.97→1.47%, 5.35→5.82%, etc.). **All of those numbers came from exp_newdata FT runs that are HP-contaminated** — see audit banner at the top of `findings.md`. Do not cite Δ label-fraction direction flips from this section until reproduction under per-FM official HP. Historical content trimmed 2026-04-19; retrieve from git if reviewer asks for the pre-audit framing.
 
-The taxonomy across four datasets (updated 2026-04-10 after Stress reclassification):
+### What remains defensible regardless of HP audit outcome
 
-| Mode | Dataset (n_rec / n_subj) | Label type | Representation Δ (frozen → FT) | Behavioral Δ (frozen LP → FT BA) | Representation behavior |
-|---|---|---|---|---|---|
-| **Injection** | ADFTD (195 / 65) | between-subject, strong EEG biomarker (theta/delta increase in AD) | 2.79% → 7.70% (**+5.22 to +5.68 pp N-invariant**) | 0.669 → 0.752 (**+8.3 pp**) | Clean label-signal injection at both metrics. The canonical success case. |
-| **Mild injection** | EEGMAT (72 / 36) | within-subject, rest vs arithmetic (classical cognitive-load biomarker) | 5.35% → 5.82% (≈ 0, crossed design) | 0.671 → 0.736 (**+6.5 pp**) | Representation unchanged but BA improves — FT re-shapes head/projection without rewriting backbone. |
-| **Silent erosion** | TDBRAIN (734 / 359) | between-subject, MDD (weak EEG biomarker, contested lit) | 2.97% → 1.47% (**−1.06 to −1.58 pp N-invariant**, opposite side of permutation null) | 0.679 → 0.681 (≈ 0) | Representation label-fraction drops 50% while BA is unchanged — classifier compensates in a linear projection the frozen representation already supplied. |
-| **Behavioral erosion** | Stress (70 / 17) | between-subject, DASS trait class (no accepted EEG biomarker) | **stale** — needs re-run under `--label dass` | 0.605 ± 0.030 → 0.443 ± 0.068 (**−16.2 pp**) | Frozen LP beats FT by 16 pp. Real FT is statistically indistinguishable from null (FT on shuffled labels: 0.497 ± 0.081, p(null ≥ real)=0.70). Full evidence: `results/studies/exp03_stress_erosion/`. |
+1. **Frozen representations are subject-dominated across 6 datasets × 3 FMs** (F-A; RSA 12/12, variance decomposition) — this does not depend on any FT.
+2. **Wang 90.47% Stress BA inflates under subject-level CV** — Frozen LP 0.605 and classical XGBoost 0.553 are our reproductions; these do not depend on FT HP.
+3. **Our evaluation is stricter than community** — subject-level 5-fold CV (vs most papers' predefined subject split × seeds) and recording-level pooled classification at LP (vs community per-window LP). Both direction flags ourselves as conservative, not optimistic.
+4. **Positioning vs EEG-FM-Bench**: their CKA/RSA is input-side, multi-task averaged, unsupervised; ours is output-side, label-aware, per-dataset (F-A). This contribution holds even if FT numbers change.
 
-**The headline correction (2026-04-08 evening, after the matched-subsample experiment):** the previous "dataset-size-dependent" framing of this taxonomy was wrong. At literally matched N=17 with nearly identical frozen baselines (ADFTD 6.50%, Stress 7.23%), ADFTD gains +5 pp from FT and Stress gains 0 pp. The three modes are properties of the *label biology*, not the training set size. The canonical "ADFTD ×2.76 rewrite" ratio is also N-inflated (the pooled-fraction denominator shrinks at small N) — at Stress-comparable N=17 the true ratio is 1.87×, and the **N-invariant additive +5 pp** is the honest effect size. Use the additive framing as the headline; the ratio framing should appear only at full N for literature comparison.
+### What depends on HP-clean FT reruns (currently stale)
 
-The TDBRAIN active-erosion finding is then the strongest leg of the stool: under permutation null, TDBRAIN's observed Δ doesn't merely fail to be positive — it sits on the *opposite* side of zero from where the null sits. FT is doing real damage to a label signal the frozen FM already carried.
+- Any FT-vs-Frozen ΔBA statement across our 6 datasets (formerly the paper's Type A / Type C headline evidence).
+- The three-modes FT direction taxonomy (injection / projection / erosion).
+- ρ(subject_id_BA, ΔBA) correlation — both the +0.50 between-arm and underpowered within-arm claims.
+- "Architecture-independent Stress ceiling" (F-D.3) at 0.52–0.58 across FMs.
 
-Reviewer-prior coverage: EEG-FM-Bench's CKA/RSA pipeline averages over multi-task and over folds, so neither the projection-only behavior on Stress + EEGMAT nor the active erosion on TDBRAIN is visible to it. Their gradient-mass observation ("backbone remains stable on pretrained-FT") is mechanistically consistent with our no-op result on Stress and EEGMAT but never quantified, label-aware, or stratified per-dataset, and they cannot see the ADFTD injection or the TDBRAIN erosion at all because their CKA pipeline is unsupervised and dataset-averaged.
-
-| Aspect | Field Status | Our Contribution |
-|--------|-------------|-----------------|
-| **FT representation evolution diagnostics** | EEG-FM-Bench tracks gradient mass (input-side) and CKA/RSA (unsupervised, multi-task averaged) | Pooled label fraction $SS_\text{label}/SS_\text{total}$ — output-side, label-aware, dataset-stratified, per-fold-aware. Sensitive to fold-drift dilution that CKA/RSA average out. |
-| **N-invariance of FT effect direction** | Field default: assume more data → cleaner adaptation (monotonic). | Three N-invariant modes: injection (ADFTD +5 pp stable across N), no-op (Stress/EEGMAT Δ ≈ 0), erosion (TDBRAIN −1.5 pp stable across N, on opposite side of permutation null). Verified by paired matched subsampling and label-permutation null. Inverts the scaling-laws expectation: TDBRAIN gets *worse* with FT regardless of how much data you give it. |
-| **FM on resting-state stress** | Only 1 paper (our reference, 90% BA with leakage) | First multi-FM comparison with rigorous subject-level CV (Stress is one of three case studies, not the headline) |
-| **Subject-level CV rigor for FMs** | Known to matter (Brookshire 2024); rarely applied to FMs | 20+ point inflation gap quantified across 3 FMs; subject-level cluster bootstrap and subject-level PERMANOVA used as the inference layer |
-| **Statistical rigor of representation analysis** | Naive percentile bootstrap on recording-level features is the field default | Cluster bootstrap over subjects (Huang 2018) + per-fold degeneracy guard for n_subjects_per_class < 2 |
-| **FM + classical features on resting-state clinical EEG** | Not directly compared | RF on hand-crafted band power matches FT LaBraM on ADFTD (0.753 vs 0.752); Stress comparison is **stale** under subject-dass (RF 0.666, FT 0.656) — both need re-run under per-rec DASS. |
-| **Young-brain stress ceiling explanation** | Hypothesized in neuro lit, not tested on EEG classification | Converging evidence: neural efficiency + allostatic regulation explains the ~65% Stress ceiling at the *signal* level, complementing the *representation* level diagnosis |
+See `findings.md` top-of-file audit for the full HP-contaminated vs HP-safe claim inventory.
 
 ### Key Papers to Cite (in order of centrality to the new framing)
 
@@ -382,3 +403,36 @@ Reviewer-prior coverage: EEG-FM-Bench's CKA/RSA pipeline averages over multi-tas
 - **Scope**: NeurIPS 2025 competition track explicitly framed around cross-subject generalization and psychopathology prediction (CBCL p-factor, internalizing, externalizing, attention).
 - **Relevance**: Strongest field-level marker that cross-subject + clinical psychopathology decoding is *the* open problem for EEG FMs. Provides external validation of the F-A (subject dominance) and F-D (Stress power-floor) framings our paper advances.
 - **Ref**: arXiv:2506.19141.
+
+---
+
+## 11. Pretraining-Objective Redesign (Alternatives to Masked Reconstruction)
+
+### 11.1 Laya — LeJEPA for EEG (arXiv, 2026)
+- **Diagnostic claim**: Reconstruction-based SSL biases representations toward **high-variance artifacts** rather than task-relevant neural structure.
+- **Method**: JEPA (Joint-Embedding Predictive Architecture) — abandons pixel/waveform reconstruction; predicts future features in latent space.
+- **Result**: Beats reconstruction baselines under LP at 10% pretraining data on EEG-Bench clinical tasks.
+- **Overlap with us**: *partial framing alignment* — "high-variance axis is a distractor" is adjacent to our "subject identity is the dominant variance axis". Laya does not name subject identity or quantify subject-level CV diagnostics; they are prescriptive, we are diagnostic.
+- **Ref**: arXiv (verify ID before citing — agent reported 2603.16281 which requires double-check).
+
+### 11.2 STELAR — Dual-Space Pretraining (OpenReview 2025/2026)
+- **Method**: Three-part loss — visible-token alignment (representation space), masked-token alignment, linear masked reconstruction (signal space). Encoder-centric with lightweight auxiliary heads.
+- **Result**: +5% LP over EEGPT-like baselines, ~50% fewer pretraining parameters.
+- **Overlap with us**: none on subject-identity dominance. Pure objective engineering.
+- **Ref**: OpenReview forum id WzVHEkp4cK.
+
+### 11.3 NeuroRVQ — Multi-Scale Tokenization (arXiv:2510.13068)
+- **Diagnostic claim**: Neural tokenizers fail to preserve high-frequency dynamics, limiting generative reconstruction fidelity; single-scale tokenization blurs oscillatory band structure.
+- **Method**: Multi-scale feature extractor + hierarchical RVQ codebooks + phase/amplitude-aware loss.
+- **Result**: +15% vs other large brain models on 5 BCI tasks.
+- **Overlap with us**: none. Token-engineering paper.
+- **Ref**: arXiv:2510.13068.
+
+### 11.4 EEGDM — Diffusion-Based EEG SSL (arXiv:2508.14086, Aug 2025)
+- **Method**: DDPM over state-space model backbone; latent-fusion transformer head. Abandons MAE entirely.
+- **Datasets**: TUEV (interictal discharges) + CHB-MIT (seizures).
+- **Overlap with us**: none. Clinical-event detection with a novel SSL objective; no subject-level CV diagnostic.
+- **Ref**: arXiv:2508.14086.
+
+### 11.5 Crowding Summary
+The "replace reconstruction with something else" move is **crowded as of April 2026**. Laya/STELAR/NeuroRVQ/EEGDM/STELAR collectively saturate the prescription space. Our paper should **not** make a prescriptive objective-redesign claim; we stay diagnostic and cite these as independent motivations for why subject-axis leakage matters upstream.

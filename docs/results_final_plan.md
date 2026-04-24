@@ -95,7 +95,7 @@ Each section function:
 - [ ] Verify vs ceiling table.tex classical + nonfm rows
 
 ### Phase 3 — FT provenance stamps (no new numbers)
-- [ ] For each existing `results/final/{cell}/{model}/ft/seed*/summary.json`: add sibling `provenance.json` with raw_dir, commit, HP recipe pulled from `config.json`
+- [ ] For each existing `results/final/{cell}/ft/{model}/seed*/summary.json`: add sibling `provenance.json` with raw_dir, commit, HP recipe pulled from `config.json`
 
 ### Phase 4 — FOOOF + band-stop snapshots
 - [ ] Copy `fooof_ablation/{cell}_probes.json` → `results/final/{cell}/fooof_ablation/probes.json` + provenance
