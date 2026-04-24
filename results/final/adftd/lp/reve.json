@@ -2,7 +2,7 @@
   "provenance": {
     "raw_dir": "results/studies/perwindow_lp_all/adftd",
     "snapshot_date": "2026-04-23",
-    "commit": "d1517f4",
+    "commit": "c98f965",
     "script": "scripts/analysis/rebuild_final_snapshots.py",
     "notes": "Per-window frozen LP, 8-seed sklearn LogReg + test-prob mean-pool."
   },
