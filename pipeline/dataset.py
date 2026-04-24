@@ -184,7 +184,10 @@ class WindowDataset(Dataset):
         for idx in indices:
             rec = base_dataset.records[int(idx)]
             cache_path = os.path.join(base_dataset.cache_dir, rec["cache_name"])
-            epochs = torch.load(cache_path, weights_only=True)  # (M, C, T)
+            if not os.path.exists(cache_path) and hasattr(base_dataset, "_preprocess"):
+                epochs = base_dataset._preprocess(rec)
+            else:
+                epochs = torch.load(cache_path, weights_only=True)  # (M, C, T)
 
             if label_override is not None:
                 label = int(label_override[int(idx)])
