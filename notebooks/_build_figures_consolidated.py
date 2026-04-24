@@ -344,9 +344,10 @@ save(fig, 'fig5a_psd_fooof_fit')
 # Per-panel independent x-axis keeps a single cell×cond outlier from squashing others.
 # State probe from FOOOF-ablation JSON; subject probe from new temporal-block protocol.
 FIG5B = r"""# Fig 5b — FOOOF ablation signature per FM (state × subject Δ BA scatter)
-fig, axes = plt.subplots(1, 3, figsize=(W_DOUBLE, W_SINGLE*0.9), sharey=True, sharex=False)
-markers = {'−aperiodic': 'o', '−periodic': 's'}
-COND_MAP = [('aperiodic_removed', '−aperiodic'), ('periodic_removed', '−periodic')]
+fig, axes = plt.subplots(1, 3, figsize=(W_DOUBLE, W_SINGLE*0.9), sharey=True, sharex=True)
+markers = {'remove aperiodic': 'o', 'remove periodic': 's'}
+COND_MAP = [('aperiodic_removed', 'remove aperiodic'),
+            ('periodic_removed',  'remove periodic')]
 
 for ax, fm in zip(axes, FMS):
     ax.axhline(0, color='k', lw=0.5)
@@ -369,15 +370,19 @@ for ax, fm in zip(axes, FMS):
     ax.set_xlabel('Δ Subject probe BA (pp)', fontsize=8)
     ax.tick_params(labelsize=7.5)
     ax.grid(True, ls=':', lw=0.3, alpha=0.5)
+    ax.set_xticks([-40, -20, 0, 20, 40])
+    ax.set_yticks([-10, -5, 0, 5, 10])
+    ax.set_xlim(-45, 45)
+    ax.set_ylim(-14, 14)
 
 axes[0].set_ylabel('Δ State probe BA (pp)', fontsize=8.5)
 
 ds_leg = [Line2D([], [], marker='o', ls='', color=DS_CMAP[d], markeredgecolor='k',
                   markersize=7, label=DS_SHORT[d]) for d in DS_PROBE]
 cond_leg = [Line2D([], [], marker='o', ls='', color='gray', markeredgecolor='k',
-                   markersize=7, label='−aperiodic'),
+                   markersize=7, label='remove aperiodic'),
             Line2D([], [], marker='s', ls='', color='gray', markeredgecolor='k',
-                   markersize=7, label='−periodic')]
+                   markersize=7, label='remove periodic')]
 fig.legend(handles=ds_leg + cond_leg, loc='lower center', ncol=6, fontsize=7.5,
            frameon=False, bbox_to_anchor=(0.5, -0.03))
 
