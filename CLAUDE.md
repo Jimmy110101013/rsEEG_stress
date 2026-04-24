@@ -10,6 +10,8 @@
 **Historical archive** (read-only): `docs/historical/` — prior drafts, reviews (R1–R4), pre-SDL strategy, `progress.md` legacy log, sdl_paper_draft v1/v2
 **Reference papers / specs**: `docs/reference/` (external PDFs — CbraMod, REVE, EEG-FM-Bench, Komarov, Wang 2025, etc.); `specs/` (HHT integration, normalization ablation — reference-only, never auto-loaded)
 
+> **Canonical results access**: paper figure/table builders and notebooks MUST read numbers through `from src import results` (see `src/results.py`), NOT by memorising filesystem paths. Schema spec + accessor contract: `results/final/README.md`.
+
 > **ID migration (2026-04-15)**: old `F01`–`F21` were consolidated into 5 paper claims (`F-A`…`F-E`) plus guardrails/notes. Each claim's `Absorbs:` line in `findings.md` lists the original F## IDs, so prior references resolve via that mapping.
 
 ---
@@ -63,13 +65,14 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
 | `src/model.py` | `DecoupledStressModel` (extract_pooled + classify) |
 | `src/variance_analysis.py` | Nested SS, mixed-effects, cluster bootstrap, PERMANOVA, label-subspace |
 | `src/wsci.py` | WSCI (Within-Subject Contrast Index) metric |
+| `src/results.py` | **Canonical results accessor**. Paper builders read numbers through `results.source_table(...)`, `results.lp_multiseed(...)`, `results.lp_stats_3seed(...)`, `results.ft_stats(...)`, `results.perm_null_summaries(...)`, `results.labram_ft_ba_null_matched(...)`. Module grows on demand — add a function when a builder needs one, not before. Path changes live here, callers unaffected. |
 
 **Scripts layout** (subdirectories under `scripts/`)
 | Subdirectory | Contents |
 |---|---|
-| `scripts/figures/` | Paper figure builders (`build_*.py`, ~35 scripts — current Fig 2..6 + appendix + legacy SDL builders under `_historical/`) |
+| `scripts/figures/` | Active paper figure builders: `build_fig2_2x2.py`, `build_fig3_perm_null_4panel.py`, `build_master_performance_table.py`, `build_paper_pdf.py` (4 files). Fig 4/5/6 + appendix figures produced by `notebooks/_build_figures_consolidated.py`. 23 pre-pivot SDL-era builders retired 2026-04-25 (available via `git log`). |
 | `scripts/hhsa/` | HHSA pipeline — cache, holospectra, analysis directions (9 scripts) |
-| `scripts/experiments/` | Experiment launchers — 14 `.py` orchestrators + 35 `.sh` chain drivers (perm-null, non-FM, FOOOF, final-FT, etc.) |
+| `scripts/experiments/` | Experiment launchers — `.py` orchestrators (`run_perm_null.py`, `run_hp_sweep.py`, `frozen_lp_perwindow_all.py` etc.) + 9 reusable `.sh` templates (`run_final_ft_*.sh`, `run_ft_winfeat_*.sh`, `run_variance_triangulation*.sh`, `snapshot_variance_triangulation.sh`). One-time exp chains retired 2026-04-25. |
 | `scripts/features/` | Feature extraction — frozen + FT (8 scripts) |
 | `scripts/analysis/` | Statistical analysis, PSD anchors, variance, WSCI, representation drift (~37 scripts) |
 
