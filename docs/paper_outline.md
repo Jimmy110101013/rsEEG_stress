@@ -287,7 +287,7 @@ TDBRAIN dropped from main text (duplicates ADFTD cell; retained as supplementary
 | Fig 3 | Fig 4.3 | §4.3 | Permutation-null density 4 cells | `paper/figures/fig3/fig3_honest_evaluation.{pdf,png}` | Existing — verify 4-cell extension |
 | Fig 4 (a/b/c) | Fig 4.4 | §4.4 | Within-subject LOO trajectory + direction consistency (EEGMAT + SleepDep) | `paper/figures/fig4/fig4{a,b,c}_*.{pdf,png}` | Existing — Stress/ADFTD excluded by design |
 | Fig 5a | Fig 4.5a | §4.5 | PSD + FOOOF fit 4 cells (shared loglog, aperiodic + periodic overlay) | `paper/figures/fig5/fig5a_psd_fooof_fit.{pdf,png}` | ✅ |
-| Fig 5b | Fig 4.5b | §4.5 | FOOOF ablation Δ BA — 1×2 grouped bars (state + subject probes, 4 cells × 3 FMs × 2 conds) | `paper/figures/fig5/fig5b_fooof_ablation_bars.{pdf,png}` | ✅ rebuilt 2026-04-24 with temporal-block subject probe |
+| Fig 5b | Fig 4.5b | §4.5 | FOOOF ablation scatter — 3 per-FM panels (state vs subject Δ BA), circle = −aperiodic, square = −periodic, line per cell | `paper/figures/fig5/fig5b_fooof_scatter.{pdf,png}` | ✅ rebuilt 2026-04-25 with temporal-block subject probe (4-cell uniform, per-FM independent x-axis) |
 | Fig 5c | Fig 4.5c | §4.5 | Band-stop cosine distance per FM (3-panel strip × 4 cells × 4 bands) | `paper/figures/fig5/fig5c_band_stop.{pdf,png}` | Existing |
 
 Note: **Fig 1 reserved for a planned pipeline/teaser schematic** (data → 2×2 cell assignment → diagnostic toolkit → per-cell verdict); not yet built. Benchmark landscape (setup, §4.1) is carried by Tab 1 only — no standalone figure.
