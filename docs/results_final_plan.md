@@ -112,8 +112,9 @@ Each section function:
 - [ ] Build `tab1_benchmark.json` combining all 4 cells' summary numbers (used by ceiling table + master_results_table)
 
 ### Phase 7 — Docs integration
-- [ ] Update `scripts/figures/build_frozen_vs_ft_table.py` to read from `results/final/{cell}/lp,ft/` instead of scattered paths
-- [ ] Update `scripts/figures/build_fig2_2x2.py`, `build_fig3_perm_null_4panel.py`, etc., similarly — one script at a time
+- [x] `scripts/figures/build_frozen_vs_ft_table.py` — **retired 2026-04-25** (v1 of master_performance_table; deleted alongside 22 other dead SDL-era builders)
+- [x] `build_fig2_2x2.py`, `build_fig3_perm_null_4panel.py`, `build_master_performance_table.py` migrated to `src.results.*` accessors (2026-04-25)
+- [ ] `notebooks/_build_figures_consolidated.py` (fig4/5/6 + figA1/B1/B2) — pending migration
 - [ ] Add a row to `docs/paper_experiments_index.md` for each `results/final/` path
 
 ### Phase 8 — Supersession stubs

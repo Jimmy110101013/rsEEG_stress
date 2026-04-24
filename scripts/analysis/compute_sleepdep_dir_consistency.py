@@ -1,11 +1,11 @@
 """Compute SleepDep within-subject direction-consistency for Fig 4 trajectory row.
 
-Matches EEGMAT definition (scripts/figures/build_within_subject_supplementary.py):
-direction per subject = (x_sleep_deprived - x_rested) / ||.||, then mean pairwise
-cosine similarity across subjects = `dir_consistency`.
+Direction per subject = (x_sleep_deprived - x_rested) / ||.||, then mean
+pairwise cosine similarity across subjects = `dir_consistency`. (Same
+definition as EEGMAT uses via `scripts/analysis/sleepdep_within_subject.py`.)
 
 Writes into results/final/source_tables/sleepdep_within_subject.json.
-Consumed by Fig 4 build script.
+Consumed by Fig 4 via notebooks/_build_figures_consolidated.py.
 """
 from __future__ import annotations
 import json

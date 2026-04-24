@@ -92,13 +92,13 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 ## §4.4 Within-subject direction consistency — Fig 4
 
 **Figure**: `paper/figures/fig4/fig4{a,b,c}_*.{pdf,png}` — canonical per-panel outputs (fig4a_eegmat_trajectory, fig4b_sleepdep_trajectory, fig4c_dir_consistency). Hand-composited master at `paper/figures/main/Fig4_dir_consist.png`.
-**Build script**: `scripts/figures/build_eegmat_within_subject_figure.py` + `scripts/figures/build_within_subject_supplementary.py`
+**Build script**: `notebooks/_build_figures_consolidated.py` (execute cells labelled FIG4A/B/C in `notebooks/figures_consolidated.ipynb`). Legacy per-panel builders (`build_eegmat_within_subject_figure.py`, `build_within_subject_supplementary.py`) retired 2026-04-25.
 **Scope**: EEGMAT + SleepDep **only** (Stress / ADFTD excluded by design — no within-subject label contrast)
 
 | Cell | Source JSON | Script | Status |
 |---|---|---|---|
-| EEGMAT | `paper/figures/_historical/source_tables/f14_within_subject.json` | `scripts/analysis/sleepdep_within_subject.py` (misnamed — applies to both) | ✅ |
-| SleepDep | `paper/figures/_historical/source_tables/sleepdep_within_subject.json` | `scripts/analysis/sleepdep_within_subject.py` | ✅ |
+| EEGMAT | `results/final/source_tables/f14_within_subject.json` | `scripts/analysis/sleepdep_within_subject.py` (misnamed — applies to both) | ✅ |
+| SleepDep | `results/final/source_tables/sleepdep_within_subject.json` | `scripts/analysis/compute_sleepdep_dir_consistency.py` | ✅ |
 | ADFTD | — | — | N/A by design |
 | Stress | — | — | N/A by design |
 
