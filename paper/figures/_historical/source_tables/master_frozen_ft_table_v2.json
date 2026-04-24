@@ -1,0 +1,136 @@
+{
+  "version": "v2",
+  "date": "2026-04-20",
+  "protocol_notes": {
+    "frozen_lp": "per-window LogReg (liblinear, 1-99pct clip, StandardScaler), recording-level StratifiedGroupKFold(5) by patient_id, window-level train, mean-pooled probs per recording \u2192 0.5 threshold, 8 seeds",
+    "fine_tuning": "per-FM canonical recipe (LaBraM: lr=1e-5, encoder_lr_scale=0.1, zscore; CBraMod: lr=1e-5, elrs=0.1, none; REVE: lr=3e-5, elrs=0.1, none). All datasets use the same per-FM recipe (no per-dataset HP tuning). 3 seeds (42, 123, 2024).",
+    "stress_labram_source": "exp03_stress_erosion/ft_real (canonical lr=1e-5), NOT hp_sweep best-HP (lr=1e-4). Matches the per-FM recipe used on ADFTD/TDBRAIN/EEGMAT."
+  },
+  "models": [
+    "labram",
+    "cbramod",
+    "reve"
+  ],
+  "datasets": [
+    "stress",
+    "adftd",
+    "tdbrain",
+    "eegmat"
+  ],
+  "table": {
+    "labram": {
+      "stress": {
+        "frozen_mean": 0.5245535714285714,
+        "frozen_std": 0.03985841834693814,
+        "frozen_n": 8,
+        "ft_mean": 0.4434333333333333,
+        "ft_std": 0.08295868449615947,
+        "ft_n": 3,
+        "delta_mean": -0.0811202380952381
+      },
+      "adftd": {
+        "frozen_mean": 0.652558269476373,
+        "frozen_std": 0.01811420002955526,
+        "frozen_n": 8,
+        "ft_mean": 0.7086,
+        "ft_std": 0.013721880337621414,
+        "ft_n": 3,
+        "delta_mean": 0.05604173052362704
+      },
+      "tdbrain": {
+        "frozen_mean": 0.751550033244681,
+        "frozen_std": 0.010953690828508606,
+        "frozen_n": 8,
+        "ft_mean": 0.6645666666666666,
+        "ft_std": 0.044658071312287266,
+        "ft_n": 3,
+        "delta_mean": -0.08698336657801431
+      },
+      "eegmat": {
+        "frozen_mean": 0.736111111111111,
+        "frozen_std": 0.024622368345219983,
+        "frozen_n": 8,
+        "ft_mean": 0.7314666666666666,
+        "ft_std": 0.021232600719962035,
+        "ft_n": 3,
+        "delta_mean": -0.004644444444444451
+      }
+    },
+    "cbramod": {
+      "stress": {
+        "frozen_mean": 0.4296875,
+        "frozen_std": 0.032522383803324256,
+        "frozen_n": 8,
+        "ft_mean": 0.5476333333333333,
+        "ft_std": 0.03136021896182062,
+        "ft_n": 3,
+        "delta_mean": 0.1179458333333333
+      },
+      "adftd": {
+        "frozen_mean": 0.5697038633461047,
+        "frozen_std": 0.02968930978376754,
+        "frozen_n": 8,
+        "ft_mean": 0.5372,
+        "ft_std": 0.0265531542382445,
+        "ft_n": 3,
+        "delta_mean": -0.03250386334610467
+      },
+      "tdbrain": {
+        "frozen_mean": 0.5245740525265957,
+        "frozen_std": 0.022279542292665027,
+        "frozen_n": 8,
+        "ft_mean": 0.48793333333333333,
+        "ft_std": 0.013615187598168953,
+        "ft_n": 3,
+        "delta_mean": -0.036640719193262394
+      },
+      "eegmat": {
+        "frozen_mean": 0.7222222222222221,
+        "frozen_std": 0.02227177015936872,
+        "frozen_n": 8,
+        "ft_mean": 0.6204,
+        "ft_std": 0.057814271594477426,
+        "ft_n": 3,
+        "delta_mean": -0.10182222222222215
+      }
+    },
+    "reve": {
+      "stress": {
+        "frozen_mean": 0.4408482142857143,
+        "frozen_std": 0.021837874576867276,
+        "frozen_n": 8,
+        "ft_mean": 0.5773666666666667,
+        "ft_std": 0.05075995797213918,
+        "ft_n": 3,
+        "delta_mean": 0.1365184523809524
+      },
+      "adftd": {
+        "frozen_mean": 0.6519795657726692,
+        "frozen_std": 0.027449873054566358,
+        "frozen_n": 8,
+        "ft_mean": 0.6577333333333334,
+        "ft_std": 0.03017189641592546,
+        "ft_n": 3,
+        "delta_mean": 0.005753767560664147
+      },
+      "tdbrain": {
+        "frozen_mean": 0.5192175033244681,
+        "frozen_std": 0.021947852128572157,
+        "frozen_n": 8,
+        "ft_mean": 0.4883333333333333,
+        "ft_std": 0.019154459881012897,
+        "ft_n": 3,
+        "delta_mean": -0.030884169991134858
+      },
+      "eegmat": {
+        "frozen_mean": 0.7326388888888888,
+        "frozen_std": 0.020667328031745674,
+        "frozen_n": 8,
+        "ft_mean": 0.7268333333333333,
+        "ft_std": 0.03498089955008781,
+        "ft_n": 3,
+        "delta_mean": -0.005805555555555508
+      }
+    }
+  }
+}

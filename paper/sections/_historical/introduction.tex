@@ -1,0 +1,77 @@
+\section{Introduction}
+\label{sec:intro}
+
+Foundation models (FMs) pretrained on large unlabelled EEG corpora have
+recently reported strong performance on downstream clinical tasks
+\citep{labram2024,cbramod2025,reve2025,kauffmann2025critique}. A
+representative claim comes from Wang et al.\ \citep{wang2025stress},
+who report $0.9047$ balanced accuracy (BA) on the Komarov--Ko--Jung
+resting-state stress dataset \citep{komarov2020stress} ---
+17 subjects, 92 recordings, per-recording DASS-21 self-reports.
+Independent EEG FM
+benchmarks~\citep{brain4fms2026,eegfmbench2025,adabrain2025,eegbench2025},
+meanwhile, converge on the empirical observation that FMs do not
+consistently outperform simpler models on cross-subject clinical
+tasks. We ask \emph{when} an EEG FM claim on a small clinical cohort
+should be expected to hold. Our contribution is not a new
+architecture, a new loss, or a new dataset, but a \emph{diagnosis}:
+frozen FM representations overwhelmingly encode subject identity;
+under subject-respecting evaluation, the Wang headline is
+attenuated to a $0.52$--$0.58$ band shared by seven architectures
+spanning five orders of magnitude in parameter count; and a
+controlled paired comparison isolates the operative variable as the
+within-subject neural contrast strength of the target label, not
+model capacity.
+
+We call this pattern \textbf{Subject-Dominance Limits (SDL)}: when the
+downstream label corresponds to a within-subject neural contrast that
+is strong relative to subject-level representational variance, FM
+fine-tuning projects the label variance onto an otherwise
+subject-dominated representation and delivers measurable rescue.
+When the neural contrast is weak or absent, no architecture available
+to us escapes the subject-dominance ceiling. SDL supplies the
+mechanistic layer under the aggregate benchmark observation.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/main/fig_sdl_spectrum.pdf}
+\caption{\textbf{SDL Spectrum.} Subject-level fine-tuned balanced
+  accuracy across datasets ordered by within-subject neural-contrast
+  anchor strength, the operative axis of the SDL diagnostic. Bounded
+  regime (left, yellow): UCSD Stress per-recording DASS classification
+  and within-subject longitudinal DSS classification, both with no
+  published per-recording within-subject EEG correlate. Intermediate
+  regime (centre, grey): TDBRAIN MDD vs HC --- group-level alpha
+  asymmetry and theta-power literature exists but no robust
+  within-subject per-recording correlate, and three FMs span 19\,pp.
+  Anchored regime (right, green): EEGMAT rest vs mental arithmetic,
+  anchored by Klimesch alpha desynchronisation. Outlier (left,
+  detached): ADFTD AD vs HC --- a cross-subject categorical label
+  with established group-level alpha-slowing signature, included
+  here only to mark its position outside the within-subject SDL
+  scope. Markers are LaBraM (\textcolor{red!80!black}{$\bullet$}),
+  CBraMod (\textcolor{blue!70!black}{$\blacksquare$}), and REVE
+  (\textcolor{green!50!black}{$\blacktriangle$}). Reference lines:
+  chance ($0.50$, dashed) and best class-balanced classical baseline
+  on UCSD Stress ($0.55$, dotted).}
+\label{fig:sdl_spectrum}
+\end{figure}
+
+If the failure locus is contrast strength rather than model capacity,
+the natural next step is to ask \emph{how to decide, before running a
+benchmark, whether a target clinical task will admit FM rescue}. We
+propose a \emph{pre-benchmark diagnostic question}: \emph{does the
+label have a within-subject neural contrast in the published
+neuroscience literature?} If no independent evidence exists for such
+a contrast, reported subject-level benchmarks should be interpreted
+as bounded by the subject-dominance ceiling --- regardless of how
+large the pretrained model or how careful the fine-tuning recipe ---
+and the reader should expect compact from-scratch baselines to match
+or exceed the FM result.
+
+Section~\ref{sec:results} presents four experimental chapters
+delivering the SDL diagnosis --- variance decomposition of frozen FM
+representations, the Wang-protocol audit, the paired within-subject
+contrast experiment, and the architecture-independence check ---
+followed by the pre-benchmark contrast-anchoring protocol in
+Sec.~\ref{sec:discussion}.

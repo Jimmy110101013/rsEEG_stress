@@ -1,23 +1,19 @@
-% Main LaTeX entry point.
-% Narrative source: docs/paper_narrative_zh.md
-% Strategy: docs/paper_strategy.md
-% Findings (F01-F20): docs/findings.md
+% SDL Paper main entry — 2×2 factorial framing (pivot 2026-04-21)
+% Outline: docs/paper_outline.md
+% Master results table: docs/master_results_table.md
 %
-% Target venue: IEEE TNSRE (primary). Fallback: J. Neural Eng, TMLR.
-% Current state: outlines only; prose TBD after advisor alignment on D1/D2.
+% Target venue: Journal of Neural Engineering (JNE, IOP).
+% Companion preprint: TMLR. Fallback: JBHI → J. Neuroscience Methods.
 
 \documentclass{article}
 \usepackage{arxiv}
 \usepackage{booktabs}
- \usepackage{multirow}
+\usepackage{multirow}
 \usepackage{graphicx}
 \usepackage{amsmath}
-\usepackage{placeins}  % \FloatBarrier — keeps floats inside their section
-\usepackage{xcolor}    % colored markers in fig captions
+\usepackage{placeins}
+\usepackage{xcolor}
 
-% Loosen LaTeX's default float-placement parameters so figures/tables
-% don't get queued up at the end of the document. Defaults are too
-% conservative for figure-heavy single-column drafts.
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\bottomfraction}{0.8}
 \renewcommand{\textfraction}{0.07}
@@ -26,42 +22,41 @@
 \setcounter{bottomnumber}{2}
 \setcounter{totalnumber}{5}
 
-\title{Subject Dominance Limits: A Mechanistic Diagnostic \\
-       for EEG Foundation Models}
+\title{A \(2\!\times\!2\) Factorial Characterisation of EEG Foundation
+       Model Behaviour on Small-\(N\) Clinical Resting-State Cohorts}
 
 \author{%
-  Jimmy Lin\thanks{Corresponding author. \texttt{linjimmy1003.md10@nycu.edu.tw}} \\
-  Affiliation School of Medicine National Yang Ming Chiao Tung University Taipei, Taiwan\\
+  Jimmy Lin\thanks{Corresponding author.
+    \texttt{linjimmy1003.md10@nycu.edu.tw}} \\
+  School of Medicine, National Yang Ming Chiao Tung University, Taipei, Taiwan \\
   \and
   Tzyy-Ping Jung \\
-  Swartz Center for Computational Neuroscience, University of California, San Diego, La Jolla, CA 92037, USA
+  Swartz Center for Computational Neuroscience,
+  University of California, San Diego, La Jolla, CA 92037, USA
 }
 
-\def\headeright{Preprint --- draft 2026-04-15 (SDL)}
+\def\headeright{Preprint --- draft 2026-04-22 (2\(\times\)2 pivot)}
 
 \begin{document}
 \maketitle
 
-\input{sections/abstract}
+% \input{sections/abstract}
 \input{sections/introduction}
 \FloatBarrier
+
 \input{sections/related_work}
 \FloatBarrier
 \input{sections/methods}
 \FloatBarrier
-\input{sections/results}
-\FloatBarrier
-\input{sections/discussion}
-\FloatBarrier
-\input{sections/limitations}
-\FloatBarrier
-\input{sections/conclusion}
-\FloatBarrier
+% \input{sections/results}
+% \FloatBarrier
+% \input{sections/discussion}
+% \FloatBarrier
+% \input{sections/limitations}
+% \FloatBarrier
+% \input{sections/conclusion}
+% \FloatBarrier
 
 \bibliography{references}
-
-\input{sections/appendix_psd_anchor}
-\input{sections/appendix_adftd_split}
-\input{sections/appendix_perm_null}
 
 \end{document}

@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\caption{Benchmarks excluded from Table~\ref{tab:benchmark_gap} because the source split protocol is stratified, subject-dependent, or unspecified.}
+\label{tab:excluded}
+\begin{tabular}{lllc}
+\toprule
+Benchmark & Source & Reported split & Reason \\
+\midrule
+ADFTD (3-class) & EEG-FM-Bench & Stratified 70/15/15 & Subject leakage \\
+TUEV & EEG-FM-Bench & Stratified 80/10/10 & Subject leakage \\
+Mimul-11 & EEG-FM-Bench & Stratified 76/12/12 & Subject leakage \\
+MentalArithmetic & EEG-FM-Bench & Stratified 72/14/14 & Subject leakage \\
+TUSL & EEG-FM-Bench & Stratified & Subject leakage \\
+SEED / SEED-V & EEG-FM-Bench & Subject-dependent & Trial leakage \\
+Mumtaz2016 (MDD) & CBraMod & Unspecified & Ambiguous split \\
+REVE Table~2/4 rows & REVE & ``same as earlier'' & Ambiguous split \\
+\bottomrule
+\end{tabular}
+\end{table}

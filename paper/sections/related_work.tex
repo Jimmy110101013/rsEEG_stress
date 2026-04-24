@@ -1,139 +1,114 @@
 \section{Related Work}
 \label{sec:related}
 
-\subsection{EEG Foundation Models and the cross-subject clinical
-  challenge}
-The past two years have seen the emergence of large EEG foundation
-models pretrained on aggregated public corpora: LaBraM
-\citep{labram2024} (vector-quantised neural tokenizer,
-$\sim\!100$\,M parameters), CBraMod \citep{cbramod2025} (criss-cross
-attention, $\sim\!100$\,M parameters), REVE \citep{reve2025} (linear
-patch embedding, $\sim\!1.4$\,B parameters), and a growing family of
-encoder variants surveyed in recent reviews. Each reports competitive
-or state-of-the-art performance on selected downstream tasks ---
-typically sleep staging, seizure detection, or event-related
-potentials. Performance on \emph{cross-subject affective and clinical
-state prediction} has been more mixed.
+\paragraph{EEG foundation models.}
+Three open-weight EEG foundation models anchor our evaluation.
+\textbf{LaBraM} \citep{labram2024} is a ViT with
+channel-position embeddings over the 10--20 system and a vector-quantised
+tokenizer, pretrained with masked patch prediction on roughly 2{,}000
+hours of mixed EEG. \textbf{CBraMod} \citep{cbramod2025} replaces
+single-stream attention with a criss-cross transformer that factorises
+spatial and temporal attention, and uses a CNN-plus-FFT spectral patch
+embedding; the encoder is pretrained on TUEG with masked patch
+modelling. \textbf{REVE} \citep{reve2025} is a ViT with a 4D Fourier
+positional encoding pretrained by masked autoencoding on $25{,}000$
+subjects across heterogeneous montages. The three backbones span
+complementary design choices --- tokenization strategy (VQ vs.\
+continuous), attention factorisation, and pretraining scale --- and
+have each been reported to achieve strong downstream performance on
+event-related EEG \citep{eegfmbench2025,adabrain2025}. They also have
+materially different input assumptions: LaBraM expects z-scored
+inputs, whereas CBraMod and REVE are calibrated to raw microvolt-scale
+signals. This per-model input convention is neither documented in
+aggregate benchmarks nor invariant to preprocessing, and we will show
+in Sec.~\ref{sec:results} that it interacts with causal anchor
+ablation in a way that would be invisible under a single global
+normalisation.
 
-Four recent large-scale benchmarks have independently stress-tested FM
-claims under strict cross-subject evaluation. Brain4FMs
-\citep{brain4fms2026}, EEG-FM-Bench \citep{eegfmbench2025}, and
-AdaBrain-Bench \citep{adabrain2025} each report settings where current
-FMs fail to outperform classical pipelines or compact from-scratch
-models. Most directly relevant is EEG-Bench \citep{eegbench2025},
-which covers 14 datasets $\times$ 11 clinical tasks (epilepsy,
-schizophrenia, Parkinson, OCD, TBI) under strict cross-subject splits
-and concludes that ``while foundation models achieve strong
-performance in certain settings, simpler models often remain
-competitive, particularly under clinical distribution shifts.'' Our
-work complements these benchmark audits by providing a
-\emph{mechanistic} explanation for the observed pattern rather than a
-further benchmark enumeration: we decompose the subject-versus-label
-variance structure of FM representations, conduct a controlled paired
-within-subject experiment that isolates contrast strength as the
-operative variable, and confirm architecture-independence of the
-ceiling on a single small clinical dataset where seven architectures
-converge. Kauffmann et al.\ \citep{kauffmann2025critique} present the
-most explicit position-paper-style critique of EEG FM progress to
-date, noting that ``linear probing results were relatively worse''
-than full fine-tuning and that ``general time-series foundation models
-sometimes outperformed EEG-FMs'' --- observations consistent with our
-finding that fine-tuning acts as \emph{projection} onto
-subject-dominated axes rather than representation rewrite.
+\paragraph{Subject leakage and evaluation protocols.}
+A distinct line of work has audited the evaluation protocols under
+which EEG deep-learning results are reported. Large-scale audits have
+established that segment-based or trial-level cross-validation in
+clinical EEG inflates accuracy by exposing models to segments from the
+same subject at train and test time
+\citep{brookshire2024leakage,smalln2025biorxiv}. Subject-disjoint
+cross-validation is increasingly adopted as the primary protocol, and
+benchmark efforts such as EEG-FM-Bench \citep{eegfmbench2025},
+AdaBrain-Bench \citep{adabrain2025}, EEG-Bench
+\citep{eegbench2025}, and Brain4FMs \citep{brain4fms2026} enforce some
+form of cross-subject splitting. These audits establish \emph{that}
+subject leakage inflates reported numbers and document the size of the
+inflation; they do not predict, from dataset metadata alone, which
+datasets will collapse and which will retain a signal once leakage is
+removed. Our $2\times 2$ factorial takes the subject-disjoint
+protocol as the starting point and asks a complementary
+question --- under an already-honest protocol, which structural
+properties of a dataset (subject relation of the label, linear-probe
+separability) predict whether FM features carry a usable signal at
+all.
 
-The cross-subject psychopathology decoding problem has also been
-explicitly elevated to competition-track status by the EEG Foundation
-Challenge 2025 \citep{eegchallenge2025}, whose explicit framing
-positions cross-subject + clinical psychopathology prediction as
-\emph{the} open problem for this field. This motivates the clear
-pre-benchmark diagnostic protocol our paper supplies.
+\paragraph{Neural anchors for clinical rsEEG labels.}
+A parallel neurophysiological literature asks which spectral and
+band-specific features carry trait- or state-level clinical signal
+in resting-state EEG. Classical oscillatory accounts link theta and
+alpha rhythms to cognitive and attentional state
+\citep{klimesch1999,klimesch2012update,pfurtscheller1979}, and more
+recent work has quantified the discriminative power of band-ratio
+features for cognitive stress, typically finding that a handful of
+scalar ratios (theta/alpha ratio, frontal alpha asymmetry) carry most
+of the classifiable variance in cross-subject designs. The neural
+efficiency and allostatic regulation literatures further motivate a
+ceiling argument for trait-like resting-state paradigms in young,
+high-cognitive-reserve cohorts \citep{lovibond1995}. These works
+characterise \emph{signal-side} anchors --- which band or ratio
+discriminates --- but do not ask the downstream question of whether
+a pretrained FM's representation has actually learned that anchor.
+Our causal anchor ablation (Sec.~\ref{sec:results}) operationalises
+this check by intervening on the FOOOF-parameterised aperiodic
+$1/f$ background \citep{donoghue2020fooof} and on narrow-band
+power independently, and reporting which ablation collapses each
+FM's probe.
 
-\subsection{Subject leakage and subject-level cross-validation}
-The systematic impact of subject leakage on EEG deep learning
-performance has been documented for nearly a decade
-\citep{roy2019review,brookshire2024leakage}. Brookshire et al.\
-\citep{brookshire2024leakage} is the current canonical reference for
-trial-level vs subject-level CV gap quantification in translational
-EEG deep learning. Our Wang et al.\ \citep{wang2025stress}
-re-analysis is, to our knowledge, the first independent subject-level
-audit of a claimed ``EEG FM beats classical stress classification''
-result; we find that a single protocol correction accounts for the
-majority of the reported gap.
+\paragraph{Aperiodic $1/f$ activity as subject identity signal.}
+A recent strand of work has drawn attention to the aperiodic $1/f$
+component of the EEG power spectrum, parameterised separately from
+periodic peaks by FOOOF \citep{donoghue2020fooof}. Aperiodic slope
+and offset are stable within an individual across recording sessions
+and carry idiosyncratic information that distinguishes subjects
+independently of task-evoked oscillations, paralleling the broader
+observation that functional-connectivity patterns fingerprint
+individuals \citep{finn2015,campisi2014,marcel2007}. At the
+representation level, SSL-pretrained EEG backbones have been shown to
+encode strong subject identity --- a property that has been framed as
+useful signal for within-subject BCI calibration, where
+intra-subject regularity is the target \citep{multidataset2025},
+but which behaves as a confound for cross-subject clinical
+screening. Our work treats this asymmetry explicitly: we use
+FOOOF-based aperiodic ablation not as a preprocessing step but as an
+intervention whose purpose is to ask whether each FM's downstream
+probe is anchored on the $1/f$ axis, on periodic peaks, on broadband
+combinations of the two, or on no recoverable spectral anchor.
 
-\subsection{Statistical power and small-$N$ reliability in EEG}
-The reliability of small-$N$ deep learning findings on EEG has
-recently been quantified at unprecedented scale. A multisite
-psychiatry study of $N = 2{,}874$ resting-state EEG recordings
-\citep{smalln2025biorxiv} concludes that ``results from small samples
-were unstable, with inflated and highly variable effect sizes,''
-converging only at large $N$. This provides the statistical-power
-backdrop against which our UCSD Stress (70 rec / 14 positive) audit
-operates: any claim at this cohort size is fragile by construction,
-and our permutation-null analysis quantifies this fragility directly.
-
-\subsection{Fine-tuning dynamics and cross-modality precedents}
-Our observation that FM fine-tuning acts as \emph{projection} rather
-than \emph{rewrite} on EEG downstream tasks has cross-modality
-analogues in recent large-scale language and vision work. Chen et al.\
-\citep{chen2025sft} (757 fine-tuned models $\times$ 10 base
-architectures $\times$ 10 datasets) report that ``the inductive biases
-of the base model outweigh the specific SFT corpus in determining the
-final representation'' --- a cleaner LLM-scale instantiation of the
-same phenomenon. In the vision domain \citep{li2025robustness}
-document an analogous erosion pattern under fine-tuning. For EEG
-emotion recognition, \citep{multidataset2025} proposes a cross-dataset
-covariance-alignment loss that partially mitigates the inter-subject
-variability problem by design; our contribution is complementary ---
-we \emph{diagnose} the structural problem, whereas such methods
-\emph{propose} solutions that future work may test against our SDL
-diagnostic.
-
-\subsection{Cognitive-load alpha desynchronisation}
-The neurophysiological basis for distinguishing EEGMAT (rest vs
-mental arithmetic) from UCSD Stress (DASS state) as targets for
-within-subject FM evaluation rests on decades of oscillatory EEG
-literature. Klimesch \citep{klimesch1999} established alpha
-desynchronisation as the canonical cognitive-load signature;
-Pfurtscheller and Aranibar \citep{pfurtscheller1979} provided the
-event-related desynchronisation framework. EEGMAT rest vs arithmetic
-produces a within-subject effect that is robust, spectrally localised
-to alpha, and reliably induced across participants. By contrast, no
-published EEG literature establishes a per-recording within-subject
-correlate of DASS-21 or the Daily Stress Scale (DSS) at the resolution
-used in the Wang et al.\ benchmark. This distinction --- independent
-of any FM analysis --- is what our paired experiment operationalises.
-
-\subsection{Subject biometric identity in EEG}
-The dominance of subject-identifying information in EEG
-representations is not a new observation in the biometric literature
-\citep{campisi2014,marcel2007}. What is new in our variance-decomposition
-analysis is the quantification of subject-vs-label variance inside
-\emph{pretrained FM} representations using variance decomposition and
-cross-dataset RSA, providing a representation-level bridge between the
-biometric literature and the downstream-task literature that has
-largely overlooked it.
-
-\subsection{Positioning of the present work}
-Our contribution differs from three adjacent literatures in the
-following specific ways. Against concurrent large-scale EEG-FM
-benchmark audits \citep{eegbench2025,kauffmann2025critique,eegfmbench2025,adabrain2025},
-which empirically document \emph{that} FMs sometimes fail to exceed
-classical baselines on cross-subject clinical tasks, we supply the
-mechanistic layer: a controlled within-subject paired experiment
-that isolates neural contrast strength as the operative variable,
-plus a pre-benchmark diagnostic protocol that predicts failure
-before the benchmark is run. Against the EEG biometric literature
-\citep{campisi2014,marcel2007}, which has long established
-subject-discriminability as a property of classical EEG features, we
-extend the quantification into pretrained FM representations and
-connect it explicitly to downstream clinical classification outcomes.
-Against the small-$N$ reliability critique
-\citep{smalln2025biorxiv,varoquaux2017}, which treats statistical
-instability as a general problem of effect-size reporting, we
-identify a specific structural cause of the instability in the EEG-FM
-setting (subject-dominance of the representation) and show that it
-interacts with within-subject contrast strength to produce a
-two-regime behaviour pattern. The result is a diagnosis rather than a
-remediation; methods that explicitly target subject-dominance
-during pretraining \citep{multidataset2025} are a complementary
-direction that future work can test against the present diagnostic.
+\paragraph{Factorial and taxonomy-style analyses in EEG benchmarking.}
+Existing aggregate benchmarks organise EEG-FM evaluation either as a
+single-dataset case study or as a leaderboard that aggregates across
+many tasks and datasets. EEG-FM-Bench \citep{eegfmbench2025},
+AdaBrain-Bench \citep{adabrain2025}, EEG-Bench \citep{eegbench2025},
+and Brain4FMs \citep{brain4fms2026} each report dozens of
+task--dataset cells and broadly converge on the observation that
+FMs are not uniformly superior across clinical cross-subject tasks
+\citep{kauffmann2025critique,eegchallenge2025}. Their taxonomies,
+however, are organised along axes largely orthogonal to ours: task
+category (motor imagery, SSVEP, affect, disease), pretraining
+objective (masked reconstruction, contrastive, diffusion), or
+fine-tuning strategy (frozen, LoRA, full-parameter). None separates
+datasets by \emph{subject relation of the label} (within-subject
+paired vs.\ between-subject label) crossed with \emph{linear-probe
+separability under subject-disjoint CV} (separable vs.\
+null-indistinguishable), and none asks whether the quadrants of this
+factorial exhibit distinguishable mechanisms. Our work is not a
+bigger benchmark --- four datasets and three backbones is deliberately
+small --- but a structural re-organisation that foregrounds
+\emph{why} benchmark numbers fragment across cohorts of comparable
+size, paired with a diagnostic toolkit whose scope conditions state
+in advance which cells each tool is valid in.

@@ -1,0 +1,246 @@
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Datasets}
+\label{sec:methods_data}
+\textbf{UCSD Stress} (primary). Resting-state EEG from
+\citep{komarov2020stress}: 17 graduate students, 92 recordings.
+Each recording carries two behavioural labels supplied by the source
+release: a categorical DASS-21 \citep{lovibond1995} state assignment
+(\textit{increase} or \textit{normal}, per recording) used as the
+primary binary target, and a continuous Daily Stress Scale (DSS)
+self-report score (normalised to $[0, 100]$). We use the 70
+recordings with both labels available; epochs are $5$\,s at
+$200$\,Hz $\times$ $30$ channels. The primary binary label
+(\textit{increase} vs \textit{normal}) is taken directly from the
+source \texttt{Group} field and matches the label used by Wang et
+al.\ \citep{wang2025stress} on this cohort. DASS-21 is a past-week
+trait/state screener and DSS a daily-stress aggregate; neither was
+psychometrically validated as a per-recording single-session EEG
+classification label, and we reproduce both label conventions for
+independent audit rather than endorsing either as a per-recording
+neural ground truth.
+\label{sec:methods_dass_scope}
+
+\emph{Sample-size conventions.} Three distinct subsets are used
+across the paper, and figure/table captions name the subset used
+locally:
+\begin{itemize}
+  \item $70$ recordings / $17$ subjects --- subject-level
+    fine-tuning and cross-validation against the DASS-21 binary
+    target (Secs.~\ref{sec:results_paired},
+    \ref{sec:results_fm_adds}; Fig.~\ref{fig:cv_gap}).
+  \item $55$ recordings / $14$ subjects --- variance decomposition
+    of frozen embeddings (Sec.~\ref{sec:results_atlas}). The nested
+    decomposition used there requires each subject to carry a
+    single target label, so the three DASS-mixed subjects (pids
+    with recordings in both the \textit{increase} and
+    \textit{normal} classes, $15$ recordings in total) are removed
+    for this analysis only.
+  \item $14$ subjects with $\geq\!2$ recordings --- within-subject
+    longitudinal DSS trajectory classification
+    (Sec.~\ref{sec:results_paired} Arm 2), where each recording is
+    labelled above vs below that subject's personal-median DSS.
+\end{itemize}
+
+\textbf{EEGMAT} \citep{eegmat} (paired within-subject comparator).
+36 healthy subjects $\times$ 2 recordings (resting baseline plus
+serial-subtraction mental arithmetic); 19 channels, 60\,s segments.
+This dataset provides the \emph{strong within-subject
+alpha-desynchronisation contrast} side of our paired experiment
+(Sec.~\ref{sec:results_paired}).
+
+\textbf{ADFTD} \citep{adftd} (for variance-decomposition
+cross-dataset coverage). Alzheimer's disease vs healthy controls,
+65 subjects $\times$ 19 channels. ADFTD is natively
+single-recording-per-subject; for the nested variance decomposition
+we require multiple observations per subject, so each subject's
+$\sim\!14$-min resting recording is partitioned into $3$
+non-overlapping contiguous segments (195 pseudo-observations from 65
+subjects, all three segments of a subject carrying the same AD/HC
+label, kept in the same fold by subject-level CV). Full rationale
+and the semantic-asymmetry caveat vs other datasets are in
+App.~\ref{app:adftd_split}.
+
+\textbf{TDBRAIN} \citep{tdbrain} (for variance-decomposition
+cross-dataset coverage). MDD vs HC, 734 recordings / 359 subjects /
+26 channels (downsampled to 19 for FM compatibility).
+
+ADFTD is used in this paper for frozen-representation variance
+decomposition (Sec.~\ref{sec:results_atlas}) and as a single
+suggestive-but-not-controlled cross-subject anchored datapoint
+(Sec.~\ref{sec:results_fm_adds}). TDBRAIN is used for variance
+decomposition and additionally as the single
+intermediate-anchor case study discussed in
+Sec.~\ref{sec:discussion}, where its role in refining the binary
+anchored/bounded SDL classification is explained.
+
+\subsection{Pipeline and foundation models}
+\label{sec:methods_pipeline}
+All three FMs are wrapped in a unified frozen-extractor interface
+producing fixed-dimensional embeddings from (channels $\times$ time)
+windows: LaBraM \citep{labram2024} 200-d, CBraMod
+\citep{cbramod2025} 200-d, REVE \citep{reve2025} 512-d. Weights are
+loaded from the official pretrained releases. Input normalisation is
+model-dependent to match each FM's pretraining distribution:
+$z$-score for LaBraM, $\mu$V-scale unchanged for CBraMod and REVE.
+
+\subsection{Cross-validation and evaluation protocols}
+\label{sec:methods_cv}
+Primary evaluation is \textbf{subject-level StratifiedGroupKFold(5)},
+grouping by \texttt{patient\_id}. Trial-level StratifiedKFold(5) is
+included only as a literature-comparison reference (e.g., reproducing
+Wang et al.\ \citep{wang2025stress}) and reported transparently
+alongside subject-level numbers; it carries subject leakage and
+inflates reported BA on this dataset by $20$--$30$\,pp
+(Sec.~\ref{sec:results_paired}).
+
+All training uses cuDNN determinism. Seed variance on the UCSD Stress
+$70$-recording / $14$-positive regime nevertheless remains
+$\pm 5$--$10$\,pp single-seed, consistent with recent small-$N$
+stability literature \citep{smalln2025biorxiv}. All headline claims
+are reported as mean $\pm$ sample standard deviation (divide by
+$n-1$) over at least three random seeds.
+
+\textbf{Permutation null.} Recording-level label shuffle prior to CV.
+A batched helper runs ten permutation seeds per FM; real FT and null
+FT are compared by a one-sided Mann--Whitney test on the pooled
+balanced-accuracy distributions.
+
+\textbf{Class imbalance handling for classical baselines.} All
+classical baselines use class-balanced weighting: Random Forest,
+Logistic Regression ($L_2$), and SVM via
+\texttt{class\_weight = `balanced'}; gradient-boosted trees via
+\texttt{sample\_weight} from
+\texttt{sklearn.utils.compute\_sample\_weight}.
+
+\subsection{Variance decomposition and representational similarity}
+\label{sec:methods_variance}
+For the variance decomposition
+(Sec.~\ref{sec:results_atlas}, Fig.~\ref{fig:variance_atlas}) we
+compute three measurements on the frozen embedding matrix
+$\mathbf{X} = (\mathbf{x}_1, \ldots, \mathbf{x}_N) \in
+\mathbb{R}^{N \times D}$ for each cell, with per-recording subject
+identifiers $s_i$ and target labels $y_i$.
+
+\textbf{(i) Pooled variance fractions.} Let $\bar{\mathbf{x}}$
+denote the grand mean. The total sum of squares is
+$\mathrm{SS}_\text{total} = \sum_i \| \mathbf{x}_i -
+\bar{\mathbf{x}} \|^2$. For datasets where each subject in the
+analyzed subset carries a single target label --- ADFTD, TDBRAIN,
+and the $55$-recording Stress subset after dropping DASS-mixed
+subjects (Sec.~\ref{sec:methods_data}) --- we use a nested
+decomposition (subject within label):
+\begin{align*}
+\mathrm{SS}_\text{label}      &= \sum_{\ell} n_\ell \, \| \bar{\mathbf{x}}_\ell - \bar{\mathbf{x}} \|^2, \\
+\mathrm{SS}_\text{subj|label} &= \sum_{\ell} \sum_{s \in \ell} n_{s,\ell} \, \| \bar{\mathbf{x}}_{s,\ell} - \bar{\mathbf{x}}_\ell \|^2, \\
+\mathrm{SS}_\text{residual}   &= \sum_i \| \mathbf{x}_i - \bar{\mathbf{x}}_{s_i, y_i} \|^2,
+\end{align*}
+where $\bar{\mathbf{x}}_\ell$ and $\bar{\mathbf{x}}_{s,\ell}$ are
+the label-group and subject-within-label means, and $n_\ell$,
+$n_{s,\ell}$ the corresponding counts. For EEGMAT, each subject
+contributes recordings of both labels (rest and arithmetic), so the
+design is crossed subject $\times$ label:
+\begin{align*}
+\mathrm{SS}_\text{label}    &= \sum_{\ell} n_\ell \, \| \bar{\mathbf{x}}_\ell - \bar{\mathbf{x}} \|^2, \\
+\mathrm{SS}_\text{subject}  &= \sum_{s} n_s \, \| \bar{\mathbf{x}}_s - \bar{\mathbf{x}} \|^2, \\
+\mathrm{SS}_\text{residual} &= \mathrm{SS}_\text{total} - \mathrm{SS}_\text{label} - \mathrm{SS}_\text{subject}.
+\end{align*}
+Pooled variance fractions are reported as
+$\mathrm{SS}_\text{factor} / \mathrm{SS}_\text{total}$, with the
+squared norms summed over all $D$ feature dimensions before
+ratio-taking.
+
+\textbf{(ii) RSA} \citep{kriegeskorte2008rsa}. The feature
+dissimilarity matrix uses cosine distance,
+$\mathrm{RDM}_\text{feat}[i,j] = 1 - \cos(\mathbf{x}_i,
+\mathbf{x}_j)$, while the identity matrices are binary,
+$\mathrm{RDM}_\text{label}[i,j] = \mathbb{1}[y_i \neq y_j]$ and
+$\mathrm{RDM}_\text{subj}[i,j] = \mathbb{1}[s_i \neq s_j]$. We
+report Spearman rank correlations between the feature RDM and the
+subject and label RDMs on the upper-triangular off-diagonal
+entries.
+
+\textbf{(iii) Cluster bootstrap}
+\citep{field2007clusterbootstrap}. A $95$\% confidence interval on
+the subject/label variance ratio is obtained by resampling subjects
+(not recordings) with replacement for $B = 1000$ iterations; each
+iteration concatenates the drawn subjects' recordings and recomputes
+$\mathrm{SS}_\text{subject} / \mathrm{SS}_\text{label}$ under
+whichever decomposition applies. The ratio statistic is
+heavy-tailed, so we report percentile bounds on the
+log-transformed distribution and exponentiate them back for
+reporting.
+
+\subsection{Contrast-strength anchoring protocol}
+\label{sec:methods_anchor}
+A naïve operationalisation of the SDL thesis would define ``contrast
+strength'' in terms of FM fine-tuning outcomes and then use those
+outcomes to validate the thesis --- a circular construction. We
+avoid this by triangulating contrast strength from three
+FM-independent dimensions, assessed per dataset prior to any FM
+fine-tuning.
+
+\textbf{Dimension 1 --- Published within-subject correlate.}
+Literature search for a published per-recording within-subject EEG
+correlate of the target label, with documented spectral locus and
+effect size.
+
+\textbf{Dimension 2 --- Empirical cluster-corrected contrast.}
+Group-level cluster-permutation $F$-test on log-PSDs (Welch, 2\,s
+segments, 50\% overlap, 0.5--45\,Hz, MNE
+\texttt{permutation\_cluster\_test}, 1000 permutations, default
+threshold at $p = 0.05$, independent adjacency across channels and
+frequency bins) on our own cohort, testing whether any cluster
+survives correction at $p < 0.05$.
+
+\textbf{Dimension 3 --- Locus concordance.}
+If an empirical cluster survives, does it spatially and spectrally
+align with the published within-subject correlate from Dimension 1?
+An empirical cluster at an unexpected locus (different band,
+different topography) is diagnostically weaker than one matching the
+published anchor, because it may reflect a cohort-level confound
+rather than a canonical label-relevant within-subject contrast.
+
+A dataset is classified as \emph{Strong-anchored} when all three
+dimensions agree (published correlate, significant cluster, and
+locus match), \emph{Intermediate} when the empirical cluster
+survives but either the published correlate is absent or its
+spectral locus does not match, and \emph{Bounded} when no
+within-subject correlate is documented and our own cluster test
+does not survive correction. Fig.~\ref{fig:sdl_spectrum} uses this
+rubric to order datasets. Full cluster-permutation protocols and
+topographic summaries for all three datasets we anchor quantitatively
+(UCSD Stress, EEGMAT, TDBRAIN) are in App.~A.
+
+The rationale is to falsify SDL if an anchor disagrees with the
+behavioural pattern, rather than merely confirm it post hoc.
+
+\subsection{Hyperparameter selection}
+\label{sec:methods_hp}
+Hyperparameters for each FM's best fine-tuning configuration on the
+primary UCSD Stress cohort were selected via a $3 \times 2 \times 3$
+grid (3 learning rates $\times$ 2 encoder-learning-rate scales $\times$
+3 seeds) independently per model. The selected configurations differ
+between models: LaBraM $\text{lr} = 10^{-4}$, $\text{elrs} = 1.0$;
+CBraMod $\text{lr} = 10^{-5}$, $\text{elrs} = 0.1$; REVE
+$\text{lr} = 3 \times 10^{-5}$, $\text{elrs} = 0.1$. On the three
+secondary datasets (EEGMAT, ADFTD, TDBRAIN) we did not re-sweep the
+full grid; instead we used a per-model conservative fine-tuning
+configuration identical across secondary datasets to control for
+hyperparameter choice as a source of cross-dataset variation
+(CBraMod and REVE at their Stress-sweep best HP; LaBraM at
+$\text{lr} = 10^{-5}$, $\text{elrs} = 0.1$, the
+reference-implementation default \citep{labram2024}). The per-model
+best-hyperparameter numbers on Stress are presented as observations,
+not as controlled comparisons between architectures;
+Sec.~\ref{sec:results_paired}'s architecture-independence claim
+relies on each architecture at its own best HP on Stress falling
+inside a common band, not on cross-architecture ranking.
+
+\subsection{Reproducibility}
+All code, training configurations, frozen and fine-tuned checkpoints,
+variance-decomposition outputs, permutation-null logs, the pre/post
+LaBraM diagnostic, the class-balanced classical audit, and the
+contrast-strength anchoring protocol specification will be released
+at the project repository upon publication.

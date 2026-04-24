@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Dataset summary (six EEG benchmarks). $^{\dagger}$Stress is excluded from the clean within-subject arm because only $3/17$ subjects cross DASS classes.}
+\label{tab:datasets}
+\begin{tabular}{lcccll}
+\toprule
+Dataset & Arm & $N_{\mathrm{sub}}$ & $N_{\mathrm{rec}}$ & Label design & Source \\
+\midrule
+EEGMAT & Within & 36 & 72 & Task vs Rest & PhysioNet \\
+SleepDep & Within & 36 & 72 & NS vs SD & OpenNeuro ds004902 \\
+Stress$^\dagger$ & Within & 17 & 70 & DASS (3 cross) & Komarov 2020 \\
+ADFTD & Between & 65 & 195 & AD vs CN & OpenNeuro ds004504 \\
+TDBRAIN & Between & 359 & 734 & MDD vs CN & TDBRAIN \\
+Meditation & Between & 24 & 40 & Expert vs Novice & Private \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,34 @@
+{
+  "frozen": {
+    "sleepdep": {
+      "labram": {
+        "dir_consistency": -0.003198317807736498,
+        "n_subj": 36
+      },
+      "cbramod": {
+        "dir_consistency": -0.004488312751739048,
+        "n_subj": 36
+      },
+      "reve": {
+        "dir_consistency": 0.044659613820180834,
+        "n_subj": 36
+      }
+    }
+  },
+  "ft": {
+    "sleepdep": {
+      "labram": {
+        "dir_consistency": -0.001011216140122444,
+        "n_subj": 36
+      },
+      "cbramod": {
+        "dir_consistency": 0.0010392279611874796,
+        "n_subj": 36
+      },
+      "reve": {
+        "dir_consistency": 0.01863158130175607,
+        "n_subj": 36
+      }
+    }
+  }
+}

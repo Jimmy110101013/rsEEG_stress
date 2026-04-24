@@ -1,0 +1,30 @@
+\begin{table*}[t]
+\centering
+\caption{Frozen linear-probe (LP) vs fine-tuned (FT) balanced accuracy for three EEG foundation models across six datasets. Each cell reports mean $\pm$ sample std over three seeds unless otherwise indicated; $\Delta$BA $=$ FT $-$ LP. Negative values indicate FT underperforms LP.}
+\label{tab:fm_performance}
+\begin{tabular}{llcccr}
+\toprule
+Dataset & FM & LP BA & FT BA & $\Delta$BA & $n_{\mathrm{seed}}$ \\
+\midrule
+EEGMAT & LaBraM & 67.1 $\pm$ 5.6 & 73.1 $\pm$ 2.1 & $+$6.0 & 3 \\
+ & CBraMod & 73.1 $\pm$ 5.3 & 62.0 $\pm$ 5.8 & $-$11.1 & 3 \\
+ & REVE & 67.1 $\pm$ 2.1 & 72.7 $\pm$ 3.5 & $+$5.6 & 3 \\
+SleepDep & LaBraM & 50.0 $\pm$ 3.5 & 53.2 $\pm$ 6.9 & $+$3.3 & 3 \\
+ & CBraMod & 55.7 $\pm$ 4.0 & 55.6 $\pm$ 5.0 & $-$0.1 & 3 \\
+ & REVE & 54.4 $\pm$ 4.2 & 54.2 $\pm$ 1.4 & $-$0.2 & 3 \\
+Stress & LaBraM & 60.5 $\pm$ 3.2 & 52.4 $\pm$ 1.0 & $-$8.1 & 3 \\
+ & CBraMod & 45.2 $\pm$ 3.2 & 54.8 $\pm$ 3.1 & $+$9.6 & 3 \\
+ & REVE & 49.4 $\pm$ 1.8 & 57.7 $\pm$ 5.1 & $+$8.3 & 3 \\
+\midrule
+ADFTD & LaBraM & 69.5 $\pm$ 0.6 & 70.9 $\pm$ 1.4 & $+$1.3 & 3 \\
+ & CBraMod & 55.8 $\pm$ 2.2 & 53.7 $\pm$ 2.7 & $-$2.1 & 3 \\
+ & REVE & 69.2 $\pm$ 2.6 & 65.8 $\pm$ 3.0 & $-$3.5 & 3 \\
+TDBRAIN & LaBraM & 67.9 $\pm$ 0.9 & 66.5 $\pm$ 4.5 & $-$1.5 & 3 \\
+ & CBraMod & 56.4 $\pm$ 0.7 & 48.8 $\pm$ 1.4 & $-$7.6 & 3 \\
+ & REVE & 54.4 $\pm$ 0.9 & 48.8 $\pm$ 1.9 & $-$5.6 & 3 \\
+Meditation & LaBraM & 47.3 $\pm$ 1.8 & 51.5 $\pm$ 7.8 & $+$4.2 & 3 \\
+ & CBraMod & 71.0 $\pm$ 7.2 & 68.3 $\pm$ 4.6 & $-$2.7 & 3 \\
+ & REVE & 53.8 $\pm$ 7.5 & 43.3 $\pm$ 10.4 & $-$10.5 & 3 \\
+\bottomrule
+\end{tabular}
+\end{table*}
