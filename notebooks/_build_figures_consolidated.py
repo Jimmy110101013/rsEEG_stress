@@ -25,7 +25,7 @@ def code(src): return {"cell_type": "code", "metadata": {}, "execution_count": N
 # ============================================================
 # SETUP
 # ============================================================
-SETUP = r"""import json, os
+SETUP = r"""import json, os, sys
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -35,6 +35,8 @@ from matplotlib.patches import Patch, FancyArrowPatch
 
 import re as _re
 REPO = Path('/raid/jupyter-linjimmy1003.md10/UCSD_stress')
+if str(REPO) not in sys.path: sys.path.insert(0, str(REPO))
+from src import results  # canonical results accessor — see results/final/README.md
 # paper/figures/main/ is RESERVED for user's hand-composited final figures (PPT output).
 # Auto-generated subfigures land in paper/figures/figN/ where N = figure number.
 OUT_ROOT = REPO / 'paper/figures'
@@ -81,7 +83,7 @@ FIG2 = r"""# Fig 2 — Representation structure across the 4-dataset 2×2 factor
 # 2×2 grid: (within|subject-trait) × (strong-aligned|weak-aligned)
 # Each panel: window-level variance stacked bars (frz/FT, 3 FMs) + Δlabel_frac callout
 # Source: variance_analysis_window_level.json (window-level crossed SS, Jan 2026-04-24+)
-va = json.load(open(REPO/'results/final/source_tables/variance_analysis_window_level.json'))
+va = results.source_table('variance_analysis_window_level')
 
 def variance_entry(fm, ds):
     # Return dict with frozen/ft label_frac, subject_frac, delta_label_frac — all as percentages.
@@ -151,14 +153,12 @@ save(fig, 'fig2_representation_2x2')"""
 FIG3 = r"""# Fig 3 — Honest evaluation: permutation null shows chance on Stress, signal on EEGMAT
 # Funnel dropped — Wang gap & absolute BAs now in Table 1. Fig 3 owns the statistical claim only.
 
-null_dir = REPO/'results/studies/exp27_paired_null/stress'
-nulls_stress = np.array([json.load(open(d/'summary.json'))['subject_bal_acc']
-                         for d in sorted(null_dir.iterdir()) if (d/'summary.json').exists()])
-null_dir_e = REPO/'results/studies/exp27_paired_null/eegmat'
-nulls_eeg = np.array([json.load(open(d/'summary.json'))['subject_bal_acc']
-                      for d in sorted(null_dir_e.iterdir()) if (d/'summary.json').exists()])
+nulls_stress = np.array([s['subject_bal_acc']
+                         for s in results.perm_null_summaries('stress')])
+nulls_eeg = np.array([s['subject_bal_acc']
+                      for s in results.perm_null_summaries('eegmat')])
 
-fp = json.load(open(REPO/'results/studies/exp_30_sdl_vs_between/tables/fm_performance.json'))
+fp = results.exp30_fm_performance()
 def real_ft(ds, fm='labram'):
     rows = [r for r in fp if r['dataset']==ds and r['fm']==fm and r['mode']=='ft' and r['bal_acc'] is not None]
     return float(np.mean([r['bal_acc'] for r in rows]))
@@ -209,7 +209,7 @@ def paired_endpoints(pids, y2):
     return pairs
 
 sup = json.load(open(REPO/'results/studies/exp11_longitudinal_dss/within_subject_supplementary.json'))
-sd_sup = json.load(open(REPO/'results/final/source_tables/sleepdep_within_subject.json'))
+sd_sup = results.source_table('sleepdep_within_subject')
 for mode in ['frozen', 'ft']:
     sup[mode]['sleepdep'] = sd_sup[mode]['sleepdep']
 
@@ -285,10 +285,7 @@ def mean_psd(sig):
 def rep_psd(ds):
     # ADFTD refresh 2026-04-24 split the fit into per-FM windows; w=5 is shared
     # by labram+cbramod so it's the natural default for the panel-A PSD demo.
-    if ds == 'adftd':
-        p = REPO/'results/features_cache/fooof_ablation/adftd_norm_none_w5.npz'
-    else:
-        p = REPO/f'results/features_cache/fooof_ablation/{ds}_norm_none.npz'
+    p = results.fooof_ablated_features_path(ds, w5=(ds=='adftd'))
     d = np.load(p, allow_pickle=True)
     ri = int(d['quality_r2'].mean(axis=1).argmax())
     mask = d['window_rec_idx']==ri
@@ -310,12 +307,10 @@ DS_CMAP  = {'eegmat':'#2E8B8B','sleepdep':'#7A4B9C','stress':'#D55E00','adftd':'
 
 psd = {ds: rep_psd(ds) for ds in DS_PSD}
 # State probe comes from the original FOOOF-ablation JSONs.
-F_STATE = {ds: json.load(open(REPO/f'results/studies/fooof_ablation/{ds}_probes.json'))['results']
-           for ds in DS_PROBE}
+F_STATE = {ds: results.fooof_ablation_probes(ds)['results'] for ds in DS_PROBE}
 # Subject probe comes from the new temporal-block protocol (uniform 4 cells).
-F_SUBJ = {ds: json.load(open(REPO/f'results/studies/exp33_temporal_block_probe/{ds}_probes.json'))['results']
-          for ds in DS_PROBE}
-bs = json.load(open(REPO/'results/studies/exp14_channel_importance/band_stop_ablation.json'))
+F_SUBJ = {ds: results.subject_probe_temporal_block(ds)['results'] for ds in DS_PROBE}
+bs = results.band_stop_ablation()
 """
 
 # ---- Fig 5a — PSD + FOOOF fit (4 datasets) ----
@@ -428,7 +423,7 @@ FIG6 = r"""# Fig 6 — Architecture ceiling × 3 regimes
 # x = params (log), y = subject-CV BA, one panel per dataset (by regime order).
 
 # --- Data sources -----------------------------------------------------------
-t1 = json.load(open(REPO/'paper/tables/_source/table1_master_performance.json'))  # FM LP/FT per dataset
+t1 = results.master_performance_table()  # FM LP/FT per dataset
 
 def fm_ft(ds, fm):
     k = f'{ds}_{fm}'
@@ -438,9 +433,8 @@ def fm_ft(ds, fm):
 
 # Classical multi-seed (new format, 3 datasets; ADFTD not run yet)
 def classical(ds):
-    p = REPO/f'results/studies/exp02_classical_dass/{ds}/summary.json'
-    if not p.exists(): return []
-    d = json.load(open(p))
+    try: d = results.classical_summary(ds)
+    except FileNotFoundError: return []
     agg = d.get('aggregated', {})
     out = []
     for name in ['LogReg_L2','SVM_RBF','RF','XGBoost']:
@@ -533,7 +527,7 @@ save(fig, 'fig6_architecture_ceiling')
 # APPENDIX — A.1 / B.1 / B.2 (keep simple)
 # ============================================================
 FIG_A1 = r"""# Fig A.1 — ADFTD + TDBRAIN variance atlas
-va = json.load(open(REPO/'results/final/source_tables/variance_analysis_all.json'))
+va = results.source_table('variance_analysis_all')
 DATASETS = ['adftd','tdbrain']
 fig, axes = plt.subplots(2, 6, figsize=(W_DOUBLE, W_DOUBLE*0.38), sharey='row')
 for col, (fm,ds) in enumerate([(fm,ds) for ds in DATASETS for fm in FMS]):
@@ -556,7 +550,7 @@ save(fig, 'figA1_variance_atlas_disease', out_dir=OUT_APP)
 
 FIG_B1 = r"""# Fig B.1 — Channel ablation topomap (Stress 30-ch, 3 FMs)
 import mne
-ci = json.load(open(REPO/'results/studies/exp14_channel_importance/channel_importance.json'))
+ci = results.channel_importance()
 RAW = ci['labram']['channel_names']
 montage = mne.channels.make_standard_montage('standard_1005')
 mont_map = {c.lower(): c for c in montage.ch_names}
@@ -576,7 +570,7 @@ save(fig, 'figB1_channel_ablation', out_dir=OUT_APP)
 """
 
 FIG_B2 = r"""# Fig B.2 — Per-FM band-stop breakdown (3 datasets × 3 FM × 4 bands)
-bs = json.load(open(REPO/'results/studies/exp14_channel_importance/band_stop_ablation.json'))
+bs = results.band_stop_ablation()
 BANDS = ['delta','theta','alpha','beta']
 fig, axes = plt.subplots(1, 3, figsize=(W_DOUBLE, W_DOUBLE*0.33), sharey=True)
 w = 0.25; x = np.arange(len(BANDS))

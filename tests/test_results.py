@@ -111,6 +111,63 @@ def test_ft_stats_nonexistent_combination_is_safe():
     assert out is None or out["n_seeds"] == 1
 
 
+def test_fooof_ablation_probes_have_4_conditions():
+    for ds in DATASETS:
+        d = results.fooof_ablation_probes(ds)
+        for fm in FMS:
+            keys = set(d["results"][fm].keys())
+            assert {"original", "aperiodic_removed", "periodic_removed",
+                    "both_removed"}.issubset(keys), f"{ds}×{fm}: missing condition"
+
+
+def test_subject_probe_temporal_block_has_4_conditions():
+    for ds in DATASETS:
+        d = results.subject_probe_temporal_block(ds)
+        for fm in FMS:
+            keys = set(d["results"][fm].keys())
+            assert {"original", "aperiodic_removed", "periodic_removed",
+                    "both_removed"}.issubset(keys), f"{ds}×{fm}: missing condition"
+
+
+def test_band_stop_ablation_has_all_datasets():
+    bs = results.band_stop_ablation()
+    for ds in DATASETS:
+        assert ds in bs, f"missing dataset in band-stop: {ds}"
+        for fm in FMS:
+            assert fm in bs[ds], f"missing fm {fm} for {ds}"
+
+
+def test_classical_summary_returns_dict():
+    for ds in ["eegmat", "stress", "sleepdep"]:
+        d = results.classical_summary(ds)
+        assert isinstance(d, dict)
+        assert "dataset" in d
+
+
+def test_master_performance_table_indexed_by_ds_fm():
+    t = results.master_performance_table()
+    for ds in DATASETS:
+        for fm in FMS:
+            key = f"{ds}_{fm}"
+            assert key in t, f"missing key in master table: {key}"
+
+
+def test_exp30_fm_performance_returns_list():
+    rows = results.exp30_fm_performance()
+    assert isinstance(rows, list)
+    assert len(rows) > 0
+    assert "fm" in rows[0] and "dataset" in rows[0]
+
+
+def test_path_accessors_resolve():
+    p = results.frozen_features_path("labram", "stress", 30)
+    assert p.suffix == ".npz"
+    assert p.exists()
+    p2 = results.fooof_ablated_features_path("stress")
+    assert p2.suffix == ".npz"
+    assert p2.exists()
+
+
 if __name__ == "__main__":
     tests = [fn for name, fn in list(globals().items())
              if name.startswith("test_") and callable(fn)]
