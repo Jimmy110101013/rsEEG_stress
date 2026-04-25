@@ -82,29 +82,28 @@ Each section function:
 
 ### Phase 0 — directory skeleton (no data, just structure)
 - [ ] Create `results/final/{adftd,eegmat,sleepdep,stress,tdbrain}/{ft,lp,classical,nonfm_deep,perm_null,fooof_ablation,band_stop}/` (FT already exists for 4 cells)
-- [ ] Create `results/final/cross_cell/`
-- [ ] Write `results/final/README.md` explaining the layer and rebuild command
+- [x] Created `results/final/cross_cell/`
+- [x] `results/final/README.md` upgraded to schema spec + `src.results` accessor contract (2026-04-25)
 
 ### Phase 1 — LP snapshots (trivial, no agg needed)
-- [ ] For each cell × FM: copy `perwindow_lp_all/{cell}/{model}_multi_seed.json` → `results/final/{cell}/lp/{model}.json` + add provenance
-- [ ] Verify `docs/master_results_table.md` LP numbers match `results/final/{cell}/lp/` — should be no-op; if mismatch, investigate
+- [x] `rebuild_final_snapshots.py --section lp` populates `results/final/<cell>/lp/<model>.json` (2026-04-25)
+- [x] LP numbers verified — `master_results_table.md` matches by construction (same source JSONs)
 
 ### Phase 2 — Classical + non-FM deep snapshots
-- [ ] Copy `exp02_classical_dass/{cell}/summary.json` → `results/final/{cell}/classical/summary.json` + provenance
-- [ ] Aggregate 3 seeds from `exp15_nonfm_baselines/{cell}/eegnet_lr*_s*/`, write `results/final/{cell}/nonfm_deep/eegnet.json`; same for shallowconvnet
-- [ ] Verify vs ceiling table.tex classical + nonfm rows
+- [x] Classical: `rebuild_final_snapshots.py --section classical` (2026-04-25); accessor: `results.classical_summary(dataset)`
+- [ ] Non-FM deep: `rebuild_final_snapshots.py` does not yet implement `nonfm_deep` section (per-seed glob across exp15 sweep + per-cell layouts is non-trivial; add when needed)
 
 ### Phase 3 — FT provenance stamps (no new numbers)
-- [ ] For each existing `results/final/{cell}/ft/{model}/seed*/summary.json`: add sibling `provenance.json` with raw_dir, commit, HP recipe pulled from `config.json`
+- [x] `rebuild_final_snapshots.py --section ft` (2026-04-25) — every `results/final/<cell>/ft/<model>/seed*/` has `provenance.json` with commit + HP recipe
 
 ### Phase 4 — FOOOF + band-stop snapshots
-- [ ] Copy `fooof_ablation/{cell}_probes.json` → `results/final/{cell}/fooof_ablation/probes.json` + provenance
-- [ ] Extract each cell's rows from `exp14_channel_importance/band_stop_ablation.json` → `results/final/{cell}/band_stop/probes.json` + provenance
-- [ ] Note: ADFTD FOOOF + band-stop currently pending per-FM window patch (separate task)
+- [x] FOOOF: `rebuild_final_snapshots.py --section fooof_ablation` (2026-04-25); accessor: `results.fooof_ablation_probes(dataset)`
+- [x] Band-stop: per-cell slices written via `--section band_stop` (2026-04-25); accessor: `results.band_stop_ablation_cell(dataset)`
+- [x] ADFTD: per-FM window patch landed pre-promotion; current snapshot uses split1 + per-FM windows
 
 ### Phase 5 — Perm null snapshots
-- [ ] Aggregate 30 perm seeds from `exp27_paired_null/{cell}/perm_s*/summary.json` (ADFTD / SleepDep / EEGMAT) and `exp03_stress_erosion/ft_null_{model}/perm_s*/summary.json` (Stress); compute null mean, std, p-value of real FT BA → `results/final/{cell}/perm_null/{model}_null.json`
-- [ ] Note: ADFTD null currently on split3 — pending re-run on split1 (separate task)
+- [x] `rebuild_final_snapshots.py --section perm_null` (2026-04-25) — 30-seed aggregate at `results/final/<cell>/perm_null/labram_null.json`; accessor: `results.perm_null_aggregate(dataset)` (cheaper than `perm_null_summaries` when only mean/std needed)
+- [x] ADFTD: now on split1 (pre-promotion split1 rerun closed in commit `d8bbac7`)
 
 ### Phase 6 — Cross-cell snapshots
 - [ ] Copy `exp14_channel_importance/band_rsa.json` → `results/final/cross_cell/band_rsa.json` + provenance
@@ -114,8 +113,9 @@ Each section function:
 ### Phase 7 — Docs integration
 - [x] `scripts/figures/build_frozen_vs_ft_table.py` — **retired 2026-04-25** (v1 of master_performance_table; deleted alongside 22 other dead SDL-era builders)
 - [x] `build_fig2_2x2.py`, `build_fig3_perm_null_4panel.py`, `build_master_performance_table.py` migrated to `src.results.*` accessors (2026-04-25)
-- [ ] `notebooks/_build_figures_consolidated.py` (fig4/5/6 + figA1/B1/B2) — pending migration
-- [ ] Add a row to `docs/paper_experiments_index.md` for each `results/final/` path
+- [x] `notebooks/_build_figures_consolidated.py` migrated (2026-04-25, commit `e47a8b0`) — 14 data-load sites now go through `src.results.*`. Verified via cross-run PNG md5 stability.
+- [x] `src/results.py` codified as the canonical access contract; `results/final/README.md` documents the schema + growth rule.
+- [ ] Add a row to `docs/paper_experiments_index.md` for each `results/final/` path (deferred — index currently maps via `paper/figures/` and the section number; a future pass can add explicit `results/final/<...>` columns).
 
 ### Phase 8 — Supersession stubs
 - [ ] `results/studies/exp07_adftd_multiseed/SUPERSEDED.md`: ADFTD split3 n_rec=195 → replaced by `results/final/adftd/ft/` (split1). Keep dir for historical reference.

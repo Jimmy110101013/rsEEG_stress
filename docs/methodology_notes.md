@@ -9,6 +9,12 @@ Read this file when you need to:
 - understand a caveat referenced from a main finding
 - trace an archived finding's history
 
+> **Data access**: any number cited in the paper goes through `src.results.*`
+> (see `results/final/README.md` for the accessor contract). Don't memorise
+> file paths; if `src.results` is missing an accessor you need, add one and
+> redirect the function body to whatever path holds the data — callers then
+> stay path-free.
+
 ---
 
 ## Guardrails (pipeline policies)

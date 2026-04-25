@@ -29,12 +29,16 @@ Supplementary: TDBRAIN (Appendix A — replicates Subject × strong-aligned cell
 
 **Source of truth for numbers**: `docs/master_results_table.md` (human-curated, ADFTD LP refreshed 2026-04-23 split1; FT values still pre-split1 — marked ⚠)
 
-| Row | Content | Source |
-|---|---|---|
-| LP per cell × FM | per-window sklearn LogReg, 8 seeds | `results/studies/perwindow_lp_all/{cell}/{model}_multi_seed.json` |
-| FT per cell × FM | 3 seeds, per-FM unified HP | `results/studies/exp_newdata/` + `results/studies/exp17_eegmat_cbramod_reve_ft/` + `results/studies/exp07_adftd_multiseed/` + `results/studies/exp03_stress_erosion/` |
-| Classical ML baseline | LogReg/SVM/RF/XGB, 3 seeds | `results/studies/exp02_classical_dass/{cell}/` |
-| Non-FM deep baseline | EEGNet / ShallowConvNet, 3 seeds | `results/studies/exp15_nonfm_baselines/{cell}/` |
+| Row | Content | Canonical accessor (preferred) | Raw fallback |
+|---|---|---|---|
+| LP per cell × FM | per-window sklearn LogReg, 8 seeds | `results.lp_multiseed(cell, fm)` / `results.lp_stats_3seed(...)` | `results/final/{cell}/lp/{fm}.json` ← `results/studies/perwindow_lp_all/{cell}/{fm}_multi_seed.json` |
+| FT per cell × FM | 3 seeds, per-FM unified HP | `results.ft_stats(cell, fm)` | `results/final/{cell}/ft/{fm}/seed*/` ← scattered exp## dirs |
+| Classical ML baseline | LogReg/SVM/RF/XGB, 3 seeds | `results.classical_summary(cell)` | `results/final/{cell}/classical/summary.json` ← `results/studies/exp02_classical_dass/{cell}/` |
+| Non-FM deep baseline | EEGNet / ShallowConvNet, 3 seeds | (no accessor yet) | `results/studies/exp15_nonfm_baselines/{cell}/` |
+| Permutation null | 30-seed LaBraM FT under shuffled labels | `results.perm_null_aggregate(cell)` (or per-seed: `results.perm_null_summaries(cell)`) | `results/final/{cell}/perm_null/labram_null.json` ← `results/studies/exp27_paired_null/{cell}/perm_s*/` |
+| FOOOF ablation probes | state probe BA after {aperiodic,periodic,both}_removed | `results.fooof_ablation_probes(cell)` | `results/final/{cell}/fooof_ablation/probes.json` ← `results/studies/fooof_ablation/{cell}_probes.json` |
+| Subject-ID temporal probe | uniform 4-cell subject-fingerprint probe | `results.subject_probe_temporal_block(cell)` | `results/final/{cell}/subject_probe_temporal_block/probes.json` ← `results/studies/exp33_temporal_block_probe/{cell}_probes.json` |
+| Band-stop ablation | per-band cosine distance, 3 FMs | `results.band_stop_ablation_cell(cell)` (or cross-cell: `results.band_stop_ablation()`) | `results/final/{cell}/band_stop/probes.json` ← `results/studies/exp14_channel_importance/band_stop_ablation.json` |
 
 **Status 2026-04-24**:
 - LP: ✅ all 4 cells fresh (ADFTD split1 2026-04-23; Stress/EEGMAT/SleepDep unchanged since 2026-04-20)
