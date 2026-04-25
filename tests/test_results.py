@@ -168,6 +168,26 @@ def test_path_accessors_resolve():
     assert p2.exists()
 
 
+def test_perm_null_aggregate_matches_summaries():
+    """The aggregated snapshot's mean/n_seeds must match what
+    perm_null_summaries returns when reduced client-side."""
+    import statistics
+    for ds in DATASETS:
+        agg = results.perm_null_aggregate(ds)
+        bas = [s["subject_bal_acc"] for s in results.perm_null_summaries(ds)]
+        assert agg["n_seeds"] == len(bas), f"{ds}: n_seeds mismatch"
+        assert abs(agg["subject_bal_acc_mean"] - statistics.mean(bas)) < 1e-10, \
+            f"{ds}: mean mismatch"
+
+
+def test_band_stop_ablation_cell_matches_cross_cell():
+    """Per-cell band-stop slice must equal cross-cell[<dataset>]."""
+    cross = results.band_stop_ablation()
+    for ds in DATASETS:
+        per_cell = results.band_stop_ablation_cell(ds)["bands"]
+        assert per_cell == cross[ds], f"{ds}: per-cell != cross-cell slice"
+
+
 if __name__ == "__main__":
     tests = [fn for name, fn in list(globals().items())
              if name.startswith("test_") and callable(fn)]

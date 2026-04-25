@@ -1,8 +1,8 @@
 {
   "provenance": {
     "raw_dir": "results/final/eegmat/ft/labram/seed123",
-    "snapshot_date": "2026-04-23",
-    "commit": "c98f965",
+    "snapshot_date": "2026-04-25",
+    "commit": "e47a8b0",
     "script": "scripts/analysis/rebuild_final_snapshots.py",
     "notes": "FT run for eegmat \u00d7 labram. Per-FM canonical HP (see docs/methodology_notes.md G-F09)."
   },

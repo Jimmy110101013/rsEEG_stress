@@ -11,11 +11,16 @@ Usage:
     $PY scripts/analysis/rebuild_final_snapshots.py --dry-run --all
 
 Sections implemented:
-    lp      — per-window frozen LP 8-seed results (pass-through + provenance)
-    ft      — FT per-FM × 3-seed provenance stamps (summary.json already in place)
+    lp                            — per-window frozen LP 8-seed (pass-through + provenance)
+    ft                            — FT per-FM × 3-seed provenance stamps
+    perm_null                     — exp27 paired-null aggregated to one JSON / cell
+    classical                     — exp02 classical baselines (pass-through + provenance)
+    fooof_ablation                — fooof_ablation/<ds>_probes (pass-through + provenance)
+    subject_probe_temporal_block  — exp33 temporal-block probe (pass-through + provenance)
+    band_stop                     — per-cell slice of exp14 band_stop_ablation
 
 Sections pending (TODO):
-    classical, nonfm_deep, perm_null, fooof_ablation, band_stop, cross_cell.
+    nonfm_deep, variance_triangulation, cross_cell.
 """
 from __future__ import annotations
 
@@ -121,11 +126,143 @@ def rebuild_ft_provenance(cell: str, model: str, dry: bool = False):
 
 
 # ---------------------------------------------------------------------------
+# Section: perm_null (aggregate 30 per-seed summaries → 1 JSON per cell)
+# ---------------------------------------------------------------------------
+def rebuild_perm_null(cell: str, model: str, dry: bool = False):
+    if model != "labram":
+        return  # only LaBraM null chains exist per exp27 design
+    src_dir = STUDIES / "exp27_paired_null" / cell
+    if not src_dir.exists():
+        print(f"  skip perm_null {cell}: {src_dir.relative_to(REPO)} missing")
+        return
+    seeds = sorted(src_dir.glob("perm_s*/summary.json"))
+    if not seeds:
+        print(f"  skip perm_null {cell}: no perm_s*/summary.json under {src_dir.relative_to(REPO)}")
+        return
+    bas, per_seed = [], {}
+    for p in seeds:
+        d = json.loads(p.read_text())
+        seed_id = p.parent.name.replace("perm_", "")  # e.g. "s0"
+        per_seed[seed_id] = float(d["subject_bal_acc"])
+        bas.append(per_seed[seed_id])
+    import numpy as np
+    payload = {
+        "provenance": _provenance(
+            raw_dir=str(src_dir.relative_to(REPO)),
+            notes=f"30-seed LaBraM FT permutation null for {cell}; aggregated.",
+        ),
+        "model": model,
+        "cell": cell,
+        "n_seeds": len(bas),
+        "subject_bal_acc_per_seed": per_seed,
+        "subject_bal_acc_mean": float(np.mean(bas)),
+        "subject_bal_acc_std_ddof1": float(np.std(bas, ddof=1)) if len(bas) > 1 else 0.0,
+        "subject_bal_acc_min": float(np.min(bas)),
+        "subject_bal_acc_max": float(np.max(bas)),
+    }
+    _write(FINAL / cell / "perm_null" / f"{model}_null.json", payload, dry)
+
+
+# ---------------------------------------------------------------------------
+# Section: classical (exp02, pass-through + provenance)
+# ---------------------------------------------------------------------------
+def rebuild_classical(cell: str, model: str, dry: bool = False):
+    if model != "labram":
+        return  # classical baselines are model-agnostic; one snapshot per cell
+    src = STUDIES / "exp02_classical_dass" / cell / "summary.json"
+    if not src.exists():
+        print(f"  skip classical {cell}: {src.relative_to(REPO)} missing")
+        return
+    raw = json.loads(src.read_text())
+    payload = {
+        "provenance": _provenance(
+            raw_dir=str(src.parent.relative_to(REPO)),
+            notes="Classical (LogReg/SVM/RF/XGB) multi-seed baseline.",
+        ),
+        **raw,
+    }
+    _write(FINAL / cell / "classical" / "summary.json", payload, dry)
+
+
+# ---------------------------------------------------------------------------
+# Section: fooof_ablation (per-cell pass-through + provenance)
+# ---------------------------------------------------------------------------
+def rebuild_fooof_ablation(cell: str, model: str, dry: bool = False):
+    if model != "labram":
+        return  # cell-level (all FMs in one file)
+    src = STUDIES / "fooof_ablation" / f"{cell}_probes.json"
+    if not src.exists():
+        print(f"  skip fooof_ablation {cell}: {src.relative_to(REPO)} missing")
+        return
+    raw = json.loads(src.read_text())
+    payload = {
+        "provenance": _provenance(
+            raw_dir=str(src.relative_to(REPO)),
+            notes="FOOOF {aperiodic,periodic,both}_removed → re-extract → state probe.",
+        ),
+        **raw,
+    }
+    _write(FINAL / cell / "fooof_ablation" / "probes.json", payload, dry)
+
+
+# ---------------------------------------------------------------------------
+# Section: subject_probe_temporal_block (exp33, pass-through + provenance)
+# ---------------------------------------------------------------------------
+def rebuild_subject_probe_temporal_block(cell: str, model: str, dry: bool = False):
+    if model != "labram":
+        return  # cell-level
+    src = STUDIES / "exp33_temporal_block_probe" / f"{cell}_probes.json"
+    if not src.exists():
+        print(f"  skip subject_probe {cell}: {src.relative_to(REPO)} missing")
+        return
+    raw = json.loads(src.read_text())
+    payload = {
+        "provenance": _provenance(
+            raw_dir=str(src.relative_to(REPO)),
+            notes="Temporal-block subject-ID probe (uniform across 4 cells).",
+        ),
+        **raw,
+    }
+    _write(FINAL / cell / "subject_probe_temporal_block" / "probes.json",
+           payload, dry)
+
+
+# ---------------------------------------------------------------------------
+# Section: band_stop (slice cross-cell exp14 JSON into per-cell snapshots)
+# ---------------------------------------------------------------------------
+def rebuild_band_stop(cell: str, model: str, dry: bool = False):
+    if model != "labram":
+        return  # cell-level (all FMs in one slice)
+    src = STUDIES / "exp14_channel_importance" / "band_stop_ablation.json"
+    if not src.exists():
+        print(f"  skip band_stop {cell}: {src.relative_to(REPO)} missing")
+        return
+    full = json.loads(src.read_text())
+    if cell not in full:
+        print(f"  skip band_stop {cell}: not present in {src.relative_to(REPO)}")
+        return
+    payload = {
+        "provenance": _provenance(
+            raw_dir=str(src.relative_to(REPO)),
+            notes=f"Band-stop cosine-distance probes for {cell} (sliced from cross-cell file).",
+        ),
+        "cell": cell,
+        "bands": full[cell],
+    }
+    _write(FINAL / cell / "band_stop" / "probes.json", payload, dry)
+
+
+# ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
 SECTIONS = {
     "lp": rebuild_lp,
     "ft": rebuild_ft_provenance,
+    "perm_null": rebuild_perm_null,
+    "classical": rebuild_classical,
+    "fooof_ablation": rebuild_fooof_ablation,
+    "subject_probe_temporal_block": rebuild_subject_probe_temporal_block,
+    "band_stop": rebuild_band_stop,
 }
 
 

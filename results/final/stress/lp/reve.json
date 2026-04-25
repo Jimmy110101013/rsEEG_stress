@@ -1,8 +1,8 @@
 {
   "provenance": {
     "raw_dir": "results/studies/perwindow_lp_all/stress",
-    "snapshot_date": "2026-04-23",
-    "commit": "c98f965",
+    "snapshot_date": "2026-04-25",
+    "commit": "e47a8b0",
     "script": "scripts/analysis/rebuild_final_snapshots.py",
     "notes": "Per-window frozen LP, 8-seed sklearn LogReg + test-prob mean-pool."
   },

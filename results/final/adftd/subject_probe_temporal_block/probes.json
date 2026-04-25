@@ -1,4 +1,11 @@
 {
+  "provenance": {
+    "raw_dir": "results/studies/exp33_temporal_block_probe/adftd_probes.json",
+    "snapshot_date": "2026-04-25",
+    "commit": "e47a8b0",
+    "script": "scripts/analysis/rebuild_final_snapshots.py",
+    "notes": "Temporal-block subject-ID probe (uniform across 4 cells)."
+  },
   "dataset": "adftd",
   "protocol": "temporal_block_5fold",
   "seeds": [

@@ -50,18 +50,33 @@ def source_table(name: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def perm_null_summaries(dataset: str, *, exp: str = "exp27_paired_null") -> list[dict]:
-    """Return the per-seed ``summary.json`` dicts for the LaBraM FT paired-null
+    """Return per-seed ``summary.json`` dicts for the LaBraM FT paired-null
     chain on ``dataset``, sorted by seed.
 
-    Current home is ``results/studies/<exp>/<dataset>/perm_s*/summary.json``
-    (scratchpad). When promoted to ``results/final/<dataset>/perm_null/``,
-    redirect here and keep callers untouched.
+    Source: ``results/studies/<exp>/<dataset>/perm_s*/summary.json``
+    (per-seed raw form). For the aggregated (mean/std) form, see
+    :func:`perm_null_aggregate`.
     """
     root = STUDIES / exp / dataset.lower()
     paths = sorted(root.glob("perm_s*/summary.json"))
     if not paths:
         raise FileNotFoundError(f"No perm-null summaries under {root}")
     return [json.loads(p.read_text()) for p in paths]
+
+
+def perm_null_aggregate(dataset: str, fm: str = "labram") -> dict:
+    """Return the aggregated permutation-null snapshot for (dataset, fm).
+
+    Path: ``results/final/<dataset>/perm_null/<fm>_null.json``. Schema:
+    ``{provenance, model, cell, n_seeds, subject_bal_acc_per_seed,
+    subject_bal_acc_mean, subject_bal_acc_std_ddof1, ...min, ...max}``.
+
+    Cheaper than calling ``perm_null_summaries`` + reducing client-side.
+    """
+    p = FINAL / dataset.lower() / "perm_null" / f"{fm}_null.json"
+    if not p.exists():
+        raise FileNotFoundError(f"No aggregated perm-null at {p}")
+    return json.loads(p.read_text())
 
 
 # ---------------------------------------------------------------------------
@@ -219,28 +234,38 @@ def ft_stats(dataset: str, fm: str, *, seeds=(42, 123, 2024)) -> dict | None:
 # ---------------------------------------------------------------------------
 
 def fooof_ablation_probes(dataset: str) -> dict:
-    """Return ``results/studies/fooof_ablation/<dataset>_probes.json``.
+    """Return the FOOOF probes JSON (state-probe variant, Fig 5b).
 
-    Schema: ``{"results": {<fm>: {"original": {...}, "aperiodic_removed": {...},
-    "periodic_removed": {...}, "both_removed": {...}}, ...}, ...}`` — keys vary
-    per cell. Used for Fig 5b state probe.
+    Reads from ``results/final/<dataset>/fooof_ablation/probes.json`` if
+    present (the snapshotted form with ``provenance``); falls back to
+    ``results/studies/fooof_ablation/<dataset>_probes.json`` otherwise.
+    Both shapes have the same ``results: {<fm>: {<condition>: ...}}``
+    payload at top level.
     """
-    p = STUDIES / "fooof_ablation" / f"{dataset.lower()}_probes.json"
-    if not p.exists():
-        raise FileNotFoundError(f"No FOOOF probes at {p}")
-    return json.loads(p.read_text())
+    final = FINAL / dataset.lower() / "fooof_ablation" / "probes.json"
+    if final.exists():
+        return json.loads(final.read_text())
+    studies = STUDIES / "fooof_ablation" / f"{dataset.lower()}_probes.json"
+    if not studies.exists():
+        raise FileNotFoundError(f"No FOOOF probes at {final} or {studies}")
+    return json.loads(studies.read_text())
 
 
 def subject_probe_temporal_block(dataset: str) -> dict:
-    """Return ``results/studies/exp33_temporal_block_probe/<dataset>_probes.json``.
+    """Return the temporal-block subject-ID probe JSON (Fig 5b subject axis).
 
-    Schema: same as fooof_ablation_probes but with ``subject_probe_mean``
-    fields. Used for Fig 5b subject probe (uniform 4-cell protocol).
+    Reads from ``results/final/<dataset>/subject_probe_temporal_block/
+    probes.json`` if present (snapshotted form); falls back to
+    ``results/studies/exp33_temporal_block_probe/<dataset>_probes.json``.
     """
-    p = STUDIES / "exp33_temporal_block_probe" / f"{dataset.lower()}_probes.json"
-    if not p.exists():
-        raise FileNotFoundError(f"No temporal-block probe at {p}")
-    return json.loads(p.read_text())
+    final = (FINAL / dataset.lower() / "subject_probe_temporal_block"
+             / "probes.json")
+    if final.exists():
+        return json.loads(final.read_text())
+    studies = STUDIES / "exp33_temporal_block_probe" / f"{dataset.lower()}_probes.json"
+    if not studies.exists():
+        raise FileNotFoundError(f"No temporal-block probe at {final} or {studies}")
+    return json.loads(studies.read_text())
 
 
 # ---------------------------------------------------------------------------
@@ -248,14 +273,29 @@ def subject_probe_temporal_block(dataset: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def band_stop_ablation() -> dict:
-    """Return the cross-dataset band-stop ablation JSON (all FMs × all bands ×
-    all datasets in one file).
+    """Return the cross-dataset band-stop ablation JSON.
 
-    Path: ``results/studies/exp14_channel_importance/band_stop_ablation.json``.
     Schema: ``{<dataset>: {<fm>: {<band>: {"mean_distance": float, ...}}}}``.
+    The cross-cell file at
+    ``results/studies/exp14_channel_importance/band_stop_ablation.json``
+    is the source of truth; per-cell snapshots at
+    ``results/final/<dataset>/band_stop/probes.json`` are sliced views.
     """
     return json.loads((STUDIES / "exp14_channel_importance"
                        / "band_stop_ablation.json").read_text())
+
+
+def band_stop_ablation_cell(dataset: str) -> dict:
+    """Return the per-cell band-stop slice from results/final/.
+
+    Schema: ``{"provenance": ..., "cell": ..., "bands": {<fm>: {<band>: ...}}}``.
+    Convenience over :func:`band_stop_ablation`[dataset] when only one cell
+    is needed.
+    """
+    p = FINAL / dataset.lower() / "band_stop" / "probes.json"
+    if not p.exists():
+        raise FileNotFoundError(f"No per-cell band-stop slice at {p}")
+    return json.loads(p.read_text())
 
 
 def channel_importance() -> dict:
@@ -273,15 +313,20 @@ def channel_importance() -> dict:
 # ---------------------------------------------------------------------------
 
 def classical_summary(dataset: str) -> dict:
-    """Return ``results/studies/exp02_classical_dass/<dataset>/summary.json``.
+    """Return the classical-baseline summary (Fig 6 squares).
 
+    Reads from ``results/final/<dataset>/classical/summary.json`` if
+    present; falls back to
+    ``results/studies/exp02_classical_dass/<dataset>/summary.json``.
     Schema: per-method (logreg/svm/rf/xgb) per-seed BA, mean, std.
-    Used for Fig 6 architecture ceiling (classical ML squares).
     """
-    p = STUDIES / "exp02_classical_dass" / dataset.lower() / "summary.json"
-    if not p.exists():
-        raise FileNotFoundError(f"No classical summary at {p}")
-    return json.loads(p.read_text())
+    final = FINAL / dataset.lower() / "classical" / "summary.json"
+    if final.exists():
+        return json.loads(final.read_text())
+    studies = STUDIES / "exp02_classical_dass" / dataset.lower() / "summary.json"
+    if not studies.exists():
+        raise FileNotFoundError(f"No classical summary at {final} or {studies}")
+    return json.loads(studies.read_text())
 
 
 # ---------------------------------------------------------------------------

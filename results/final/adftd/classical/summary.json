@@ -1,4 +1,11 @@
 {
+  "provenance": {
+    "raw_dir": "results/studies/exp02_classical_dass/adftd",
+    "snapshot_date": "2026-04-25",
+    "commit": "e47a8b0",
+    "script": "scripts/analysis/rebuild_final_snapshots.py",
+    "notes": "Classical (LogReg/SVM/RF/XGB) multi-seed baseline."
+  },
   "dataset": "adftd",
   "n_features": 101,
   "n_recordings": 65,
