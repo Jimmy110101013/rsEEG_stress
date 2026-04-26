@@ -1,6 +1,6 @@
 # TODO — Current Priorities
 
-**Last updated**: 2026-04-23 (alignment axis pivot complete; Fig 3 2×2 is the paper anchor)
+**Last updated**: 2026-04-26 (LaBraM input-norm aligned to /100; pre-fix results need re-validation)
 
 Update this file as priorities shift. Delete completed items; don't accumulate history.
 
@@ -33,36 +33,14 @@ Open. Our FT uses default hyperparameters across three seeds; published FM paper
 
 ## High priority — active work
 
-1. **F4 leave-one-dataset-out robustness** (pipeline Stage K)
-   - For each between-arm dataset, drop it and recompute ρ
-   - Claim is robust only if dropping any single dataset keeps |ρ| > 0.3 with CI not collapsing
-   - Priority: BEFORE any tex rewrite
-
-2. **Add TUAB to pipeline** (gated on path A)
-   - ~600 subjects, binary abnormal/normal; subject-level split standard
-   - Adds 4th between-arm dataset → n = 9 → 12
-   - Cost: ~5–8 h FT per FM (15–24 h total); need to download TUAB
-
-3. **Add HMC (sleep staging) to within_strict arm** (gated on path A)
-   - 151 subjects, 5-class, subject-level split standard
-   - Adds 3rd within-strict dataset → n = 6 → 9; current CI is [−0.50, +1.00]
-   - Cost: ~4–6 h FT per FM (12–18 h total); need to download HMC
-   - **Most important single addition** for path A
-
-
-4. **EEGMAT architecture ceiling → Fig 6 left** (alignment-conditional architecture claim)
-   - Need EEGMAT counterpart showing ceiling rises to 0.70+ for same architectures as Stress flat ceiling
-   - Check `results/studies/exp15_nonfm_baselines/sweep/*` for existing EEGMAT runs
-   - If missing: eegnet + shallowconvnet × 3 seeds on EEGMAT (~2 h)
-
-5. **2×2 axis text in Methods §3.1 + Intro** (axis renamed 2026-04-23)
-    - Intro: state taxonomy upfront — row = CV regime; column = task-substrate alignment. Cite DEAP/SEED/DREAMER/DASPS as additional (subject-label × weak-aligned) instances (no new experiments)
-    - Methods §3.1: map four datasets onto 2×2 with operational definitions — alignment: p ≤ 0.05 strong / p > 0.1 weak; regime: label design structure
-    - Zero experimental cost; ~500 words
-
-6. **Sweep remaining `docs/paper_outline.md` for stale "regime"/"signal coherence" language**
-    - Sections 4.x, Discussion, Supplementary not yet updated to alignment terminology
-    - Propagate when §1 Intro draft begins
+1. **🚨 Re-validate LaBraM results under aligned input norm** (commit `ac1e115`, 2026-04-26)
+   - Pre-fix LaBraM runs used per-window zscore; original LaBraM (and EEG-FM-Bench / Benchmarking_EEG_Analysis spec) uses `raw µV / 100`
+   - Extractor now does `/100` internally (mirrors CBraMod pattern); all `MODEL_NORM` dicts and shell launchers pinned to `none`
+   - **All pre-2026-04-26 LaBraM numbers are NOT directly comparable** to post-fix runs — ΔBA, F-A through F-E LaBraM cells, perm null, HP sweep all need re-validation before the paper rests on them
+   - Action: rerun canonical 3-seed FT (`scripts/experiments/run_final_ft_labram.sh`) on Stress + EEGMAT + ADFTD + SleepDep first; then frozen LP (`extract_frozen_*` → `train_lp.py`) for the same 4 datasets
+   - Cost: ~6–8 h FT × 4 datasets × 3 seeds + ~2 h LP extraction ≈ 1 GPU-day
+   - **Block on this**: any rewriting/figures that cite a LaBraM number; once a representative subset re-runs, decide whether to swap in new numbers wholesale or annotate old ones as pre-alignment ablation
+   - Trace: grep `2026-04-26` or commit `ac1e115` for all touched files; CLAUDE.md §2 carries the guardrail
 
 ---
 
