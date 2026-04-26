@@ -400,7 +400,8 @@ for ax, fm in zip(axes, FMS):
     ax.set_xticks(xi)
     ax.set_xticklabels([b.title() for b in BANDS], fontsize=7.5)
     ax.set_xlabel('Frequency band', fontsize=8)
-    ax.set_title(f"{fm.upper()}  ({'zscore' if fm=='labram' else 'raw'})",
+    # 2026-04-26: labram norm aligned to /100 (was zscore); all 3 FMs now use raw µV input
+    ax.set_title(f"{fm.upper()}  (raw)",
                  fontsize=9.5, color=FM_COLOR[fm], fontweight='bold')
     ax.grid(True, ls=':', lw=0.3, alpha=0.5)
     ax.tick_params(labelsize=7.5)

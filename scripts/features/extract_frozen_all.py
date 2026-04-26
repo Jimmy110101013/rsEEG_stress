@@ -26,7 +26,8 @@ from baseline.abstract.factory import create_extractor
 from pipeline.common_channels import COMMON_19
 
 # Per-model norm (must match CLAUDE.md conventions)
-MODEL_NORM = {"labram": "zscore", "cbramod": "none", "reve": "none"}
+# labram: 2026-04-26 changed zscore → none (extractor does /100 internally)
+MODEL_NORM = {"labram": "none", "cbramod": "none", "reve": "none"}
 
 
 def load_dataset(name: str, norm: str, window_sec: float = 5.0,

@@ -27,8 +27,9 @@ import baseline.reve     # noqa: F401
 from baseline.abstract.factory import create_extractor
 
 # Per-model norm (must match CLAUDE.md / train_ft.py conventions)
+# labram: 2026-04-26 changed zscore → none (extractor does /100 internally)
 MODEL_NORM = {
-    "labram": "zscore",
+    "labram": "none",
     "cbramod": "none",
     "reve": "none",
 }

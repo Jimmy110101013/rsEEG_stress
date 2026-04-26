@@ -94,7 +94,8 @@ def run_stress_analysis():
     results = {}
 
     for model in models:
-        norm = {"labram": "zscore", "cbramod": "none", "reve": "none"}[model]
+        # labram: 2026-04-26 changed zscore → none (extractor does /100 internally)
+        norm = {"labram": "none", "cbramod": "none", "reve": "none"}[model]
         cache_dir = "data/cache" if norm == "zscore" else f"data/cache_n{norm}"
 
         # Load dataset for cache paths
@@ -145,7 +146,8 @@ def run_other_dataset(dataset_name):
     results = {}
 
     for model in models:
-        norm = {"labram": "zscore", "cbramod": "none", "reve": "none"}[model]
+        # labram: 2026-04-26 changed zscore → none (extractor does /100 internally)
+        norm = {"labram": "none", "cbramod": "none", "reve": "none"}[model]
 
         # Load frozen features
         feat = np.load(f"{FEAT_DIR}/frozen_{model}_{dataset_name}_19ch.npz")

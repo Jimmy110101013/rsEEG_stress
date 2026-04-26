@@ -35,7 +35,8 @@ from pipeline.common_channels import COMMON_19
 OUT_DIR = "results/studies/exp14_channel_importance"
 
 # Per-model norm
-MODEL_NORM = {"labram": "zscore", "cbramod": "none", "reve": "none"}
+# labram: 2026-04-26 changed zscore → none (extractor does /100 internally)
+MODEL_NORM = {"labram": "none", "cbramod": "none", "reve": "none"}
 
 # Stress 30ch names (from raw .set files)
 STRESS_30CH = [

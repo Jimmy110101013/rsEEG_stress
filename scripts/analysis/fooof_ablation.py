@@ -34,7 +34,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 from fooof import FOOOF  # noqa: E402
 
 # Per-FM norm convention (keep consistent with extract_frozen_stress.py)
-MODEL_NORM = {"labram": "zscore", "cbramod": "none", "reve": "none"}
+# labram: 2026-04-26 changed zscore → none (extractor does /100 internally)
+MODEL_NORM = {"labram": "none", "cbramod": "none", "reve": "none"}
 # Per-FM canonical window (ADFTD refresh 2026-04-23: reve=10s, others=5s)
 MODEL_WINDOW = {"labram": 5.0, "cbramod": 5.0, "reve": 10.0}
 

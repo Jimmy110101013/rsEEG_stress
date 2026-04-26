@@ -134,5 +134,10 @@ class LaBraMExtractor(BaseExtractor):
         # Reshape to LaBraM expected format: (B, n_channels, n_patches, patch_size)
         x = x.reshape(B, C, n_patches, self.patch_size)
 
+        # Normalize: LaBraM expects raw µV / 100 (matches original repo's
+        # engine_for_finetuning.py:87 and data_processor/data_preprocess.py).
+        # Aligned 2026-04-26 — see CLAUDE.md and commit msg.
+        x = x / 100.0
+
         # Forward with our channel position indices
         return self.model(x, input_chans=self.input_chans)

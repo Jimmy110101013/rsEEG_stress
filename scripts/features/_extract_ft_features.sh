@@ -67,13 +67,13 @@ echo "=========================================="
 #   CBraMod: lr=1e-5, elrs=0.1
 #   REVE:    lr=3e-5, elrs=0.1
 
-# ── LaBraM (norm=zscore) ──
+# ── LaBraM (norm=none; extractor does /100 internally — 2026-04-26 alignment) ──
 echo ""
 echo "--- LaBraM ---"
-run_one "labram_stress"  1800  --extractor labram --norm zscore --lr 1e-4 --encoder-lr-scale 1.0 --label dass --csv data/comprehensive_labels.csv --seed 42
-run_one "labram_adftd"   2700  --extractor labram --norm zscore --lr 1e-5 --encoder-lr-scale 0.1 --dataset adftd --seed 42
-run_one "labram_eegmat"  1800  --extractor labram --norm zscore --lr 1e-5 --encoder-lr-scale 0.1 --dataset eegmat --seed 42
-run_one "labram_tdbrain" 10800 --extractor labram --norm zscore --lr 1e-5 --encoder-lr-scale 0.1 --dataset tdbrain --seed 42
+run_one "labram_stress"  1800  --extractor labram --norm none --lr 1e-4 --encoder-lr-scale 1.0 --label dass --csv data/comprehensive_labels.csv --seed 42
+run_one "labram_adftd"   2700  --extractor labram --norm none --lr 1e-5 --encoder-lr-scale 0.1 --dataset adftd --seed 42
+run_one "labram_eegmat"  1800  --extractor labram --norm none --lr 1e-5 --encoder-lr-scale 0.1 --dataset eegmat --seed 42
+run_one "labram_tdbrain" 10800 --extractor labram --norm none --lr 1e-5 --encoder-lr-scale 0.1 --dataset tdbrain --seed 42
 
 # ── CBraMod (norm=none) ──
 echo ""

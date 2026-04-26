@@ -26,10 +26,10 @@ def main():
         'data/tdbrain',
         target_sfreq=200.0,
         window_sec=5.0,       # LaBraM window
-        norm='zscore',
+        norm='none',          # 2026-04-26: was 'zscore'; LaBraM extractor now does /100 internally
         condition='both',
         target_dx='MDD',
-        cache_dir='data/cache_tdbrain',
+        cache_dir='data/cache_tdbrain_nnone',
     )
     pids = ds.get_patient_ids()
     labels = ds.get_labels()

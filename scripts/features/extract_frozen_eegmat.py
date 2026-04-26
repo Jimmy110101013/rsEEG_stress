@@ -31,8 +31,8 @@ def main():
         "data/eegmat",
         target_sfreq=200.0,
         window_sec=5.0,
-        norm="zscore",
-        cache_dir="data/cache_eegmat",
+        norm="none",  # 2026-04-26: was "zscore"; LaBraM extractor now does /100 internally
+        cache_dir="data/cache_eegmat_nnone",
     )
     pids = ds.get_patient_ids()
     labels = ds.get_labels()

@@ -10,7 +10,7 @@ FM=labram
 DEVICE=cuda:3
 BASE="--mode ft --extractor $FM --lr 5e-4 --weight-decay 0.05 --llrd 0.65 \
   --label-smoothing 0.1 --head-hidden 0 --encoder-lr-scale 1.0 \
-  --warmup-epochs 5 --batch-size 64 --norm zscore --loss ce \
+  --warmup-epochs 5 --batch-size 64 --norm none --loss ce \
   --epochs 200 --save-features --device $DEVICE"
 
 for SEED in 42 2024 123; do

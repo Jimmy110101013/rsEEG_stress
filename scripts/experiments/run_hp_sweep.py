@@ -90,7 +90,7 @@ MODELS: dict[str, dict[str, Any]] = {
     "deepconvnet":    {"type": "dl", "fixed": {"norm": "zscore"}},
     "eegconformer":   {"type": "dl", "fixed": {"norm": "zscore"}},
     # Foundation models
-    "labram":         {"type": "fm", "fixed": {"norm": "zscore"}},
+    "labram":         {"type": "fm", "fixed": {"norm": "none"}},  # 2026-04-26: was "zscore"
     "cbramod":        {"type": "fm", "fixed": {"norm": "none"}},
     "reve":           {"type": "fm", "fixed": {"norm": "none"}},
 }

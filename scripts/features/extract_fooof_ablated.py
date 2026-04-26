@@ -29,7 +29,8 @@ import baseline.reve     # noqa: F401
 from baseline.abstract.factory import create_extractor
 from pipeline.common_channels import COMMON_19
 
-MODEL_NORM = {"labram": "zscore", "cbramod": "none", "reve": "none"}
+# labram: 2026-04-26 changed zscore → none (extractor does /100 internally)
+MODEL_NORM = {"labram": "none", "cbramod": "none", "reve": "none"}
 MODEL_WINDOW = {"labram": 5.0, "cbramod": 5.0, "reve": 10.0}
 
 

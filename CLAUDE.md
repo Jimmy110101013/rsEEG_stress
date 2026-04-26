@@ -36,7 +36,7 @@ EEG (.set) → StressEEGDataset (epoch + cache) → FM Backbone → Global Pool 
 
 - **FM extractors** (`baseline/`): unified `(B, embed_dim)`. LaBraM 200, CBraMod 200, REVE 512. Use `create_extractor(name)` — **never** pass `embed_dim`.
 - **Input normalisation** (`--norm`) is **per-model**, not a global default. Getting this wrong silently destroys the run:
-  - `labram` → `zscore` (matches paper FT recipe)
+  - `labram` → `none` (extractor internally does `x / 100` in `labram_extractor.py:142` — matches original LaBraM `engine_for_finetuning.py:87`; aligned 2026-04-26. **Pre-2026-04-26 results used `zscore`** — see git log around 2026-04-26 for the alignment commit; old runs are not directly comparable to post-fix runs.)
   - `cbramod` → `none` (extractor internally does `x / 100` in `cbramod_extractor.py:102`; passing zscored input double-scales to ~0)
   - `reve` → `none` (patch embedding is a `Linear(patch_size → embed_dim)` trained on µV-scale pretraining data; scale-sensitive)
   - `eegnet` / `shallowconvnet` / `deepconvnet` / `eegconformer` → `zscore` (Lawhern/Schirrmeister/Song conventions + early BatchNorm)

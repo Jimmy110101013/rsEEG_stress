@@ -35,7 +35,8 @@ import baseline.cbramod  # noqa: F401
 import baseline.reve     # noqa: F401
 from baseline.abstract.factory import create_extractor
 
-MODEL_NORM = {"labram": "zscore", "cbramod": "none", "reve": "none"}
+# labram: 2026-04-26 changed zscore → none (extractor does /100 internally)
+MODEL_NORM = {"labram": "none", "cbramod": "none", "reve": "none"}
 
 
 def parse_args():
