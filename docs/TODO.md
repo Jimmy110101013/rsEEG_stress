@@ -1,6 +1,6 @@
 # TODO — Current Priorities
 
-**Last updated**: 2026-04-26 (LaBraM input-norm aligned to /100; pre-fix results need re-validation)
+**Last updated**: 2026-04-26 (LaBraM input-norm aligned to /100; CBraMod head + aggregation alignment options noted)
 
 Update this file as priorities shift. Delete completed items; don't accumulate history.
 
@@ -41,6 +41,17 @@ Open. Our FT uses default hyperparameters across three seeds; published FM paper
    - Cost: ~6–8 h FT × 4 datasets × 3 seeds + ~2 h LP extraction ≈ 1 GPU-day
    - **Block on this**: any rewriting/figures that cite a LaBraM number; once a representative subset re-runs, decide whether to swap in new numbers wholesale or annotate old ones as pre-alignment ablation
    - Trace: grep `2026-04-26` or commit `ac1e115` for all touched files; CLAUDE.md §2 carries the guardrail
+
+2. **CBraMod head + window-aggregation alignment** (audit 2026-04-26 — verified norm matches; head + agg do not)
+   - **Norm**: ✅ already aligned — original `datasets/*_dataset.py` does `data/100`; our `cbramod_extractor.py:102` does same. No code change needed.
+   - **Backbone (`model.py`, `criss_cross_transformer.py`)**: ✅ mathematically identical to original; cosmetic-only differences (deleted dead helpers `_get_seq_len`, `_detect_is_causal_mask`, `_generate_square_subsequent_mask`, telemetry, unused `is_causal` plumbing).
+   - **Head — divergence #1**: original `models/model_for_stress.py` uses 4 selectable classifiers (default `avgpooling_patch_reps` = `Rearrange + AdaptiveAvgPool2d → Linear(200, 1)` + BCE); we use `Linear(200,128) + GELU + Dropout + Linear(128,2)` + multiclass CE.
+   - **Aggregation — divergence #2**: original is **strict per-window** (each window independently → 1 logit, BCE per window, no recording-level vote). Our FT path does per-window classify → majority vote → recording label; our LP path does feature avg-pool over windows → single classify per recording. Neither matches original exactly.
+   - **Action (when ready)**: add config flags
+     - `--cbramod-head {mlp,linear}` — `linear` reproduces paper's single `Linear(200,2)` head (keep CE + 2-class for our binary stress framing rather than copying their BCE+1-output)
+     - `--cbramod-agg {feature-pool,window-vote,per-window}` — `per-window` = strict paper alignment (no recording-level aggregation, evaluate per window); other two = our current modes
+   - **Block scope**: not blocking the paper — current head/agg are reasonable design choices, not bugs. Run only if reviewers push back or we want a "paper-strict" ablation row. Cost: head change is trivial (one Linear); agg change requires touching `evaluate_recording_level()` and feature-cache pooling.
+   - **Same audit for LaBraM** (open): LaBraM original head is `nn.Linear(embed_dim, num_classes)` with `init_scale=0.001`; our `head_cls` is also 2-layer MLP (head_hidden=128). If we add the CBraMod flags, mirror them for LaBraM (`--labram-head {mlp,linear}`) for symmetry.
 
 ---
 
